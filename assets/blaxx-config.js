@@ -3,7 +3,7 @@
  * Em desenvolvimento (servidor Flask servindo /site/) usa origem propria.
  * No Netlify (frontend separado) APONTE PARA O FLY.IO:
  *
- *   window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";
+ * window.BLAXX_API = "https://blaxx-rewards-pix.fly.dev";
  *
  * O blaxx-app.js le esta variavel global. Se nao definida, cai em
  * location.origin (modo dev).
@@ -12,7 +12,7 @@
   // ============================================================
   // EDITE AQUI A URL DO SEU BACKEND FLY.IO APOS O DEPLOY:
   // ============================================================
-  // window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";
+ window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";
 
   // Auto-detect: se estamos em netlify.app/.com, exige backend remoto
   if (!window.BLAXX_API) {
