@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080907">
+<title>App ao vivo | Blaxx Pontos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* Tweaks para esta tela integrada */
+  .live-pill { display:inline-flex; align-items:center; gap:6px; background:var(--ok); color:var(--ok-text); padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+  .live-pill::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--ok-text); animation:pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
+  .api-badge { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; background:var(--ink); color:var(--lime); padding:2px 8px; border-radius:6px; }
+  .endpoint-tag { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; color:var(--muted); }
+  .qr-box { width:130px; height:130px; background:#fff; border-radius:12px; padding:6px; border:1px solid var(--line); }
+  .brcode-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:10px; word-break:break-all; line-height:1.4; background:var(--bg-warm); padding:10px; border-radius:8px; max-height:90px; overflow:auto; }
+  .row-input { display:grid; gap:8px; margin-top:8px; }
+  .row-input label { font-size:12px; color:var(--muted); }
+  .row-input input { padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:14px; background:var(--card); }
+  .alert { padding:10px 12px; border-radius:10px; font-size:13px; margin-top:10px; }
+  .alert-ok    { background:var(--ok); color:var(--ok-text); }
+  .alert-warn  { background:var(--warn); color:var(--warn-text); }
+  .alert-err   { background:var(--danger); color:var(--danger-text); }
+  .balance-big { font-size:42px; font-weight:800; line-height:1; letter-spacing:-0.02em; }
+  .balance-sub { color:var(--muted-2); font-size:13px; margin-top:4px; }
+  .step-label { background:var(--ink); color:var(--lime); font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px; }
+  .login-bar { display:grid; grid-template-columns:1.4fr 1fr auto; gap:8px; align-items:center; }
+  .pkg-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px; }
+  .pkg-btn { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:left; cursor:pointer; transition:.15s; }
+  .pkg-btn:hover { border-color:var(--ink); }
+  .pkg-btn.featured { border:2px solid var(--ink); }
+  .pkg-btn .nm { font-size:11px; color:var(--muted); }
+  .pkg-btn .pr { font-size:16px; font-weight:700; margin-top:2px; }
+  .pkg-btn .pt { font-size:11px; color:var(--muted); }
+  .tx-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .tx-row:last-child { border-bottom:0; }
+  .tx-amt-pos { color:var(--ok-text); font-weight:600; }
+  .tx-amt-neg { color:var(--danger-text); font-weight:600; }
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+<header class="topbar">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <span class="mark">B</span>
+      Blaxx <span class="brand-sub">Pontos</span>
+    </a>
+    <div class="links">
+      <a href="index.html">Início</a>
+      <a href="dashboard.html">Painel (estático)</a>
+      <a href="app.html" data-link="app">App ao vivo</a>
+      <a href="sitemap.html">Mapa do site</a>
+    </div>
+    <div class="cta-row">
+      <span class="live-pill">backend conectado</span>
+      <span class="api-badge" id="api-base">localhost:5001</span>
+    </div>
+  </nav>
+</header>
+
+<main class="shell">
+
+  <div class="page-head">
+    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> App ao vivo</div>
+    <h1>App <span style="color:#7fa01e;">funcional</span></h1>
+    <p class="lead" style="max-width:60ch;margin-top:14px;">Esta tela usa o backend Python real. Login, saldo, compra de pontos via PIX, envio entre clientes e resgate via PIX — tudo passando pelos endpoints Flask.</p>
+  </div>
+
+  <!-- ====================== LOGIN ====================== -->
+  <section class="section" id="sec-login">
+    <div class="card" style="padding:24px;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px;">
+        <h2 style="margin:0;">Entrar</h2>
+        <span class="endpoint-tag">POST /auth/login</span>
+      </div>
+      <div class="login-bar">
+        <input id="li-email" type="email" placeholder="e-mail" value="mariana@blaxx.com" style="padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;">
+        <input id="li-pass" type="password" placeholder="senha" value="123456" style="padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;">
+        <button class="button" id="li-go">Entrar</button>
+      </div>
+      <p style="margin-top:10px;font-size:12px;color:var(--muted);">Demo: <strong>mariana@blaxx.com</strong> ou <strong>lucas@blaxx.com</strong> · senha <strong>123456</strong></p>
+      <div id="li-msg"></div>
+    </div>
+  </section>
+
+  <!-- ====================== APP (escondido até logar) ====================== -->
+  <div id="app" style="display:none;">
+
+    <!-- ============ CARTEIRA ============ -->
+    <section class="section">
+      <div class="card" style="padding:30px;background:var(--ink);color:white;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
+          <div>
+            <div style="color:var(--lime-2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Carteira de <span id="me-name">…</span></div>
+            <div class="balance-big" style="color:var(--lime);margin-top:8px;"><span id="bal-pts">…</span> <span style="font-size:18px;color:var(--lime-soft);">pts</span></div>
+            <div class="balance-sub" style="color:var(--lime-soft);">≈ R$ <span id="bal-brl">…</span></div>
+          </div>
+          <button class="button ghost" id="logout" style="background:transparent;color:white;border:1px solid rgba(255,255,255,.3);">Sair</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FLUXO 1: COMPRAR PONTOS ============ -->
+    <section class="section">
+      <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span class="step-label">Fluxo 1</span>
+            <h2 style="margin:0;">Comprar pontos via PIX</h2>
+          </div>
+          <span class="endpoint-tag">POST /pix/charge → /pix/simulate-payment</span>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Escolha um pacote. O backend cria a cobrança e devolve o BR Code. O botão "simular pagamento" dispara o webhook que credita os pontos.</p>
+
+        <div class="pkg-grid">
+          <button class="pkg-btn" data-pkg="start"><div class="nm">Start</div><div class="pr">R$ 19,90</div><div class="pt">2.000 pts</div></button>
+          <button class="pkg-btn featured" data-pkg="plus"><div class="nm" style="color:var(--ink);">Plus · popular</div><div class="pr">R$ 49,90</div><div class="pt">5.500 pts</div></button>
+          <button class="pkg-btn" data-pkg="prime"><div class="nm">Prime</div><div class="pr">R$ 99,90</div><div class="pt">12.000 pts</div></button>
+          <button class="pkg-btn" data-pkg="black"><div class="nm">Black</div><div class="pr">R$ 199,90</div><div class="pt">28.000 pts</div></button>
+        </div>
+
+        <div id="charge-area" style="display:none;margin-top:16px;background:var(--lime-bg);padding:16px;border-radius:14px;">
+          <div style="display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:start;">
+            <div class="qr-box" id="qr"></div>
+            <div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">BR Code copia-e-cola</div>
+              <div class="brcode-box" id="brcode"></div>
+              <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+                <span class="status-pill" id="charge-status" style="background:var(--warn);color:var(--warn-text);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;">pending</span>
+                <button class="button" id="charge-pay" style="font-size:13px;padding:8px 14px;">Simular pagamento (webhook)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="charge-msg"></div>
+      </div>
+    </section>
+
+    <!-- ============ FLUXO 2: ENVIAR PONTOS ============ -->
+    <section class="section">
+      <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span class="step-label">Fluxo 2</span>
+            <h2 style="margin:0;">Enviar pontos a outro cliente</h2>
+          </div>
+          <span class="endpoint-tag">POST /transfer/</span>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Identifica destinatário por e-mail ou CPF. Mín. 100 pts, máx. 50.000 pts/dia, sem taxa. Comprovante no formato <code>ENV-2026-XXXX-XXXX</code>.</p>
+
+        <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:8px;margin-top:12px;align-items:end;">
+          <div class="row-input"><label>Destinatário (e-mail ou CPF)</label><input id="t-to" value="lucas@blaxx.com"></div>
+          <div class="row-input"><label>Quantidade (pts)</label><input id="t-amt" type="number" value="2000" min="100" step="100"></div>
+          <div class="row-input"><label>Sua senha</label><input id="t-pwd" type="password" value="123456"></div>
+          <button class="button" id="t-send">Enviar</button>
+        </div>
+        <div class="row-input" style="margin-top:10px;"><label>Mensagem (opcional, máx 140)</label><input id="t-msg" maxlength="140" placeholder="obrigado!"></div>
+        <div id="t-msg-out"></div>
+      </div>
+    </section>
+
+    <!-- ============ FLUXO 3: RESGATE PIX ============ -->
+    <section class="section">
+      <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span class="step-label">Fluxo 3</span>
+            <h2 style="margin:0;">Resgatar pontos via PIX</h2>
+          </div>
+          <span class="endpoint-tag">POST /redeem/</span>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Conversão 100 pts = R$ 1,00. Mínimo 2.500 pts. Se a chave começar com <code>fail-</code> o gateway falha e o backend estorna automaticamente.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr auto;gap:8px;margin-top:12px;align-items:end;">
+          <div class="row-input"><label>Pontos (múltiplo de 100)</label><input id="r-pts" type="number" value="5000" min="2500" step="100"></div>
+          <div class="row-input"><label>Chave PIX</label><input id="r-key" value="ricardo.veles@gmail.com"></div>
+          <div class="row-input"><label>Sua senha</label><input id="r-pwd" type="password" value="123456"></div>
+          <button class="button" id="r-go">Resgatar</button>
+        </div>
+        <div id="r-quote" style="margin-top:8px;font-size:12px;color:var(--muted);"></div>
+        <div id="r-msg"></div>
+      </div>
+    </section>
+
+    <!-- ============ EXTRATO ============ -->
+    <section class="section">
+      <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
+          <h2 style="margin:0;">Extrato (últimas 10)</h2>
+          <span class="endpoint-tag">GET /wallet/transactions</span>
+        </div>
+        <div id="extrato">…</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="brand"><span class="mark">B</span> Blaxx <span class="brand-sub">Pontos</span></div>
+      <p class="about">Esta tela mostra o backend Python rodando contra o protótipo. Os dados são reais (SQLite local) e refletem em todas as outras telas estáticas que consultam a mesma API.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  [data-link="app"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
+</style>
+
+<script>
+const API = location.origin; // mesma origem (servido pelo Flask em /site/)
+document.getElementById('api-base').textContent = API.replace(/^https?:\/\//, '');
+
+let token = sessionStorage.getItem('blaxx_token');
+let me = JSON.parse(sessionStorage.getItem('blaxx_me') || 'null');
+
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Number(n).toLocaleString('pt-BR');
+const brl = (n) => 'R$ ' + Number(n).toFixed(2).replace('.', ',');
+
+function alertBox(target, kind, msg) {
+  $(target).innerHTML = `<div class="alert alert-${kind}">${msg}</div>`;
+}
+
+async function api(path, opts = {}) {
+  const headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(API + path, Object.assign({}, opts, { headers }));
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || 'erro'), { data, status: res.status });
+  return data;
+}
+
+// ---------- LOGIN ----------
+$('li-go').addEventListener('click', async () => {
+  $('li-msg').innerHTML = '';
+  try {
+    const res = await api('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email: $('li-email').value.trim(), password: $('li-pass').value })
+    });
+    token = res.token; me = res.user;
+    sessionStorage.setItem('blaxx_token', token);
+    sessionStorage.setItem('blaxx_me', JSON.stringify(me));
+    showApp();
+  } catch (e) {
+    alertBox('li-msg', 'err', '✗ ' + e.message);
+  }
+});
+
+$('logout').addEventListener('click', () => {
+  sessionStorage.clear();
+  token = null; me = null;
+  $('app').style.display = 'none';
+  $('sec-login').style.display = '';
+});
+
+async function showApp() {
+  $('sec-login').style.display = 'none';
+  $('app').style.display = '';
+  $('me-name').textContent = me.name;
+  await refresh();
+}
+
+async function refresh() {
+  const w = await api('/wallet/');
+  $('bal-pts').textContent = fmt(w.balance_pts);
+  $('bal-brl').textContent = w.balance_brl_equiv.toFixed(2).replace('.', ',');
+
+  const t = await api('/wallet/transactions?limit=10');
+  if (!t.items.length) { $('extrato').textContent = 'sem movimentações ainda.'; return; }
+  $('extrato').innerHTML = t.items.map(tx => {
+    const cls = tx.amount_pts >= 0 ? 'tx-amt-pos' : 'tx-amt-neg';
+    const sign = tx.amount_pts >= 0 ? '+' : '';
+    const date = new Date(tx.created_at).toLocaleString('pt-BR');
+    return `<div class="tx-row">
+      <div><strong>${tx.description || tx.type}</strong> <span style="color:var(--muted-2);font-size:11px;">· ${tx.type}</span><br><span style="color:var(--muted-2);font-size:11px;">${date}</span></div>
+      <div class="${cls}">${sign}${fmt(tx.amount_pts)} pts</div>
+    </div>`;
+  }).join('');
+}
+
+// ---------- FLUXO 1 ----------
+let activeCharge = null;
+document.querySelectorAll('.pkg-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    $('charge-msg').innerHTML = '';
+    try {
+      const charge = await api('/pix/charge', {
+        method: 'POST',
+        body: JSON.stringify({ package: btn.dataset.pkg })
+      });
+      activeCharge = charge;
+      $('charge-area').style.display = 'block';
+      $('brcode').textContent = charge.br_code;
+      $('qr').innerHTML = drawQR(charge.br_code);
+      $('charge-status').textContent = charge.status;
+      $('charge-status').style.background = 'var(--warn)';
+      $('charge-status').style.color = 'var(--warn-text)';
+    } catch (e) { alertBox('charge-msg', 'err', '✗ ' + e.message); }
+  });
+});
+
+$('charge-pay').addEventListener('click', async () => {
+  if (!activeCharge) return;
+  try {
+    const r = await api('/pix/simulate-payment', {
+      method: 'POST', body: JSON.stringify({ charge_id: activeCharge.id })
+    });
+    $('charge-status').textContent = 'paid';
+    $('charge-status').style.background = 'var(--ok)';
+    $('charge-status').style.color = 'var(--ok-text)';
+    alertBox('charge-msg', 'ok', '✓ Pagamento confirmado · +' + fmt(activeCharge.points_to_credit) + ' pts creditados');
+    activeCharge = null;
+    await refresh();
+  } catch (e) { alertBox('charge-msg', 'err', '✗ ' + e.message); }
+});
+
+// ---------- FLUXO 2 ----------
+$('t-send').addEventListener('click', async () => {
+  $('t-msg-out').innerHTML = '';
+  try {
+    const r = await api('/transfer/', {
+      method: 'POST',
+      body: JSON.stringify({
+        to: $('t-to').value.trim(),
+        amount_pts: parseInt($('t-amt').value),
+        password: $('t-pwd').value,
+        message: $('t-msg').value || null
+      })
+    });
+    alertBox('t-msg-out', 'ok',
+      `✓ ${fmt(r.amount_pts)} pts enviados · comprovante <strong>${r.receipt_code}</strong>`);
+    await refresh();
+  } catch (e) { alertBox('t-msg-out', 'err', '✗ ' + e.message); }
+});
+
+// ---------- FLUXO 3 ----------
+$('r-pts').addEventListener('input', () => {
+  const pts = parseInt($('r-pts').value || 0);
+  if (pts > 0) $('r-quote').textContent = `≈ ${brl(pts/100)} (100 pts = R$ 1,00)`;
+});
+$('r-pts').dispatchEvent(new Event('input'));
+
+$('r-go').addEventListener('click', async () => {
+  $('r-msg').innerHTML = '';
+  try {
+    const r = await api('/redeem/', {
+      method: 'POST',
+      body: JSON.stringify({
+        points: parseInt($('r-pts').value),
+        pix_key: $('r-key').value.trim(),
+        password: $('r-pwd').value
+      })
+    });
+    if (r.status === 'paid') {
+      alertBox('r-msg', 'ok',
+        `✓ ${brl(r.amount_brl)} enviados via PIX · E2E <code>${r.end_to_end_id}</code>`);
+    } else if (r.status === 'failed') {
+      alertBox('r-msg', 'warn',
+        `⚠ Payout falhou: ${r.failure_reason} · ${fmt(r.points_debited)} pts <strong>estornados automaticamente</strong>`);
+    } else {
+      alertBox('r-msg', 'ok', `Status: ${r.status}`);
+    }
+    await refresh();
+  } catch (e) { alertBox('r-msg', 'err', '✗ ' + e.message); }
+});
+
+// ---------- QR Code visual (CRC já vem certo do backend) ----------
+function drawQR(text) {
+  const size = 25, cell = 100/size;
+  let h = 0; for (const c of text) h = ((h<<5)-h + c.charCodeAt(0)) | 0;
+  const rng = (i) => { h = (h * 1103515245 + 12345 + i) & 0x7fffffff; return h; };
+  let svg = `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="white"/>`;
+  for (let y=0;y<size;y++) for (let x=0;x<size;x++) {
+    const corner = (x<7&&y<7)||(x>=size-7&&y<7)||(x<7&&y>=size-7);
+    const inCorner = corner && !((x>0&&x<6&&y>0&&y<6)||(x>size-7&&x<size-1&&y>0&&y<6)||(x>0&&x<6&&y>size-7&&y<size-1));
+    const dotInCorner = corner && ((x>1&&x<5&&y>1&&y<5)||(x>size-6&&x<size-2&&y>1&&y<5)||(x>1&&x<5&&y>size-6&&y<size-2));
+    const on = corner ? (inCorner || dotInCorner) : ((rng(y*size+x) % 2) === 0);
+    if (on) svg += `<rect x="${(x*cell).toFixed(2)}" y="${(y*cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}" fill="black"/>`;
+  }
+  return svg + `</svg>`;
+}
+
+// Auto-login se ja tem token
+if (token && me) showApp();
+</script>
+</body>
+</html>

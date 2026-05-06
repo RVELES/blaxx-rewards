@@ -1,0 +1,34 @@
+# Deploy automatico do backend para Fly.io a cada push na branch main.
+# Build e push acontecem nos servidores do GitHub (nao depende da sua rede).
+#
+# Pre-requisito 1x:
+#   1) No Fly: fly tokens create deploy --name "github-actions" -x 9999h
+#      (copia o token que aparecer)
+#   2) No GitHub: repo > Settings > Secrets and variables > Actions
+#      > New repository secret > Name: FLY_API_TOKEN > Value: <cole o token>
+
+name: Deploy backend to Fly.io
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/fly-deploy.yml"
+  workflow_dispatch:        # permite rodar manualmente pelo botao no GitHub
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    concurrency: deploy-group   # so 1 deploy por vez
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        working-directory: backend
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

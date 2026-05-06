@@ -1,0 +1,18 @@
+# Backend
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.db
+backend/instance/
+backend/.setup-ok
+backend/.venv/
+backend/venv/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Logs
+*.log

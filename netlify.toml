@@ -1,0 +1,51 @@
+# Configuracao Netlify para o frontend Blaxx Pontos
+
+[build]
+  publish = "."           # Toda a pasta blaxx/ vira o site
+  command = ""            # Sem build step - HTML/CSS/JS puros
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Cache agressivo para CSS/JS/imagens (busta no nome do arquivo se mudar)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"
+
+# Service worker NUNCA pode ser cacheado pelo CDN
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Manifest tambem
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Headers de seguranca basicos
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Redireciona / para /index.html (default do Netlify ja faz, redundante por clareza)
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# 404 customizado
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.setup-ok
+instance/
+*.db
+*.bat
+.git/
+.venv/
+venv/
+.env
+node_modules/

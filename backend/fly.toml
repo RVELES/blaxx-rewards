@@ -1,0 +1,38 @@
+# Configuracao Fly.io para o backend Blaxx Pontos
+# Use: fly launch --copy-config (na primeira vez) ou fly deploy
+
+app = "blaxx-pontos"   		# Mude para um nome unico (ex: blaxx-pontos)
+primary_region = "gru"         	# Sao Paulo. Outros: gig (Rio), sjc (USA-CA)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Setar via:  fly secrets set CORS_ORIGINS="https://blaxx-pontos.netlify.app"
+  # Setar via:  fly secrets set SECRET_KEY="$(openssl rand -hex 32)"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0     # Plano free: dorme quando nao tem trafego
+  processes = ["app"]
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/health"
+
+# Volume persistente para o SQLite. Crie com:
+#   fly volumes create blaxx_data --region gru --size 1
+[mounts]
+  source = "blaxx_data"
+  destination = "/data"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256              # Plano free: 256 MB e mais que suficiente

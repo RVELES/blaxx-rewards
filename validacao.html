@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080907">
+<title>Validar e-mail | Blaxx Pontos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+<header class="topbar">
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <span class="mark">B</span>
+            Blaxx <span class="brand-sub">Pontos</span>
+        </a>
+        <div class="links">
+            <a href="index.html" data-link="index">Início</a>
+            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
+            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
+            <a href="resgates.html" data-link="resgates">Resgates</a>
+            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
+            <a href="venda-pontos.html" data-link="venda-pontos">Vender pontos</a>
+        </div>
+        <div class="cta-row">
+            <a href="login.html" class="button ghost">Entrar</a>
+            <a href="cadastro.html" class="button">Cadastre-se</a>
+        </div>
+    </nav>
+</header>
+<div class="auth-wrap">
+<div class="auth-card center">
+    <div class="icon-badge">📧</div>
+    <h2>Confirme seu e-mail</h2>
+    <p class="sub">Enviamos um código de 6 dígitos para <strong style="color:var(--ink);">mariana@email.com</strong>. Cole abaixo para validar sua conta.</p>
+
+    <form action="onboarding.html">
+        <div class="form-row" style="margin-top:12px;">
+            <label for="code">Código de validação</label>
+            <input type="text" id="code" placeholder="000000" maxlength="6" style="font-size:24px;letter-spacing:0.4em;text-align:center;font-weight:800;">
+        </div>
+        <button class="button full lg">Validar conta →</button>
+    </form>
+
+    <div class="auth-foot">
+        Não recebeu? <a href="#">Reenviar código</a> · <a href="cadastro.html">Trocar e-mail</a>
+    </div>
+</div>
+</div>
+<footer class="footer">
+    <div class="footer-inner">
+        <div>
+            <div class="brand">
+                <span class="mark">B</span>
+                Blaxx <span class="brand-sub">Pontos</span>
+            </div>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+        </div>
+        <div>
+            <h4>Produto</h4>
+            <ul>
+                <li><a href="como-funciona.html">Como funciona</a></li>
+                <li><a href="parceiros.html">Parceiros</a></li>
+                <li><a href="resgates.html">Resgates</a></li>
+                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+                <li><a href="venda-pontos.html">Vender pontos</a></li>
+                <li><a href="campanhas.html">Campanhas</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Conta</h4>
+            <ul>
+                <li><a href="login.html">Entrar</a></li>
+                <li><a href="cadastro.html">Cadastre-se</a></li>
+                <li><a href="dashboard.html">Painel</a></li>
+                <li><a href="carteira.html">Carteira</a></li>
+                <li><a href="extrato.html">Extrato</a></li>
+                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Suporte</h4>
+            <ul>
+                <li><a href="central-ajuda.html">Central de ajuda</a></li>
+                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
+                <li><a href="meus-chamados.html">Meus chamados</a></li>
+                <li><a href="termos.html">Termos de uso</a></li>
+                <li><a href="documentos-termos.html">Documentos</a></li>
+                <li><a href="sitemap.html">Mapa do site</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
+        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
+    </div>
+</footer>
+<style>
+  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
+  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
+  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+</style>
+</body>
+</html>

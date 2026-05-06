@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080907">
+<title>Carteira | Blaxx Pontos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+<header class="topbar">
+    <nav class="nav">
+        <a href="dashboard.html" class="brand">
+            <span class="mark">B</span>
+            Blaxx <span class="brand-sub">Pontos</span>
+        </a>
+        <div class="links">
+            <a href="dashboard.html" data-link="dashboard">Início</a>
+            <a href="carteira.html" data-link="carteira">Carteira</a>
+            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
+            <a href="resgates.html" data-link="resgates">Resgates</a>
+            <a href="campanhas.html" data-link="campanhas">Campanhas</a>
+        </div>
+        <div class="cta-row">
+            <a href="central-notificacoes.html" class="button ghost" aria-label="Notificações">🔔</a>
+            <a href="perfil.html" class="button secondary">Olá, Mariana</a>
+        </div>
+    </nav>
+</header>
+<div class="app-shell">
+<aside class="sidebar">
+    <div class="side-user">
+        <div class="avatar">M</div>
+        <div>
+            <div class="side-user-name">Mariana Costa</div>
+            <div class="side-user-tier">Plano Plus · 84.750 pts</div>
+        </div>
+    </div>
+    <ul class="side-nav">
+        <li><a href="dashboard.html" data-side="dashboard"><span class="ic">●</span> Início</a></li>
+        <li><a href="carteira.html" data-side="carteira"><span class="ic">◆</span> Carteira</a></li>
+        <li><a href="extrato.html" data-side="extrato"><span class="ic">≡</span> Extrato</a></li>
+        <li><a href="parceiros.html" data-side="parceiros"><span class="ic">⊙</span> Parceiros</a></li>
+        <li><a href="resgates.html" data-side="resgates"><span class="ic">★</span> Resgates</a></li>
+        <li><a href="meus-resgates.html" data-side="meus-resgates"><span class="ic">✓</span> Meus resgates</a></li>
+        <li><a href="campanhas.html" data-side="campanhas"><span class="ic">▲</span> Campanhas</a></li>
+        <li><a href="comprar-pontos.html" data-side="comprar-pontos"><span class="ic">+</span> Comprar pontos</a></li>
+        <li><a href="enviar-pontos.html" data-side="enviar-pontos"><span class="ic">→</span> Enviar pontos</a></li>
+        <li><a href="indique-ganhe.html" data-side="indique"><span class="ic">♥</span> Indique e ganhe</a></li>
+    </ul>
+    <div class="side-foot">
+        <ul class="side-nav">
+            <li><a href="perfil.html" data-side="perfil"><span class="ic">⚙</span> Perfil</a></li>
+            <li><a href="seguranca.html" data-side="seguranca"><span class="ic">🔒</span> Segurança</a></li>
+            <li><a href="central-ajuda.html" data-side="ajuda"><span class="ic">?</span> Ajuda</a></li>
+            <li><a href="login.html"><span class="ic">↩</span> Sair</a></li>
+        </ul>
+    </div>
+</aside>
+<main>
+<div class="page-head">
+    <div class="crumbs"><a href="dashboard.html">Início</a><span class="sep">/</span> Carteira</div>
+    <h1 style="font-size:36px;">Sua carteira</h1>
+    <p class="muted">Saldo, pontos pendentes e o que está por expirar.</p>
+</div>
+
+<div class="wallet dark">
+    <div class="grid two" style="gap:32px;align-items:center;">
+        <div>
+            <div class="label">Saldo total</div>
+            <div class="big">84.750 <small>pts</small></div>
+            <div class="equiv">≈ R$ 847,50 em resgates · Plano Plus</div>
+            <div class="actions" style="margin-top:18px;">
+                <a href="comprar-pontos.html" class="button">Comprar pontos</a>
+                <a href="enviar-pontos.html" class="button secondary">Enviar pontos</a>
+                <a href="resgates.html" class="button ghost" style="color:white;">Resgatar →</a>
+            </div>
+        </div>
+        <div class="mini-grid" style="margin-top:0;">
+            <div class="mini"><div class="lbl">Disponível</div><strong style="color:white;">81.550</strong></div>
+            <div class="mini"><div class="lbl">Pendente</div><strong style="color:white;">3.200</strong></div>
+            <div class="mini"><div class="lbl">A expirar 60d</div><strong style="color:#ffce6b;">2.450</strong></div>
+            <div class="mini"><div class="lbl">Bloqueado</div><strong style="color:white;">0</strong></div>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="grid two">
+        <div class="card">
+            <div class="flex between mb-2">
+                <h3>Próximo resgate</h3>
+                <span class="status ativo">85% concluído</span>
+            </div>
+            <p class="muted" style="margin-bottom:10px;">Você está a 15.250 pts da Latam Pass.</p>
+            <div class="progress"><span style="width:85%;"></span></div>
+            <div class="progress-row" style="margin-top:6px;">
+                <span>84.750 pts</span>
+                <span>100.000 pts</span>
+            </div>
+            <a href="resgates.html" class="button secondary" style="margin-top:14px;">Ver resgate →</a>
+        </div>
+        <div class="card">
+            <h3>Pontos a expirar</h3>
+            <p class="muted" style="margin-bottom:10px;">Use até 30/06 para não perder.</p>
+            <table class="table" style="border:0;background:transparent;">
+                <tbody>
+                    <tr><td data-label="Origem" style="padding:8px 0;">Bom Preço</td><td data-label="Pontos" class="right amount-neg" style="padding:8px 0;">1.240</td><td data-label="Vence" class="right" style="padding:8px 0;">10/06</td></tr>
+                    <tr><td data-label="Origem" style="padding:8px 0;">Drogasil</td><td data-label="Pontos" class="right amount-neg" style="padding:8px 0;">810</td><td data-label="Vence" class="right" style="padding:8px 0;">22/06</td></tr>
+                    <tr><td data-label="Origem" style="padding:8px 0;">Shell</td><td data-label="Pontos" class="right amount-neg" style="padding:8px 0;">400</td><td data-label="Vence" class="right" style="padding:8px 0;">28/06</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <h2>Movimentações recentes</h2>
+        <a href="extrato.html">Ver extrato completo →</a>
+    </div>
+    <table class="table">
+        <thead><tr><th>Data</th><th>Descrição</th><th>Status</th><th class="right">Pontos</th></tr></thead>
+        <tbody>
+            <tr><td data-label="Data">28/04</td><td data-label="Descrição">Bom Preço</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+1.240</td></tr>
+            <tr><td data-label="Data">26/04</td><td data-label="Descrição">iFood R$ 50</td><td data-label="Status"><span class="status concluido">● Concluído</span></td><td data-label="Pontos" class="right amount-neg">−5.000</td></tr>
+            <tr><td data-label="Data">22/04</td><td data-label="Descrição">Posto Shell</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+850</td></tr>
+            <tr><td data-label="Data">19/04</td><td data-label="Descrição">Pacote Plus</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+5.500</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<section class="section">
+    <div class="alert info">
+        <div class="alert-icon">i</div>
+        <div>
+            <p>Os pontos Blaxx são créditos promocionais de uso restrito na plataforma. Não são moeda, depósito, investimento, valor mobiliário ou criptoativo.</p>
+        </div>
+    </div>
+</section>
+</main>
+</div>
+<footer class="footer">
+    <div class="footer-inner">
+        <div>
+            <div class="brand">
+                <span class="mark">B</span>
+                Blaxx <span class="brand-sub">Pontos</span>
+            </div>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+        </div>
+        <div>
+            <h4>Produto</h4>
+            <ul>
+                <li><a href="como-funciona.html">Como funciona</a></li>
+                <li><a href="parceiros.html">Parceiros</a></li>
+                <li><a href="resgates.html">Resgates</a></li>
+                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+                <li><a href="venda-pontos.html">Vender pontos</a></li>
+                <li><a href="campanhas.html">Campanhas</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Conta</h4>
+            <ul>
+                <li><a href="login.html">Entrar</a></li>
+                <li><a href="cadastro.html">Cadastre-se</a></li>
+                <li><a href="dashboard.html">Painel</a></li>
+                <li><a href="carteira.html">Carteira</a></li>
+                <li><a href="extrato.html">Extrato</a></li>
+                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Suporte</h4>
+            <ul>
+                <li><a href="central-ajuda.html">Central de ajuda</a></li>
+                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
+                <li><a href="meus-chamados.html">Meus chamados</a></li>
+                <li><a href="termos.html">Termos de uso</a></li>
+                <li><a href="documentos-termos.html">Documentos</a></li>
+                <li><a href="sitemap.html">Mapa do site</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
+        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
+    </div>
+</footer>
+<style>
+  [data-link="carteira"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
+  [data-side="carteira"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
+  [data-side="carteira"] .ic { background: var(--lime) !important; color: var(--black) !important; }
+</style>
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
+</body>
+</html>
