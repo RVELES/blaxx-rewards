@@ -12,7 +12,7 @@
   // ============================================================
   // EDITE AQUI A URL DO SEU BACKEND FLY.IO APOS O DEPLOY:
   // ============================================================
- window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";
+  window.BLAXX_API = "https://blaxx-rewards-pix.fly.dev";
 
   // Auto-detect: se estamos em netlify.app/.com, exige backend remoto
   if (!window.BLAXX_API) {
