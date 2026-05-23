@@ -1,27 +1,22 @@
-/* Configuracao do front Blaxx Pontos.
+/* Configuração do front Blaxx Pontos.
  *
- * Em desenvolvimento (servidor Flask servindo /site/) usa origem propria.
- * No Netlify (frontend separado) APONTE PARA O FLY.IO:
+ * Lógica:
+ *  - Em localhost / 127.0.0.1 / IP da LAN → usa location.origin (Flask local)
+ *  - Em produção (netlify.app, blaxxpontos.com) → usa Fly.io
  *
- * window.BLAXX_API = "https://blaxx-rewards-pix.fly.dev";
- *
- * O blaxx-app.js le esta variavel global. Se nao definida, cai em
- * location.origin (modo dev).
+ * O blaxx-app.js lê window.BLAXX_API. Se não definida, cai em location.origin.
  */
 (function () {
-  // ============================================================
-  // EDITE AQUI A URL DO SEU BACKEND FLY.IO APOS O DEPLOY:
-  // ============================================================
-  window.BLAXX_API = "https://blaxx-rewards-pix.fly.dev";
+  var host = location.hostname;
+  var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
 
-  // Auto-detect: se estamos em netlify.app/.com, exige backend remoto
-  if (!window.BLAXX_API) {
-    var host = location.hostname;
-    if (host.indexOf("netlify.app") >= 0 || host.indexOf(".com") >= 0) {
-      console.warn(
-        "[Blaxx] window.BLAXX_API nao foi definida em assets/blaxx-config.js. " +
-        "Aponte para a URL do seu backend Fly.io."
-      );
-    }
+  if (isLocal) {
+    // Modo dev: mesma origem do Flask (sem CORS issue)
+    window.BLAXX_API = location.origin;
+  } else {
+    // Modo produção (Netlify) — edite a URL do seu backend Fly.io aqui
+    window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";
   }
+
+  if (window.console && console.log) console.log('[Blaxx] API:', window.BLAXX_API);
 })();
