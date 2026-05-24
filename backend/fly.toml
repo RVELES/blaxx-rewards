@@ -1,7 +1,7 @@
 # Configuracao Fly.io para o backend Blaxx Pontos
 # Use: fly launch --copy-config (na primeira vez) ou fly deploy
 
-app = "blaxx-pontos"   		# Mude para um nome unico (ex: blaxx-pontos)
+app = "blaxx-rewards-pix"   		# Mude para um nome unico (ex: blaxx-pontos)
 primary_region = "gru"         	# Sao Paulo. Outros: gig (Rio), sjc (USA-CA)
 
 [build]

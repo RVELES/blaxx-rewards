@@ -454,11 +454,203 @@
   }
 
   // =========================================================================
+  // Cadastro de novo cliente (POST /auth/register)
+  // =========================================================================
+  function initCadastro() {
+    var form = $('form') || $('#bx-form-cadastro');
+    if (!form) return;
+    // Máscara de CPF se houver campo
+    var cpfEl = form.querySelector('#cpf') || form.querySelector('input[name="cpf"]');
+    if (cpfEl) {
+      cpfEl.addEventListener('input', function () {
+        var v = cpfEl.value.replace(/\D/g, '').slice(0, 11);
+        cpfEl.value = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      });
+    }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nome = (form.querySelector('#nome, input[name="nome"]') || {}).value || '';
+      var email = (form.querySelector('#email, input[type="email"]') || {}).value || '';
+      var cpf = (cpfEl || {}).value || '';
+      var senha = (form.querySelector('#senha, input[type="password"]') || {}).value || '';
+      if (!nome.trim() || !email.trim() || !cpf.trim() || !senha) {
+        notify('Preencha todos os campos', 'error');
+        return;
+      }
+      var body = {
+        name: nome.trim(),
+        email: email.trim().toLowerCase(),
+        cpf: cpf.replace(/\D/g, ''),
+        password: senha
+      };
+      api('/auth/register', { method: 'POST', body: JSON.stringify(body) })
+        .then(function (data) {
+          STORE.setToken(data.token); STORE.setUser(data.user);
+          notify('Conta criada! Bem-vindo, ' + data.user.name.split(' ')[0], 'success');
+          setTimeout(function () { location.href = 'dashboard.html'; }, 700);
+        })
+        .catch(function (err) { notify(err.message || 'Falha no cadastro', 'error'); });
+    });
+  }
+
+  // =========================================================================
+  // Parceiros (GET /partners)
+  // =========================================================================
+  function initParceiros() {
+    if (!requireAuth()) return;
+    api('/partners/').then(function (d) {
+      var items = d.items || [];
+      var grid = $('.bx-grid, .grid, main');
+      if (!grid) return;
+      var html = items.map(function (p) {
+        return '<div class="bx-card" style="padding:16px;border:1px solid #eee;border-radius:12px;margin:8px;">'
+          + '<div style="font-size:20px;">' + (p.logo_emoji || '◯') + ' <strong>' + p.name + '</strong></div>'
+          + '<div style="color:#888;font-size:13px;margin-top:4px;">' + p.category + '</div>'
+          + '<div style="margin-top:8px;font-size:14px;">' + (p.description || '') + '</div>'
+          + '<div style="margin-top:10px;background:#F0FAD9;color:#8FB81F;padding:6px 10px;border-radius:6px;display:inline-block;font-size:12px;font-weight:600;">'
+          + (p.accrual_rule || '') + '</div></div>';
+      }).join('');
+      var container = $('#bx-parceiros-list') || grid;
+      if (container.id === 'bx-parceiros-list') container.innerHTML = html;
+    }).catch(function (e) { notify(e.message, 'error'); });
+  }
+
+  // =========================================================================
+  // Resgates / Benefícios (GET /benefits + POST /benefits/<id>/redeem)
+  // =========================================================================
+  function initResgates() {
+    if (!requireAuth()) return;
+    api('/benefits/').then(function (d) {
+      var items = d.items || [];
+      var container = $('#bx-beneficios-list');
+      if (!container) return;
+      container.innerHTML = items.map(function (b) {
+        return '<div class="bx-benefit-card" data-id="' + b.id + '" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;cursor:pointer;">'
+          + (b.tag ? '<span style="background:#F0FAD9;color:#8FB81F;padding:2px 8px;border-radius:4px;font-size:11px;">' + b.tag + '</span>' : '')
+          + '<div style="font-size:28px;margin-top:6px;">' + (b.image_emoji || '★') + '</div>'
+          + '<strong>' + b.name + '</strong>'
+          + (b.partner_name ? '<div style="color:#888;font-size:12px;">' + b.partner_name + '</div>' : '')
+          + '<div style="margin-top:8px;font-weight:600;">' + fmt(b.cost_pts) + ' pts</div>'
+          + '</div>';
+      }).join('');
+      $$('.bx-benefit-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+          location.href = 'beneficio-detalhe.html?id=' + card.dataset.id;
+        });
+      });
+    }).catch(function (e) { notify(e.message, 'error'); });
+  }
+
+  function initBeneficioDetalhe() {
+    if (!requireAuth()) return;
+    var id = new URLSearchParams(location.search).get('id');
+    if (!id) return;
+    var target = $('#bx-beneficio-card') || $('main');
+    Promise.all([api('/benefits/' + id), api('/wallet/')]).then(function (res) {
+      var b = res[0], w = res[1];
+      if (target) {
+        target.innerHTML = '<h2>' + (b.image_emoji || '★') + ' ' + b.name + '</h2>'
+          + '<p>' + (b.description || '') + '</p>'
+          + '<p><strong>Custo:</strong> ' + fmt(b.cost_pts) + ' pts</p>'
+          + '<p><strong>Seu saldo:</strong> ' + fmt(w.balance_pts) + ' pts</p>'
+          + '<button id="bx-redeem" ' + (w.balance_pts < b.cost_pts ? 'disabled' : '') + '>'
+          + (w.balance_pts < b.cost_pts ? 'Saldo insuficiente' : 'Resgatar') + '</button>';
+      }
+      var btn = $('#bx-redeem');
+      if (btn && w.balance_pts >= b.cost_pts) {
+        btn.addEventListener('click', function () {
+          btn.disabled = true; btn.textContent = 'Processando…';
+          api('/benefits/' + id + '/redeem', { method: 'POST' })
+            .then(function (v) {
+              sessionStorage.setItem('blaxx_voucher_id', v.id);
+              notify('Voucher emitido: ' + v.code, 'success');
+              setTimeout(function () { location.href = 'detalhe-voucher.html?id=' + v.id; }, 800);
+            })
+            .catch(function (e) { notify(e.message, 'error'); btn.disabled = false; btn.textContent = 'Resgatar'; });
+        });
+      }
+    }).catch(function (e) { notify(e.message, 'error'); });
+  }
+
+  // =========================================================================
+  // Campanhas (GET /campaigns + POST /campaigns/<id>/join)
+  // =========================================================================
+  function initCampanhas() {
+    if (!requireAuth()) return;
+    api('/campaigns/').then(function (d) {
+      var items = d.items || [];
+      var container = $('#bx-campanhas-list');
+      if (!container) return;
+      container.innerHTML = items.map(function (c) {
+        var pct = c.progress_pct || 0;
+        return '<div class="bx-camp-card" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;">'
+          + (c.completed_at ? '<span style="color:#8FB81F">✓ Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
+          + '<h3>' + c.name + '</h3>'
+          + '<p>' + (c.description || '') + '</p>'
+          + '<p style="color:#888;font-size:12px;">' + (c.mechanic || '') + '</p>'
+          + (c.joined ? '<div style="height:8px;background:#eee;border-radius:99px;"><div style="height:100%;width:' + pct + '%;background:#C6F432;border-radius:99px;"></div></div><small>' + pct + '%</small>' : '')
+          + '<p><strong>Bônus:</strong> ' + fmt(c.reward_pts) + ' pts</p>'
+          + (c.completed_at ? '' : c.joined
+              ? '<button class="bx-camp-progress" data-id="' + c.id + '">Simular gasto R$ 100</button>'
+              : '<button class="bx-camp-join" data-id="' + c.id + '">Participar</button>')
+          + '</div>';
+      }).join('');
+      $$('.bx-camp-join').forEach(function (b) {
+        b.addEventListener('click', function () {
+          api('/campaigns/' + b.dataset.id + '/join', { method: 'POST' })
+            .then(function () { notify('Você está participando!', 'success'); initCampanhas(); })
+            .catch(function (e) { notify(e.message, 'error'); });
+        });
+      });
+      $$('.bx-camp-progress').forEach(function (b) {
+        b.addEventListener('click', function () {
+          api('/campaigns/' + b.dataset.id + '/progress', { method: 'POST', body: JSON.stringify({ amount_brl: 100 }) })
+            .then(function (r) {
+              if (r.completed_at) notify('Campanha concluída! Bônus creditado.', 'success');
+              else notify('Progresso: ' + r.progress_pct + '%', 'success');
+              initCampanhas();
+            })
+            .catch(function (e) { notify(e.message, 'error'); });
+        });
+      });
+    }).catch(function (e) { notify(e.message, 'error'); });
+  }
+
+  // =========================================================================
+  // Notificações (GET /notifications + PATCH read)
+  // =========================================================================
+  function initNotificacoes() {
+    if (!requireAuth()) return;
+    api('/notifications/').then(function (d) {
+      var items = d.items || [];
+      var container = $('#bx-notif-list');
+      if (!container) return;
+      if (!items.length) { container.innerHTML = '<p>Sem notificações.</p>'; return; }
+      container.innerHTML = items.map(function (n) {
+        return '<div class="bx-notif" data-id="' + n.id + '" style="padding:12px;border-bottom:1px solid #eee;'
+          + (n.is_read ? '' : 'background:rgba(198,244,50,0.06);')
+          + 'cursor:pointer;">'
+          + '<div style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#0A0A0A;color:#C6F432;text-align:center;line-height:32px;">' + (n.icon || '!') + '</div> '
+          + '<strong>' + n.title + (n.is_read ? '' : ' •') + '</strong>'
+          + '<p style="margin:4px 0 0;color:#888;font-size:13px;">' + (n.body || '') + '</p>'
+          + '</div>';
+      }).join('');
+      $$('.bx-notif').forEach(function (el) {
+        el.addEventListener('click', function () {
+          api('/notifications/' + el.dataset.id + '/read', { method: 'PATCH' })
+            .then(initNotificacoes).catch(function () {});
+        });
+      });
+    }).catch(function (e) { notify(e.message, 'error'); });
+  }
+
+  // =========================================================================
   // Router
   // =========================================================================
   var PAGE = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   var INITS = {
     'login.html': initLogin,
+    'cadastro.html': initCadastro,
     'dashboard.html': initDashboard,
     'carteira.html': initDashboard,
     'extrato.html': initDashboard,
@@ -468,7 +660,13 @@
     'enviar-pontos.html': initEnviarPontos,
     'confirmar-envio.html': initConfirmarEnvio,
     'envio-concluido.html': initEnvioConcluido,
-    'resgate-pix.html': initResgatePix
+    'resgate-pix.html': initResgatePix,
+    'parceiros.html': initParceiros,
+    'resgates.html': initResgates,
+    'beneficio-detalhe.html': initBeneficioDetalhe,
+    'detalhe-beneficio.html': initBeneficioDetalhe,
+    'campanhas.html': initCampanhas,
+    'central-notificacoes.html': initNotificacoes
   };
 
   function bootstrap() {
