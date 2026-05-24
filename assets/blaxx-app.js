@@ -116,20 +116,35 @@
   }
 
   function replaceHardcoded(w) {
+    var u = STORE.user() || {};
+    var firstName = (u.name || '').split(' ')[0] || 'Convidado';
+    var fullName = u.name || 'Convidado';
     var saldoStr = fmt(w.balance_pts);
     var brlStr = w.balance_brl_equiv.toFixed(2).replace('.', ',');
-    document.body.innerHTML = document.body.innerHTML; // no-op
-    // Substitui textos exatos "84.750" e "R$ 847,50" presentes no protótipo
+
+    // Walk no DOM substituindo textos do protótipo pelo dado real do usuário logado.
+    // NÃO usa innerHTML pra preservar event listeners.
     function walk(node) {
       if (node.nodeType === 3) {
         var t = node.nodeValue;
-        if (t.indexOf('84.750') >= 0) node.nodeValue = t.replace(/84\.750/g, saldoStr);
-        if (t.indexOf('R$ 847,50') >= 0) node.nodeValue = node.nodeValue.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
+        var orig = t;
+        // Saldo / equivalência em R$
+        if (t.indexOf('84.750') >= 0) t = t.replace(/84\.750/g, saldoStr);
+        if (t.indexOf('R$ 847,50') >= 0) t = t.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
+        // Nome (cobre "Olá, Mariana", "Mariana 👋", "Mariana Costa", "Mariana,")
+        if (t.indexOf('Mariana Costa') >= 0) t = t.replace(/Mariana Costa/g, fullName);
+        if (t.indexOf('Mariana') >= 0) t = t.replace(/Mariana/g, firstName);
+        if (t !== orig) node.nodeValue = t;
       } else if (node.nodeType === 1 && ['SCRIPT','STYLE','INPUT','TEXTAREA'].indexOf(node.nodeName) === -1) {
         for (var i = 0; i < node.childNodes.length; i++) walk(node.childNodes[i]);
       }
     }
     walk(document.body);
+
+    // Avatares grandes que mostram "M" hardcoded
+    $$('.avatar-letter, .user-letter').forEach(function (el) {
+      el.textContent = (fullName[0] || '?').toUpperCase();
+    });
   }
 
   // =========================================================================
@@ -673,8 +688,15 @@
     var initFn = INITS[PAGE];
     if (initFn) initFn();
     // Em qualquer página logada, atualiza textos hardcoded da Mariana
-    if (STORE.token() && !INITS[PAGE]) applyUserToShell();
+    // (roda também em páginas com init — initDashboard já chama, mas garantimos
+    // para outras páginas que esqueceram). É idempotente.
+    if (STORE.token() && !initFn) applyUserToShell();
   }
+
+  // Re-aplica ao terminar transições, garantindo override em qualquer página
+  window.addEventListener('pageshow', function () {
+    if (STORE.token()) applyUserToShell();
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bootstrap);
