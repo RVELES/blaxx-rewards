@@ -119,18 +119,32 @@
     var u = STORE.user() || {};
     var firstName = (u.name || '').split(' ')[0] || 'Convidado';
     var fullName = u.name || 'Convidado';
-    var saldoStr = fmt(w.balance_pts);
-    var brlStr = w.balance_brl_equiv.toFixed(2).replace('.', ',');
+    var saldo = w.balance_pts || 0;
+    var pending = w.pending_pts || 0;
+    var saldoStr = fmt(saldo);
+    var pendStr = fmt(pending);
+    var brlStr = (w.balance_brl_equiv || 0).toFixed(2).replace('.', ',');
+    var META = 100000;
+    var faltam = Math.max(0, META - saldo);
+    var pctMeta = Math.min(100, Math.round((saldo / META) * 100));
 
-    // Walk no DOM substituindo textos do protótipo pelo dado real do usuário logado.
-    // NÃO usa innerHTML pra preservar event listeners.
+    // Walk no DOM substituindo TODOS os valores hardcoded da Mariana
+    // pelos dados reais. NÃO usa innerHTML pra preservar event listeners.
     function walk(node) {
       if (node.nodeType === 3) {
         var t = node.nodeValue;
         var orig = t;
-        // Saldo / equivalência em R$
-        if (t.indexOf('84.750') >= 0) t = t.replace(/84\.750/g, saldoStr);
-        if (t.indexOf('R$ 847,50') >= 0) t = t.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
+        // Saldo total
+        t = t.replace(/84\.750/g, saldoStr);
+        t = t.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
+        // "Disponíveis" (era 82.300 - subset do saldo)
+        t = t.replace(/82\.300/g, saldoStr);
+        // "Pendentes" / "Próx. expirar" (eram 2.450)
+        t = t.replace(/2\.450/g, pendStr);
+        // "Faltam X pts" (era 15.250)
+        t = t.replace(/15\.250/g, fmt(faltam));
+        // Progresso (era "85%")
+        t = t.replace(/\b85%/g, pctMeta + '%');
         // Nome (cobre "Olá, Mariana", "Mariana 👋", "Mariana Costa", "Mariana,")
         if (t.indexOf('Mariana Costa') >= 0) t = t.replace(/Mariana Costa/g, fullName);
         if (t.indexOf('Mariana') >= 0) t = t.replace(/Mariana/g, firstName);
@@ -140,6 +154,11 @@
       }
     }
     walk(document.body);
+
+    // Progress bar (style="width: 85%" hardcoded)
+    $$('[style*="width: 85%"], [style*="width:85%"]').forEach(function (el) {
+      el.style.width = pctMeta + '%';
+    });
 
     // Avatares grandes que mostram "M" hardcoded
     $$('.avatar-letter, .user-letter').forEach(function (el) {
