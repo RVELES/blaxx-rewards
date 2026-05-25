@@ -210,6 +210,55 @@
     loadTransactions();
   };
 
+  // ── Payments tab (PIX manual pendente) ─────────────────────────────────
+  function loadPendingPayments() {
+    api('/admin/charges/pending').then(function (r) {
+      var tbody = document.getElementById('payments-tbody');
+      if (!r.items || !r.items.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Nenhum pagamento aguardando.</td></tr>';
+      } else {
+        tbody.innerHTML = r.items.map(function (c) {
+          var when = c.claimed_paid_at ? shortDate(c.claimed_paid_at) : '—';
+          var brl = Number(c.amount_brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          return '<tr>' +
+            '<td>' + when + '</td>' +
+            '<td>' + escapeHtml(c.user_name || '—') + '<br><small style="color:#8a918a;">' + escapeHtml(c.user_email || '') + '</small></td>' +
+            '<td>R$ ' + brl + '</td>' +
+            '<td>' + fmt(c.points_to_credit) + ' pts</td>' +
+            '<td style="text-align:center;">' +
+              '<button class="button" onclick="confirmCharge(\'' + c.id + '\')" style="font-size:12px;padding:6px 12px;margin-right:4px;">Confirmar</button>' +
+              '<button class="button ghost" onclick="rejectCharge(\'' + c.id + '\')" style="font-size:12px;padding:6px 12px;color:#a83417;">Rejeitar</button>' +
+            '</td>' +
+            '</tr>';
+        }).join('');
+      }
+      var badge = document.getElementById('pending-count');
+      if (r.items.length > 0) {
+        badge.textContent = r.items.length; badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    });
+  }
+
+  window.confirmCharge = function (chargeId) {
+    if (!confirm('Confirma o recebimento do PIX e libera os pontos?')) return;
+    api('/admin/charges/' + chargeId + '/confirm', { method: 'POST', body: '{}' })
+      .then(function () { loadPendingPayments(); loadStats(); })
+      .catch(function (e) { alert('Erro: ' + e.message); });
+  };
+
+  window.rejectCharge = function (chargeId) {
+    var reason = prompt('Motivo da rejeição:', 'PIX não localizado no extrato');
+    if (!reason) return;
+    api('/admin/charges/' + chargeId + '/reject', {
+      method: 'POST',
+      body: JSON.stringify({ reason: reason }),
+    })
+      .then(function () { loadPendingPayments(); loadStats(); })
+      .catch(function (e) { alert('Erro: ' + e.message); });
+  };
+
   // ── Tabs ───────────────────────────────────────────────────────────────
   window.switchTab = function (tab) {
     document.querySelectorAll('.tab-row button').forEach(function (b) {
@@ -217,7 +266,9 @@
     });
     document.getElementById('tab-users').style.display = tab === 'users' ? '' : 'none';
     document.getElementById('tab-transactions').style.display = tab === 'transactions' ? '' : 'none';
+    document.getElementById('tab-payments').style.display = tab === 'payments' ? '' : 'none';
     if (tab === 'transactions' && TX_TOTAL === 0) loadTransactions();
+    if (tab === 'payments') loadPendingPayments();
   };
 
   window.adminLogout = function () {
@@ -228,4 +279,7 @@
   // ── Boot ───────────────────────────────────────────────────────────────
   loadStats();
   loadUsers();
+  // Atualiza badge de pendentes a cada 30s
+  loadPendingPayments();
+  setInterval(loadPendingPayments, 30000);
 })();

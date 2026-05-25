@@ -69,6 +69,9 @@
   <div class="tab-row">
     <button class="active" data-tab="users" onclick="switchTab('users')">Usuários</button>
     <button data-tab="transactions" onclick="switchTab('transactions')">Movimentações</button>
+    <button data-tab="payments" onclick="switchTab('payments')">
+      Pagamentos pendentes <span id="pending-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
+    </button>
   </div>
 
   <!-- Tab: Users -->
@@ -107,6 +110,25 @@
         <button id="users-next" onclick="changePage(1)">Próxima ›</button>
       </div>
     </div>
+  </div>
+
+  <!-- Tab: Payments (PIX manual pendente) -->
+  <div id="tab-payments" style="display:none;">
+    <p style="color:#5f665e;font-size:13px;margin-bottom:12px;">
+      Usuários que pagaram via PIX e estão aguardando confirmação. Confirme no extrato bancário e clique <b>Confirmar</b> para liberar os pontos.
+    </p>
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Data do clique</th>
+          <th>Usuário</th>
+          <th>Valor (R$)</th>
+          <th>Pontos a creditar</th>
+          <th style="text-align:center;">Ação</th>
+        </tr>
+      </thead>
+      <tbody id="payments-tbody"></tbody>
+    </table>
   </div>
 
   <!-- Tab: Transactions -->
