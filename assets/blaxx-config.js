@@ -18,5 +18,11 @@
     window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";
   }
 
+  // ---------------- Google OAuth ----------------
+  // Client ID Web do projeto "Blaxx Pontos" no Google Cloud Console.
+  // Esse valor é PÚBLICO por design — pode aparecer no JS do browser sem risco
+  // (a segurança vem da validação do ID token no backend, não do Client ID).
+  window.BLAXX_GOOGLE_CLIENT_ID = "105341431878-tj5vi2is40n8gbugugj9bgvi2b67v0el.apps.googleusercontent.com";
+
   if (window.console && console.log) console.log('[Blaxx] API:', window.BLAXX_API);
 })();
