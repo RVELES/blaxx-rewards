@@ -1,0 +1,14 @@
+# Configuração de cache pro Netlify CDN.
+# https://docs.netlify.com/routing/headers/
+
+# HTML: nunca cachear no browser (sempre verifica server)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# JS / CSS: cache curto + revalidação. Mudanças aparecem em ~1 min sem hard refresh.
+/assets/*
+  Cache-Control: public, max-age=60, must-revalidate
+
+# Fontes e imagens: cache longo (não mudam frequentemente)
+/assets/icons/*
+  Cache-Control: public, max-age=2592000, immutable

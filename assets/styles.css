@@ -14,10 +14,13 @@
     --bg: #f6f8f2;
     --bg-warm: #fafcf3;
     --card: #ffffff;
-    --lime: #cfff1a;
-    --lime-2: #e7ff75;
-    --lime-soft: #eef7d4;
+    /* Verde-limão oficial do logo BlaxX — alinhado com Mac/iOS Theme.swift
+       e renderer design-system.css. */
+    --lime: #C6F432;
+    --lime-2: #d8ff75;
+    --lime-soft: #F0FAD9;
     --lime-bg: #f5fbe2;
+    --lime-dark: #8FB81F;
     --ok: #efffe6;
     --ok-text: #2d651b;
     --warn: #fff7df;
@@ -91,21 +94,31 @@ input, select, textarea { font-family: inherit; }
     letter-spacing: -0.04em;
     font-size: 17px;
 }
+/* Brand mark "BlaxX" — quadrado preto com texto lime, identidade oficial
+   (mesmo padrão do AppIcon do Mac/iOS). Aceita filho com a letra "B" simples
+   (legado, virou texto "BlaxX") ou o texto "BlaxX" diretamente dentro. */
 .mark {
-    width: 36px;
+    min-width: 64px;
     height: 36px;
-    border-radius: 12px;
+    padding: 0 10px;
+    border-radius: 10px;
     background: var(--black);
     color: var(--lime);
-    display: grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 900;
+    font-size: 17px;
+    letter-spacing: -0.02em;
     box-shadow: var(--shadow);
+    line-height: 1;
 }
 .brand-sub {
     color: var(--muted);
     font-weight: 500;
     margin-left: 2px;
+    text-transform: lowercase;
+    letter-spacing: 0;
 }
 .links {
     display: flex;
@@ -1772,8 +1785,8 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
         flex-wrap: wrap;
         gap: 10px;
     }
-    .brand { font-size: 16px; }
-    .brand .mark { width: 32px; height: 32px; font-size: 16px; }
+    .brand { font-size: 14px; }
+    .brand .mark { min-width: 54px; height: 30px; font-size: 14px; padding: 0 8px; }
     .brand-sub { display: none; }
 
     /* Public nav links — hide and provide condensed inline */

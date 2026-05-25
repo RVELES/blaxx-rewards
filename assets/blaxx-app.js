@@ -212,7 +212,7 @@
     fab.innerHTML = '⊞';
     fab.style.cssText =
       'position:fixed;bottom:20px;left:20px;z-index:8000;width:56px;height:56px;' +
-      'background:#080907;color:#cfff1a;border:0;border-radius:50%;font-size:24px;' +
+      'background:#080907;color:#C6F432;border:0;border-radius:50%;font-size:24px;' +
       'box-shadow:0 12px 32px rgba(0,0,0,.18);cursor:pointer;';
     fab.addEventListener('click', function () {
       window.blaxxScanQR(function (code) {
@@ -749,7 +749,7 @@
     btn.id = 'bx-install-btn';
     btn.textContent = '+ Instalar app';
     btn.style.cssText =
-      'position:fixed;bottom:20px;right:20px;z-index:9000;background:#cfff1a;color:#080907;' +
+      'position:fixed;bottom:20px;right:20px;z-index:9000;background:#C6F432;color:#080907;' +
       'border:0;padding:12px 22px;border-radius:999px;font-weight:700;font-size:14px;' +
       'box-shadow:0 12px 32px rgba(0,0,0,.18);cursor:pointer;font-family:Inter,sans-serif;';
     btn.addEventListener('click', function () {
@@ -773,12 +773,12 @@
     sessionStorage.setItem('blaxx_ios_hint', '1');
     var bar = document.createElement('div');
     bar.style.cssText =
-      'position:fixed;bottom:0;left:0;right:0;z-index:9000;background:#080907;color:#cfff1a;' +
+      'position:fixed;bottom:0;left:0;right:0;z-index:9000;background:#080907;color:#C6F432;' +
       'padding:14px 18px;font-family:Inter,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;';
     bar.innerHTML =
       '<span style="flex:1;line-height:1.4;">Para instalar como app: toque em <strong>Compartilhar</strong> ' +
       'e depois em <strong>Adicionar à Tela de Início</strong>.</span>' +
-      '<button style="background:transparent;border:1px solid #cfff1a;color:#cfff1a;padding:6px 12px;border-radius:8px;font-weight:700;">OK</button>';
+      '<button style="background:transparent;border:1px solid #C6F432;color:#C6F432;padding:6px 12px;border-radius:8px;font-weight:700;">OK</button>';
     bar.querySelector('button').addEventListener('click', function () { bar.remove(); });
     document.body.appendChild(bar);
   }
@@ -810,7 +810,7 @@
       'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;' +
       'align-items:center;justify-content:center;flex-direction:column;color:white;font-family:Inter,sans-serif;';
     overlay.innerHTML =
-      '<div style="font-size:14px;margin-bottom:10px;color:#cfff1a;">Escanear QR Code</div>' +
+      '<div style="font-size:14px;margin-bottom:10px;color:#C6F432;">Escanear QR Code</div>' +
       '<video id="bx-cam" playsinline autoplay style="max-width:90vw;max-height:60vh;border-radius:18px;background:black;"></video>' +
       '<div id="bx-cam-msg" style="font-size:12px;color:#888;margin-top:10px;text-align:center;max-width:80vw;">Aponte para o QR Code do parceiro</div>' +
       '<button id="bx-cam-cancel" style="margin-top:14px;background:white;color:#080907;border:0;padding:10px 22px;border-radius:999px;font-weight:700;cursor:pointer;">Cancelar</button>';
