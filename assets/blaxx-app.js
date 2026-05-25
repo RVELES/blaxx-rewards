@@ -781,7 +781,11 @@
   // =========================================================================
   // Router
   // =========================================================================
-  var PAGE = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  // Suporta tanto URLs "tradicionais" (login.html) quanto "pretty URLs" do
+  // Netlify (/login). Ambas mapeiam para a mesma chave em INITS.
+  var rawPage = (location.pathname.split('/').pop() || 'index').toLowerCase();
+  var PAGE = rawPage.indexOf('.') >= 0 ? rawPage : rawPage + '.html';
+  if (PAGE === '.html' || PAGE === '') PAGE = 'index.html';
   var INITS = {
     'login.html': initLogin,
     'cadastro.html': initCadastro,
