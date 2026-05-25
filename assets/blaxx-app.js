@@ -72,11 +72,30 @@
     var tok = STORE.token();
     if (tok) headers['Authorization'] = 'Bearer ' + tok;
     return fetch(API + path, Object.assign({}, opts, { headers: headers })).then(function (res) {
-      return res.json().then(function (data) {
-        if (!res.ok) {
-          var err = new Error(data.error || ('HTTP ' + res.status));
-          err.data = data; err.status = res.status;
+      // Lê o body como texto bruto antes de tentar parsear como JSON.
+      // Sem isso, se o servidor devolver HTML (página de erro 502, 404 do
+      // proxy, etc), o JS quebra com "Unexpected token '<'" e o usuário
+      // vê uma mensagem inútil. Aqui apanhamos isso e damos contexto real.
+      return res.text().then(function (raw) {
+        var data;
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch (parseErr) {
+          // Não era JSON — provavelmente HTML de erro do proxy/CDN
+          var snippet = (raw || '').slice(0, 120).replace(/\s+/g, ' ').trim();
+          var err = new Error(
+            'Servidor respondeu HTTP ' + res.status + ' com conteúdo não-JSON' +
+            (snippet ? ' ("' + snippet + '...")' : '')
+          );
+          err.status = res.status;
+          err.raw = raw;
+          console.error('[Blaxx] api(' + path + ') falhou:', err.message);
           throw err;
+        }
+        if (!res.ok) {
+          var apiErr = new Error(data.error || ('HTTP ' + res.status));
+          apiErr.data = data; apiErr.status = res.status;
+          throw apiErr;
         }
         return data;
       });
@@ -85,7 +104,7 @@
 
   function requireAuth() {
     if (!STORE.token()) {
-      location.href = 'login.html';
+      location.href = '/login';
       return false;
     }
     return true;
@@ -250,7 +269,7 @@
         STORE.setToken(r.token);
         STORE.setUser(r.user);
         notify('Bem-vindo, ' + (r.user.name || '').split(' ')[0] + '!', 'ok');
-        setTimeout(function () { location.href = 'dashboard.html'; }, 350);
+        setTimeout(function () { location.href = '/dashboard'; }, 350);
       })
       .catch(function (e) {
         if (err) {
@@ -284,7 +303,7 @@
       api('/auth/login', { method: 'POST', body: JSON.stringify({ email: email, password: password }) })
         .then(function (r) {
           STORE.setToken(r.token); STORE.setUser(r.user);
-          location.href = 'dashboard.html';
+          location.href = '/dashboard';
         })
         .catch(function (e) {
           notify(e.message || 'falha no login', 'err');
@@ -335,7 +354,7 @@
         api('/pix/charge', { method: 'POST', body: JSON.stringify({ package: pkgKey }) })
           .then(function (charge) {
             STORE.setFlow('charge', charge);
-            location.href = 'pagamento-pix.html';
+            location.href = '/pagamento-pix';
           })
           .catch(function (err) {
             notify(err.message, 'err');
@@ -350,7 +369,7 @@
     var charge = STORE.getFlow('charge');
     if (!charge) {
       notify('Nenhuma cobrança ativa - voltando para pacotes', 'warn');
-      setTimeout(function () { location.href = 'comprar-pontos.html'; }, 1500);
+      setTimeout(function () { location.href = '/comprar-pontos'; }, 1500);
       return;
     }
     // Procura locais óbvios na tela para injetar o BR Code
@@ -390,7 +409,7 @@
       api('/pix/simulate-payment', { method: 'POST', body: JSON.stringify({ charge_id: charge.id }) })
         .then(function (res) {
           STORE.setFlow('charge_paid', res.charge);
-          location.href = 'compra-aprovada.html';
+          location.href = '/compra-aprovada';
         })
         .catch(function (e) { notify(e.message, 'err'); btn.disabled = false; btn.textContent = 'Simular pagamento (webhook)'; });
     });
@@ -444,7 +463,7 @@
       if (!pwd) return notify('Informe sua senha', 'warn');
 
       STORE.setFlow('transfer_pending', { to: to, amount_pts: amount, message: msg, password: pwd });
-      location.href = 'confirmar-envio.html';
+      location.href = '/confirmar-envio';
     });
   }
 
@@ -454,7 +473,7 @@
     var p = STORE.getFlow('transfer_pending');
     if (!p) {
       notify('Nenhum envio pendente - voltando', 'warn');
-      setTimeout(function () { location.href = 'enviar-pontos.html'; }, 1200);
+      setTimeout(function () { location.href = '/enviar-pontos'; }, 1200);
       return;
     }
 
@@ -478,14 +497,14 @@
       '</div>';
     host.insertBefore(box, host.firstChild);
 
-    $('#bx-cancel').addEventListener('click', function () { location.href = 'enviar-pontos.html'; });
+    $('#bx-cancel').addEventListener('click', function () { location.href = '/enviar-pontos'; });
     $('#bx-confirm').addEventListener('click', function () {
       var btn = $('#bx-confirm'); btn.disabled = true; btn.textContent = 'Enviando...';
       api('/transfer/', { method: 'POST', body: JSON.stringify(p) })
         .then(function (t) {
           STORE.setFlow('transfer_done', t);
           sessionStorage.removeItem('blaxx_flow_transfer_pending');
-          location.href = 'envio-concluido.html';
+          location.href = '/envio-concluido';
         })
         .catch(function (e) { notify(e.message, 'err'); btn.disabled = false; btn.textContent = 'Confirmar envio →'; });
     });
@@ -621,7 +640,7 @@
         .then(function (data) {
           STORE.setToken(data.token); STORE.setUser(data.user);
           notify('Conta criada! Bem-vindo, ' + data.user.name.split(' ')[0], 'success');
-          setTimeout(function () { location.href = 'dashboard.html'; }, 700);
+          setTimeout(function () { location.href = '/dashboard'; }, 700);
         })
         .catch(function (err) { notify(err.message || 'Falha no cadastro', 'error'); });
     });
@@ -669,7 +688,7 @@
       }).join('');
       $$('.bx-benefit-card').forEach(function (card) {
         card.addEventListener('click', function () {
-          location.href = 'beneficio-detalhe.html?id=' + card.dataset.id;
+          location.href = '/beneficio-detalhe?id=' + card.dataset.id;
         });
       });
     }).catch(function (e) { notify(e.message, 'error'); });
@@ -698,7 +717,7 @@
             .then(function (v) {
               sessionStorage.setItem('blaxx_voucher_id', v.id);
               notify('Voucher emitido: ' + v.code, 'success');
-              setTimeout(function () { location.href = 'detalhe-voucher.html?id=' + v.id; }, 800);
+              setTimeout(function () { location.href = '/detalhe-voucher?id=' + v.id; }, 800);
             })
             .catch(function (e) { notify(e.message, 'error'); btn.disabled = false; btn.textContent = 'Resgatar'; });
         });
