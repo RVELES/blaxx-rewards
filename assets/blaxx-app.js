@@ -167,12 +167,91 @@
   }
 
   // =========================================================================
+  // GOOGLE SIGN-IN
+  // =========================================================================
+  // Renderiza o botão oficial do Google no container #g-signin-btn de qualquer
+  // página que tenha esse elemento. Quando o usuário aceita, o Google chama
+  // handleGoogleCredential() com um ID token JWT. Mandamos para o backend
+  // /auth/google que valida, cria User+Wallet se for novo, e devolve nosso
+  // JWT Blaxx. Salvamos token + user e redirecionamos pro dashboard.
+  function initGoogleSignIn() {
+    var container = document.getElementById('g-signin-btn');
+    if (!container) return;
+
+    var clientId = window.BLAXX_GOOGLE_CLIENT_ID || '';
+    if (!clientId) {
+      // Sem Client ID configurado → esconde o botão pra não dar UX quebrada.
+      container.style.display = 'none';
+      var divider = container.previousElementSibling;
+      if (divider && divider.classList.contains('auth-divider')) divider.style.display = 'none';
+      return;
+    }
+
+    // Aguarda o SDK carregar (script com async defer)
+    function tryRender() {
+      if (!(window.google && window.google.accounts && window.google.accounts.id)) {
+        return setTimeout(tryRender, 80);
+      }
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredential,
+        ux_mode: 'popup',
+        auto_select: false,
+      });
+      window.google.accounts.id.renderButton(container, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'pill',
+        logo_alignment: 'left',
+        width: 320,
+      });
+    }
+    tryRender();
+  }
+
+  function handleGoogleCredential(response) {
+    var err = document.getElementById('g-signin-error');
+    if (err) { err.style.display = 'none'; err.textContent = ''; }
+
+    if (!response || !response.credential) {
+      if (err) {
+        err.textContent = 'Não recebemos token do Google. Tente novamente.';
+        err.style.display = 'block';
+      }
+      return;
+    }
+
+    api('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ id_token: response.credential }),
+    })
+      .then(function (r) {
+        STORE.setToken(r.token);
+        STORE.setUser(r.user);
+        notify('Bem-vindo, ' + (r.user.name || '').split(' ')[0] + '!', 'ok');
+        setTimeout(function () { location.href = 'dashboard.html'; }, 350);
+      })
+      .catch(function (e) {
+        if (err) {
+          err.textContent = e.message || 'Falha ao validar Google login';
+          err.style.display = 'block';
+        } else {
+          notify(e.message || 'falha no login Google', 'err');
+        }
+      });
+  }
+
+  // =========================================================================
   // PER-PAGE INIT
   // =========================================================================
 
   function initLogin() {
     var form = document.querySelector('form[action="dashboard.html"]');
     if (!form) return;
+    // Botão "Entrar com Google" (se Client ID estiver configurado)
+    initGoogleSignIn();
 
     form.setAttribute('novalidate', 'novalidate');
     form.addEventListener('submit', function (ev) {
@@ -493,6 +572,8 @@
   function initCadastro() {
     var form = $('form') || $('#bx-form-cadastro');
     if (!form) return;
+    // Botão "Entrar com Google" no cadastro (cria conta no 1º login)
+    initGoogleSignIn();
     // Máscara de CPF se houver campo
     var cpfEl = form.querySelector('#cpf') || form.querySelector('input[name="cpf"]');
     if (cpfEl) {

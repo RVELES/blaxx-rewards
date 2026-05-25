@@ -59,8 +59,13 @@
 
         <div class="auth-divider">ou</div>
 
-        <a href="dashboard.html" class="button secondary full">Continuar com Google</a>
+        <!-- Google Sign-In · renderizado pelo blaxx-app.js (gsi-button) -->
+        <div id="g-signin-btn" style="display:flex;justify-content:center;margin-top:4px;"></div>
+        <p id="g-signin-error" style="display:none;color:#a83417;font-size:13px;margin-top:8px;text-align:center;"></p>
     </form>
+
+    <!-- SDK oficial Google Identity Services (FedCM-ready, sem cookies de 3rd party) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <div class="auth-foot">
         Ainda não tem conta? <a href="cadastro.html">Cadastre-se grátis</a>
