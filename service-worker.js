@@ -7,7 +7,9 @@
  *     (nunca cacheia dados de saldo).
  *   - Sem internet + recurso nao cacheado: pagina offline elegante.
  * ========================================================================== */
-const CACHE = 'blaxx-v1';
+// Bumpa esta versão sempre que mexer em HTML/CSS/JS — força browsers a
+// descartar o cache antigo no próximo carregamento. v2 = release Google Login.
+const CACHE = 'blaxx-v2-google-login';
 const PRECACHE = [
   '/site/',
   '/site/login.html',
