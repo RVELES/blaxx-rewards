@@ -187,28 +187,47 @@
       return;
     }
 
-    // Aguarda o SDK carregar (script com async defer)
+    // Aguarda o SDK carregar (script com async defer). Cap em 8s pra não
+    // ficar em loop infinito se o GSI estiver bloqueado.
+    var attempts = 0;
     function tryRender() {
       if (!(window.google && window.google.accounts && window.google.accounts.id)) {
+        if (++attempts > 100) {
+          console.error('[Blaxx] Google Identity Services nunca carregou. Adblock ou erro de rede?');
+          showGoogleError('Não foi possível carregar o login Google. Verifique se há bloqueador de anúncios.');
+          return;
+        }
         return setTimeout(tryRender, 80);
       }
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleCredential,
-        ux_mode: 'popup',
-        auto_select: false,
-      });
-      window.google.accounts.id.renderButton(container, {
-        type: 'standard',
-        theme: 'outline',
-        size: 'large',
-        text: 'continue_with',
-        shape: 'pill',
-        logo_alignment: 'left',
-        width: 320,
-      });
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleCredential,
+          ux_mode: 'popup',
+          auto_select: false,
+          use_fedcm_for_prompt: true,
+        });
+        window.google.accounts.id.renderButton(container, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'pill',
+          logo_alignment: 'left',
+          width: 320,
+        });
+        console.log('[Blaxx] Google Sign-In button rendered ✓');
+      } catch (err) {
+        console.error('[Blaxx] GSI renderButton failed:', err);
+        showGoogleError('Falha ao inicializar Google Sign-In: ' + (err.message || err));
+      }
     }
     tryRender();
+  }
+
+  function showGoogleError(msg) {
+    var errEl = document.getElementById('g-signin-error');
+    if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
   }
 
   function handleGoogleCredential(response) {
