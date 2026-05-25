@@ -8,8 +8,10 @@
  *   - Sem internet + recurso nao cacheado: pagina offline elegante.
  * ========================================================================== */
 // Bumpa esta versão sempre que mexer em HTML/CSS/JS — força browsers a
-// descartar o cache antigo no próximo carregamento. v2 = release Google Login.
-const CACHE = 'blaxx-v2-google-login';
+// descartar o cache antigo no próximo carregamento.
+// v2 = release Google Login.
+// v3 = PIX MP automático no Web + dashboard via IDs reais (não regex Mariana).
+const CACHE = 'blaxx-v3-pix-mp';
 const PRECACHE = [
   '/site/',
   '/site/login.html',
