@@ -50,10 +50,15 @@
     return isFinite(n) && n > 0 ? n : 0;
   }
 
+  // Conversao R$ <-> pontos · 1 pt = R$ 0,09 = 9 centavos
+  // Sincronizar com backend Config.CENTS_PER_POINT.
+  var CENTS_PER_POINT = 9;
+
   // Etapa 1 — valor
   window.onAmountChange = function (val) {
     var amount = parseInputAmount(val);
-    var pts = Math.round(amount * 100);
+    var cents = Math.round(amount * 100);
+    var pts = Math.floor(cents / CENTS_PER_POINT);
     document.getElementById('points-preview').textContent = pts.toLocaleString('pt-BR');
     document.getElementById('btn-create').disabled = amount < 10;
   };

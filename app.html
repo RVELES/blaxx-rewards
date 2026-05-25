@@ -179,10 +179,10 @@
           </div>
           <span class="endpoint-tag">POST /redeem/</span>
         </div>
-        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Conversão 100 pts = R$ 1,00. Mínimo 2.500 pts. Se a chave começar com <code>fail-</code> o gateway falha e o backend estorna automaticamente.</p>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Conversão 1 pt = R$ 0,09. Sem mínimo e sem múltiplo. Se a chave começar com <code>fail-</code> o gateway falha e o backend estorna automaticamente.</p>
 
         <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr auto;gap:8px;margin-top:12px;align-items:end;">
-          <div class="row-input"><label>Pontos (múltiplo de 100)</label><input id="r-pts" type="number" value="5000" min="2500" step="100"></div>
+          <div class="row-input"><label>Pontos</label><input id="r-pts" type="number" value="1000" min="1" step="1"></div>
           <div class="row-input"><label>Chave PIX</label><input id="r-key" value="ricardo.veles@gmail.com"></div>
           <div class="row-input"><label>Sua senha</label><input id="r-pwd" type="password" value="123456"></div>
           <button class="button" id="r-go">Resgatar</button>
@@ -347,9 +347,11 @@ $('t-send').addEventListener('click', async () => {
 });
 
 // ---------- FLUXO 3 ----------
+// 1 pt = R$ 0,09 = 9 centavos. Sincronizar com backend Config.CENTS_PER_POINT.
+const CENTS_PER_POINT = 9;
 $('r-pts').addEventListener('input', () => {
   const pts = parseInt($('r-pts').value || 0);
-  if (pts > 0) $('r-quote').textContent = `≈ ${brl(pts/100)} (100 pts = R$ 1,00)`;
+  if (pts > 0) $('r-quote').textContent = `≈ ${brl(pts * CENTS_PER_POINT / 100)} (1 pt = R$ 0,09)`;
 });
 $('r-pts').dispatchEvent(new Event('input'));
 

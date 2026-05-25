@@ -219,12 +219,28 @@
         return setTimeout(tryRender, 80);
       }
       try {
+        // Nonce anti-replay: gera 32 bytes aleatórios, armazena na sessão,
+        // passa pro GIS. Backend valida que o id_token.nonce bate.
+        var nonce = '';
+        try {
+          var arr = new Uint8Array(24);
+          (window.crypto || window.msCrypto).getRandomValues(arr);
+          nonce = Array.from(arr).map(function (b) {
+            return ('0' + b.toString(16)).slice(-2);
+          }).join('');
+        } catch (e) {
+          // Fallback fraco — só pra browsers MUITO antigos. Não usa em prod sério.
+          nonce = String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+        }
+        sessionStorage.setItem('blaxx_google_nonce', nonce);
+
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: handleGoogleCredential,
           ux_mode: 'popup',
           auto_select: false,
           use_fedcm_for_prompt: true,
+          nonce: nonce,                      // anti-replay
         });
         window.google.accounts.id.renderButton(container, {
           type: 'standard',
@@ -261,9 +277,13 @@
       return;
     }
 
+    // Anti-replay: backend valida que id_token.nonce bate com este valor.
+    var nonce = sessionStorage.getItem('blaxx_google_nonce') || '';
+    sessionStorage.removeItem('blaxx_google_nonce');  // single-use
+
     api('/auth/google', {
       method: 'POST',
-      body: JSON.stringify({ id_token: response.credential }),
+      body: JSON.stringify({ id_token: response.credential, nonce: nonce }),
     })
       .then(function (r) {
         STORE.setToken(r.token);
@@ -566,9 +586,13 @@
     var ptsInput = $('#bx-r-pts');
     if (!ptsInput) return;
 
+    // 1 pt = R$ 0,09 = 9 centavos. Sincronizar com backend Config.CENTS_PER_POINT.
+    var BX_CENTS_PER_POINT = 9;
     function quote() {
       var p = parseInt(ptsInput.value || '0');
-      $('#bx-r-quote').textContent = p > 0 ? '≈ ' + brl(p / 100) + ' (100 pts = R$ 1,00)' : '';
+      $('#bx-r-quote').textContent = p > 0
+        ? '≈ ' + brl(p * BX_CENTS_PER_POINT / 100) + ' (1 pt = R$ 0,09)'
+        : '';
     }
     ptsInput.addEventListener('input', quote); quote();
 
