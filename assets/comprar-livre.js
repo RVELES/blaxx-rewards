@@ -1,4 +1,12 @@
-/* Comprar pontos · valor livre · fluxo PIX manual com confirmação admin */
+/* Comprar pontos · valor livre · fluxo PIX automatizado via Mercado Pago.
+ *
+ * Substitui o antigo fluxo manual (admin confirmava) por chamada direta
+ * a /pix/charge com amount_brl. Backend integra com MP e devolve QR Code
+ * real (PNG base64) + BR Code copia-e-cola.
+ *
+ * Confirmação é automática via webhook MP → polling a cada 4s pra
+ * detectar quando charge.status === 'paid'.
+ */
 (function () {
   'use strict';
 
@@ -8,6 +16,7 @@
   if (!TOKEN) { location.href = '/login'; return; }
 
   var currentCharge = null;
+  var pollHandle = null;
 
   function api(path, opts) {
     opts = opts || {};
@@ -49,6 +58,12 @@
     document.getElementById('btn-create').disabled = amount < 10;
   };
 
+  // Se a URL trouxer ?pkg=plus, troca pro fluxo de pacote
+  function getQueryPkg() {
+    var m = location.search.match(/[?&]pkg=([a-z]+)/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+
   window.createCharge = function () {
     var amount = parseInputAmount(document.getElementById('amount-input').value);
     if (amount < 10) {
@@ -58,17 +73,20 @@
     var btn = document.getElementById('btn-create');
     btn.disabled = true; btn.textContent = 'Gerando QR...';
 
-    api('/pix/custom-charge', {
+    var body = { amount_brl: amount };
+    var pkg = getQueryPkg();
+    if (pkg) {
+      // Compra de pacote: ignora amount digitado e usa o pkg da URL
+      body = { package: pkg };
+    }
+
+    api('/pix/charge', {
       method: 'POST',
-      body: JSON.stringify({ amount_brl: amount }),
+      body: JSON.stringify(body),
     }).then(function (charge) {
       currentCharge = charge;
-      // Etapa 2: mostra QR
-      document.getElementById('pix-amount-display').textContent = fmtBRL(charge.amount_brl);
-      document.getElementById('qr-img').src = API + '/static/pix-qr-blaxx.png';
-      document.getElementById('step-1').style.display = 'none';
-      document.getElementById('step-2').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showStep2(charge);
+      startPolling(charge.id);
     }).catch(function (e) {
       alert('Erro: ' + e.message);
       btn.disabled = false;
@@ -76,45 +94,109 @@
     });
   };
 
-  window.claimPaid = function () {
-    if (!currentCharge) return;
-    var btn = document.getElementById('btn-claim');
-    btn.disabled = true; btn.textContent = 'Enviando...';
+  function showStep2(charge) {
+    document.getElementById('pix-amount-display').textContent = fmtBRL(charge.amount_brl);
 
-    api('/pix/custom-charge/' + currentCharge.id + '/claim-paid', {
-      method: 'POST',
-      body: '{}',
-    }).then(function () {
-      document.getElementById('step-2').style.display = 'none';
-      document.getElementById('step-3').style.display = 'block';
-      // Polling: a cada 10s checa se admin já confirmou
-      pollChargeStatus(currentCharge.id);
-    }).catch(function (e) {
-      alert('Erro: ' + e.message);
-      btn.disabled = false;
-      btn.textContent = 'Já paguei pelo banco';
-    });
-  };
+    var img = document.getElementById('qr-img');
+    if (charge.qr_code_image) {
+      // MP devolveu data-URI base64 do PNG do QR — usa direto.
+      img.src = charge.qr_code_image;
+      img.style.display = 'block';
+    } else {
+      // Fallback: provider sem QR PNG (ex: alguns mocks). Esconde a img
+      // e oferece só o copia-e-cola.
+      img.style.display = 'none';
+    }
 
-  function pollChargeStatus(chargeId) {
-    var interval = setInterval(function () {
-      api('/pix/my-charges').then(function (r) {
-        var c = (r.items || []).find(function (x) { return x.id === chargeId; });
-        if (!c) return;
-        var pill = document.getElementById('status-pill');
-        if (c.status === 'paid') {
-          pill.className = 'status-pill status-paid';
-          pill.textContent = '✓ Pontos liberados!';
-          clearInterval(interval);
-          setTimeout(function () { location.href = '/carteira'; }, 2000);
-        } else if (c.status === 'rejected') {
-          pill.className = 'status-pill status-rejected';
-          pill.textContent = '✗ Pagamento rejeitado';
-          clearInterval(interval);
-        }
+    // Adiciona caixa com BR Code copia-e-cola
+    var brBox = document.getElementById('br-code-box');
+    if (!brBox) {
+      brBox = document.createElement('div');
+      brBox.id = 'br-code-box';
+      brBox.style.cssText = 'margin-top:16px;text-align:left;';
+      brBox.innerHTML =
+        '<div style="font-size:12px;color:#5f665e;margin-bottom:6px;">Ou copie o código PIX:</div>' +
+        '<div style="display:flex;gap:8px;align-items:stretch;">' +
+          '<textarea id="br-code-text" readonly style="flex:1;height:64px;font-family:ui-monospace,monospace;font-size:11px;background:#f5f7f0;border:1px solid #e6eadf;border-radius:8px;padding:8px;resize:none;"></textarea>' +
+          '<button id="br-code-copy" class="button secondary" type="button" style="white-space:nowrap;">Copiar</button>' +
+        '</div>';
+      document.querySelector('#step-2 .qr-box').appendChild(brBox);
+      document.getElementById('br-code-copy').addEventListener('click', function () {
+        var ta = document.getElementById('br-code-text');
+        ta.select();
+        try {
+          document.execCommand('copy');
+          this.textContent = '✓ Copiado';
+          var self = this;
+          setTimeout(function () { self.textContent = 'Copiar'; }, 2000);
+        } catch (e) { /* silent */ }
       });
-    }, 10000);
+    }
+    document.getElementById('br-code-text').value = charge.br_code || '';
+
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Polling automático — checa status da charge a cada 4s.
+  // Quando webhook MP confirma e marca como PAID, esse polling detecta
+  // e redireciona pra carteira automaticamente.
+  function startPolling(chargeId) {
+    if (pollHandle) clearInterval(pollHandle);
+    pollHandle = setInterval(function () {
+      api('/pix/charge/' + chargeId).then(function (c) {
+        if (c.status === 'paid') {
+          clearInterval(pollHandle);
+          showStep3Success(c);
+        } else if (c.status === 'expired' || c.status === 'rejected') {
+          clearInterval(pollHandle);
+          alert('Charge ' + c.status + '. Gere uma nova cobrança.');
+          location.reload();
+        }
+      }).catch(function () { /* silent retry */ });
+    }, 4000);
+  }
+
+  function showStep3Success(charge) {
+    document.getElementById('step-2').style.display = 'none';
+    var step3 = document.getElementById('step-3');
+    step3.style.display = 'block';
+    step3.innerHTML =
+      '<h3 style="margin-bottom:12px;"><span class="step-num">3</span> Pagamento confirmado!</h3>' +
+      '<p style="font-size:18px;">+' + (charge.points_to_credit || 0).toLocaleString('pt-BR') +
+        ' pts adicionados à sua carteira.</p>' +
+      '<div style="text-align:center;margin-top:16px;">' +
+        '<span class="status-pill status-paid">✓ Pontos liberados</span>' +
+      '</div>' +
+      '<button class="button full lg" onclick="goWallet()" style="margin-top:18px;">' +
+        'Ir para minha carteira' +
+      '</button>';
   }
 
   window.goWallet = function () { location.href = '/carteira'; };
+
+  // Se chegou aqui com ?pkg=plus, dispara o fluxo de pacote automaticamente
+  // (sem precisar digitar valor). Backend usa Config.POINT_PACKAGES[pkg].
+  document.addEventListener('DOMContentLoaded', function () {
+    var pkg = getQueryPkg();
+    if (!pkg) return;
+    // Esconde a etapa de digitar valor — vai direto pro QR
+    var step1 = document.getElementById('step-1');
+    if (step1) step1.style.display = 'none';
+    // Mostra um spinner enquanto o backend gera
+    var loading = document.createElement('div');
+    loading.id = 'pkg-loading';
+    loading.style.cssText = 'text-align:center;padding:48px;color:#5f665e;';
+    loading.textContent = 'Gerando seu QR Code…';
+    document.querySelector('.buy-wrap').insertBefore(loading, step1);
+    window.createCharge();
+    var tryRemove = setInterval(function () {
+      if (document.getElementById('step-2').style.display === 'block') {
+        var el = document.getElementById('pkg-loading');
+        if (el) el.remove();
+        clearInterval(tryRemove);
+      }
+    }, 200);
+  });
 })();

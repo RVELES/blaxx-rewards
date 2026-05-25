@@ -31,50 +31,42 @@
         </div>
         <div class="cta-row">
             <a href="central-notificacoes.html" class="button ghost" aria-label="Notificações">🔔</a>
-            <a href="perfil.html" class="button secondary">Olá, Mariana</a>
+            <a href="perfil.html" class="button secondary" data-bx-user-name>Olá!</a>
         </div>
     </nav>
 </header>
 <main class="shell">
 <div class="page-head">
-    <div class="crumbs"><a href="comprar-pontos.html">Comprar pontos</a><span class="sep">/</span> <a href="checkout.html">Checkout</a><span class="sep">/</span> Pagamento PIX</div>
+    <div class="crumbs"><a href="comprar-pontos.html">Comprar pontos</a><span class="sep">/</span> Pagamento PIX</div>
 </div>
 
 <section class="section">
     <div class="split-page">
         <div class="card center" style="padding:40px;">
-            <span class="kicker" style="background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">⏱ Aguardando pagamento</span>
+            <span class="kicker" id="bx-status-pill" style="background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">⏱ Aguardando pagamento</span>
             <h2 style="margin:14px 0 6px;">Pague com PIX em segundos</h2>
             <p>Escaneie o QR Code com o app do seu banco ou copie o código abaixo.</p>
 
-            <div style="margin:28px 0;">
-                <div class="qr"></div>
+            <div style="margin:28px 0;display:flex;justify-content:center;">
+                <img id="bx-qr-img" alt="QR Code PIX" style="max-width:260px;width:100%;height:auto;display:none;">
+                <div id="bx-qr-placeholder" style="width:260px;height:260px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px;">Carregando QR…</div>
             </div>
 
             <div class="copy-box" style="text-align:left;font-size:12px;">
-                00020126580014BR.GOV.BCB.PIX0136abc-123-blaxx-pontos-2026-checkout5204000053039865802BR5916BLAXX PONTOS LTDA6009SAO PAULO62070503***6304A1B2
-                <span class="muted" style="font-size:11px;flex-shrink:0;">Copiar</span>
+                <span id="bx-brcode-text" style="word-break:break-all;font-family:ui-monospace,monospace;flex:1;">—</span>
+                <button id="bx-brcode-copy" type="button" class="muted" style="font-size:11px;flex-shrink:0;background:none;border:0;cursor:pointer;text-decoration:underline;">Copiar</button>
             </div>
 
-            <div class="alert warn mt-4">
-                <div class="alert-icon">⏱</div>
-                <div>
-                    <h4>Tempo restante</h4>
-                    <p>Este código expira em <strong>14:32 minutos</strong>. Após isso, gere um novo código.</p>
-                </div>
-            </div>
-
-            <a href="compra-aprovada.html" class="button full lg mt-2">Já paguei →</a>
-            <a href="checkout.html" class="button ghost full mt-2" style="margin-top:8px;">← Voltar</a>
+            <a href="comprar-pontos.html" class="button ghost full mt-2" style="margin-top:18px;">← Cancelar e voltar</a>
         </div>
 
         <div class="summary-card">
             <h3>Resumo</h3>
             <div class="dl mt-2">
-                <div><span class="k">Pacote</span><span class="v">Plus</span></div>
-                <div><span class="k">Pontos</span><span class="v amount-pos">+5.500 pts</span></div>
+                <div><span class="k">Pacote</span><span class="v" id="bx-summary-pkg">—</span></div>
+                <div><span class="k">Pontos</span><span class="v amount-pos" id="bx-summary-pts">—</span></div>
                 <div><span class="k">Forma</span><span class="v">PIX</span></div>
-                <div><span class="k">Valor</span><span class="v" style="font-size:20px;">R$ 49,90</span></div>
+                <div><span class="k">Valor</span><span class="v" id="bx-summary-amt" style="font-size:20px;">—</span></div>
             </div>
 
             <h3 class="mt-4">Como pagar</h3>

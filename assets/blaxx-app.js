@@ -372,55 +372,74 @@
       setTimeout(function () { location.href = '/comprar-pontos'; }, 1500);
       return;
     }
-    // Procura locais óbvios na tela para injetar o BR Code
-    injectPixCharge(charge);
+    renderPixCharge(charge);
+    startChargePolling(charge.id);
   }
 
-  function injectPixCharge(charge) {
-    // Tenta achar um container existente; se não, cria um overlay
-    var host = $('.pix-area') || $('main') || document.body;
-    var box = document.createElement('div');
-    box.className = 'card lime';
-    box.style.cssText = 'padding:24px;margin:24px auto;max-width:720px;';
-    box.innerHTML =
-      '<h2 style="margin:0 0 6px;">PIX gerado pelo backend</h2>' +
-      '<p style="color:var(--muted);margin:0 0 16px;font-size:14px;">' +
-        'Pacote <strong>' + charge.package + '</strong> · ' + brl(charge.amount_brl) +
-        ' → <strong>' + fmt(charge.points_to_credit) + ' pts</strong>' +
-      '</p>' +
-      '<div style="display:grid;grid-template-columns:160px 1fr;gap:18px;align-items:start;">' +
-        '<div id="bx-qr" style="width:160px;height:160px;background:#fff;border-radius:14px;padding:8px;border:1px solid var(--line);"></div>' +
-        '<div>' +
-          '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">BR Code copia-e-cola</div>' +
-          '<textarea readonly style="width:100%;height:90px;font-family:ui-monospace,monospace;font-size:10px;background:white;border:1px solid var(--line);border-radius:10px;padding:10px;">' +
-          charge.br_code + '</textarea>' +
-          '<div style="margin-top:12px;display:flex;gap:8px;align-items:center;">' +
-            '<span id="bx-status" class="status pendente">' + charge.status + '</span>' +
-            '<button id="bx-pay" class="button">Simular pagamento (webhook)</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    host.insertBefore(box, host.firstChild);
+  function renderPixCharge(charge) {
+    // QR Code real do MP (PNG base64 em data-URI). Se o provider não devolveu
+    // (ex: mock), esconde a img e mantém o copia-e-cola visível.
+    var img = $('#bx-qr-img');
+    var placeholder = $('#bx-qr-placeholder');
+    if (img && charge.qr_code_image) {
+      img.src = charge.qr_code_image;
+      img.style.display = 'block';
+      if (placeholder) placeholder.style.display = 'none';
+    } else if (placeholder) {
+      placeholder.textContent = 'QR não disponível — use o código copia-e-cola';
+    }
 
-    $('#bx-qr').innerHTML = drawQR(charge.br_code);
+    // BR Code copia-e-cola
+    var brEl = $('#bx-brcode-text');
+    if (brEl) brEl.textContent = charge.br_code || '—';
+    var copyBtn = $('#bx-brcode-copy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var range = document.createRange();
+        range.selectNode(brEl);
+        var sel = window.getSelection();
+        sel.removeAllRanges(); sel.addRange(range);
+        try {
+          document.execCommand('copy');
+          copyBtn.textContent = '✓ Copiado';
+          setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2000);
+        } catch (e) { /* silent */ }
+        sel.removeAllRanges();
+      });
+    }
 
-    $('#bx-pay').addEventListener('click', function () {
-      var btn = $('#bx-pay'); btn.disabled = true; btn.textContent = 'Confirmando...';
-      api('/pix/simulate-payment', { method: 'POST', body: JSON.stringify({ charge_id: charge.id }) })
-        .then(function (res) {
-          STORE.setFlow('charge_paid', res.charge);
-          location.href = '/compra-aprovada';
-        })
-        .catch(function (e) { notify(e.message, 'err'); btn.disabled = false; btn.textContent = 'Simular pagamento (webhook)'; });
-    });
+    // Resumo lateral
+    var pkgEl = $('#bx-summary-pkg');
+    if (pkgEl) pkgEl.textContent = charge.package === 'custom' ? 'Valor livre' : (charge.package || '—');
+    var ptsEl = $('#bx-summary-pts');
+    if (ptsEl) ptsEl.textContent = '+' + fmt(charge.points_to_credit || 0) + ' pts';
+    var amtEl = $('#bx-summary-amt');
+    if (amtEl) amtEl.textContent = brl(charge.amount_brl);
+  }
 
-    // Botao extra "Abrir no app do banco" - copia o BR Code e instrui o user
-    var openBankBtn = document.createElement('button');
-    openBankBtn.className = 'button secondary';
-    openBankBtn.style.cssText = 'font-size:13px;padding:8px 14px;margin-left:6px;';
-    openBankBtn.textContent = '📱 Abrir no app do banco';
-    openBankBtn.addEventListener('click', function () { window.blaxxOpenBankApp(charge.br_code); });
-    $('#bx-pay').parentNode.appendChild(openBankBtn);
+  function startChargePolling(chargeId) {
+    var pill = $('#bx-status-pill');
+    var handle = setInterval(function () {
+      api('/pix/charge/' + chargeId).then(function (c) {
+        if (c.status === 'paid') {
+          clearInterval(handle);
+          if (pill) {
+            pill.style.background = 'var(--ok-soft, #efffe6)';
+            pill.style.color = 'var(--ok-text, #2d651b)';
+            pill.textContent = '✓ Pagamento confirmado';
+          }
+          STORE.setFlow('charge_paid', c);
+          setTimeout(function () { location.href = '/compra-aprovada'; }, 1200);
+        } else if (c.status === 'expired' || c.status === 'rejected') {
+          clearInterval(handle);
+          if (pill) {
+            pill.style.background = '#ffede8';
+            pill.style.color = '#a83417';
+            pill.textContent = c.status === 'expired' ? '⏱ Expirado' : '✗ Rejeitado';
+          }
+        }
+      }).catch(function () { /* silent retry */ });
+    }, 4000);
   }
 
   function initCompraAprovada() {
