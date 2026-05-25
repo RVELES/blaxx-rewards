@@ -76,8 +76,8 @@
     <div class="grid two" style="gap:32px;align-items:center;">
         <div>
             <div class="label">Saldo total</div>
-            <div class="big">84.750 <small>pts</small></div>
-            <div class="equiv">≈ R$ 847,50 em resgates · Plano Plus</div>
+            <div class="big" id="wallet-balance">— <small>pts</small></div>
+            <div class="equiv">≈ <span id="wallet-balance-brl">R$ —</span> em resgates</div>
             <div class="actions" style="margin-top:18px;">
                 <a href="comprar-pontos.html" class="button">Comprar pontos</a>
                 <a href="enviar-pontos.html" class="button secondary">Enviar pontos</a>
@@ -85,10 +85,10 @@
             </div>
         </div>
         <div class="mini-grid" style="margin-top:0;">
-            <div class="mini"><div class="lbl">Disponível</div><strong style="color:white;">81.550</strong></div>
-            <div class="mini"><div class="lbl">Pendente</div><strong style="color:white;">3.200</strong></div>
-            <div class="mini"><div class="lbl">A expirar 60d</div><strong style="color:#ffce6b;">2.450</strong></div>
-            <div class="mini"><div class="lbl">Bloqueado</div><strong style="color:white;">0</strong></div>
+            <div class="mini"><div class="lbl">Disponível</div><strong style="color:white;" id="wallet-available">—</strong></div>
+            <div class="mini"><div class="lbl">Pendente</div><strong style="color:white;" id="wallet-pending">—</strong></div>
+            <div class="mini"><div class="lbl">A expirar 60d</div><strong style="color:#ffce6b;" id="wallet-expire">—</strong></div>
+            <div class="mini"><div class="lbl">Bloqueado</div><strong style="color:white;" id="wallet-blocked">0</strong></div>
         </div>
     </div>
 </div>
@@ -129,11 +129,8 @@
     </div>
     <table class="table">
         <thead><tr><th>Data</th><th>Descrição</th><th>Status</th><th class="right">Pontos</th></tr></thead>
-        <tbody>
-            <tr><td data-label="Data">28/04</td><td data-label="Descrição">Bom Preço</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+1.240</td></tr>
-            <tr><td data-label="Data">26/04</td><td data-label="Descrição">iFood R$ 50</td><td data-label="Status"><span class="status concluido">● Concluído</span></td><td data-label="Pontos" class="right amount-neg">−5.000</td></tr>
-            <tr><td data-label="Data">22/04</td><td data-label="Descrição">Posto Shell</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+850</td></tr>
-            <tr><td data-label="Data">19/04</td><td data-label="Descrição">Pacote Plus</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+5.500</td></tr>
+        <tbody id="wallet-tx-tbody">
+            <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Carregando…</td></tr>
         </tbody>
     </table>
 </section>

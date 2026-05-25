@@ -81,21 +81,21 @@
                     <span class="label" style="font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:#9ea59c;">Carteira Blaxx</span>
                     <span class="pill" style="background:var(--lime);color:var(--black);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.04em;">Plano Plus</span>
                 </div>
-                <div class="big-num" style="font-size:56px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:white;margin-top:14px;">84.750 <small style="font-size:16px;font-weight:600;color:#9ea59c;margin-left:8px;">pontos</small></div>
-                <div style="color:#9ea59c;margin-top:8px;font-size:14px;">≈ R$ 847,50 em resgates</div>
+                <div class="big-num" style="font-size:56px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:white;margin-top:14px;"><span id="dash-balance">—</span> <small style="font-size:16px;font-weight:600;color:#9ea59c;margin-left:8px;">pontos</small></div>
+                <div style="color:#9ea59c;margin-top:8px;font-size:14px;">≈ <span id="dash-balance-brl">R$ —</span> em resgates</div>
 
                 <div class="grid-kpi" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px 28px;margin-top:22px;padding-top:18px;border-top:1px solid #1f221c;">
                     <div>
                         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#9ea59c;">Disponíveis</div>
-                        <div style="font-size:22px;font-weight:800;color:white;margin-top:4px;">82.300</div>
+                        <div style="font-size:22px;font-weight:800;color:white;margin-top:4px;" id="dash-available">—</div>
                     </div>
                     <div>
                         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#9ea59c;">Pendentes</div>
-                        <div style="font-size:22px;font-weight:800;color:white;margin-top:4px;">2.450</div>
+                        <div style="font-size:22px;font-weight:800;color:white;margin-top:4px;" id="dash-pending">—</div>
                     </div>
                     <div>
                         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#9ea59c;">Próx. expirar</div>
-                        <div style="font-size:22px;font-weight:800;color:var(--lime);margin-top:4px;">2.450</div>
+                        <div style="font-size:22px;font-weight:800;color:var(--lime);margin-top:4px;" id="dash-expire">—</div>
                     </div>
                 </div>
 
@@ -191,12 +191,8 @@
     </div>
     <table class="table">
         <thead><tr><th>Data</th><th>Descrição</th><th>Status</th><th class="right">Pontos</th></tr></thead>
-        <tbody>
-            <tr><td data-label="Data">Hoje · 14h32</td><td data-label="Descrição"><strong>Mercado Bom Preço</strong><div class="muted" style="font-size:13px;">Compra · NF 12345</div></td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+1.240</td></tr>
-            <tr><td data-label="Data">Ontem · 09h05</td><td data-label="Descrição"><strong>Resgate Netflix 30d</strong><div class="muted" style="font-size:13px;">Voucher entregue</div></td><td data-label="Status"><span class="status concluido">● Concluído</span></td><td data-label="Pontos" class="right amount-neg">−12.000</td></tr>
-            <tr><td data-label="Data">26/04</td><td data-label="Descrição"><strong>Posto Shell · Av. Faria Lima</strong><div class="muted" style="font-size:13px;">Abastecimento</div></td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+850</td></tr>
-            <tr><td data-label="Data">22/04</td><td data-label="Descrição"><strong>Compra de pontos · Pacote Plus</strong><div class="muted" style="font-size:13px;">PIX confirmado</div></td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+5.500</td></tr>
-            <tr><td data-label="Data">20/04</td><td data-label="Descrição"><strong>Drogasil</strong><div class="muted" style="font-size:13px;">Compra · NF 98741</div></td><td data-label="Status"><span class="status pendente">● Aguardando</span></td><td data-label="Pontos" class="right amount-pos">+220</td></tr>
+        <tbody id="dash-tx-tbody">
+            <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Carregando…</td></tr>
         </tbody>
     </table>
 </section>

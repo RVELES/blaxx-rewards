@@ -61,111 +61,21 @@
     </div>
 </section>
 
-<section class="section" id="mercados">
-    <div class="section-head">
-        <h2>Mercados &amp; supermercados</h2>
-        <p class="sub">10 pts por R$ 1 · crédito em até 24h</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">BP</div><div><h3>Mercado Bom Preço</h3><div class="rate">10 pts/R$ · +50% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">CR</div><div><h3>Carrefour</h3><div class="rate">10 pts/R$ · +50% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">PA</div><div><h3>Pão de Açúcar</h3><div class="rate">12 pts/R$ · +50% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">EX</div><div><h3>Extra</h3><div class="rate">10 pts/R$ · +50% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">AS</div><div><h3>Assaí</h3><div class="rate">8 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">DI</div><div><h3>Dia Supermercados</h3><div class="rate">10 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">SO</div><div><h3>Sonda</h3><div class="rate">10 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">SS</div><div><h3>St. Marche</h3><div class="rate">12 pts/R$</div></div></a>
-    </div>
-</section>
 
-<section class="section" id="farmacias">
-    <div class="section-head">
-        <h2>Farmácias</h2>
-        <p class="sub">12 pts por R$ 1 · +30% em campanha ativa</p>
+<section class="section">
+    <div class="card" style="padding:18px;margin-bottom:18px;">
+        <div class="toolbar">
+            <input id="pt-search" type="search" class="search" placeholder="Buscar parceiro…" oninput="window.reloadParceiros && reloadParceiros()">
+            <select id="pt-cat" style="width:auto;" onchange="window.reloadParceiros && reloadParceiros()">
+                <option value="">Todas as categorias</option>
+            </select>
+        </div>
     </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">DR</div><div><h3>Drogasil</h3><div class="rate">12 pts/R$ · +30% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">PM</div><div><h3>Pague Menos</h3><div class="rate">12 pts/R$ · +30% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">RD</div><div><h3>Raia</h3><div class="rate">12 pts/R$ · +30% campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">DN</div><div><h3>Drogaria Nissei</h3><div class="rate">10 pts/R$</div></div></a>
+    <div class="grid four" id="pt-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Carregando parceiros…</div>
     </div>
-</section>
-
-<section class="section" id="combustivel">
-    <div class="section-head">
-        <h2>Combustível</h2>
-        <p class="sub">8 pts por R$ 1 · campanha postos Shell em dobro</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">SH</div><div><h3>Shell</h3><div class="rate">8 pts/R$ · 2x em campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">IP</div><div><h3>Ipiranga</h3><div class="rate">8 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">PT</div><div><h3>Petrobras BR</h3><div class="rate">8 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">AL</div><div><h3>Ale Combustíveis</h3><div class="rate">6 pts/R$</div></div></a>
-    </div>
-</section>
-
-<section class="section" id="viagens">
-    <div class="section-head">
-        <h2>Viagens</h2>
-        <p class="sub">15 pts por R$ 1 · campanha "Sua viagem rendendo" em dobro</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">LA</div><div><h3>Latam Airlines</h3><div class="rate">15 pts/R$ · 2x em campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">GO</div><div><h3>Gol Linhas Aéreas</h3><div class="rate">15 pts/R$ · 2x em campanha</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">BO</div><div><h3>Booking.com</h3><div class="rate">12 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">DC</div><div><h3>Decolar</h3><div class="rate">12 pts/R$</div></div></a>
-    </div>
-</section>
-
-<section class="section" id="moda">
-    <div class="section-head">
-        <h2>Moda</h2>
-        <p class="sub">6 pts por R$ 1</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">RE</div><div><h3>Renner</h3><div class="rate">6 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">CA</div><div><h3>C&amp;A</h3><div class="rate">6 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">RP</div><div><h3>Riachuelo</h3><div class="rate">6 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">ZA</div><div><h3>Zara</h3><div class="rate">5 pts/R$</div></div></a>
-    </div>
-</section>
-
-<section class="section" id="eletronicos">
-    <div class="section-head">
-        <h2>Eletrônicos &amp; serviços online</h2>
-        <p class="sub">6 pts por R$ 1</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">ML</div><div><h3>Mercado Livre</h3><div class="rate">6 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">AM</div><div><h3>Amazon</h3><div class="rate">6 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">MG</div><div><h3>Magalu</h3><div class="rate">6 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">CB</div><div><h3>Casas Bahia</h3><div class="rate">6 pts/R$</div></div></a>
-    </div>
-</section>
-
-<section class="section" id="educacao">
-    <div class="section-head">
-        <h2>Educação</h2>
-        <p class="sub">5 pts por R$ 1</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">UD</div><div><h3>Udemy</h3><div class="rate">5 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">DU</div><div><h3>Duolingo</h3><div class="rate">5 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">AL</div><div><h3>Alura</h3><div class="rate">5 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">RB</div><div><h3>Rocketseat</h3><div class="rate">5 pts/R$</div></div></a>
-    </div>
-</section>
-
-<section class="section" id="servicos">
-    <div class="section-head">
-        <h2>Serviços</h2>
-        <p class="sub">5 pts por R$ 1</p>
-    </div>
-    <div class="grid four">
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">UB</div><div><h3>Uber</h3><div class="rate">5 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">99</div><div><h3>99 App</h3><div class="rate">5 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">IF</div><div><h3>iFood</h3><div class="rate">5 pts/R$</div></div></a>
-        <a href="detalhe-parceiro.html" class="partner-card"><div class="partner-logo">RR</div><div><h3>Rappi</h3><div class="rate">5 pts/R$</div></div></a>
+    <div class="flex between mt-2">
+        <span class="muted" id="pt-count" style="font-size:13px;">—</span>
     </div>
 </section>
 

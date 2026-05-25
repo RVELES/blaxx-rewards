@@ -798,6 +798,255 @@
   }
 
   // =========================================================================
+  // Helpers compartilhados entre Dashboard / Carteira / Extrato
+  // =========================================================================
+  var TX_TYPE_LABEL = {
+    purchase: 'Compra', transfer_in: 'Recebido', transfer_out: 'Enviado',
+    redeem: 'Resgate', refund: 'Estorno', bonus: 'Bônus',
+  };
+  var TX_STATUS_LABEL = {
+    confirmed: 'Confirmado', pending: 'Aguardando', reversed: 'Estornado',
+  };
+  var TX_STATUS_CLASS = {
+    confirmed: 'confirmado', pending: 'pendente', reversed: 'estornado',
+  };
+
+  function renderTxRow(t, withDescriptionBold) {
+    var d = (t.created_at || '').replace('T', ' ').slice(0, 16);
+    var sign = t.amount_pts > 0 ? '+' : '−';
+    var amount = sign + fmt(Math.abs(t.amount_pts));
+    var amountClass = t.amount_pts > 0 ? 'amount-pos' : 'amount-neg';
+    var statusKey = (t.status || 'confirmed').toLowerCase();
+    var statusLabel = TX_STATUS_LABEL[statusKey] || statusKey;
+    var statusClass = TX_STATUS_CLASS[statusKey] || 'confirmado';
+    var desc = t.description || '—';
+    if (withDescriptionBold) desc = '<strong>' + desc + '</strong>';
+    return '<tr>' +
+      '<td data-label="Data">' + d + '</td>' +
+      '<td data-label="Descrição">' + desc + '</td>' +
+      '<td data-label="Status"><span class="status ' + statusClass + '">● ' + statusLabel + '</span></td>' +
+      '<td data-label="Pontos" class="right ' + amountClass + '">' + amount + '</td>' +
+      '</tr>';
+  }
+
+  // Atualiza o card de saldo escuro com balance_pts + equivalente em R$ +
+  // bloco de Disponíveis/Pendentes/Próx. expirar. Compartilhado entre
+  // dashboard.html e carteira.html.
+  function applyWalletToShell(w) {
+    var $ = function (id) { return document.getElementById(id); };
+    var balance = w.balance_pts || 0;
+    var pending = w.pending_pts || 0;
+    var brl = (w.balance_brl_equiv || 0).toFixed(2).replace('.', ',');
+    // Dashboard
+    if ($('dash-balance')) $('dash-balance').textContent = fmt(balance);
+    if ($('dash-balance-brl')) $('dash-balance-brl').textContent = 'R$ ' + brl;
+    if ($('dash-available')) $('dash-available').textContent = fmt(balance - pending);
+    if ($('dash-pending')) $('dash-pending').textContent = fmt(pending);
+    if ($('dash-expire')) $('dash-expire').textContent = '0';  // sem expiração ativa por enquanto
+    // Carteira
+    if ($('wallet-balance')) $('wallet-balance').innerHTML = fmt(balance) + ' <small>pts</small>';
+    if ($('wallet-balance-brl')) $('wallet-balance-brl').textContent = 'R$ ' + brl;
+    if ($('wallet-available')) $('wallet-available').textContent = fmt(balance - pending);
+    if ($('wallet-pending')) $('wallet-pending').textContent = fmt(pending);
+    if ($('wallet-expire')) $('wallet-expire').textContent = '0';
+  }
+
+  // =========================================================================
+  // Dashboard (KPIs + últimas movimentações reais)
+  // =========================================================================
+  // Overload do initDashboard original — preserva substituir_textos_hardcoded
+  // mas adiciona binding por ID dos elementos do dashboard.html.
+  var __originalInitDashboard = window.__originalInitDashboard || initDashboard;
+  function initDashboardEnhanced() {
+    if (!requireAuth()) return;
+    api('/wallet/').then(applyWalletToShell).catch(function (e) { console.error('wallet:', e); });
+
+    var tbody = document.getElementById('dash-tx-tbody');
+    if (tbody) {
+      api('/wallet/transactions?limit=5').then(function (r) {
+        var items = r.items || [];
+        if (items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Nenhuma movimentação ainda.</td></tr>';
+        } else {
+          tbody.innerHTML = items.map(function (t) { return renderTxRow(t, true); }).join('');
+        }
+      }).catch(function (e) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:#a83417;">Erro: ' + e.message + '</td></tr>';
+      });
+    }
+    applyUserToShell();
+  }
+
+  // =========================================================================
+  // Carteira (saldo, KPIs, movimentações recentes)
+  // =========================================================================
+  function initCarteira() {
+    if (!requireAuth()) return;
+    applyUserToShell();
+    api('/wallet/').then(applyWalletToShell).catch(function (e) { console.error(e); });
+
+    var tbody = document.getElementById('wallet-tx-tbody');
+    if (tbody) {
+      api('/wallet/transactions?limit=10').then(function (r) {
+        var items = r.items || [];
+        if (items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Nenhuma movimentação ainda.</td></tr>';
+        } else {
+          tbody.innerHTML = items.map(function (t) { return renderTxRow(t, false); }).join('');
+        }
+      });
+    }
+  }
+
+  // =========================================================================
+  // Comprar pontos (pacotes reais via /pix/packages)
+  // =========================================================================
+  function initComprarPontosReal() {
+    var grid = document.getElementById('pkg-grid');
+    if (!grid) return;
+    fetch(API + '/pix/packages').then(function (r) { return r.json(); }).then(function (data) {
+      var keys = Object.keys(data);
+      if (keys.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum pacote disponível.</div>';
+        return;
+      }
+      // Ordem preferida
+      var order = ['start', 'plus', 'prime', 'black'];
+      keys.sort(function (a, b) {
+        return (order.indexOf(a) === -1 ? 99 : order.indexOf(a)) -
+               (order.indexOf(b) === -1 ? 99 : order.indexOf(b));
+      });
+      grid.innerHTML = keys.map(function (k) {
+        var p = data[k];
+        var featured = k === 'plus' ? ' featured' : '';
+        var ribbon = k === 'plus' ? '<span class="ribbon">Mais popular</span>' : '';
+        var btnClass = k === 'plus' ? 'button' : 'button secondary';
+        var bonus = k === 'start' ? 'Para começar'
+                  : k === 'plus' ? '+10% bônus'
+                  : k === 'prime' ? '+20% bônus'
+                  : k === 'black' ? '+40% bônus' : '';
+        var priceBRL = Number(p.price_brl).toFixed(2).replace('.', ',');
+        return '<div class="price-card' + featured + '">' +
+          ribbon +
+          '<div class="pname">' + (p.label || k) + '</div>' +
+          '<div class="price">R$ ' + priceBRL + '</div>' +
+          '<div class="pts-line">' + fmt(p.points) + ' pts</div>' +
+          '<div class="bonus">' + bonus + '</div>' +
+          '<a href="comprar-livre.html?pkg=' + k + '" class="' + btnClass + '">Comprar agora</a>' +
+          '</div>';
+      }).join('');
+    }).catch(function () {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar pacotes.</div>';
+    });
+  }
+
+  // =========================================================================
+  // Parceiros (lista real via /partners/)
+  // =========================================================================
+  function initParceirosReal() {
+    var grid = document.getElementById('pt-grid');
+    if (!grid) return;
+
+    var ALL_PARTNERS = [];
+
+    function render() {
+      var search = (document.getElementById('pt-search') || {}).value || '';
+      var cat = (document.getElementById('pt-cat') || {}).value || '';
+      var s = search.trim().toLowerCase();
+      var filtered = ALL_PARTNERS.filter(function (p) {
+        if (cat && p.category !== cat) return false;
+        if (s && (p.name || '').toLowerCase().indexOf(s) === -1) return false;
+        return true;
+      });
+      var $c = document.getElementById('pt-count');
+      if ($c) $c.textContent = 'Mostrando ' + filtered.length + ' de ' + ALL_PARTNERS.length + ' parceiros';
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum parceiro encontrado.</div>';
+        return;
+      }
+      grid.innerHTML = filtered.map(function (p) {
+        var initials = (p.name || '?').split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
+        return '<a href="detalhe-parceiro.html?id=' + p.id + '" class="partner-card">' +
+          '<div class="partner-logo">' + (p.logo_emoji || initials) + '</div>' +
+          '<div><h3>' + p.name + '</h3>' +
+          '<div class="rate">' + (p.accrual_rule || '') + '</div></div></a>';
+      }).join('');
+    }
+
+    window.reloadParceiros = render;
+    fetch(API + '/partners/').then(function (r) { return r.json(); }).then(function (data) {
+      ALL_PARTNERS = data.items || [];
+      // Popula filtro de categorias
+      var cats = {};
+      ALL_PARTNERS.forEach(function (p) { if (p.category) cats[p.category] = true; });
+      var $cat = document.getElementById('pt-cat');
+      if ($cat) {
+        Object.keys(cats).sort().forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c; opt.textContent = c;
+          $cat.appendChild(opt);
+        });
+      }
+      render();
+    }).catch(function () {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar parceiros.</div>';
+    });
+  }
+
+  // =========================================================================
+  // Resgates (benefícios reais via /benefits/)
+  // =========================================================================
+  function initResgatesReal() {
+    var grid = document.getElementById('rg-grid');
+    if (!grid) return;
+
+    var ALL_BENEFITS = [];
+
+    function render() {
+      var search = (document.getElementById('rg-search') || {}).value || '';
+      var cat = (document.getElementById('rg-cat') || {}).value || '';
+      var s = search.trim().toLowerCase();
+      var filtered = ALL_BENEFITS.filter(function (b) {
+        if (cat && b.category !== cat) return false;
+        if (s && (b.name || '').toLowerCase().indexOf(s) === -1) return false;
+        return true;
+      });
+      var $c = document.getElementById('rg-count');
+      if ($c) $c.textContent = 'Mostrando ' + filtered.length + ' de ' + ALL_BENEFITS.length + ' benefícios';
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum benefício encontrado.</div>';
+        return;
+      }
+      grid.innerHTML = filtered.map(function (b) {
+        var tag = b.tag ? '<div class="tag-row"><span class="glyph-sm">▣</span> ' + b.tag + '</div>' : '';
+        return '<a href="beneficio-detalhe.html?id=' + b.id + '" class="market-card">' +
+          tag +
+          '<h3>' + b.name + '</h3>' +
+          '<div class="pts">' + fmt(b.cost_pts) + ' <small>pts</small></div>' +
+          '<span class="market-cta">Resgatar</span></a>';
+      }).join('');
+    }
+
+    window.reloadResgates = render;
+    fetch(API + '/benefits/').then(function (r) { return r.json(); }).then(function (data) {
+      ALL_BENEFITS = data.items || [];
+      var cats = {};
+      ALL_BENEFITS.forEach(function (b) { if (b.category) cats[b.category] = true; });
+      var $cat = document.getElementById('rg-cat');
+      if ($cat) {
+        Object.keys(cats).sort().forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c; opt.textContent = c;
+          $cat.appendChild(opt);
+        });
+      }
+      render();
+    }).catch(function () {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar benefícios.</div>';
+    });
+  }
+
+  // =========================================================================
   // Extrato (paridade com Mac StatementView)
   // =========================================================================
   function initExtrato() {
@@ -891,18 +1140,18 @@
   var INITS = {
     'login.html': initLogin,
     'cadastro.html': initCadastro,
-    'dashboard.html': initDashboard,
-    'carteira.html': initDashboard,
+    'dashboard.html': initDashboardEnhanced,
+    'carteira.html': initCarteira,
     'extrato.html': initExtrato,
-    'comprar-pontos.html': initComprarPontos,
+    'comprar-pontos.html': initComprarPontosReal,
+    'parceiros.html': initParceirosReal,
+    'resgates.html': initResgatesReal,
     'pagamento-pix.html': initPagamentoPix,
     'compra-aprovada.html': initCompraAprovada,
     'enviar-pontos.html': initEnviarPontos,
     'confirmar-envio.html': initConfirmarEnvio,
     'envio-concluido.html': initEnvioConcluido,
     'resgate-pix.html': initResgatePix,
-    'parceiros.html': initParceiros,
-    'resgates.html': initResgates,
     'beneficio-detalhe.html': initBeneficioDetalhe,
     'detalhe-beneficio.html': initBeneficioDetalhe,
     'campanhas.html': initCampanhas,
