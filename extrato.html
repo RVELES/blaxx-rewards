@@ -75,27 +75,15 @@
 <section class="section">
     <div class="card" style="padding:18px;">
         <div class="toolbar">
-            <input type="search" class="search" placeholder="Buscar por parceiro ou descrição…">
-            <select style="width:auto;">
-                <option>Todos os tipos</option>
-                <option>Acúmulo</option>
-                <option>Resgate</option>
-                <option>Compra de pontos</option>
-                <option>Envio</option>
-                <option>Estorno</option>
-            </select>
-            <select style="width:auto;">
-                <option>Últimos 30 dias</option>
-                <option>Últimos 90 dias</option>
-                <option>Este ano</option>
-                <option>Personalizado</option>
-            </select>
-            <select style="width:auto;">
-                <option>Todos os status</option>
-                <option>Confirmado</option>
-                <option>Pendente</option>
-                <option>Cancelado</option>
-                <option>Estornado</option>
+            <input id="ex-search" type="search" class="search" placeholder="Buscar por descrição…" oninput="window.reloadExtrato && reloadExtrato()">
+            <select id="ex-type" style="width:auto;" onchange="window.reloadExtrato && reloadExtrato()">
+                <option value="">Todos os tipos</option>
+                <option value="purchase">Compra de pontos</option>
+                <option value="transfer_in">Recebido</option>
+                <option value="transfer_out">Enviado</option>
+                <option value="redeem">Resgate</option>
+                <option value="refund">Estorno</option>
+                <option value="bonus">Bônus</option>
             </select>
         </div>
     </div>
@@ -103,38 +91,27 @@
 
 <section class="section">
     <div class="stat-row">
-        <div class="stat"><div class="lbl">Total acumulado</div><div class="val amount-pos">+12.480</div><div class="delta">No período</div></div>
-        <div class="stat"><div class="lbl">Total resgatado</div><div class="val">−7.500</div><div class="delta">No período</div></div>
-        <div class="stat"><div class="lbl">Comprados</div><div class="val amount-pos">+5.500</div><div class="delta">1 transação</div></div>
-        <div class="stat"><div class="lbl">Saldo final</div><div class="val">84.750</div><div class="delta">Atualizado hoje</div></div>
+        <div class="stat"><div class="lbl">Total acumulado</div><div class="val amount-pos" id="ex-stat-in">—</div><div class="delta">No período</div></div>
+        <div class="stat"><div class="lbl">Total resgatado</div><div class="val" id="ex-stat-redeem">—</div><div class="delta">No período</div></div>
+        <div class="stat"><div class="lbl">Comprados</div><div class="val amount-pos" id="ex-stat-purchase">—</div><div class="delta" id="ex-stat-purchase-count">—</div></div>
+        <div class="stat"><div class="lbl">Saldo atual</div><div class="val" id="ex-stat-balance">—</div><div class="delta">Atualizado agora</div></div>
     </div>
 </section>
 
 <section class="section">
     <div class="section-head">
         <h2>Transações</h2>
-        <a href="#" style="font-size:14px;font-weight:700;color:var(--ink);">⤓ Exportar CSV</a>
+        <span id="ex-last-fetch" style="font-size:12px;color:var(--muted);"></span>
     </div>
     <table class="table">
-        <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Status</th><th class="right">Pontos</th><th></th></tr></thead>
-        <tbody>
-            <tr><td data-label="Data">28/04/2026</td><td data-label="Descrição">Mercado Bom Preço</td><td data-label="Tipo">Acúmulo</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+1.240</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">26/04/2026</td><td data-label="Descrição">Voucher iFood R$ 50</td><td data-label="Tipo">Resgate</td><td data-label="Status"><span class="status concluido">● Concluído</span></td><td data-label="Pontos" class="right amount-neg">−5.000</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">22/04/2026</td><td data-label="Descrição">Posto Shell</td><td data-label="Tipo">Acúmulo</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+850</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">19/04/2026</td><td data-label="Descrição">Pacote Plus</td><td data-label="Tipo">Compra</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+5.500</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">15/04/2026</td><td data-label="Descrição">Pague Menos</td><td data-label="Tipo">Acúmulo</td><td data-label="Status"><span class="status pendente">● Pendente</span></td><td data-label="Pontos" class="right amount-pos">+340</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">12/04/2026</td><td data-label="Descrição">PIX R$ 20</td><td data-label="Tipo">Resgate</td><td data-label="Status"><span class="status concluido">● Concluído</span></td><td data-label="Pontos" class="right amount-neg">−2.500</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">08/04/2026</td><td data-label="Descrição">Carrefour</td><td data-label="Tipo">Acúmulo</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+1.480</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">04/04/2026</td><td data-label="Descrição">Compra cancelada</td><td data-label="Tipo">Estorno</td><td data-label="Status"><span class="status estornado">● Estornado</span></td><td data-label="Pontos" class="right amount-neg">−620</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
-            <tr><td data-label="Data">02/04/2026</td><td data-label="Descrição">Drogaria São Paulo</td><td data-label="Tipo">Acúmulo</td><td data-label="Status"><span class="status confirmado">● Confirmado</span></td><td data-label="Pontos" class="right amount-pos">+720</td><td data-label=""><a href="detalhe-transacao.html" style="font-weight:700;">Detalhes →</a></td></tr>
+        <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Status</th><th class="right">Pontos</th></tr></thead>
+        <tbody id="ex-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);">Carregando…</td></tr>
         </tbody>
     </table>
     <div class="flex between mt-2">
-        <span class="muted" style="font-size:13px;">Mostrando 9 de 47 transações</span>
-        <div class="flex gap-sm">
-            <a href="#" class="button secondary sm">← Anterior</a>
-            <a href="#" class="button secondary sm">Próxima →</a>
-        </div>
+        <span class="muted" id="ex-count" style="font-size:13px;">—</span>
+        <a href="#" class="button secondary sm" onclick="window.reloadExtrato && reloadExtrato(); return false;">↻ Atualizar</a>
     </div>
 </section>
 </main>

@@ -798,6 +798,89 @@
   }
 
   // =========================================================================
+  // Extrato (paridade com Mac StatementView)
+  // =========================================================================
+  function initExtrato() {
+    if (!requireAuth()) return;
+    applyUserToShell();
+
+    var TYPE_LABEL = {
+      purchase: 'Compra', transfer_in: 'Recebido', transfer_out: 'Enviado',
+      redeem: 'Resgate', refund: 'Estorno', bonus: 'Bônus',
+    };
+    var STATUS_CLASS = { confirmed: 'confirmado', pending: 'pendente', reversed: 'estornado' };
+
+    function reload() {
+      var typeFilter = ($('#ex-type') || {}).value || '';
+      var search = (($('#ex-search') || {}).value || '').trim().toLowerCase();
+      var tbody = $('#ex-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted);">Carregando…</td></tr>';
+
+      var url = '/wallet/transactions?limit=200';
+      api(url).then(function (r) {
+        var items = (r.items || []).filter(function (t) {
+          if (typeFilter && t.type !== typeFilter) return false;
+          if (search && (t.description || '').toLowerCase().indexOf(search) === -1) return false;
+          return true;
+        });
+
+        // Stats (mesma lógica do Mac AdminStats agregando por tipo)
+        var totalIn = 0, totalRedeem = 0, totalPurchase = 0, purchaseCount = 0;
+        items.forEach(function (t) {
+          if (t.amount_pts > 0) totalIn += t.amount_pts;
+          if (t.type === 'redeem') totalRedeem += Math.abs(t.amount_pts);
+          if (t.type === 'purchase') { totalPurchase += t.amount_pts; purchaseCount++; }
+        });
+        var $s = function (id) { return document.getElementById(id); };
+        if ($s('ex-stat-in')) $s('ex-stat-in').textContent = '+' + fmt(totalIn);
+        if ($s('ex-stat-redeem')) $s('ex-stat-redeem').textContent = '−' + fmt(totalRedeem);
+        if ($s('ex-stat-purchase')) $s('ex-stat-purchase').textContent = '+' + fmt(totalPurchase);
+        if ($s('ex-stat-purchase-count')) $s('ex-stat-purchase-count').textContent = purchaseCount + (purchaseCount === 1 ? ' transação' : ' transações');
+
+        // Tabela
+        if (items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);">Sem movimentações neste filtro.</td></tr>';
+        } else {
+          tbody.innerHTML = items.map(function (t) {
+            var d = (t.created_at || '').replace('T', ' ').slice(0, 16);
+            var typeLabel = TYPE_LABEL[t.type] || t.type;
+            var statusClass = STATUS_CLASS[t.status] || 'confirmado';
+            var statusLabel = t.status === 'confirmed' ? 'Confirmado'
+                              : t.status === 'pending' ? 'Pendente'
+                              : t.status === 'reversed' ? 'Estornado' : t.status;
+            var sign = t.amount_pts > 0 ? '+' : '−';
+            var amount = sign + fmt(Math.abs(t.amount_pts));
+            var amountClass = t.amount_pts > 0 ? 'amount-pos' : 'amount-neg';
+            return '<tr>' +
+              '<td data-label="Data">' + d + '</td>' +
+              '<td data-label="Descrição">' + (t.description || '—') + '</td>' +
+              '<td data-label="Tipo">' + typeLabel + '</td>' +
+              '<td data-label="Status"><span class="status ' + statusClass + '">● ' + statusLabel + '</span></td>' +
+              '<td data-label="Pontos" class="right ' + amountClass + '">' + amount + '</td>' +
+              '</tr>';
+          }).join('');
+        }
+
+        var $c = document.getElementById('ex-count');
+        if ($c) $c.textContent = 'Mostrando ' + items.length + ' de ' + (r.items || []).length + ' transações';
+        var $lf = document.getElementById('ex-last-fetch');
+        if ($lf) $lf.textContent = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
+      }).catch(function (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:#a83417;">Erro: ' + (e.message || 'falha de rede') + '</td></tr>';
+      });
+
+      // Saldo atual da carteira (paridade Mac)
+      api('/wallet/').then(function (w) {
+        var $b = document.getElementById('ex-stat-balance');
+        if ($b) $b.textContent = fmt(w.balance_pts);
+      }).catch(function () {});
+    }
+
+    window.reloadExtrato = reload;
+    reload();
+  }
+
+  // =========================================================================
   // Router
   // =========================================================================
   // Suporta tanto URLs "tradicionais" (login.html) quanto "pretty URLs" do
@@ -810,7 +893,7 @@
     'cadastro.html': initCadastro,
     'dashboard.html': initDashboard,
     'carteira.html': initDashboard,
-    'extrato.html': initDashboard,
+    'extrato.html': initExtrato,
     'comprar-pontos.html': initComprarPontos,
     'pagamento-pix.html': initPagamentoPix,
     'compra-aprovada.html': initCompraAprovada,
