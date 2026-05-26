@@ -326,7 +326,14 @@
           location.href = '/dashboard';
         })
         .catch(function (e) {
-          notify(e.message || 'falha no login', 'err');
+          var code = e.data && e.data.code;
+          if (code === 'email_not_verified') {
+            notify('Confirme seu email para entrar. Reenviando link...', 'warn');
+            api('/auth/resend-verification', { method: 'POST', body: JSON.stringify({ email: email }) }).catch(function () {});
+            setTimeout(function () { location.href = '/validacao.html'; }, 1500);
+          } else {
+            notify(e.message || 'Credenciais inválidas', 'err');
+          }
           btn.disabled = false; btn.textContent = orig;
         });
     });
@@ -651,7 +658,7 @@
   // Cadastro de novo cliente (POST /auth/register)
   // =========================================================================
   function initCadastro() {
-    var form = $('form') || $('#bx-form-cadastro');
+    var form = $('#form-cadastro') || $('form');
     if (!form) return;
     // Botão "Entrar com Google" no cadastro (cria conta no 1º login)
     initGoogleSignIn();
@@ -663,29 +670,49 @@
         cpfEl.value = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
       });
     }
+    // Indicador inline de forca de senha
+    var senhaEl = form.querySelector('#senha');
+    var strengthEl = $('#bx-strength');
+    attachPasswordStrength(senhaEl, strengthEl);
+
+    form.setAttribute('novalidate', 'novalidate');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var nome = (form.querySelector('#nome, input[name="nome"]') || {}).value || '';
-      var email = (form.querySelector('#email, input[type="email"]') || {}).value || '';
-      var cpf = (cpfEl || {}).value || '';
-      var senha = (form.querySelector('#senha, input[type="password"]') || {}).value || '';
-      if (!nome.trim() || !email.trim() || !cpf.trim() || !senha) {
-        notify('Preencha todos os campos', 'error');
-        return;
-      }
+      var nome = (form.querySelector('#nome') || {}).value || '';
+      var email = (form.querySelector('#email') || {}).value || '';
+      var senha = (senhaEl || {}).value || '';
+      var senhaConfirm = (form.querySelector('#senha-confirm') || {}).value || '';
+      var termos = (form.querySelector('#termos') || {}).checked || false;
+      var news = (form.querySelector('#news') || {}).checked || false;
+
+      if (!nome.trim() || nome.trim().split(/\s+/).length < 2) { notify('Informe nome completo (nome e sobrenome)', 'warn'); return; }
+      if (!email.trim()) { notify('Informe um email válido', 'warn'); return; }
+      if (!passwordStrength(senha).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
+      if (senha !== senhaConfirm) { notify('Confirmação de senha não confere', 'warn'); return; }
+      if (!termos) { notify('Você precisa aceitar os termos e a política de privacidade', 'warn'); return; }
+
+      var btn = form.querySelector('button[type="submit"], button.button');
+      var orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Criando conta...'; }
+
       var body = {
         name: nome.trim(),
         email: email.trim().toLowerCase(),
-        cpf: cpf.replace(/\D/g, ''),
-        password: senha
+        password: senha,
+        password_confirm: senhaConfirm,
+        accept_terms: true,
+        accept_privacy: true,
+        marketing_optin: news
       };
       api('/auth/register', { method: 'POST', body: JSON.stringify(body) })
         .then(function (data) {
-          STORE.setToken(data.token); STORE.setUser(data.user);
-          notify('Conta criada! Bem-vindo, ' + data.user.name.split(' ')[0], 'success');
-          setTimeout(function () { location.href = '/dashboard'; }, 700);
+          notify('Conta criada! Verifique seu email para ativar.', 'ok');
+          setTimeout(function () { location.href = '/validacao.html'; }, 1200);
         })
-        .catch(function (err) { notify(err.message || 'Falha no cadastro', 'error'); });
+        .catch(function (err) {
+          notify(err.message || 'Falha no cadastro', 'err');
+          if (btn) { btn.disabled = false; btn.textContent = orig; }
+        });
     });
   }
 
@@ -1173,6 +1200,265 @@
   }
 
   // =========================================================================
+  // Helpers de auth/fluxo (Fase 1)
+  // =========================================================================
+  function passwordStrength(pwd) {
+    pwd = pwd || '';
+    var score = 0, hints = [];
+    if (pwd.length >= 8) score++; else hints.push('8+ caracteres');
+    if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
+    if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
+    if (/\d/.test(pwd)) score++; else hints.push('número');
+    if (/[^A-Za-z0-9\s]/.test(pwd)) score++; else hints.push('caractere especial');
+    var labels = ['muito fraca','fraca','razoável','boa','forte'];
+    return { score: score, label: labels[Math.max(0, score - 1)] || 'muito fraca', hints: hints, ok: score === 5 };
+  }
+
+  function attachPasswordStrength(input, target) {
+    if (!input || !target) return;
+    var defaultText = target.textContent;
+    input.addEventListener('input', function () {
+      var pwd = input.value;
+      if (!pwd) { target.textContent = defaultText; target.style.color = ''; return; }
+      var r = passwordStrength(pwd);
+      var colors = ['#a83417','#a83417','#8a6500','#2d651b','#2d651b'];
+      target.style.color = colors[Math.max(0, r.score - 1)] || '#888';
+      target.textContent = 'Senha ' + r.label + (r.hints.length ? ' — falta: ' + r.hints.join(', ') : ' ✓');
+    });
+  }
+
+  // ---- Recuperar senha (POST /auth/forgot-password) ----
+  function initRecuperarSenha() {
+    var form = $('#form-recuperar') || $('form');
+    if (!form) return;
+    form.setAttribute('novalidate', 'novalidate');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = (form.querySelector('#email') || {}).value || '';
+      var btn = form.querySelector('button[type="submit"], button.button');
+      var orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+      api('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: email.trim().toLowerCase() }) })
+        .then(function (d) {
+          notify(d.message || 'Se este email existir, enviaremos instruções.', 'ok');
+          form.reset();
+        })
+        .catch(function (err) { notify(err.message || 'Falha ao processar', 'err'); })
+        .then(function () {
+          if (btn) { btn.disabled = false; btn.textContent = orig; }
+        });
+    });
+  }
+
+  // ---- Redefinir senha (POST /auth/reset-password) ----
+  function initRedefinirSenha() {
+    var token = new URLSearchParams(location.search).get('token') || '';
+    var form = $('#form-redefinir') || $('form');
+    var stateEl = $('#bx-state');
+    var msgEl = $('#bx-state-msg');
+    var showState = function (msg, kind) {
+      if (!stateEl) return;
+      stateEl.style.display = 'block';
+      stateEl.className = 'alert ' + (kind || 'info');
+      if (msgEl) msgEl.textContent = msg; else stateEl.textContent = msg;
+    };
+    if (!token) {
+      showState('Link inválido ou expirado. Solicite um novo em "Esqueci minha senha".', 'warn');
+      if (form) form.style.display = 'none';
+      return;
+    }
+    if (!form) return;
+    attachPasswordStrength(form.querySelector('#senha'), $('#bx-strength'));
+
+    form.setAttribute('novalidate', 'novalidate');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var senha = (form.querySelector('#senha') || {}).value || '';
+      var confirm = (form.querySelector('#senha-confirm') || {}).value || '';
+      if (!passwordStrength(senha).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
+      if (senha !== confirm) { notify('Confirmação não confere', 'warn'); return; }
+      var btn = form.querySelector('button[type="submit"], button.button');
+      var orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+      api('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token: token, password: senha, password_confirm: confirm }) })
+        .then(function (d) {
+          showState('Senha redefinida com sucesso. Redirecionando para o login...', 'ok');
+          STORE.clear();
+          setTimeout(function () { location.href = '/login'; }, 1500);
+        })
+        .catch(function (err) {
+          var code = err.data && err.data.code;
+          var msg = err.message || 'Falha ao redefinir senha';
+          if (code === 'token_expired') msg = 'Este link expirou. Solicite um novo em "Esqueci minha senha".';
+          else if (code === 'token_used') msg = 'Este link já foi utilizado.';
+          else if (code === 'invalid_token') msg = 'Link inválido. Verifique a URL.';
+          showState(msg, 'err');
+          if (btn) { btn.disabled = false; btn.textContent = orig; }
+        });
+    });
+  }
+
+  // ---- Validação de email (POST /auth/verify-email) ----
+  function initValidacao() {
+    var token = new URLSearchParams(location.search).get('token') || '';
+    var stateEl = $('#bx-state');
+    var resendForm = $('#form-resend');
+    var setState = function (msg, kind) {
+      if (!stateEl) return;
+      stateEl.className = 'alert ' + (kind || 'info');
+      stateEl.innerHTML = '<div><p>' + msg + '</p></div>';
+    };
+
+    if (!token) {
+      setState('Não recebeu o link? Informe seu email abaixo para reenviar.', 'info');
+      if (resendForm) resendForm.style.display = 'block';
+    } else {
+      setState('Validando seu email...', 'info');
+      api('/auth/verify-email', { method: 'POST', body: JSON.stringify({ token: token }) })
+        .then(function () {
+          setState('Email confirmado com sucesso! Redirecionando para o login...', 'ok');
+          setTimeout(function () { location.href = '/login'; }, 1800);
+        })
+        .catch(function (err) {
+          var code = err.data && err.data.code;
+          var msg = err.message || 'Token inválido';
+          if (code === 'token_expired') msg = 'Este link expirou. Solicite um novo abaixo.';
+          else if (code === 'token_used') msg = 'Este link já foi utilizado. Faça login normalmente.';
+          else if (code === 'invalid_token') msg = 'Link inválido. Verifique a URL ou solicite um novo.';
+          setState(msg, 'err');
+          if (resendForm) resendForm.style.display = 'block';
+        });
+    }
+
+    if (resendForm) {
+      resendForm.setAttribute('novalidate', 'novalidate');
+      resendForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = (resendForm.querySelector('#email') || {}).value || '';
+        var btn = resendForm.querySelector('button[type="submit"]');
+        var orig = btn ? btn.textContent : '';
+        if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+        api('/auth/resend-verification', { method: 'POST', body: JSON.stringify({ email: email.trim().toLowerCase() }) })
+          .then(function (d) { notify(d.message || 'Se necessário, enviamos novo link.', 'ok'); })
+          .catch(function (err) { notify(err.message || 'Falha ao reenviar', 'err'); })
+          .then(function () { if (btn) { btn.disabled = false; btn.textContent = orig; } });
+      });
+    }
+  }
+
+  // ---- Perfil (GET /auth/me + PATCH /user/profile) ----
+  function initPerfil() {
+    if (!requireAuth()) return;
+    api('/auth/me').then(function (d) {
+      var u = d.user || d;
+      STORE.setUser(u);
+      ['#perfil-nome', 'input[name="nome"]', '#nome'].forEach(function (sel) {
+        var el = $(sel); if (el) el.value = u.name || '';
+      });
+      ['#perfil-email', 'input[name="email"]', '#email'].forEach(function (sel) {
+        var el = $(sel); if (el) { el.value = u.email || ''; el.readOnly = true; }
+      });
+    }).catch(function (err) { notify(err.message || 'Falha ao carregar perfil', 'err'); });
+
+    var saveBtn = $('#bx-perfil-save, button[data-action="save-profile"]');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var nome = ($('#perfil-nome') || $('input[name="nome"]') || $('#nome') || {}).value || '';
+        if (!nome.trim() || nome.trim().split(/\s+/).length < 2) { notify('Informe nome e sobrenome', 'warn'); return; }
+        saveBtn.disabled = true;
+        api('/user/profile', { method: 'PATCH', body: JSON.stringify({ name: nome.trim() }) })
+          .then(function (d) {
+            STORE.setUser(d.user);
+            notify('Perfil atualizado', 'ok');
+          })
+          .catch(function (err) { notify(err.message || 'Falha ao salvar', 'err'); })
+          .then(function () { saveBtn.disabled = false; });
+      });
+    }
+  }
+
+  // ---- Segurança da conta (PATCH /user/password + sessões) ----
+  function initSeguranca() {
+    if (!requireAuth()) return;
+    var form = $('#form-senha') || $('form');
+    if (form) {
+      attachPasswordStrength(form.querySelector('#senha-nova, #nova-senha'), $('#bx-strength'));
+      form.setAttribute('novalidate', 'novalidate');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var current = (form.querySelector('#senha-atual') || {}).value || '';
+        var nova = (form.querySelector('#senha-nova, #nova-senha') || {}).value || '';
+        var confirm = (form.querySelector('#senha-confirm, #confirm-senha') || {}).value || '';
+        if (!current) { notify('Informe sua senha atual', 'warn'); return; }
+        if (!passwordStrength(nova).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
+        if (nova !== confirm) { notify('Confirmação não confere', 'warn'); return; }
+        var btn = form.querySelector('button[type="submit"], button.button');
+        if (btn) btn.disabled = true;
+        api('/user/password', { method: 'PATCH', body: JSON.stringify({ current_password: current, new_password: nova, new_password_confirm: confirm }) })
+          .then(function () {
+            notify('Senha alterada. Faça login novamente.', 'ok');
+            STORE.clear();
+            setTimeout(function () { location.href = '/login'; }, 1500);
+          })
+          .catch(function (err) { notify(err.message || 'Falha ao trocar senha', 'err'); if (btn) btn.disabled = false; });
+      });
+    }
+
+    // Lista de sessões
+    var sessList = $('#bx-sessions-list');
+    if (sessList) {
+      api('/user/sessions').then(function (d) {
+        var rows = (d.sessions || []).map(function (s) {
+          return '<tr>' +
+            '<td>' + (s.device_name || '—') + (s.current ? ' <strong style="color:var(--ink);">(atual)</strong>' : '') + '</td>' +
+            '<td>' + (s.ip_address || '—') + '</td>' +
+            '<td>' + (s.last_used_at ? new Date(s.last_used_at).toLocaleString('pt-BR') : '—') + '</td>' +
+            '<td>' + (s.current ? '' : '<button data-id="' + s.id + '" class="button ghost small">Encerrar</button>') + '</td>' +
+            '</tr>';
+        }).join('');
+        sessList.innerHTML = rows || '<tr><td colspan="4">Sem sessões ativas.</td></tr>';
+        $$('[data-id]', sessList).forEach(function (b) {
+          b.addEventListener('click', function () {
+            if (!confirm('Encerrar esta sessão?')) return;
+            api('/user/sessions/' + b.dataset.id, { method: 'DELETE' })
+              .then(function () { notify('Sessão encerrada', 'ok'); initSeguranca(); })
+              .catch(function (e) { notify(e.message, 'err'); });
+          });
+        });
+      }).catch(function () {});
+    }
+
+    var logoutAllBtn = $('#bx-logout-all');
+    if (logoutAllBtn) {
+      logoutAllBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!confirm('Encerrar todas as outras sessões?')) return;
+        api('/auth/logout-all', { method: 'POST' })
+          .then(function (d) { notify('Sessões encerradas: ' + (d.revoked || 0), 'ok'); STORE.clear(); location.href = '/login'; })
+          .catch(function (e) { notify(e.message, 'err'); });
+      });
+    }
+  }
+
+  // ---- Logout que avisa o backend ----
+  function logoutAndRedirect() {
+    api('/auth/logout', { method: 'POST' }).catch(function () {}).then(function () {
+      STORE.clear();
+      location.href = '/login';
+    });
+  }
+  window.blaxxLogout = logoutAndRedirect;
+
+  // ---- Redirect logado tentando acessar /login ou /cadastro ----
+  function redirectIfLoggedIn() {
+    if (STORE.token()) {
+      // valida o token contra /auth/me — se falhar, limpa e fica
+      api('/auth/me').then(function () { location.href = '/dashboard'; }).catch(function () { STORE.clear(); });
+    }
+  }
+
+  // =========================================================================
   // Router
   // =========================================================================
   // Suporta tanto URLs "tradicionais" (login.html) quanto "pretty URLs" do
@@ -1181,8 +1467,13 @@
   var PAGE = rawPage.indexOf('.') >= 0 ? rawPage : rawPage + '.html';
   if (PAGE === '.html' || PAGE === '') PAGE = 'index.html';
   var INITS = {
-    'login.html': initLogin,
-    'cadastro.html': initCadastro,
+    'login.html': function () { redirectIfLoggedIn(); initLogin(); },
+    'cadastro.html': function () { redirectIfLoggedIn(); initCadastro(); },
+    'recuperar-senha.html': initRecuperarSenha,
+    'redefinir-senha.html': initRedefinirSenha,
+    'validacao.html': initValidacao,
+    'perfil.html': initPerfil,
+    'seguranca.html': initSeguranca,
     'dashboard.html': initDashboardEnhanced,
     'carteira.html': initCarteira,
     'extrato.html': initExtrato,

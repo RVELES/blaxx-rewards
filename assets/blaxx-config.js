@@ -11,8 +11,17 @@
   var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
 
   if (isLocal) {
-    // Modo dev: mesma origem do Flask (sem CORS issue)
-    window.BLAXX_API = location.origin;
+    // Modo dev:
+    //  - Se o front esta sendo servido pelo Flask (porta 5000 por default),
+    //    location.origin ja eh o backend → sem CORS.
+    //  - Se o front esta em outra porta (ex: python -m http.server 8000),
+    //    aponta explicitamente para o Flask em :5000.
+    var port = location.port;
+    if (!port || port === '5000') {
+      window.BLAXX_API = location.origin;
+    } else {
+      window.BLAXX_API = location.protocol + '//' + location.hostname + ':5000';
+    }
   } else {
     // Modo produção (Netlify) — edite a URL do seu backend Fly.io aqui
     window.BLAXX_API = "https://blaxx-pontos-backend.fly.dev";

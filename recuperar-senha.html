@@ -41,15 +41,15 @@
     <h2>Recuperar senha</h2>
     <p class="sub">Informe o e-mail cadastrado e enviaremos um link para você criar uma nova senha.</p>
 
-    <form action="login.html">
+    <form id="form-recuperar" novalidate>
         <div class="form-row">
             <label for="email">E-mail cadastrado</label>
-            <input type="email" id="email" placeholder="voce@email.com" required>
+            <input type="email" id="email" placeholder="voce@email.com" autocomplete="email" required>
         </div>
-        <button class="button full lg">Enviar link →</button>
+        <button type="submit" class="button full lg">Enviar link →</button>
     </form>
 
-    <div class="alert info" style="margin-top:18px;">
+    <div id="bx-state" class="alert info" style="margin-top:18px;">
         <div class="alert-icon">i</div>
         <div>
             <p>Se o e-mail estiver cadastrado, você receberá uma mensagem em até 5 minutos. Confira também a pasta de spam.</p>
@@ -113,5 +113,7 @@
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
 </body>
 </html>

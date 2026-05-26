@@ -39,19 +39,26 @@
 <div class="auth-wrap">
 <div class="auth-card center">
     <div class="icon-badge">📧</div>
-    <h2>Confirme seu e-mail</h2>
-    <p class="sub">Enviamos um código de 6 dígitos para <strong style="color:var(--ink);">mariana@email.com</strong>. Cole abaixo para validar sua conta.</p>
+    <h2>Confirmação de e-mail</h2>
+    <p class="sub">Estamos validando o link que você recebeu.</p>
 
-    <form action="onboarding.html">
-        <div class="form-row" style="margin-top:12px;">
-            <label for="code">Código de validação</label>
-            <input type="text" id="code" placeholder="000000" maxlength="6" style="font-size:24px;letter-spacing:0.4em;text-align:center;font-weight:800;">
+    <div id="bx-state" class="alert info" style="margin-top:18px;">
+        <div>
+            <p>Validando seu e-mail…</p>
         </div>
-        <button class="button full lg">Validar conta →</button>
+    </div>
+
+    <form id="form-resend" style="margin-top:18px;display:none;">
+        <p class="sub" style="font-size:14px;">Não recebeu o link? Informe seu e-mail para reenviar:</p>
+        <div class="form-row">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="voce@email.com" autocomplete="email" required>
+        </div>
+        <button type="submit" class="button full lg">Reenviar link →</button>
     </form>
 
     <div class="auth-foot">
-        Não recebeu? <a href="#">Reenviar código</a> · <a href="cadastro.html">Trocar e-mail</a>
+        <a href="login.html">Voltar para entrar</a> · <a href="cadastro.html">Cadastrar nova conta</a>
     </div>
 </div>
 </div>
@@ -107,5 +114,7 @@
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
 </body>
 </html>

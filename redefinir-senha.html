@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080907">
-<title>Cadastre-se | Blaxx Pontos</title>
+<title>Redefinir senha | Blaxx Pontos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -38,66 +38,28 @@
 </header>
 <div class="auth-wrap">
 <div class="auth-card">
-    <span class="kicker" style="background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">★ Ganhe 500 pts de boas-vindas</span>
-    <h2 style="margin-top:14px;">Criar conta</h2>
-    <p class="sub">Cadastro grátis. Sem mensalidade. Comece a juntar pontos hoje.</p>
+    <h2>Criar nova senha</h2>
+    <p class="sub">Defina uma nova senha para sua conta Blaxx Pontos. O link tem validade limitada.</p>
 
-    <form id="form-cadastro">
+    <div id="bx-state" class="alert info" style="margin-top:12px;display:none;">
+        <div><p id="bx-state-msg"></p></div>
+    </div>
+
+    <form id="form-redefinir" novalidate>
         <div class="form-row">
-            <label for="nome">Nome completo</label>
-            <input type="text" id="nome" placeholder="Como aparece no seu documento" autocomplete="name" required>
-        </div>
-        <div class="form-row split">
-            <div class="form-row" style="margin:0;">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="voce@email.com" required>
-            </div>
-            <div class="form-row" style="margin:0;">
-                <label for="cpf">CPF</label>
-                <input type="text" id="cpf" placeholder="000.000.000-00" required>
-            </div>
-        </div>
-        <div class="form-row split">
-            <div class="form-row" style="margin:0;">
-                <label for="phone">Celular</label>
-                <input type="tel" id="phone" placeholder="(11) 9 0000-0000">
-            </div>
-            <div class="form-row" style="margin:0;">
-                <label for="bday">Nascimento</label>
-                <input type="date" id="bday">
-            </div>
-        </div>
-        <div class="form-row">
-            <label for="senha">Senha</label>
+            <label for="senha">Nova senha</label>
             <input type="password" id="senha" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required>
             <span id="bx-strength" class="field-help">Use maiúscula, minúscula, número e ao menos um caractere especial.</span>
         </div>
         <div class="form-row">
             <label for="senha-confirm">Confirmar senha</label>
-            <input type="password" id="senha-confirm" placeholder="Repita a senha" autocomplete="new-password" required>
+            <input type="password" id="senha-confirm" placeholder="Repita a nova senha" autocomplete="new-password" required>
         </div>
-        <div class="checkbox-row">
-            <input type="checkbox" id="termos" required>
-            <label for="termos">Concordo com os <a href="termos.html" style="color:var(--ink);font-weight:700;">termos de uso</a> e a <a href="documentos-termos.html" style="color:var(--ink);font-weight:700;">política de privacidade</a>.</label>
-        </div>
-        <div class="checkbox-row">
-            <input type="checkbox" id="news" checked>
-            <label for="news">Quero receber novidades, campanhas e ofertas exclusivas por e-mail.</label>
-        </div>
-        <button class="button full lg">Criar minha conta →</button>
-
-        <div class="auth-divider" style="margin-top:18px;">ou</div>
-
-        <!-- Google Sign-In · cria conta automaticamente no primeiro login -->
-        <div id="g-signin-btn" style="display:flex;justify-content:center;margin-top:4px;"></div>
-        <p id="g-signin-error" style="display:none;color:#a83417;font-size:13px;margin-top:8px;text-align:center;"></p>
+        <button type="submit" class="button full lg">Redefinir senha →</button>
     </form>
 
-    <!-- SDK oficial Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <div class="auth-foot">
-        Já tem conta? <a href="login.html">Entrar</a>
+        Lembrou a senha? <a href="login.html">Voltar para entrar</a>
     </div>
 </div>
 </div>
