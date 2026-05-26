@@ -139,6 +139,33 @@
     }
     document.getElementById('br-code-text').value = charge.br_code || '';
 
+    // Resumo lateral (Valor / Pontos / Expira em) — paridade com Mac BuyView.
+    var summary = document.getElementById('charge-summary');
+    if (!summary) {
+      summary = document.createElement('div');
+      summary.id = 'charge-summary';
+      summary.style.cssText =
+        'margin-top:16px;padding-top:16px;border-top:1px solid #e6eadf;' +
+        'font-size:13px;text-align:left;';
+      summary.innerHTML =
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
+          '<span style="color:#5f665e;">Valor</span>' +
+          '<span style="font-weight:600;" id="sum-amt">—</span>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
+          '<span style="color:#5f665e;">Pontos</span>' +
+          '<span style="font-weight:600;" id="sum-pts">—</span>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
+          '<span style="color:#5f665e;">Expira em</span>' +
+          '<span style="font-weight:600;">30 minutos</span>' +
+        '</div>';
+      document.querySelector('#step-2 .qr-box').appendChild(summary);
+    }
+    document.getElementById('sum-amt').textContent = fmtBRL(charge.amount_brl);
+    document.getElementById('sum-pts').textContent =
+      (charge.points_to_credit || 0).toLocaleString('pt-BR') + ' pts';
+
     document.getElementById('step-1').style.display = 'none';
     document.getElementById('step-2').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
