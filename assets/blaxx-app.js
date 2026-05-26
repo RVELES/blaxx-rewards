@@ -122,30 +122,53 @@
   }
 
   // ---- Substitui textos hardcoded da Mariana pelos do user logado ----
+  // Em duas etapas:
+  //   1. Imediato — usa apenas STORE.user(), troca nome/avatar/botao "Olá".
+  //      Funciona mesmo se /wallet/ falhar ou demorar.
+  //   2. Async — busca saldo via /wallet/ e troca valores numericos.
   function applyUserToShell() {
     var u = STORE.user();
     if (!u) return;
+    var firstName = (u.name || '').split(' ')[0] || 'Convidado';
+    var avatarLetter = ((u.name || '?')[0] || '?').toUpperCase();
+
+    // === 1. IMEDIATO — depende só do STORE.user ===
+    // Avatar (1a letra do nome)
+    $$('.avatar').forEach(function (a) { a.textContent = avatarLetter; });
+    // Nome na sidebar
+    $$('.side-user-name').forEach(function (n) { n.textContent = u.name; });
+    // Botão "Olá, Mariana" no navbar
+    $$('a.button.secondary').forEach(function (b) {
+      if (b.textContent.trim().indexOf('Olá') === 0) {
+        b.textContent = 'Olá, ' + firstName;
+      }
+    });
+    // Substituicao de texto generica (cobre <strong>Mariana Costa</strong> etc)
+    // — passa um wallet "vazio" pra nao tocar nos numericos ainda
+    replaceHardcoded({ balance_pts: 0, pending_pts: 0, balance_brl_equiv: 0 }, { skip_numeric: true });
+
+    // Prefill de inputs marcados com data-bx-prefill="name|email|phone"
+    // (so preenche se vazio — nao sobrescreve digitação do usuario)
+    $$('input[data-bx-prefill]').forEach(function (inp) {
+      if (inp.value) return;
+      var field = inp.getAttribute('data-bx-prefill');
+      if (field === 'name')  inp.value = u.name || '';
+      else if (field === 'email') inp.value = u.email || '';
+      else if (field === 'phone') inp.value = u.phone || '';
+    });
+
+    // === 2. ASYNC — depende de /wallet/ ===
     api('/wallet/').then(function (w) {
-      // Avatar (1a letra do nome)
-      $$('.avatar').forEach(function (a) { a.textContent = u.name[0].toUpperCase(); });
-      // Nome na sidebar
-      $$('.side-user-name').forEach(function (n) { n.textContent = u.name; });
-      // Plano + saldo na sidebar
       $$('.side-user-tier').forEach(function (n) {
         n.textContent = 'Plano Plus · ' + fmt(w.balance_pts) + ' pts';
       });
-      // Botão "Olá, Mariana"
-      $$('a.button.secondary').forEach(function (b) {
-        if (b.textContent.trim().indexOf('Olá') === 0) {
-          b.textContent = 'Olá, ' + u.name.split(' ')[0];
-        }
-      });
-      // Saldo grande (dashboard / carteira) e R$ equivalente
       replaceHardcoded(w);
-    }).catch(function () { /* sem token, segue */ });
+    }).catch(function () { /* sem wallet (404/401/offline): mantem so o nome */ });
   }
 
-  function replaceHardcoded(w) {
+  function replaceHardcoded(w, opts) {
+    opts = opts || {};
+    var skipNumeric = !!opts.skip_numeric;
     var u = STORE.user() || {};
     var firstName = (u.name || '').split(' ')[0] || 'Convidado';
     var fullName = u.name || 'Convidado';
@@ -164,18 +187,20 @@
       if (node.nodeType === 3) {
         var t = node.nodeValue;
         var orig = t;
-        // Saldo total
-        t = t.replace(/84\.750/g, saldoStr);
-        t = t.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
-        // "Disponíveis" (era 82.300 - subset do saldo)
-        t = t.replace(/82\.300/g, saldoStr);
-        // "Pendentes" / "Próx. expirar" (eram 2.450)
-        t = t.replace(/2\.450/g, pendStr);
-        // "Faltam X pts" (era 15.250)
-        t = t.replace(/15\.250/g, fmt(faltam));
-        // Progresso (era "85%")
-        t = t.replace(/\b85%/g, pctMeta + '%');
-        // Nome (cobre "Olá, Mariana", "Mariana 👋", "Mariana Costa", "Mariana,")
+        if (!skipNumeric) {
+          // Saldo total
+          t = t.replace(/84\.750/g, saldoStr);
+          t = t.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
+          // "Disponíveis" (era 82.300 - subset do saldo)
+          t = t.replace(/82\.300/g, saldoStr);
+          // "Pendentes" / "Próx. expirar" (eram 2.450)
+          t = t.replace(/2\.450/g, pendStr);
+          // "Faltam X pts" (era 15.250)
+          t = t.replace(/15\.250/g, fmt(faltam));
+          // Progresso (era "85%")
+          t = t.replace(/\b85%/g, pctMeta + '%');
+        }
+        // Nome (sempre, independente de skip_numeric)
         if (t.indexOf('Mariana Costa') >= 0) t = t.replace(/Mariana Costa/g, fullName);
         if (t.indexOf('Mariana') >= 0) t = t.replace(/Mariana/g, firstName);
         if (t !== orig) node.nodeValue = t;
@@ -1408,31 +1433,70 @@
   // ---- Perfil (GET /auth/me + PATCH /user/profile) ----
   function initPerfil() {
     if (!requireAuth()) return;
+
+    function setVal(sel, v) {
+      var el = $(sel);
+      if (el) el.value = v == null ? '' : v;
+    }
+    function setText(sel, v) {
+      var el = $(sel);
+      if (el) el.textContent = v == null ? '' : v;
+    }
+
     api('/auth/me').then(function (d) {
       var u = d.user || d;
       STORE.setUser(u);
-      ['#perfil-nome', 'input[name="nome"]', '#nome'].forEach(function (sel) {
-        var el = $(sel); if (el) el.value = u.name || '';
-      });
-      ['#perfil-email', 'input[name="email"]', '#email'].forEach(function (sel) {
-        var el = $(sel); if (el) { el.value = u.email || ''; el.readOnly = true; }
-      });
-    }).catch(function (err) { notify(err.message || 'Falha ao carregar perfil', 'err'); });
+      // Inputs do formulario
+      setVal('#perfil-nome', u.name);
+      setVal('#perfil-email', u.email);
+      // Mantemos email editavel via fluxo proprio (PATCH /user/email) mas
+      // bloqueamos aqui pra evitar troca silenciosa no submit de "Salvar".
+      var emailEl = $('#perfil-email');
+      if (emailEl) emailEl.readOnly = true;
+      setVal('#perfil-phone', u.phone || '');
+      setVal('#perfil-bday', u.birth_date || '');
+      setVal('#perfil-cpf', u.cpf || '');
+      // Cabecalho da pagina
+      setText('#bx-perfil-fullname', u.name || 'Sem nome');
+      if (u.created_at) {
+        var d2 = new Date(u.created_at);
+        if (!isNaN(d2)) {
+          var mm = String(d2.getMonth() + 1).padStart(2, '0');
+          var yyyy = d2.getFullYear();
+          setText('#bx-perfil-since', 'Plano Plus · cliente desde ' + mm + '/' + yyyy);
+        }
+      }
+    }).catch(function (err) {
+      if (err && err.status !== 401) {
+        notify(err.message || 'Falha ao carregar perfil', 'err');
+      }
+    });
 
-    var saveBtn = $('#bx-perfil-save, button[data-action="save-profile"]');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', function (e) {
+    var form = $('#form-perfil');
+    if (form) {
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
-        var nome = ($('#perfil-nome') || $('input[name="nome"]') || $('#nome') || {}).value || '';
-        if (!nome.trim() || nome.trim().split(/\s+/).length < 2) { notify('Informe nome e sobrenome', 'warn'); return; }
-        saveBtn.disabled = true;
+        var nome = ($('#perfil-nome') || {}).value || '';
+        if (!nome.trim() || nome.trim().split(/\s+/).length < 2) {
+          notify('Informe nome e sobrenome', 'warn');
+          return;
+        }
+        var saveBtn = $('#bx-perfil-save') || form.querySelector('button[type="submit"], button');
+        if (saveBtn) saveBtn.disabled = true;
         api('/user/profile', { method: 'PATCH', body: JSON.stringify({ name: nome.trim() }) })
           .then(function (d) {
             STORE.setUser(d.user);
+            setText('#bx-perfil-fullname', d.user.name);
             notify('Perfil atualizado', 'ok');
           })
-          .catch(function (err) { notify(err.message || 'Falha ao salvar', 'err'); })
-          .then(function () { saveBtn.disabled = false; });
+          .catch(function (err) {
+            if (err && err.status === 404) {
+              notify('Edição de perfil ainda não disponível no servidor', 'warn');
+            } else {
+              notify((err && err.message) || 'Falha ao salvar', 'err');
+            }
+          })
+          .then(function () { if (saveBtn) saveBtn.disabled = false; });
       });
     }
   }
@@ -1554,10 +1618,10 @@
   function bootstrap() {
     var initFn = INITS[PAGE];
     if (initFn) initFn();
-    // Em qualquer página logada, atualiza textos hardcoded da Mariana
-    // (roda também em páginas com init — initDashboard já chama, mas garantimos
-    // para outras páginas que esqueceram). É idempotente.
-    if (STORE.token() && !initFn) applyUserToShell();
+    // applyUserToShell é idempotente — chama SEMPRE que houver token,
+    // mesmo em páginas com init. Cobre sidebar/navbar/avatar que os
+    // inits específicos (initPerfil, initSeguranca, ...) não tocam.
+    if (STORE.token()) applyUserToShell();
   }
 
   // Re-aplica ao terminar transições, garantindo override em qualquer página

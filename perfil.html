@@ -77,8 +77,8 @@
         <div class="flex" style="gap:18px;align-items:center;margin-bottom:18px;">
             <div class="avatar" style="width:72px;height:72px;font-size:24px;">M</div>
             <div>
-                <strong style="font-size:18px;">Mariana Costa</strong>
-                <div class="muted">Plano Plus · cliente desde 03/2025</div>
+                <strong id="bx-perfil-fullname" style="font-size:18px;">Carregando…</strong>
+                <div class="muted" id="bx-perfil-since">Plano Plus</div>
             </div>
             <a href="#" class="button secondary" style="margin-left:auto;">Trocar foto</a>
         </div>
@@ -88,22 +88,22 @@
 <section class="section">
     <div class="card">
         <h3>Dados pessoais</h3>
-        <form class="mt-2">
+        <form class="mt-2" id="form-perfil">
             <div class="form-row split">
-                <div class="form-row" style="margin:0;"><label>Nome completo</label><input type="text" value="Mariana Costa"></div>
-                <div class="form-row" style="margin:0;"><label>CPF</label><input type="text" value="123.456.789-00" readonly></div>
+                <div class="form-row" style="margin:0;"><label for="perfil-nome">Nome completo</label><input id="perfil-nome" name="nome" type="text" placeholder="Carregando…" autocomplete="name"></div>
+                <div class="form-row" style="margin:0;"><label for="perfil-cpf">CPF</label><input id="perfil-cpf" type="text" placeholder="Não informado" readonly></div>
             </div>
             <div class="form-row split">
-                <div class="form-row" style="margin:0;"><label>E-mail</label><input type="email" value="mariana@email.com"></div>
-                <div class="form-row" style="margin:0;"><label>Telefone</label><input type="tel" value="(11) 9 8765-4321"></div>
+                <div class="form-row" style="margin:0;"><label for="perfil-email">E-mail</label><input id="perfil-email" name="email" type="email" placeholder="Carregando…" autocomplete="email"></div>
+                <div class="form-row" style="margin:0;"><label for="perfil-phone">Telefone</label><input id="perfil-phone" name="phone" type="tel" placeholder="(00) 0 0000-0000" autocomplete="tel"></div>
             </div>
             <div class="form-row split">
-                <div class="form-row" style="margin:0;"><label>Data de nascimento</label><input type="date" value="1991-08-14"></div>
-                <div class="form-row" style="margin:0;"><label>Gênero</label>
-                    <select><option>Feminino</option><option>Masculino</option><option>Outro</option><option>Prefiro não informar</option></select>
+                <div class="form-row" style="margin:0;"><label for="perfil-bday">Data de nascimento</label><input id="perfil-bday" name="bday" type="date"></div>
+                <div class="form-row" style="margin:0;"><label for="perfil-genero">Gênero</label>
+                    <select id="perfil-genero" name="genero"><option value="">Selecione</option><option value="F">Feminino</option><option value="M">Masculino</option><option value="O">Outro</option><option value="N">Prefiro não informar</option></select>
                 </div>
             </div>
-            <button class="button">Salvar alterações</button>
+            <button type="submit" class="button" id="bx-perfil-save">Salvar alterações</button>
         </form>
     </div>
 </section>
@@ -208,5 +208,7 @@
   [data-side="perfil"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side="perfil"] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
 </body>
 </html>

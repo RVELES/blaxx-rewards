@@ -49,21 +49,21 @@
                 <div class="form-row split mt-2">
                     <div class="form-row" style="margin:0;">
                         <label>Nome</label>
-                        <input type="text" value="Mariana Costa">
+                        <input type="text" data-bx-prefill="name" placeholder="Seu nome completo" autocomplete="name">
                     </div>
                     <div class="form-row" style="margin:0;">
                         <label>CPF</label>
-                        <input type="text" value="123.456.789-00">
+                        <input type="text" placeholder="000.000.000-00" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-row split">
                     <div class="form-row" style="margin:0;">
                         <label>E-mail</label>
-                        <input type="email" value="mariana@email.com">
+                        <input type="email" data-bx-prefill="email" placeholder="voce@email.com" autocomplete="email">
                     </div>
                     <div class="form-row" style="margin:0;">
                         <label>Telefone</label>
-                        <input type="tel" value="(11) 9 8765-4321">
+                        <input type="tel" data-bx-prefill="phone" placeholder="(00) 0 0000-0000" autocomplete="tel">
                     </div>
                 </div>
             </div>
@@ -190,5 +190,7 @@
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
 </body>
 </html>
