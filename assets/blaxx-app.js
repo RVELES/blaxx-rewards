@@ -680,6 +680,7 @@
       e.preventDefault();
       var nome = (form.querySelector('#nome') || {}).value || '';
       var email = (form.querySelector('#email') || {}).value || '';
+      var cpf = (cpfEl || {}).value || '';
       var senha = (senhaEl || {}).value || '';
       var senhaConfirm = (form.querySelector('#senha-confirm') || {}).value || '';
       var termos = (form.querySelector('#termos') || {}).checked || false;
@@ -695,9 +696,12 @@
       var orig = btn ? btn.textContent : '';
       if (btn) { btn.disabled = true; btn.textContent = 'Criando conta...'; }
 
+      // Body compativel com backend antigo (cpf obrigatorio) e novo (terms + confirm).
+      // Cada um ignora silenciosamente os campos que nao reconhece.
       var body = {
         name: nome.trim(),
         email: email.trim().toLowerCase(),
+        cpf: cpf.replace(/\D/g, ''),
         password: senha,
         password_confirm: senhaConfirm,
         accept_terms: true,
@@ -706,8 +710,16 @@
       };
       api('/auth/register', { method: 'POST', body: JSON.stringify(body) })
         .then(function (data) {
-          notify('Conta criada! Verifique seu email para ativar.', 'ok');
-          setTimeout(function () { location.href = '/validacao.html'; }, 1200);
+          if (data && data.token) {
+            // Backend antigo: emite token na hora, sem verificacao de email
+            STORE.setToken(data.token); STORE.setUser(data.user);
+            notify('Conta criada! Bem-vindo, ' + (data.user.name || '').split(' ')[0], 'ok');
+            setTimeout(function () { location.href = '/dashboard'; }, 800);
+          } else {
+            // Backend novo: exige confirmacao de email antes do login
+            notify('Conta criada! Verifique seu email para ativar.', 'ok');
+            setTimeout(function () { location.href = '/validacao.html'; }, 1200);
+          }
         })
         .catch(function (err) {
           notify(err.message || 'Falha no cadastro', 'err');
