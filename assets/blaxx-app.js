@@ -102,9 +102,20 @@
     });
   }
 
+  // Sanitiza URL pra evitar open redirect: só aceita paths relativos.
+  function safeNext(raw, fallback) {
+    fallback = fallback || '/dashboard';
+    if (!raw || typeof raw !== 'string') return fallback;
+    // bloqueia esquemas absolutos e protocol-relative (//evil.com)
+    if (raw[0] !== '/' || raw[1] === '/' || raw.indexOf(':') !== -1) return fallback;
+    return raw;
+  }
+
   function requireAuth() {
     if (!STORE.token()) {
-      location.href = '/login';
+      // Preserva pra onde o usuario queria ir (sem .html é OK no Netlify)
+      var here = location.pathname + location.search;
+      location.href = '/login.html?next=' + encodeURIComponent(here);
       return false;
     }
     return true;
@@ -289,7 +300,8 @@
         STORE.setToken(r.token);
         STORE.setUser(r.user);
         notify('Bem-vindo, ' + (r.user.name || '').split(' ')[0] + '!', 'ok');
-        setTimeout(function () { location.href = '/dashboard'; }, 350);
+        var next = safeNext(new URLSearchParams(location.search).get('next'));
+        setTimeout(function () { location.href = next; }, 350);
       })
       .catch(function (e) {
         if (err) {
@@ -323,7 +335,8 @@
       api('/auth/login', { method: 'POST', body: JSON.stringify({ email: email, password: password }) })
         .then(function (r) {
           STORE.setToken(r.token); STORE.setUser(r.user);
-          location.href = '/dashboard';
+          var next = safeNext(new URLSearchParams(location.search).get('next'));
+          location.href = next;
         })
         .catch(function (e) {
           var code = e.data && e.data.code;
@@ -986,6 +999,39 @@
   function initComprarPontosReal() {
     var grid = document.getElementById('pkg-grid');
     if (!grid) return;
+
+    // Helper: handler unico de click pros cards de pacote
+    // - Pre-check de auth: sem token → /login?next=...
+    // - Feedback visual de loading enquanto navega
+    function attachPkgClickHandlers() {
+      $$('a.bx-buy-pkg', grid).forEach(function (a) {
+        a.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          var pkg = a.getAttribute('data-pkg') || '';
+          var target = '/comprar-livre.html?pkg=' + encodeURIComponent(pkg);
+          if (!STORE.token()) {
+            // Sem login: vai pra /login mas preserva o destino
+            location.href = '/login.html?next=' + encodeURIComponent(target);
+            return;
+          }
+          // Logado: feedback visual + navega
+          a.style.opacity = '0.6';
+          a.textContent = 'Carregando…';
+          a.style.pointerEvents = 'none';
+          location.href = target;
+        });
+      });
+    }
+    // Tambem ataca handler no botao "Valor livre" do topo
+    var freeBtn = document.querySelector('a[href="comprar-livre.html"]');
+    if (freeBtn) {
+      freeBtn.addEventListener('click', function (ev) {
+        if (STORE.token()) return; // logado: deixa fluxo normal
+        ev.preventDefault();
+        location.href = '/login.html?next=' + encodeURIComponent('/comprar-livre.html');
+      });
+    }
+
     fetch(API + '/pix/packages').then(function (r) { return r.json(); }).then(function (data) {
       var keys = Object.keys(data);
       if (keys.length === 0) {
@@ -1014,11 +1060,12 @@
           '<div class="price">R$ ' + priceBRL + '</div>' +
           '<div class="pts-line">' + fmt(p.points) + ' pts</div>' +
           '<div class="bonus">' + bonus + '</div>' +
-          '<a href="comprar-livre.html?pkg=' + k + '" class="' + btnClass + '">Comprar agora</a>' +
+          '<a href="comprar-livre.html?pkg=' + k + '" data-pkg="' + k + '" class="bx-buy-pkg ' + btnClass + '">Comprar agora</a>' +
           '</div>';
       }).join('');
+      attachPkgClickHandlers();
     }).catch(function () {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar pacotes.</div>';
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar pacotes. Recarregue a página.</div>';
     });
   }
 
