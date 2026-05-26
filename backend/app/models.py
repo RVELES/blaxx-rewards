@@ -48,6 +48,12 @@ class User(db.Model):
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
     email_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
+    # telefone (E.164: +5511999999999) + MFA
+    phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    phone_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    mfa_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    mfa_method: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  # 'sms' por enquanto
+
     # federacao (Google etc) — F2 usa AccountProvider; mantemos campos diretos por conveniencia
     provider: Mapped[str] = mapped_column(String(32), nullable=False, default="local")
     google_sub: Mapped[Optional[str]] = mapped_column(
@@ -181,6 +187,65 @@ class PasswordResetToken(db.Model):
     )
     token_hash: Mapped[str] = mapped_column(String(128), nullable=False, unique=True, index=True)
 
+    expires_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    used_at: Mapped[Optional[dt.datetime]] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=utcnow
+    )
+
+    def is_valid(self) -> bool:
+        return self.used_at is None and self.expires_at > utcnow()
+
+
+# ----------------------------------------------------------------------
+# OTP de telefone — multi-uso (cadastro/verify, login 2FA)
+# ----------------------------------------------------------------------
+class PhoneOtp(db.Model):
+    __tablename__ = "phone_otps"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    phone: Mapped[str] = mapped_column(String(20), nullable=False)
+    code_hash: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    purpose: Mapped[str] = mapped_column(String(32), nullable=False)
+    # 'verify_phone'   — cadastrar/trocar telefone
+    # 'login_2fa'      — challenge no login com 2FA ativo
+
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    expires_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    used_at: Mapped[Optional[dt.datetime]] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=utcnow
+    )
+
+    def is_valid(self) -> bool:
+        return self.used_at is None and self.expires_at > utcnow() and self.attempts < 5
+
+
+# ----------------------------------------------------------------------
+# Challenge intermediario do login com 2FA
+# Quando /auth/login bate certo mas usuario tem 2FA, criamos um
+# MfaChallenge curto-prazo (5 min) com id publico, e mandamos SMS.
+# /auth/login/2fa consome esse challenge.
+# ----------------------------------------------------------------------
+class MfaChallenge(db.Model):
+    __tablename__ = "mfa_challenges"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    challenge_token_hash: Mapped[str] = mapped_column(
+        String(128), nullable=False, unique=True, index=True
+    )
+    method: Mapped[str] = mapped_column(String(16), nullable=False)  # 'sms'
+    phone_otp_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("phone_otps.id", ondelete="SET NULL")
+    )
+    ip_address: Mapped[Optional[str]] = mapped_column(String(64))
+    user_agent: Mapped[Optional[str]] = mapped_column(String(500))
     expires_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     used_at: Mapped[Optional[dt.datetime]] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[dt.datetime] = mapped_column(

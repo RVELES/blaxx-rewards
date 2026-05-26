@@ -8,10 +8,13 @@ from flask import Blueprint, current_app, jsonify
 from ..extensions import db
 from ..models import (
     EmailVerificationToken,
+    MfaChallenge,
     PasswordResetToken,
+    PhoneOtp,
     User,
 )
 from ..services import email as email_service
+from ..services import sms as sms_service
 from ..services.audit import Event, log_event
 from ..services.rate_limit import cooldown_check, hit
 from ..services.session import (
@@ -212,10 +215,131 @@ def login():
         log_event(Event.LOGIN_BLOCKED, user_id=user.id, metadata={"reason": "inactive"})
         return err("Conta inativa", 403, error_code="account_inactive")
 
+    # Se 2FA ativo, NAO emite sessao agora — cria challenge e exige /auth/login/2fa
+    if user.mfa_enabled and user.mfa_method == "sms" and user.phone_verified:
+        return _issue_mfa_challenge(user)
+
     sess, token = create_session(user, cfg.SESSION_TTL)
     log_event(Event.LOGIN_SUCCESS, user_id=user.id)
 
     return ok({"user": user.to_safe_dict(), "token": token, "session_id": sess.id})
+
+
+# ----------------------------------------------------------------------
+# Helpers MFA + endpoint /auth/login/2fa
+# ----------------------------------------------------------------------
+def _issue_mfa_challenge(user: User):
+    """Cria um MfaChallenge + envia SMS. Retorna response 200 com mfa_required=True."""
+    cfg = current_app.config["_CONFIG"]
+    import re as _re
+    import secrets as _secrets
+
+    # Gera codigo numerico 6 digitos + token do challenge (URL-safe)
+    code = f"{_secrets.randbelow(1_000_000):06d}"
+    challenge_token = generate_token(24)
+
+    # Salva OTP + Challenge linkados
+    otp = PhoneOtp(
+        user_id=user.id,
+        phone=user.phone or "",
+        code_hash=hash_token(code),
+        purpose="login_2fa",
+        expires_at=expires_in(cfg.MFA_CHALLENGE_TTL),
+    )
+    db.session.add(otp)
+    db.session.flush()  # garante otp.id
+
+    challenge = MfaChallenge(
+        user_id=user.id,
+        challenge_token_hash=hash_token(challenge_token),
+        method="sms",
+        phone_otp_id=otp.id,
+        ip_address=client_ip()[:64] or None,
+        user_agent=client_ua(),
+        expires_at=expires_in(cfg.MFA_CHALLENGE_TTL),
+    )
+    db.session.add(challenge)
+    db.session.commit()
+
+    if user.phone:
+        sms_service.send_otp(user.phone, code, "login_2fa")
+    log_event(Event.MFA_CHALLENGE_ISSUED, user_id=user.id, metadata={"method": "sms"})
+
+    # Mascara telefone pra hint no UI
+    masked = ""
+    if user.phone and len(user.phone) >= 4:
+        masked = "***" + user.phone[-4:]
+
+    return ok({
+        "mfa_required": True,
+        "mfa_method": "sms",
+        "mfa_challenge_token": challenge_token,
+        "mfa_phone_hint": masked,
+        "expires_in": cfg.MFA_CHALLENGE_TTL,
+    })
+
+
+@bp.post("/login/2fa")
+def login_2fa():
+    """Completa o login 2FA. Body: { challenge_token, code }."""
+    cfg = current_app.config["_CONFIG"]
+    data = get_json()
+    token = (data.get("challenge_token") or "").strip()
+    code = (data.get("code") or "").strip()
+
+    if not token:
+        return err("Challenge invalido", 400, error_code="missing_challenge")
+    if not code or len(code) != 6 or not code.isdigit():
+        return err("Codigo invalido", 400, error_code="invalid_code")
+
+    # Rate limit por IP no fluxo 2FA
+    allowed, retry = hit(
+        f"mfa:{client_ip()}", cfg.LOGIN_RATE_LIMIT_PER_IP, cfg.LOGIN_RATE_LIMIT_WINDOW
+    )
+    if not allowed:
+        return err("Muitas tentativas", 429, error_code="rate_limited",
+                   extra={"retry_in": retry})
+
+    challenge = db.session.scalar(
+        db.select(MfaChallenge).where(
+            MfaChallenge.challenge_token_hash == hash_token(token)
+        )
+    )
+    if not challenge or not challenge.is_valid():
+        log_event(Event.MFA_CHALLENGE_FAIL,
+                  metadata={"reason": "invalid_or_expired_challenge"})
+        return err("Challenge invalido ou expirado",
+                   400, error_code="challenge_expired")
+
+    user = db.session.get(User, challenge.user_id)
+    if not user or not user.is_active():
+        return err("Conta indisponivel", 403, error_code="account_inactive")
+
+    otp = db.session.get(PhoneOtp, challenge.phone_otp_id) if challenge.phone_otp_id else None
+    if not otp:
+        return err("OTP nao encontrado", 400, error_code="otp_not_found")
+    otp.attempts += 1
+    db.session.commit()
+    if not otp.is_valid():
+        log_event(Event.MFA_CHALLENGE_FAIL, user_id=user.id,
+                  metadata={"reason": "otp_invalid"})
+        return err("Codigo expirado ou bloqueado",
+                   400, error_code="code_expired")
+    if otp.code_hash != hash_token(code):
+        log_event(Event.MFA_CHALLENGE_FAIL, user_id=user.id,
+                  metadata={"reason": "wrong_code"})
+        return err("Codigo nao confere", 400, error_code="wrong_code")
+
+    # Tudo certo — consome OTP + challenge, emite sessao
+    otp.used_at = utcnow()
+    challenge.used_at = utcnow()
+    db.session.commit()
+
+    sess, token_out = create_session(user, cfg.SESSION_TTL)
+    log_event(Event.MFA_CHALLENGE_SUCCESS, user_id=user.id)
+    log_event(Event.LOGIN_SUCCESS, user_id=user.id, metadata={"via": "mfa"})
+
+    return ok({"user": user.to_safe_dict(), "token": token_out, "session_id": sess.id})
 
 
 # ----------------------------------------------------------------------

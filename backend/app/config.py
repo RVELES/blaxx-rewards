@@ -40,6 +40,14 @@ class Config:
 
     GOOGLE_CLIENT_ID: str = os.environ.get("GOOGLE_CLIENT_ID", "")
 
+    SMS_BACKEND: str = os.environ.get("SMS_BACKEND", "console")
+    TWILIO_ACCOUNT_SID: str = os.environ.get("TWILIO_ACCOUNT_SID", "")
+    TWILIO_AUTH_TOKEN: str = os.environ.get("TWILIO_AUTH_TOKEN", "")
+    TWILIO_FROM_PHONE: str = os.environ.get("TWILIO_FROM_PHONE", "")
+    PHONE_OTP_TTL: int = int(os.environ.get("PHONE_OTP_TTL", "600"))         # 10 min — verify
+    MFA_CHALLENGE_TTL: int = int(os.environ.get("MFA_CHALLENGE_TTL", "300")) # 5 min — login
+    PHONE_OTP_COOLDOWN: int = int(os.environ.get("PHONE_OTP_COOLDOWN", "60"))
+
     EMAIL_VERIFICATION_TOKEN_TTL: int = int(
         os.environ.get("EMAIL_VERIFICATION_TOKEN_TTL", "86400")
     )

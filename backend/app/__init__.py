@@ -44,10 +44,14 @@ def create_app() -> Flask:
     )
 
     from .api.auth import bp as auth_bp
+    from .api.security import bp as security_bp
     from .api.user import bp as user_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(user_bp, url_prefix="/user")
+    # security tem rotas que se misturam com /user/* (phone, 2fa) e /user/access-log,
+    # mantemos prefix /user pra coerencia com initSeguranca/perfil.
+    app.register_blueprint(security_bp, url_prefix="/user")
 
     @app.get("/health")
     def health():
@@ -90,5 +94,37 @@ def create_app() -> Flask:
         from . import models  # noqa: F401 — registra os modelos antes do create_all
 
         db.create_all()
+        _apply_lightweight_migrations()
 
     return app
+
+
+def _apply_lightweight_migrations() -> None:
+    """Adiciona colunas ao SQLite quando o DB foi criado em versao anterior.
+
+    Para mudancas mais complexas (drop column, rename, type change), trocar
+    por Alembic. Aqui so cobrimos ADD COLUMN nullable, que SQLite aceita
+    direto via ALTER TABLE.
+    """
+    import logging
+
+    log = logging.getLogger(__name__)
+    bind = db.engine
+    if not bind.url.drivername.startswith("sqlite"):
+        # Em postgres/outro DB usar Alembic; aqui silencia.
+        return
+
+    # (table, column, ddl)
+    pending = [
+        ("users", "phone", "VARCHAR(20)"),
+        ("users", "phone_verified", "BOOLEAN NOT NULL DEFAULT 0"),
+        ("users", "mfa_enabled", "BOOLEAN NOT NULL DEFAULT 0"),
+        ("users", "mfa_method", "VARCHAR(16)"),
+    ]
+    with bind.begin() as conn:
+        for table, col, ddl in pending:
+            res = conn.exec_driver_sql(f"PRAGMA table_info({table})").fetchall()
+            existing = {row[1] for row in res}
+            if col not in existing:
+                conn.exec_driver_sql(f"ALTER TABLE {table} ADD COLUMN {col} {ddl}")
+                log.info("migration: added %s.%s", table, col)

@@ -359,6 +359,14 @@
 
       api('/auth/login', { method: 'POST', body: JSON.stringify({ email: email, password: password }) })
         .then(function (r) {
+          // Resposta pode ser:
+          //  - Login direto: { token, user }
+          //  - 2FA pendente: { mfa_required: true, mfa_challenge_token, mfa_phone_hint, mfa_method }
+          if (r && r.mfa_required) {
+            showMfaChallenge(r);
+            btn.disabled = false; btn.textContent = orig;
+            return;
+          }
           STORE.setToken(r.token); STORE.setUser(r.user);
           var next = safeNext(new URLSearchParams(location.search).get('next'));
           location.href = next;
@@ -375,6 +383,83 @@
           btn.disabled = false; btn.textContent = orig;
         });
     });
+  }
+
+  // ---- Renderiza o passo de challenge 2FA in-place sobre o form de login ----
+  function showMfaChallenge(challengeResp) {
+    var form = document.querySelector('form[action="dashboard.html"]');
+    if (!form) return;
+    // Esconde form de login original
+    form.style.display = 'none';
+
+    // Constroi (uma unica vez) o card de challenge
+    var existing = document.getElementById('bx-mfa-card');
+    if (existing) existing.remove();
+    var card = document.createElement('div');
+    card.id = 'bx-mfa-card';
+    card.style.cssText = 'max-width:420px;margin:0 auto;';
+    card.innerHTML =
+      '<h2 style="margin:0 0 8px;">Verificação em duas etapas</h2>' +
+      '<p style="color:var(--muted);font-size:14px;">' +
+        'Enviamos um código por SMS para <strong>' + (challengeResp.mfa_phone_hint || 'seu telefone') + '</strong>. ' +
+        'Insira o código de 6 dígitos para entrar.' +
+      '</p>' +
+      '<div class="form-row" style="margin-top:14px;">' +
+        '<label for="bx-mfa-code">Código</label>' +
+        '<input id="bx-mfa-code" type="text" inputmode="numeric" maxlength="6" pattern="\\d{6}" placeholder="000000" autocomplete="one-time-code" ' +
+          'style="font-size:24px;letter-spacing:0.4em;text-align:center;font-weight:800;">' +
+      '</div>' +
+      '<button id="bx-mfa-submit" type="button" class="button full lg" style="margin-top:8px;">Validar e entrar →</button>' +
+      '<p style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);">' +
+        'O código expira em alguns minutos. ' +
+        '<a href="#" id="bx-mfa-retry" style="color:var(--ink);font-weight:700;">Voltar e tentar novamente</a>' +
+      '</p>' +
+      '<p id="bx-mfa-err" style="display:none;color:#a83417;text-align:center;font-size:13px;margin-top:6px;"></p>';
+    form.parentNode.insertBefore(card, form);
+    var codeInput = document.getElementById('bx-mfa-code');
+    if (codeInput) codeInput.focus();
+
+    var submit = document.getElementById('bx-mfa-submit');
+    var errEl = document.getElementById('bx-mfa-err');
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+    function clearErr() { if (errEl) errEl.style.display = 'none'; }
+
+    submit.addEventListener('click', function () {
+      clearErr();
+      var code = (codeInput && codeInput.value || '').trim();
+      if (!/^\d{6}$/.test(code)) { showErr('Código de 6 dígitos'); return; }
+      submit.disabled = true; submit.textContent = 'Validando…';
+      api('/auth/login/2fa', { method: 'POST', body: JSON.stringify({
+        challenge_token: challengeResp.mfa_challenge_token, code: code
+      }) }).then(function (r) {
+        STORE.setToken(r.token); STORE.setUser(r.user);
+        var next = safeNext(new URLSearchParams(location.search).get('next'));
+        location.href = next;
+      }).catch(function (e) {
+        var code2 = e.data && e.data.code;
+        if (code2 === 'wrong_code') showErr('Código incorreto. Verifique o SMS.');
+        else if (code2 === 'code_expired' || code2 === 'challenge_expired') showErr('Código expirado. Volte e tente novamente.');
+        else showErr(e.message || 'Falha ao validar código');
+        submit.disabled = false; submit.textContent = 'Validar e entrar →';
+      });
+    });
+
+    codeInput.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') submit.click();
+    });
+
+    var retry = document.getElementById('bx-mfa-retry');
+    if (retry) {
+      retry.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        card.remove();
+        form.style.display = '';
+      });
+    }
   }
 
   function initDashboard() {
@@ -1501,56 +1586,206 @@
     }
   }
 
-  // ---- Segurança da conta (PATCH /user/password + sessões) ----
+  // ---- Segurança da conta (senha + telefone + 2FA + sessões + acesso) ----
   function initSeguranca() {
     if (!requireAuth()) return;
-    var form = $('#form-senha') || $('form');
-    if (form) {
-      attachPasswordStrength(form.querySelector('#senha-nova, #nova-senha'), $('#bx-strength'));
-      form.setAttribute('novalidate', 'novalidate');
-      form.addEventListener('submit', function (e) {
+
+    // ------ 1. Trocar senha ------
+    var formSenha = $('#form-senha');
+    if (formSenha) {
+      attachPasswordStrength(formSenha.querySelector('#senha-nova'), $('#bx-strength'));
+      formSenha.addEventListener('submit', function (e) {
         e.preventDefault();
-        var current = (form.querySelector('#senha-atual') || {}).value || '';
-        var nova = (form.querySelector('#senha-nova, #nova-senha') || {}).value || '';
-        var confirm = (form.querySelector('#senha-confirm, #confirm-senha') || {}).value || '';
+        var current = ($('#senha-atual') || {}).value || '';
+        var nova = ($('#senha-nova') || {}).value || '';
+        var confirm = ($('#senha-confirm') || {}).value || '';
         if (!current) { notify('Informe sua senha atual', 'warn'); return; }
         if (!passwordStrength(nova).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
         if (nova !== confirm) { notify('Confirmação não confere', 'warn'); return; }
-        var btn = form.querySelector('button[type="submit"], button.button');
+        var btn = formSenha.querySelector('button[type="submit"]');
         if (btn) btn.disabled = true;
         api('/user/password', { method: 'PATCH', body: JSON.stringify({ current_password: current, new_password: nova, new_password_confirm: confirm }) })
           .then(function () {
             notify('Senha alterada. Faça login novamente.', 'ok');
             STORE.clear();
-            setTimeout(function () { location.href = '/login'; }, 1500);
+            setTimeout(function () { location.href = '/login.html'; }, 1500);
           })
-          .catch(function (err) { notify(err.message || 'Falha ao trocar senha', 'err'); if (btn) btn.disabled = false; });
+          .catch(function (err) {
+            if (err && err.status === 404) notify('Troca de senha indisponível no servidor atual', 'warn');
+            else notify((err && err.message) || 'Falha ao trocar senha', 'err');
+            if (btn) btn.disabled = false;
+          });
       });
     }
 
-    // Lista de sessões
-    var sessList = $('#bx-sessions-list');
-    if (sessList) {
+    // ------ 2. Telefone + 2FA ------
+    var formPhone = $('#form-phone');
+    var formVerify = $('#form-phone-verify');
+    var statusEl = $('#bx-2fa-status');
+    var actionsEl = $('#bx-2fa-actions');
+    var phoneStatusEl = $('#bx-phone-status');
+
+    function renderMfaState(u) {
+      if (!statusEl || !u) return;
+      if (u.mfa_enabled && u.mfa_method === 'sms') {
+        statusEl.className = 'status confirmado mt-2';
+        statusEl.textContent = '● 2FA por SMS ativada — número ' + (u._phone_masked || '***');
+      } else if (u.phone_verified) {
+        statusEl.className = 'status pendente mt-2';
+        statusEl.textContent = '○ Telefone verificado, mas 2FA inativa';
+      } else if (u.phone) {
+        statusEl.className = 'status pendente mt-2';
+        statusEl.textContent = '○ Telefone aguardando verificação';
+      } else {
+        statusEl.className = 'status mt-2';
+        statusEl.textContent = '○ Sem telefone cadastrado';
+      }
+      // Botoes de acao
+      if (!actionsEl) return;
+      actionsEl.innerHTML = '';
+      if (u.phone_verified && !u.mfa_enabled) {
+        var bEn = document.createElement('button');
+        bEn.type = 'button'; bEn.className = 'button';
+        bEn.textContent = 'Ativar 2FA por SMS';
+        bEn.addEventListener('click', enable2FA);
+        actionsEl.appendChild(bEn);
+      }
+      if (u.mfa_enabled) {
+        var bDis = document.createElement('button');
+        bDis.type = 'button'; bDis.className = 'button ghost';
+        bDis.textContent = 'Desativar 2FA';
+        bDis.addEventListener('click', disable2FA);
+        actionsEl.appendChild(bDis);
+      }
+      if (u.phone) {
+        var bRem = document.createElement('button');
+        bRem.type = 'button'; bRem.className = 'button secondary';
+        bRem.style.marginLeft = '8px';
+        bRem.textContent = 'Remover telefone';
+        bRem.addEventListener('click', removePhone);
+        actionsEl.appendChild(bRem);
+      }
+    }
+
+    function loadMe() {
+      api('/auth/me').then(function (d) {
+        var u = d.user || d;
+        // mascara telefone aqui no front (backend tambem mascara em access-log)
+        if (u.phone) {
+          u._phone_masked = '***' + String(u.phone).slice(-4);
+          var phoneEl = $('#bx-phone');
+          if (phoneEl && !phoneEl.value) phoneEl.value = u.phone;
+        }
+        STORE.setUser(u);
+        renderMfaState(u);
+      }).catch(function () {
+        if (statusEl) { statusEl.className = 'status mt-2'; statusEl.textContent = '— indisponível —'; }
+      });
+    }
+
+    if (formPhone) {
+      formPhone.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var phone = ($('#bx-phone') || {}).value || '';
+        if (!phone.replace(/\D/g, '').match(/^\d{10,15}$/)) {
+          notify('Telefone inválido. Use (11) 99999-9999', 'warn'); return;
+        }
+        var btn = $('#bx-phone-send');
+        if (btn) btn.disabled = true;
+        api('/user/phone', { method: 'POST', body: JSON.stringify({ phone: phone }) })
+          .then(function (d) {
+            if (phoneStatusEl) phoneStatusEl.textContent = 'Código enviado para ' + (d.phone_masked || phone) + '. Verifique seu SMS.';
+            if (formVerify) formVerify.style.display = 'block';
+            var codeEl = $('#bx-phone-code');
+            if (codeEl) codeEl.focus();
+          })
+          .catch(function (err) {
+            if (err && err.status === 404) notify('Cadastro de telefone indisponível no servidor atual', 'warn');
+            else if (err && err.status === 429) notify(err.message + ' (' + ((err.data && err.data.retry_in) || '?') + 's)', 'warn');
+            else notify((err && err.message) || 'Falha ao enviar SMS', 'err');
+          })
+          .then(function () { if (btn) btn.disabled = false; });
+      });
+    }
+
+    if (formVerify) {
+      formVerify.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var code = ($('#bx-phone-code') || {}).value || '';
+        if (!/^\d{6}$/.test(code)) { notify('Código de 6 dígitos', 'warn'); return; }
+        var btn = $('#bx-phone-verify-btn');
+        if (btn) btn.disabled = true;
+        api('/user/phone/verify', { method: 'POST', body: JSON.stringify({ code: code }) })
+          .then(function (d) {
+            notify('Telefone verificado!', 'ok');
+            STORE.setUser(d.user);
+            formVerify.style.display = 'none';
+            if (phoneStatusEl) phoneStatusEl.textContent = 'Telefone verificado ✓';
+            loadMe();
+          })
+          .catch(function (err) { notify((err && err.message) || 'Código inválido', 'err'); })
+          .then(function () { if (btn) btn.disabled = false; });
+      });
+    }
+
+    function enable2FA() {
+      if (!confirm('Ativar 2FA por SMS? Você precisará do código a cada novo login.')) return;
+      api('/user/2fa/sms/enable', { method: 'POST', body: JSON.stringify({}) })
+        .then(function (d) { notify('2FA ativada', 'ok'); STORE.setUser(d.user); loadMe(); })
+        .catch(function (err) { notify((err && err.message) || 'Falha ao ativar', 'err'); });
+    }
+    function disable2FA() {
+      var pwd = prompt('Para desativar a 2FA, confirme sua senha:');
+      if (!pwd) return;
+      api('/user/2fa/sms/disable', { method: 'POST', body: JSON.stringify({ password: pwd }) })
+        .then(function (d) { notify('2FA desativada', 'ok'); STORE.setUser(d.user); loadMe(); })
+        .catch(function (err) { notify((err && err.message) || 'Falha ao desativar', 'err'); });
+    }
+    function removePhone() {
+      var pwd = prompt('Para remover o telefone, confirme sua senha:');
+      if (!pwd) return;
+      api('/user/phone', { method: 'DELETE', body: JSON.stringify({ password: pwd }) })
+        .then(function (d) {
+          notify('Telefone removido', 'ok');
+          STORE.setUser(d.user);
+          var phoneEl = $('#bx-phone'); if (phoneEl) phoneEl.value = '';
+          if (formVerify) formVerify.style.display = 'none';
+          if (phoneStatusEl) phoneStatusEl.textContent = '';
+          loadMe();
+        })
+        .catch(function (err) { notify((err && err.message) || 'Falha ao remover', 'err'); });
+    }
+
+    loadMe();
+
+    // ------ 3. Sessões ativas ------
+    function loadSessions() {
+      var sessList = $('#bx-sessions-list');
+      if (!sessList) return;
       api('/user/sessions').then(function (d) {
         var rows = (d.sessions || []).map(function (s) {
+          var curMark = s.current ? ' <strong style="color:var(--ink);">(esta)</strong>' : '';
           return '<tr>' +
-            '<td>' + (s.device_name || '—') + (s.current ? ' <strong style="color:var(--ink);">(atual)</strong>' : '') + '</td>' +
-            '<td>' + (s.ip_address || '—') + '</td>' +
-            '<td>' + (s.last_used_at ? new Date(s.last_used_at).toLocaleString('pt-BR') : '—') + '</td>' +
-            '<td>' + (s.current ? '' : '<button data-id="' + s.id + '" class="button ghost small">Encerrar</button>') + '</td>' +
+            '<td data-label="Dispositivo"><strong>' + (s.device_name || '—') + '</strong>' + curMark + '</td>' +
+            '<td data-label="IP">' + (s.ip_address || '—') + '</td>' +
+            '<td data-label="Atividade">' + (s.last_used_at ? new Date(s.last_used_at).toLocaleString('pt-BR') : '—') + '</td>' +
+            '<td data-label="">' + (s.current ? '<span class="status ativo">● ativa</span>' : '<button type="button" data-id="' + s.id + '" class="button ghost small" style="color:var(--danger-text);">Encerrar</button>') + '</td>' +
             '</tr>';
         }).join('');
-        sessList.innerHTML = rows || '<tr><td colspan="4">Sem sessões ativas.</td></tr>';
+        sessList.innerHTML = rows || '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;">Sem sessões ativas.</td></tr>';
         $$('[data-id]', sessList).forEach(function (b) {
           b.addEventListener('click', function () {
             if (!confirm('Encerrar esta sessão?')) return;
             api('/user/sessions/' + b.dataset.id, { method: 'DELETE' })
-              .then(function () { notify('Sessão encerrada', 'ok'); initSeguranca(); })
-              .catch(function (e) { notify(e.message, 'err'); });
+              .then(function () { notify('Sessão encerrada', 'ok'); loadSessions(); })
+              .catch(function (e) { notify((e && e.message) || 'Falha', 'err'); });
           });
         });
-      }).catch(function () {});
+      }).catch(function (err) {
+        sessList.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;">Histórico indisponível</td></tr>';
+      });
     }
+    loadSessions();
 
     var logoutAllBtn = $('#bx-logout-all');
     if (logoutAllBtn) {
@@ -1558,8 +1793,54 @@
         e.preventDefault();
         if (!confirm('Encerrar todas as outras sessões?')) return;
         api('/auth/logout-all', { method: 'POST' })
-          .then(function (d) { notify('Sessões encerradas: ' + (d.revoked || 0), 'ok'); STORE.clear(); location.href = '/login'; })
-          .catch(function (e) { notify(e.message, 'err'); });
+          .then(function (d) { notify('Sessões encerradas: ' + (d.revoked || 0), 'ok'); STORE.clear(); location.href = '/login.html'; })
+          .catch(function (e) { notify((e && e.message) || 'Falha', 'err'); });
+      });
+    }
+
+    // ------ 4. Histórico de acessos ------
+    var logBody = $('#bx-access-log');
+    var eventLabels = {
+      'auth.login.success': '✓ Login com sucesso',
+      'auth.login.fail': '✗ Tentativa de login (falha)',
+      'auth.login.blocked': '✗ Login bloqueado',
+      'auth.logout': '↩ Logout',
+      'auth.logout.all': '↩ Logout de todas as sessões',
+      'user.password.changed': '🔑 Senha alterada',
+      'auth.reset_password.success': '🔑 Senha redefinida via email',
+      'user.mfa.enabled': '🛡 2FA ativada',
+      'user.mfa.disabled': '🛡 2FA desativada',
+      'auth.mfa.challenge_success': '🛡 2FA validada no login',
+      'auth.mfa.challenge_fail': '🛡 Falha em 2FA',
+      'user.phone.verified': '📱 Telefone verificado',
+      'user.phone.removed': '📱 Telefone removido',
+      'user.email.changed': '✉ Email alterado'
+    };
+    var eventStatusClass = function (ev) {
+      if (ev.indexOf('fail') >= 0 || ev.indexOf('blocked') >= 0) return 'pendente';
+      if (ev.indexOf('success') >= 0 || ev.indexOf('verified') >= 0 || ev.indexOf('changed') >= 0 || ev.indexOf('enabled') >= 0) return 'confirmado';
+      return '';
+    };
+    if (logBody) {
+      api('/user/access-log').then(function (d) {
+        var items = d.items || [];
+        if (!items.length) {
+          logBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;">Sem eventos registrados.</td></tr>';
+          return;
+        }
+        logBody.innerHTML = items.map(function (it) {
+          var when = it.at ? new Date(it.at).toLocaleString('pt-BR') : '—';
+          var label = eventLabels[it.event] || it.event;
+          var cls = eventStatusClass(it.event);
+          return '<tr>' +
+            '<td data-label="Data">' + when + '</td>' +
+            '<td data-label="Evento"><span class="status ' + cls + '">' + label + '</span></td>' +
+            '<td data-label="Dispositivo">' + (it.device || '—') + '</td>' +
+            '<td data-label="IP">' + (it.ip || '—') + '</td>' +
+            '</tr>';
+        }).join('');
+      }).catch(function (err) {
+        logBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;">Histórico indisponível no servidor atual</td></tr>';
       });
     }
   }
