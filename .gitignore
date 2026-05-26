@@ -1,18 +1,35 @@
-# Backend
-backend/__pycache__/
-backend/**/__pycache__/
-backend/*.db
+# Python (global — também cobre .archive-backend-antigo/)
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.venv/
+venv/
+
+# Backend específico
 backend/instance/
 backend/.setup-ok
-backend/.venv/
-backend/venv/
 
 # Editor / OS
 .DS_Store
 Thumbs.db
+desktop.ini
 *.swp
+*.tmp.*
 .idea/
 .vscode/
+
+# Node / Netlify CLI
+node_modules/
+.netlify/
+
+# Claude / IDE local
+.claude/settings.local.json
+
+# Secrets / env (jamais commitar)
+.env
+.env.*
+!.env.example
 
 # Logs
 *.log
