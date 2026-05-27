@@ -148,6 +148,42 @@
   to = "/central-ajuda.html"
   status = 200
 
+# Wave 5 — compliance pages (rotas bonitas + alias)
+[[redirects]]
+  from = "/faq"
+  to = "/faq.html"
+  status = 200
+
+[[redirects]]
+  from = "/perguntas-frequentes"
+  to = "/faq.html"
+  status = 301
+
+[[redirects]]
+  from = "/regras-pontos"
+  to = "/regras-pontos.html"
+  status = 200
+
+[[redirects]]
+  from = "/regras"
+  to = "/regras-pontos.html"
+  status = 301
+
+[[redirects]]
+  from = "/politica-reembolso"
+  to = "/politica-reembolso.html"
+  status = 200
+
+[[redirects]]
+  from = "/reembolso"
+  to = "/politica-reembolso.html"
+  status = 301
+
+[[redirects]]
+  from = "/cancelamento"
+  to = "/politica-reembolso.html"
+  status = 301
+
 # 404 customizado — SEMPRE por ultimo (catch-all)
 [[redirects]]
   from = "/*"
