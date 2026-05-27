@@ -24,7 +24,27 @@
   var CENTS_PER_POINT = 9; // 1 pt = R$ 0,09 — sincronizar com backend Config.CENTS_PER_POINT
 
   // ---- Util de token + safeNext (independente do blaxx-app.js) ----
-  function getToken() { return sessionStorage.getItem('blaxx_token'); }
+  // Lê token de localStorage (atual, sessão persistente) com fallback pra
+  // sessionStorage (legacy). blaxx-app.js usa STORE que salva em localStorage,
+  // então JAMAIS olhar só sessionStorage — quebra a compra inteira.
+  function getToken() {
+    try {
+      var t = localStorage.getItem('blaxx_token');
+      if (t) return t;
+    } catch (e) { /* localStorage indisponível em iframe sandbox raro */ }
+    try { return sessionStorage.getItem('blaxx_token'); }
+    catch (e) { return null; }
+  }
+  function clearStoredCreds() {
+    try {
+      localStorage.removeItem('blaxx_token');
+      localStorage.removeItem('blaxx_user');
+    } catch (e) {}
+    try {
+      sessionStorage.removeItem('blaxx_token');
+      sessionStorage.removeItem('blaxx_user');
+    } catch (e) {}
+  }
 
   function safeNext(raw, fallback) {
     fallback = fallback || '/dashboard';
@@ -63,9 +83,9 @@
           throw pe;
         }
         if (res.status === 401) {
-          // Token invalido/expirado: limpa storage e volta pro login com next
-          sessionStorage.removeItem('blaxx_token');
-          sessionStorage.removeItem('blaxx_user');
+          // Token invalido/expirado: limpa AMBOS os storages e volta pro
+          // login com next preservado.
+          clearStoredCreds();
           redirectToLoginPreservingHere();
           var err401 = new Error('Sessão expirada — redirecionando.');
           err401.status = 401;
@@ -174,21 +194,29 @@
       .catch(function (e) {
         if (e.status === 401) return; // já redirecionou
         // Backend exige email verificado pra comprar — abre modal e retry
-        // automatico apos verificacao bem sucedida.
+        // automatico apos verificacao bem sucedida. Comparacao case-insensitive
+        // (backend devolve "EMAIL_NOT_VERIFIED" uppercase).
         var data = e && e.data || {};
-        var msg = (e && e.message || '').toLowerCase();
+        var codeNorm = String(data.code || data.error_code || '').toLowerCase();
+        var msg = String((e && e.message) || '').toLowerCase();
         var isEmailGate = (
           e.status === 403 &&
-          (data.code === 'email_not_verified'
-            || data.error_code === 'email_not_verified'
+          (codeNorm === 'email_not_verified'
             || msg.indexOf('e-mail') >= 0 || msg.indexOf('email') >= 0
             || msg.indexOf('verifique') >= 0 || msg.indexOf('confirme') >= 0)
         );
+        try { console.warn('[buy] /pix/charge erro status=' + e.status, data, 'msg=' + msg, 'isEmailGate=' + isEmailGate); } catch (_) {}
         if (isEmailGate && typeof window.requireEmailVerifiedThen === 'function') {
           if (btn) { btn.disabled = false; btn.textContent = 'Gerar QR Code de pagamento'; }
           window.requireEmailVerifiedThen(function () {
             window.createCharge();
           });
+          return;
+        }
+        if (isEmailGate && typeof window.requireEmailVerifiedThen !== 'function') {
+          // blaxx-app.js nao carregado ou helper sumiu: mostra erro com instrucao
+          showInlineError('Confirme seu email antes de comprar. Volte ao painel → Perfil → Confirmar email.');
+          if (btn) { btn.disabled = false; btn.textContent = 'Gerar QR Code de pagamento'; }
           return;
         }
         showInlineError(e.message || 'Falha ao gerar QR Code');
