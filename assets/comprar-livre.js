@@ -162,23 +162,6 @@
       body = { amount_brl: amount };
     }
 
-    // Pre-check de email verificado — se ja existe a rotina global do
-    // blaxx-app.js (carregado antes deste script), bloqueia a /pix/charge
-    // e mostra modal de verificacao. Se confirmar com sucesso, repeat a
-    // chamada de createCharge automaticamente.
-    if (typeof window.requireEmailVerifiedThen === 'function') {
-      var u = null;
-      try { u = JSON.parse(localStorage.getItem('blaxx_user') || 'null'); }
-      catch (_) {}
-      if (u && !u.email_verified_at && !u.email_verified) {
-        window.requireEmailVerifiedThen(function () {
-          // Apos verificacao, tenta criar a cobranca de novo
-          window.createCharge();
-        });
-        return; // aborta esta chamada — vai re-executar apos modal fechar
-      }
-    }
-
     var btn = document.getElementById('btn-create');
     if (btn) { btn.disabled = true; btn.textContent = 'Gerando QR…'; }
 
@@ -190,6 +173,24 @@
       })
       .catch(function (e) {
         if (e.status === 401) return; // já redirecionou
+        // Backend exige email verificado pra comprar — abre modal e retry
+        // automatico apos verificacao bem sucedida.
+        var data = e && e.data || {};
+        var msg = (e && e.message || '').toLowerCase();
+        var isEmailGate = (
+          e.status === 403 &&
+          (data.code === 'email_not_verified'
+            || data.error_code === 'email_not_verified'
+            || msg.indexOf('e-mail') >= 0 || msg.indexOf('email') >= 0
+            || msg.indexOf('verifique') >= 0 || msg.indexOf('confirme') >= 0)
+        );
+        if (isEmailGate && typeof window.requireEmailVerifiedThen === 'function') {
+          if (btn) { btn.disabled = false; btn.textContent = 'Gerar QR Code de pagamento'; }
+          window.requireEmailVerifiedThen(function () {
+            window.createCharge();
+          });
+          return;
+        }
         showInlineError(e.message || 'Falha ao gerar QR Code');
         if (btn) { btn.disabled = false; btn.textContent = 'Gerar QR Code de pagamento'; }
         // Se chegou aqui via ?pkg= e deu erro, mostra step-1 pra o usuario tentar valor livre

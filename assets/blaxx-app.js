@@ -378,8 +378,24 @@
         resendLink.textContent = 'Enviando…';
       }
       api('/auth/verify-email/send', { method: 'POST', body: JSON.stringify({}) })
-        .then(function () {
-          sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '. Confira sua caixa de entrada (e spam).';
+        .then(function (resp) {
+          // Dev fallback: backend retorna _dev_code quando MAILER=console.
+          // Auto-preenche o campo pra desbloquear teste sem email real.
+          if (resp && resp._dev_code) {
+            sentMsg.innerHTML =
+              '<strong>[DEV] MAILER=console</strong> — código foi capturado direto do response. ' +
+              'Pra produção, configure Resend.';
+            stepSend.style.display = 'none';
+            stepInput.style.display = 'block';
+            codeInput.value = resp._dev_code;
+            setTimeout(function () { codeInput.focus(); submitCode(); }, 200);
+            return;
+          }
+          var deliverNote = resp && resp.delivered === false
+            ? ' (⚠ provedor reportou falha no envio — confira Render Logs)'
+            : '';
+          sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '.' + deliverNote +
+            ' Confira sua caixa de entrada (e spam).';
           stepSend.style.display = 'none';
           stepInput.style.display = 'block';
           setTimeout(function () { codeInput.focus(); }, 50);
@@ -1585,9 +1601,10 @@
     if (!grid) return;
 
     // Helper: handler unico de click pros cards de pacote
-    // - Pre-check de auth: sem token → /login?next=...
-    // - Pre-check de email verificado: nao → modal de verificacao
-    // - Feedback visual de loading enquanto navega
+    // - Pre-check apenas de AUTH (sem login → manda pra login com next)
+    // - NAO bloqueia por email_verified aqui — deixa o backend decidir.
+    //   Se /pix/charge retornar 403 email_not_verified, comprar-livre.js
+    //   abre o modal de verificacao e re-tenta automaticamente.
     function attachPkgClickHandlers() {
       $$('a.bx-buy-pkg', grid).forEach(function (a) {
         a.addEventListener('click', function (ev) {
@@ -1595,28 +1612,18 @@
           var pkg = a.getAttribute('data-pkg') || '';
           var target = '/comprar-livre.html?pkg=' + encodeURIComponent(pkg);
           if (!STORE.token()) {
-            // Sem login: vai pra /login mas preserva o destino
             location.href = '/login.html?next=' + encodeURIComponent(target);
             return;
           }
-          // Logado: dá feedback e exige email verificado antes de seguir
-          var orig = a.textContent;
+          // Logado: feedback visual + navega direto (sem gating)
           a.style.opacity = '0.6';
           a.textContent = 'Carregando…';
           a.style.pointerEvents = 'none';
-          requireEmailVerifiedThen(function () {
-            location.href = target;
-          });
-          // Se modal abrir, restaura o botão pra usuário poder clicar de novo
-          setTimeout(function () {
-            if (document.getElementById('bx-verify-modal')) {
-              a.style.opacity = ''; a.textContent = orig; a.style.pointerEvents = '';
-            }
-          }, 300);
+          location.href = target;
         });
       });
     }
-    // Tambem ataca handler no botao "Valor livre" do topo
+    // Botao "Valor livre" do topo — mesmo comportamento
     var freeBtn = document.querySelector('a[href="comprar-livre.html"]');
     if (freeBtn) {
       freeBtn.addEventListener('click', function (ev) {
@@ -1625,9 +1632,7 @@
           location.href = '/login.html?next=' + encodeURIComponent('/comprar-livre.html');
           return;
         }
-        requireEmailVerifiedThen(function () {
-          location.href = '/comprar-livre.html';
-        });
+        location.href = '/comprar-livre.html';
       });
     }
 
