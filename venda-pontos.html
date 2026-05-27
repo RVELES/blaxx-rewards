@@ -287,5 +287,17 @@
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<!--
+  blaxx-app.js eh OBRIGATORIO em paginas de "marketing" acessadas por
+  usuario logado. Sem ele:
+   - injectSidebarIfMissing nao roda → menu lateral nao aparece
+   - replaceLandingCtaWithUserWidget nao roda → botoes Entrar/Cadastre-se
+     ficam visiveis (parece deslogado)
+   - hideAuthLinksWhenLoggedIn nao roda → links de login no footer
+   - installGlobalLogoutHandler nao roda → clique em "Sair" vira navegacao
+     pro /login sem limpar storage → bug 'desloga ao clicar Vender'.
+-->
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
 </body>
 </html>

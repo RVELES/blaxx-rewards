@@ -134,6 +134,11 @@
   status = 200
 
 [[redirects]]
+  from = "/venda-pontos"
+  to = "/venda-pontos.html"
+  status = 200
+
+[[redirects]]
   from = "/como-funciona"
   to = "/como-funciona.html"
   status = 200

@@ -680,7 +680,7 @@
       { id: 'meus-resgates', icon: '✓',  label: 'Meus resgates',  href: 'meus-resgates.html' },
       { id: 'campanhas',     icon: '▲',  label: 'Campanhas',      href: 'campanhas.html' },
       { id: 'comprar-pontos',icon: '+',  label: 'Comprar pontos', href: 'comprar-pontos.html' },
-      { id: 'vender-pontos', icon: '−',  label: 'Vender pontos',  href: 'vender-pontos.html' },
+      { id: 'venda-pontos', icon: '−',  label: 'Vender pontos',  href: 'venda-pontos.html' },
       { id: 'enviar-pontos', icon: '→',  label: 'Enviar pontos',  href: 'enviar-pontos.html' },
       { id: 'indique',       icon: '♥',  label: 'Indique e ganhe',href: 'indique-ganhe.html' }
     ];
