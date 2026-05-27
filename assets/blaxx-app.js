@@ -45,18 +45,62 @@
   }
 
   // ---- Storage ----
+  // Mudança 2026-05-27: token e user agora em localStorage (persiste entre
+  // tabs e fechamento do browser). Antes era sessionStorage — perdia sessão
+  // ao abrir nova aba, voltar do Google OAuth, etc, forçando re-login.
+  //
+  // Dados de fluxo curto (charge em andamento, carteira snapshot) continuam
+  // em sessionStorage porque são contextuais à navegação atual.
+  //
+  // Migração transparente: se houver token antigo em sessionStorage, copia
+  // pra localStorage uma vez e limpa o sessionStorage antigo.
+  function _migrateOldSession() {
+    try {
+      var oldToken = sessionStorage.getItem('blaxx_token');
+      var oldUser = sessionStorage.getItem('blaxx_user');
+      if (oldToken && !localStorage.getItem('blaxx_token')) {
+        localStorage.setItem('blaxx_token', oldToken);
+        if (oldUser) localStorage.setItem('blaxx_user', oldUser);
+        sessionStorage.removeItem('blaxx_token');
+        sessionStorage.removeItem('blaxx_user');
+      }
+    } catch (e) { /* localStorage indisponível: tolera */ }
+  }
+  _migrateOldSession();
+
   var STORE = {
-    token: function () { return sessionStorage.getItem('blaxx_token'); },
-    setToken: function (t) { sessionStorage.setItem('blaxx_token', t); },
-    user: function () {
-      try { return JSON.parse(sessionStorage.getItem('blaxx_user') || 'null'); }
-      catch (e) { return null; }
+    token: function () {
+      try { return localStorage.getItem('blaxx_token'); }
+      catch (e) { return sessionStorage.getItem('blaxx_token'); }
     },
-    setUser: function (u) { sessionStorage.setItem('blaxx_user', JSON.stringify(u)); },
+    setToken: function (t) {
+      try { localStorage.setItem('blaxx_token', t); }
+      catch (e) { sessionStorage.setItem('blaxx_token', t); }
+    },
+    user: function () {
+      try { return JSON.parse(localStorage.getItem('blaxx_user') || 'null'); }
+      catch (e) {
+        try { return JSON.parse(sessionStorage.getItem('blaxx_user') || 'null'); }
+        catch (e2) { return null; }
+      }
+    },
+    setUser: function (u) {
+      try { localStorage.setItem('blaxx_user', JSON.stringify(u)); }
+      catch (e) { sessionStorage.setItem('blaxx_user', JSON.stringify(u)); }
+    },
     clear: function () {
-      Object.keys(sessionStorage).forEach(function (k) {
-        if (k.indexOf('blaxx_') === 0) sessionStorage.removeItem(k);
-      });
+      try {
+        Object.keys(localStorage).forEach(function (k) {
+          if (k.indexOf('blaxx_') === 0 && k !== 'blaxx_set_password_dismissed_at') {
+            localStorage.removeItem(k);
+          }
+        });
+      } catch (e) {}
+      try {
+        Object.keys(sessionStorage).forEach(function (k) {
+          if (k.indexOf('blaxx_') === 0) sessionStorage.removeItem(k);
+        });
+      } catch (e) {}
     },
     setFlow: function (k, v) { sessionStorage.setItem('blaxx_flow_' + k, JSON.stringify(v)); },
     getFlow: function (k) {
@@ -95,6 +139,25 @@
         if (!res.ok) {
           var apiErr = new Error(data.error || ('HTTP ' + res.status));
           apiErr.data = data; apiErr.status = res.status;
+          // 401 global: token invalido/expirado em qualquer endpoint
+          // autenticado → limpa storage e manda pro login preservando destino.
+          // Não dispara em paginas publicas (login, cadastro, recuperar, etc).
+          // Não dispara em /auth/login porque ai é "credenciais invalidas" — UX
+          // específica é feita pelo initLogin.
+          if (res.status === 401 && path.indexOf('/auth/login') !== 0
+              && path.indexOf('/auth/register') !== 0
+              && path.indexOf('/auth/google') !== 0
+              && path.indexOf('/auth/forgot') !== 0
+              && path.indexOf('/auth/reset') !== 0) {
+            try { STORE.clear(); } catch (e) {}
+            var hereU = location.pathname + location.search;
+            var publicPages = ['login.html','cadastro.html','recuperar-senha.html',
+                               'redefinir-senha.html','validacao.html','index.html'];
+            // só redireciona se nao estiver ja numa pagina publica
+            if (publicPages.indexOf(PAGE) < 0) {
+              location.href = '/login.html?next=' + encodeURIComponent(hereU);
+            }
+          }
           throw apiErr;
         }
         return data;
@@ -175,6 +238,136 @@
     });
   }
 
+  // ---- Helper: cta-row de páginas marketing vira widget de user logado ----
+  // Páginas como comprar-pontos.html, vender-pontos.html, resgates.html,
+  // parceiros.html, index.html têm:
+  //   <div class="cta-row">
+  //     <a href="login.html" class="button ghost">Entrar</a>
+  //     <a href="cadastro.html" class="button">Cadastre-se</a>
+  //   </div>
+  // Quando logado, troca por: 🔔 + "Olá, Nome" + Sair, igual ao dashboard.
+  function replaceLandingCtaWithUserWidget(firstName) {
+    var ctaRows = $$('.cta-row');
+    if (!ctaRows.length) return;
+    ctaRows.forEach(function (row) {
+      // Detecta padrão "Entrar/Cadastre-se"
+      var hasEntrar = false;
+      row.querySelectorAll('a').forEach(function (a) {
+        var txt = a.textContent.trim().toLowerCase();
+        if (txt === 'entrar' || txt === 'cadastre-se' || txt === 'cadastrar') hasEntrar = true;
+      });
+      if (!hasEntrar) return; // já é versão logada
+      // Substitui o conteúdo da cta-row
+      row.innerHTML =
+        '<a href="central-notificacoes.html" class="button ghost" aria-label="Notificações" title="Notificações">🔔</a>' +
+        '<a href="perfil.html" class="button secondary">Olá, ' + firstName + '</a>' +
+        '<a href="login.html" class="button ghost" data-bx-logout="1" aria-label="Sair" title="Sair">↩</a>';
+      // Wire o handler de logout no link novo
+      var logoutLink = row.querySelector('[data-bx-logout]');
+      if (logoutLink) {
+        logoutLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          api('/auth/logout', { method: 'POST' }).catch(function () {}).then(function () {
+            STORE.clear();
+            location.href = '/login.html';
+          });
+        });
+      }
+    });
+  }
+
+  // ---- Helper: injeta sidebar nas páginas de OPERAÇÃO logadas sem ela ----
+  // Garante "navegabilidade pelo menu lateral" mesmo nas páginas que
+  // historicamente eram "marketing/landing" (comprar-pontos, vender-pontos,
+  // resgates, parceiros) — quando o usuário está logado.
+  //
+  // Estratégia: detecta páginas sem .sidebar mas com <main>, envolve em
+  // .app-shell e prepende o aside com o menu padrão (mesmos itens do
+  // dashboard).
+  function injectSidebarIfMissing(user) {
+    // Já tem sidebar? nada a fazer.
+    if (document.querySelector('aside.sidebar')) return;
+
+    // Páginas onde NÃO injetamos (truly public OR checkout/standalone)
+    var skip = ['index.html','login.html','cadastro.html','recuperar-senha.html',
+                'redefinir-senha.html','validacao.html','termos.html',
+                'documentos-termos.html','como-funciona.html','comprar-livre.html',
+                'sitemap.html','manutencao.html','404.html','splash.html',
+                'app.html','admin.html','design-system.html','convite.html'];
+    if (skip.indexOf(PAGE) >= 0) return;
+
+    // Precisa de um <main> pra envolver
+    var mainEl = document.querySelector('main.shell, main');
+    if (!mainEl) return;
+
+    // Side ativo: lê data-link do header, ou usa o PAGE
+    var pageBase = PAGE.replace('.html', '');
+
+    var sideMenu = [
+      { id: 'dashboard',     icon: '●',  label: 'Início',         href: 'dashboard.html' },
+      { id: 'carteira',      icon: '◆',  label: 'Carteira',       href: 'carteira.html' },
+      { id: 'extrato',       icon: '≡',  label: 'Extrato',         href: 'extrato.html' },
+      { id: 'parceiros',     icon: '⊙',  label: 'Parceiros',      href: 'parceiros.html' },
+      { id: 'resgates',      icon: '★',  label: 'Resgates',       href: 'resgates.html' },
+      { id: 'meus-resgates', icon: '✓',  label: 'Meus resgates',  href: 'meus-resgates.html' },
+      { id: 'campanhas',     icon: '▲',  label: 'Campanhas',      href: 'campanhas.html' },
+      { id: 'comprar-pontos',icon: '+',  label: 'Comprar pontos', href: 'comprar-pontos.html' },
+      { id: 'vender-pontos', icon: '−',  label: 'Vender pontos',  href: 'vender-pontos.html' },
+      { id: 'enviar-pontos', icon: '→',  label: 'Enviar pontos',  href: 'enviar-pontos.html' },
+      { id: 'indique',       icon: '♥',  label: 'Indique e ganhe',href: 'indique-ganhe.html' }
+    ];
+    var sideFoot = [
+      { id: 'perfil',    icon: '⚙', label: 'Perfil',     href: 'perfil.html' },
+      { id: 'seguranca', icon: '🔒', label: 'Segurança',  href: 'seguranca.html' },
+      { id: 'ajuda',     icon: '?',  label: 'Ajuda',      href: 'central-ajuda.html' }
+    ];
+    var avatarLetter = ((user.name || '?')[0] || '?').toUpperCase();
+    function buildItems(items) {
+      return items.map(function (it) {
+        var active = (pageBase === it.id) ? ' style="background:var(--black);color:var(--lime);font-weight:700;"' : '';
+        return '<li><a href="' + it.href + '" data-side="' + it.id + '"' + active + '><span class="ic">' + it.icon + '</span> ' + it.label + '</a></li>';
+      }).join('');
+    }
+    var sidebarHtml =
+      '<div class="side-user">' +
+        '<div class="avatar">' + avatarLetter + '</div>' +
+        '<div>' +
+          '<div class="side-user-name">' + (user.name || '') + '</div>' +
+          '<div class="side-user-tier">Plano Plus</div>' +
+        '</div>' +
+      '</div>' +
+      '<ul class="side-nav">' + buildItems(sideMenu) + '</ul>' +
+      '<div class="side-foot"><ul class="side-nav">' + buildItems(sideFoot) +
+        '<li><a href="#" data-bx-logout-side="1"><span class="ic">↩</span> Sair</a></li>' +
+      '</ul></div>';
+
+    // Cria o <aside> e wrapper .app-shell
+    var aside = document.createElement('aside');
+    aside.className = 'sidebar';
+    aside.innerHTML = sidebarHtml;
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'app-shell';
+
+    // Pega o pai do <main>, faz: <wrapper>[<aside>][<main>]</wrapper>
+    var parent = mainEl.parentNode;
+    parent.insertBefore(wrapper, mainEl);
+    wrapper.appendChild(aside);
+    wrapper.appendChild(mainEl);
+
+    // Wire logout do sidebar
+    var sideLogout = aside.querySelector('[data-bx-logout-side]');
+    if (sideLogout) {
+      sideLogout.addEventListener('click', function (e) {
+        e.preventDefault();
+        api('/auth/logout', { method: 'POST' }).catch(function () {}).then(function () {
+          STORE.clear();
+          location.href = '/login.html';
+        });
+      });
+    }
+  }
+
   // ---- Substitui textos hardcoded da Mariana pelos do user logado ----
   // Em duas etapas:
   //   1. Imediato — usa apenas STORE.user(), troca nome/avatar/botao "Olá".
@@ -197,6 +390,16 @@
         b.textContent = 'Olá, ' + firstName;
       }
     });
+    // Páginas estilo "marketing/landing" (comprar-pontos, vender, resgates,
+    // parceiros) têm cta-row com "Entrar/Cadastre-se" em vez de "Olá X".
+    // Quando logado, substitui pelo widget de user (notificações + nome + sair).
+    replaceLandingCtaWithUserWidget(firstName);
+
+    // Injeta sidebar dinamicamente em páginas de OPERAÇÃO logadas que estão
+    // sem ela (comprar-pontos, vender-pontos, resgates, parceiros). Garante
+    // navegabilidade entre as áreas do app sem voltar ao dashboard.
+    injectSidebarIfMissing(u);
+
     // Substituicao de texto generica (cobre <strong>Mariana Costa</strong> etc)
     // — passa um wallet "vazio" pra nao tocar nos numericos ainda
     replaceHardcoded({ balance_pts: 0, pending_pts: 0, balance_brl_equiv: 0 }, { skip_numeric: true });
