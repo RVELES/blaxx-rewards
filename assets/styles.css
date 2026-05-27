@@ -621,17 +621,17 @@ p.lead { font-size: 18px; color: var(--ink-2); }
     color: var(--lime);
     font-weight: 700;
 }
-/* Icones da sidebar — 1.5x maior conforme pedido.
-   Antes: 18x18 com font 11px. Agora: 28x28 com font 18px.
-   Background transparente (fundo lime ficava ruim com emoji colorido). */
+/* Icones da sidebar — 1.5x sobre o tamanho anterior (28→42px) conforme
+   segundo pedido do usuario. Background transparente porque emojis ja
+   tem cores proprias e fundo lime conflitava com elas. */
 .side-nav .ic {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
     background: transparent;
     display: grid;
     place-items: center;
-    font-size: 18px;
+    font-size: 27px;
     line-height: 1;
     flex-shrink: 0;
 }
