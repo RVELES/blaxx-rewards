@@ -607,10 +607,10 @@ p.lead { font-size: 18px; color: var(--ink-2); }
 .side-nav a {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 11px 13px;
+    gap: 12px;            /* maior pra acomodar icones 1.5x */
+    padding: 12px 14px;
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 15px;      /* discreto bump pra balancear com icones */
     color: var(--ink-2);
     font-weight: 500;
     transition: all 0.15s;
@@ -621,16 +621,19 @@ p.lead { font-size: 18px; color: var(--ink-2); }
     color: var(--lime);
     font-weight: 700;
 }
+/* Icones da sidebar — 1.5x maior conforme pedido.
+   Antes: 18x18 com font 11px. Agora: 28x28 com font 18px.
+   Background transparente (fundo lime ficava ruim com emoji colorido). */
 .side-nav .ic {
-    width: 18px;
-    height: 18px;
-    border-radius: 6px;
-    background: var(--lime-soft);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: transparent;
     display: grid;
     place-items: center;
-    font-size: 11px;
-    font-weight: 900;
-    color: var(--ink);
+    font-size: 18px;
+    line-height: 1;
+    flex-shrink: 0;
 }
 .side-nav a.active .ic { background: var(--lime); color: var(--black); }
 .side-foot {

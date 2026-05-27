@@ -595,18 +595,23 @@
     if (!links) return;
 
     var pageBase = PAGE.replace('.html', '');
+    // Menu superior FIXO (pedido do usuario: aparecem sempre, em qualquer
+    // pagina, independente do que foi clicado). Reflete a navegacao
+    // institucional do produto. Funcoes pessoais (Carteira, Extrato,
+    // Campanhas, Indique) ficam na sidebar lateral.
     var menuItems = [
       { id: 'dashboard',      href: '/dashboard.html',      label: 'Início' },
-      { id: 'carteira',       href: '/carteira.html',       label: 'Carteira' },
-      { id: 'extrato',        href: '/extrato.html',        label: 'Extrato' },
+      { id: 'como-funciona',  href: '/como-funciona.html',  label: 'Como funciona' },
       { id: 'parceiros',      href: '/parceiros.html',      label: 'Parceiros' },
       { id: 'resgates',       href: '/resgates.html',       label: 'Resgates' },
       { id: 'comprar-pontos', href: '/comprar-pontos.html', label: 'Comprar pontos' },
-      { id: 'campanhas',      href: '/campanhas.html',      label: 'Campanhas' }
+      { id: 'venda-pontos',   href: '/venda-pontos.html',   label: 'Vender pontos' }
     ];
-    // "Inicio" ativa pra dashboard, index e qualquer pagina nao mapeada
+    // "Inicio" ativa pra dashboard, index e qualquer pagina nao mapeada.
+    // "Vender pontos" cobre as 2 paginas existentes (venda + vender legado).
     var activeId = pageBase;
     if (pageBase === 'index') activeId = 'dashboard';
+    if (pageBase === 'vender-pontos') activeId = 'venda-pontos';
 
     links.innerHTML = menuItems.map(function (it) {
       var active = (it.id === activeId) ? ' aria-current="page"' : '';
@@ -727,23 +732,26 @@
     // Side ativo: lê data-link do header, ou usa o PAGE
     var pageBase = PAGE.replace('.html', '');
 
+    // Icones alegres (emojis coloridos) substituindo simbolos geometricos
+    // antigos. Pedido: "icones mais alegres e 1,5x maior que o atual".
+    // Tamanho dos badges aumentado via CSS (.side-nav .ic).
     var sideMenu = [
-      { id: 'dashboard',     icon: '●',  label: 'Início',         href: 'dashboard.html' },
-      { id: 'carteira',      icon: '◆',  label: 'Carteira',       href: 'carteira.html' },
-      { id: 'extrato',       icon: '≡',  label: 'Extrato',         href: 'extrato.html' },
-      { id: 'parceiros',     icon: '⊙',  label: 'Parceiros',      href: 'parceiros.html' },
-      { id: 'resgates',      icon: '★',  label: 'Resgates',       href: 'resgates.html' },
-      { id: 'meus-resgates', icon: '✓',  label: 'Meus resgates',  href: 'meus-resgates.html' },
-      { id: 'campanhas',     icon: '▲',  label: 'Campanhas',      href: 'campanhas.html' },
-      { id: 'comprar-pontos',icon: '+',  label: 'Comprar pontos', href: 'comprar-pontos.html' },
-      { id: 'venda-pontos', icon: '−',  label: 'Vender pontos',  href: 'venda-pontos.html' },
-      { id: 'enviar-pontos', icon: '→',  label: 'Enviar pontos',  href: 'enviar-pontos.html' },
-      { id: 'indique',       icon: '♥',  label: 'Indique e ganhe',href: 'indique-ganhe.html' }
+      { id: 'dashboard',     icon: '🏠', label: 'Início',         href: 'dashboard.html' },
+      { id: 'carteira',      icon: '💳', label: 'Carteira',       href: 'carteira.html' },
+      { id: 'extrato',       icon: '📊', label: 'Extrato',        href: 'extrato.html' },
+      { id: 'parceiros',     icon: '🏬', label: 'Parceiros',      href: 'parceiros.html' },
+      { id: 'resgates',      icon: '🎁', label: 'Resgates',       href: 'resgates.html' },
+      { id: 'meus-resgates', icon: '🎟️', label: 'Meus resgates',  href: 'meus-resgates.html' },
+      { id: 'campanhas',     icon: '🎯', label: 'Campanhas',      href: 'campanhas.html' },
+      { id: 'comprar-pontos',icon: '💰', label: 'Comprar pontos', href: 'comprar-pontos.html' },
+      { id: 'venda-pontos',  icon: '💼', label: 'Vender pontos',  href: 'venda-pontos.html' },
+      { id: 'enviar-pontos', icon: '📤', label: 'Enviar pontos',  href: 'enviar-pontos.html' },
+      { id: 'indique',       icon: '💝', label: 'Indique e ganhe',href: 'indique-ganhe.html' }
     ];
     var sideFoot = [
-      { id: 'perfil',    icon: '⚙', label: 'Perfil',     href: 'perfil.html' },
-      { id: 'seguranca', icon: '🔒', label: 'Segurança',  href: 'seguranca.html' },
-      { id: 'ajuda',     icon: '?',  label: 'Ajuda',      href: 'central-ajuda.html' }
+      { id: 'perfil',    icon: '👤', label: 'Perfil',     href: 'perfil.html' },
+      { id: 'seguranca', icon: '🔐', label: 'Segurança',  href: 'seguranca.html' },
+      { id: 'ajuda',     icon: '💬', label: 'Ajuda',      href: 'central-ajuda.html' }
     ];
     var avatarLetter = ((user.name || '?')[0] || '?').toUpperCase();
     function buildItems(items) {
