@@ -121,6 +121,10 @@
   // sticky "Backend instavel" com botao de retry. Reset no 1o sucesso.
   // Nao dispara em 4xx (que sao falhas semanticas, nao infra).
   var _bxNetFailCount = 0;
+  var _bxAutoRecoverTimer = null;
+  var _bxAutoRecoverAttempts = 0;
+  var BX_AUTO_RECOVER_INTERVAL_MS = 30000;     // probe a cada 30s
+  var BX_AUTO_RECOVER_MAX_ATTEMPTS = 10;       // ate 5 minutos, depois desiste
 
   function _bxShowOfflineBanner() {
     if (document.getElementById('bx-offline-banner')) return;
@@ -133,7 +137,7 @@
       'padding:10px 16px;font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:600;' +
       'text-align:center;border-bottom:1px solid #f0c850;box-shadow:0 2px 6px rgba(0,0,0,.08);';
     bar.innerHTML =
-      '<span>⚠ Conexao instavel com o servidor. Algumas operacoes podem falhar.</span> ' +
+      '<span id="bx-offline-msg">⚠ Conexao instavel com o servidor. Tentando reconectar…</span> ' +
       '<button id="bx-offline-retry" style="margin-left:12px;background:#8a6500;color:#fff;border:0;' +
       'padding:4px 12px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;">' +
       'Verificar agora</button>';
@@ -142,17 +146,19 @@
     if (btn) {
       btn.addEventListener('click', function () {
         btn.disabled = true; btn.textContent = 'Testando...';
-        bxFetchJson(API + '/health', { timeoutMs: 10000 })
-          .then(function () { _bxHideOfflineBanner(); _bxNetFailCount = 0; })
-          .catch(function () {
-            btn.disabled = false; btn.textContent = 'Verificar agora';
-          });
+        _bxProbeHealth().then(function (ok) {
+          if (ok) { _bxHideOfflineBanner(); _bxNetFailCount = 0; _bxStopAutoRecover(); }
+          else { btn.disabled = false; btn.textContent = 'Verificar agora'; }
+        });
       });
     }
+    // Inicia auto-recover em background (cancelavel)
+    _bxStartAutoRecover();
   }
   function _bxHideOfflineBanner() {
     var b = document.getElementById('bx-offline-banner');
     if (b) b.remove();
+    _bxStopAutoRecover();
   }
   function _bxNetFailureTick() {
     _bxNetFailCount++;
@@ -162,6 +168,41 @@
     if (_bxNetFailCount > 0) {
       _bxNetFailCount = 0;
       _bxHideOfflineBanner();
+    }
+  }
+
+  // Probe /healthz com timeout curto. Resolve true se backend respondeu OK.
+  function _bxProbeHealth() {
+    return bxFetchJson(API + '/healthz', { timeoutMs: 8000 })
+      .then(function () { return true; })
+      .catch(function () { return false; });
+  }
+
+  // Auto-recover: probe periodico ate backend voltar OU desistir apos 5min.
+  // Custo total: ate 10 GETs no /healthz (handler de <2ms cada). Negligenciavel.
+  function _bxStartAutoRecover() {
+    if (_bxAutoRecoverTimer) return;
+    _bxAutoRecoverAttempts = 0;
+    _bxAutoRecoverTimer = setInterval(function () {
+      _bxAutoRecoverAttempts++;
+      if (_bxAutoRecoverAttempts > BX_AUTO_RECOVER_MAX_ATTEMPTS) {
+        _bxStopAutoRecover();
+        var msg = document.getElementById('bx-offline-msg');
+        if (msg) msg.innerHTML = '⚠ Backend indisponivel ha muito tempo. Atualize a pagina.';
+        return;
+      }
+      _bxProbeHealth().then(function (ok) {
+        if (ok) {
+          _bxNetFailCount = 0;
+          _bxHideOfflineBanner();
+        }
+      });
+    }, BX_AUTO_RECOVER_INTERVAL_MS);
+  }
+  function _bxStopAutoRecover() {
+    if (_bxAutoRecoverTimer) {
+      clearInterval(_bxAutoRecoverTimer);
+      _bxAutoRecoverTimer = null;
     }
   }
 
