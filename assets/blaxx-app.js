@@ -1590,6 +1590,44 @@
   function initSeguranca() {
     if (!requireAuth()) return;
 
+    // ------ Detecta Google-only e oferece "Definir senha" ------
+    // Faz fetch /auth/me upfront pra decidir se mostra form ou hint.
+    api('/auth/me').then(function (d) {
+      var u = (d && d.user) || d || {};
+      STORE.setUser(u);
+      var googleOnly = (u.has_password === false) || (u.auth_provider === 'google' && !u.has_password);
+      var formS = $('#form-senha');
+      if (googleOnly && formS) {
+        // Esconde form de "senha atual" + mostra CTA "Definir senha"
+        formS.style.display = 'none';
+        var card = formS.closest('.card');
+        if (card && !$('#bx-google-only-hint')) {
+          var hint = document.createElement('div');
+          hint.id = 'bx-google-only-hint';
+          hint.style.cssText = 'padding:14px;border-radius:10px;background:#e8f3ff;border:1px solid #c1ddff;font-size:13px;line-height:1.5;margin-top:12px;color:#1c4f87;';
+          hint.innerHTML =
+            '<strong>Sua conta entra via Google.</strong> ' +
+            'Você ainda não tem senha local. Para também acessar por email+senha, ' +
+            'envie um link de definição de senha para o seu email.' +
+            '<button type="button" id="bx-send-first-password" class="button" style="margin-top:10px;display:block;">Receber link para definir senha</button>';
+          card.appendChild(hint);
+          $('#bx-send-first-password').addEventListener('click', function () {
+            var btn = this;
+            btn.disabled = true; var orig = btn.textContent; btn.textContent = 'Enviando…';
+            api('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: u.email }) })
+              .then(function () {
+                notify('Link enviado para ' + u.email + '. Confira sua caixa.', 'ok');
+                btn.textContent = '✓ Link enviado';
+              })
+              .catch(function () {
+                notify('Falha ao enviar', 'err');
+                btn.disabled = false; btn.textContent = orig;
+              });
+          });
+        }
+      }
+    }).catch(function () { /* offline: deixa o form normal */ });
+
     // ------ 1. Trocar senha ------
     var formSenha = $('#form-senha');
     if (formSenha) {
