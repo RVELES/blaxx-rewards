@@ -621,6 +621,60 @@
     }).join('');
   }
 
+  // ---- Helper: atualiza icones de sidebars hardcoded no HTML ----
+  // Paginas como dashboard.html, carteira.html, extrato.html, perfil.html,
+  // seguranca.html etc tem sidebar inline com simbolos geometricos antigos
+  // (●, ◆, ≡, ⊙, ★, ✓, ▲, +, −, →, ♥, ⚙, 🔒, ?, ↩).
+  // Reescreve cada badge .ic baseado no data-side do <a> ancestral. Mais
+  // robusto que match por texto. Cobre 100% das sidebars em runtime.
+  var SIDEBAR_ICON_BY_SIDE = {
+    'dashboard':      '🏠',
+    'carteira':       '💳',
+    'extrato':        '📊',
+    'parceiros':      '🏬',
+    'resgates':       '🎁',
+    'meus-resgates':  '🎟️',
+    'campanhas':      '🎯',
+    'comprar-pontos': '💰',
+    'venda-pontos':   '💼',
+    'vender-pontos':  '💼',
+    'enviar-pontos':  '📤',
+    'indique':        '💝',
+    'indique-ganhe':  '💝',
+    'perfil':         '👤',
+    'seguranca':      '🔐',
+    'ajuda':          '💬',
+    'central-ajuda':  '💬',
+    'sair':           '🚪',
+    'logout':         '🚪'
+  };
+  function upgradeHardcodedSidebarIcons() {
+    var sidebar = document.querySelector('aside.sidebar');
+    if (!sidebar) return;
+    sidebar.querySelectorAll('a[data-side]').forEach(function (a) {
+      var side = a.getAttribute('data-side');
+      var newIcon = SIDEBAR_ICON_BY_SIDE[side];
+      if (!newIcon) return;
+      var ic = a.querySelector('.ic');
+      if (ic) ic.textContent = newIcon;
+    });
+    // Cobre links de "Sair" hardcoded — alguns templates tem so
+    // <a href="login.html">Sair</a> sem data attribute. Detecta por
+    // href (login.html) + texto (Sair/Logout).
+    sidebar.querySelectorAll('a').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      var txt = (a.textContent || '').toLowerCase();
+      var isLogout = (
+        a.hasAttribute('data-bx-logout-side') ||
+        a.hasAttribute('data-bx-logout') ||
+        (/login(\.html)?(\?|#|$)/.test(href) && (txt.indexOf('sair') >= 0 || txt.indexOf('logout') >= 0))
+      );
+      if (!isLogout) return;
+      var ic = a.querySelector('.ic');
+      if (ic) ic.textContent = '🚪';
+    });
+  }
+
   // ---- Helper: oculta TODOS os links de login/cadastro quando logado ----
   // Cobre casos que replaceLandingCtaWithUserWidget nao alcanca:
   //  - <li><a href="login.html">Entrar</a></li> no footer "Conta"
@@ -843,6 +897,11 @@
     // sem ela (comprar-pontos, vender-pontos, resgates, parceiros). Garante
     // navegabilidade entre as áreas do app sem voltar ao dashboard.
     injectSidebarIfMissing(u);
+
+    // Atualiza icones de sidebars HARDCODED no HTML (dashboard, carteira,
+    // extrato, perfil, seguranca etc tem sidebar inline com simbolos
+    // geometricos antigos). Reescreve os badges .ic via data-side.
+    upgradeHardcodedSidebarIcons();
 
     // Substituicao de texto generica (cobre <strong>Mariana Costa</strong> etc)
     // — passa um wallet "vazio" pra nao tocar nos numericos ainda
