@@ -2152,17 +2152,55 @@
   function logoutAndRedirect() {
     api('/auth/logout', { method: 'POST' }).catch(function () {}).then(function () {
       STORE.clear();
-      location.href = '/login';
+      location.href = '/login.html';
     });
   }
   window.blaxxLogout = logoutAndRedirect;
 
+  // ---- Handler global de cliques em "Sair" e "Entrar" hardcoded no HTML ----
+  // Muitas páginas têm <a href="login.html">Sair</a> direto no HTML, sem JS
+  // anexado. Sem este handler, o link só navega pra login.html sem limpar
+  // o STORE — usuário acha que "deslogou" mas o token continua, causando
+  // bounce de volta pro dashboard via redirectIfLoggedIn.
+  //
+  // Solução: event delegation no document — intercepta TODO <a> que aponta
+  // pra login.html e analisa o texto pra decidir:
+  //   - "Sair", "Logout", "↩ Sair" → executa logout completo
+  //   - "Entrar" → se logado, vai pro dashboard (não faz nada confuso)
+  function installGlobalLogoutHandler() {
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      // Só intercepta links pra /login (com ou sem .html, com ou sem path)
+      if (!/^\/?login(\.html)?(\?|#|$)/.test(href) && href.indexOf('login.html') < 0) return;
+      var text = (a.textContent || '').trim().toLowerCase();
+      // Sair → logout proper
+      if (text.indexOf('sair') >= 0 || text.indexOf('logout') >= 0) {
+        e.preventDefault();
+        logoutAndRedirect();
+        return;
+      }
+      // Entrar / Cadastre-se quando JÁ logado → manda pro dashboard
+      // (evita o bounce visível login→dashboard)
+      if (STORE.token() && (text.indexOf('entrar') >= 0 || text.indexOf('cadastre') >= 0)) {
+        e.preventDefault();
+        location.href = '/dashboard.html';
+      }
+    }, true);
+  }
+
   // ---- Redirect logado tentando acessar /login ou /cadastro ----
+  // SINCRONO: redireciona imediatamente se ha token, pra evitar flash da
+  // tela de login. Se o token vier a ser invalido, o /auth/me no dashboard
+  // dispara o 401 handler global e bounca o user pro login proper.
+  // Retorna true se redirecionou (caller deve nao inicializar nada).
   function redirectIfLoggedIn() {
     if (STORE.token()) {
-      // valida o token contra /auth/me — se falhar, limpa e fica
-      api('/auth/me').then(function () { location.href = '/dashboard'; }).catch(function () { STORE.clear(); });
+      location.href = '/dashboard.html';
+      return true;
     }
+    return false;
   }
 
   // =========================================================================
@@ -2174,8 +2212,8 @@
   var PAGE = rawPage.indexOf('.') >= 0 ? rawPage : rawPage + '.html';
   if (PAGE === '.html' || PAGE === '') PAGE = 'index.html';
   var INITS = {
-    'login.html': function () { redirectIfLoggedIn(); initLogin(); },
-    'cadastro.html': function () { redirectIfLoggedIn(); initCadastro(); },
+    'login.html': function () { if (redirectIfLoggedIn()) return; initLogin(); },
+    'cadastro.html': function () { if (redirectIfLoggedIn()) return; initCadastro(); },
     'recuperar-senha.html': initRecuperarSenha,
     'redefinir-senha.html': initRedefinirSenha,
     'validacao.html': initValidacao,
@@ -2200,6 +2238,10 @@
   };
 
   function bootstrap() {
+    // Instala interceptador global de Sair/Entrar SEMPRE — funciona logado
+    // ou deslogado e em qualquer página com links pra /login.html.
+    installGlobalLogoutHandler();
+
     var initFn = INITS[PAGE];
     if (initFn) initFn();
     // applyUserToShell é idempotente — chama SEMPRE que houver token,
