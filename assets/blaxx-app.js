@@ -868,7 +868,7 @@
 
       if (!nome.trim() || nome.trim().split(/\s+/).length < 2) { notify('Informe nome completo (nome e sobrenome)', 'warn'); return; }
       if (!email.trim()) { notify('Informe um email válido', 'warn'); return; }
-      if (!passwordStrength(senha).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
+      if (!passwordStrength(senha).ok) { notify('Senha fraca: use 10+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
       if (senha !== senhaConfirm) { notify('Confirmação de senha não confere', 'warn'); return; }
       if (!termos) { notify('Você precisa aceitar os termos e a política de privacidade', 'warn'); return; }
 
@@ -884,8 +884,13 @@
         cpf: cpf.replace(/\D/g, ''),
         password: senha,
         password_confirm: senhaConfirm,
+        // Backend exige 3 aceites separados (Termos, Privacidade, LGPD).
+        // Frontend simplifica com 1 checkbox cobrindo os 3 documentos —
+        // os links de "termos de uso" e "política de privacidade" do
+        // checkbox levam aos 3 docs.
         accept_terms: true,
         accept_privacy: true,
+        accept_lgpd: true,
         marketing_optin: news
       };
       api('/auth/register', { method: 'POST', body: JSON.stringify(body) })
@@ -1431,7 +1436,7 @@
   function passwordStrength(pwd) {
     pwd = pwd || '';
     var score = 0, hints = [];
-    if (pwd.length >= 8) score++; else hints.push('8+ caracteres');
+    if (pwd.length >= 10) score++; else hints.push('10+ caracteres');
     if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
     if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
     if (/\d/.test(pwd)) score++; else hints.push('número');
@@ -1501,7 +1506,7 @@
       e.preventDefault();
       var senha = (form.querySelector('#senha') || {}).value || '';
       var confirm = (form.querySelector('#senha-confirm') || {}).value || '';
-      if (!passwordStrength(senha).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
+      if (!passwordStrength(senha).ok) { notify('Senha fraca: use 10+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
       if (senha !== confirm) { notify('Confirmação não confere', 'warn'); return; }
       var btn = form.querySelector('button[type="submit"], button.button');
       var orig = btn ? btn.textContent : '';
@@ -1695,7 +1700,7 @@
         var nova = ($('#senha-nova') || {}).value || '';
         var confirm = ($('#senha-confirm') || {}).value || '';
         if (!current) { notify('Informe sua senha atual', 'warn'); return; }
-        if (!passwordStrength(nova).ok) { notify('Senha fraca: use 8+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
+        if (!passwordStrength(nova).ok) { notify('Senha fraca: use 10+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
         if (nova !== confirm) { notify('Confirmação não confere', 'warn'); return; }
         var btn = formSenha.querySelector('button[type="submit"]');
         if (btn) btn.disabled = true;
