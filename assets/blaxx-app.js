@@ -34,6 +34,12 @@
     var bg = { ok: '#efffe6', err: '#ffede8', warn: '#fff7df', info: '#e8f3ff' }[kind];
     var color = { ok: '#2d651b', err: '#a83417', warn: '#8a6500', info: '#1c4f87' }[kind];
     var el = document.createElement('div');
+    // A11y: erros usam role=alert (assertivo, interrompe leitor de tela);
+    // outros usam role=status (polite, espera o leitor terminar).
+    // aria-live garante que o screen reader anuncie o conteudo dinamico.
+    el.setAttribute('role', kind === 'err' ? 'alert' : 'status');
+    el.setAttribute('aria-live', kind === 'err' ? 'assertive' : 'polite');
+    el.setAttribute('aria-atomic', 'true');
     el.style.cssText =
       'position:fixed;top:24px;right:24px;z-index:9999;background:' + bg +
       ';color:' + color + ';padding:14px 20px;border-radius:14px;font-family:Inter,sans-serif;' +
@@ -1425,10 +1431,12 @@
   // =========================================================================
   function initCampanhas() {
     if (!requireAuth()) return;
+    var container = $('#bx-campanhas-list');
+    if (!container) return;
+    bxRenderGridSkeleton(container, 4, 180);
+
     api('/campaigns/').then(function (d) {
       var items = d.items || [];
-      var container = $('#bx-campanhas-list');
-      if (!container) return;
       container.innerHTML = items.map(function (c) {
         var pct = c.progress_pct || 0;
         return '<div class="bx-camp-card" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;">'
@@ -1461,7 +1469,16 @@
             .catch(function (e) { notify(e.message, 'error'); });
         });
       });
-    }).catch(function (e) { notify(e.message, 'error'); });
+    }).catch(function (e) {
+      // Em vez de toast efêmero, mostra erro inline com retry — usuario tem
+      // contexto e botao pra acionar de novo sem precisar recarregar a pagina.
+      var cls = bxClassifyError(e, 'Endpoint /campaigns/ nao respondeu.');
+      bxRenderError({
+        kind: 'grid', host: container,
+        message: cls.message, hint: cls.hint,
+        onRetry: initCampanhas,
+      });
+    });
   }
 
   // =========================================================================
@@ -1581,7 +1598,10 @@
     api('/wallet/').then(applyWalletToShell).catch(function (e) { console.error(e); });
 
     var tbody = document.getElementById('wallet-tx-tbody');
-    if (tbody) {
+    if (!tbody) return;
+
+    function loadTx() {
+      bxRenderTableSkeleton(tbody, 4, 4);
       api('/wallet/transactions?limit=10').then(function (r) {
         var items = r.items || [];
         if (items.length === 0) {
@@ -1589,8 +1609,16 @@
         } else {
           tbody.innerHTML = items.map(function (t) { return renderTxRow(t, false); }).join('');
         }
+      }).catch(function (e) {
+        var cls = bxClassifyError(e, 'Endpoint /wallet/transactions nao respondeu.');
+        bxRenderError({
+          kind: 'row', host: tbody, cols: 4,
+          message: cls.message, hint: cls.hint,
+          onRetry: loadTx,
+        });
       });
     }
+    loadTx();
   }
 
   // =========================================================================
@@ -1636,41 +1664,52 @@
       });
     }
 
-    fetch(API + '/pix/packages').then(function (r) { return r.json(); }).then(function (data) {
-      var keys = Object.keys(data);
-      if (keys.length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum pacote disponível.</div>';
-        return;
-      }
-      // Ordem preferida
-      var order = ['start', 'plus', 'prime', 'black'];
-      keys.sort(function (a, b) {
-        return (order.indexOf(a) === -1 ? 99 : order.indexOf(a)) -
-               (order.indexOf(b) === -1 ? 99 : order.indexOf(b));
-      });
-      grid.innerHTML = keys.map(function (k) {
-        var p = data[k];
-        var featured = k === 'plus' ? ' featured' : '';
-        var ribbon = k === 'plus' ? '<span class="ribbon">Mais popular</span>' : '';
-        var btnClass = k === 'plus' ? 'button' : 'button secondary';
-        var bonus = k === 'start' ? 'Para começar'
-                  : k === 'plus' ? '+10% bônus'
-                  : k === 'prime' ? '+20% bônus'
-                  : k === 'black' ? '+40% bônus' : '';
-        var priceBRL = Number(p.price_brl).toFixed(2).replace('.', ',');
-        return '<div class="price-card' + featured + '">' +
-          ribbon +
-          '<div class="pname">' + (p.label || k) + '</div>' +
-          '<div class="price">R$ ' + priceBRL + '</div>' +
-          '<div class="pts-line">' + fmt(p.points) + ' pts</div>' +
-          '<div class="bonus">' + bonus + '</div>' +
-          '<a href="comprar-livre.html?pkg=' + k + '" data-pkg="' + k + '" class="bx-buy-pkg ' + btnClass + '">Comprar agora</a>' +
-          '</div>';
-      }).join('');
-      attachPkgClickHandlers();
-    }).catch(function () {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar pacotes. Recarregue a página.</div>';
-    });
+    function loadPackages() {
+      bxRenderGridSkeleton(grid, 4, 220);
+      bxFetchJson(API + '/pix/packages', { timeoutMs: 20000 })
+        .then(function (data) {
+          var keys = Object.keys(data);
+          if (keys.length === 0) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum pacote disponível.</div>';
+            return;
+          }
+          // Ordem preferida
+          var order = ['start', 'plus', 'prime', 'black'];
+          keys.sort(function (a, b) {
+            return (order.indexOf(a) === -1 ? 99 : order.indexOf(a)) -
+                   (order.indexOf(b) === -1 ? 99 : order.indexOf(b));
+          });
+          grid.innerHTML = keys.map(function (k) {
+            var p = data[k];
+            var featured = k === 'plus' ? ' featured' : '';
+            var ribbon = k === 'plus' ? '<span class="ribbon">Mais popular</span>' : '';
+            var btnClass = k === 'plus' ? 'button' : 'button secondary';
+            var bonus = k === 'start' ? 'Para começar'
+                      : k === 'plus' ? '+10% bônus'
+                      : k === 'prime' ? '+20% bônus'
+                      : k === 'black' ? '+40% bônus' : '';
+            var priceBRL = Number(p.price_brl).toFixed(2).replace('.', ',');
+            return '<div class="price-card' + featured + '">' +
+              ribbon +
+              '<div class="pname">' + (p.label || k) + '</div>' +
+              '<div class="price">R$ ' + priceBRL + '</div>' +
+              '<div class="pts-line">' + fmt(p.points) + ' pts</div>' +
+              '<div class="bonus">' + bonus + '</div>' +
+              '<a href="comprar-livre.html?pkg=' + k + '" data-pkg="' + k + '" class="bx-buy-pkg ' + btnClass + '">Comprar agora</a>' +
+              '</div>';
+          }).join('');
+          attachPkgClickHandlers();
+        })
+        .catch(function (err) {
+          var cls = bxClassifyError(err, 'Endpoint /pix/packages nao respondeu.');
+          bxRenderError({
+            kind: 'grid', host: grid,
+            message: cls.message, hint: cls.hint,
+            onRetry: loadPackages,
+          });
+        });
+    }
+    loadPackages();
   }
 
   // =========================================================================
@@ -1707,22 +1746,164 @@
     }
 
     window.reloadParceiros = render;
-    fetch(API + '/partners/').then(function (r) { return r.json(); }).then(function (data) {
-      ALL_PARTNERS = data.items || [];
-      // Popula filtro de categorias
-      var cats = {};
-      ALL_PARTNERS.forEach(function (p) { if (p.category) cats[p.category] = true; });
-      var $cat = document.getElementById('pt-cat');
-      if ($cat) {
-        Object.keys(cats).sort().forEach(function (c) {
-          var opt = document.createElement('option');
-          opt.value = c; opt.textContent = c;
-          $cat.appendChild(opt);
+
+    function loadPartners() {
+      bxRenderGridSkeleton(grid, 8, 110);
+      bxFetchJson(API + '/partners/', { timeoutMs: 20000 })
+        .then(function (data) {
+          ALL_PARTNERS = data.items || [];
+          // Popula filtro de categorias (reset antes pra evitar duplicacao no retry)
+          var cats = {};
+          ALL_PARTNERS.forEach(function (p) { if (p.category) cats[p.category] = true; });
+          var $cat = document.getElementById('pt-cat');
+          if ($cat) {
+            $cat.innerHTML = '<option value="">Todas as categorias</option>';
+            Object.keys(cats).sort().forEach(function (c) {
+              var opt = document.createElement('option');
+              opt.value = c; opt.textContent = c;
+              $cat.appendChild(opt);
+            });
+          }
+          render();
+        })
+        .catch(function (err) {
+          var cls = bxClassifyError(err, 'Endpoint /partners/ nao respondeu.');
+          bxRenderError({
+            kind: 'grid', host: grid,
+            message: cls.message, hint: cls.hint,
+            onRetry: loadPartners,
+          });
         });
-      }
-      render();
-    }).catch(function () {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar parceiros.</div>';
+    }
+    loadPartners();
+  }
+
+  // =========================================================================
+  // Helpers de resiliência pra telas dinâmicas (Wave 2 da auditoria)
+  // =========================================================================
+  // Padrao unificado em todas as paginas que dependem de fetch do backend:
+  //   1. Skeleton com pulse animation enquanto carrega.
+  //   2. AbortController + timeout duro (20s — Render free cold start ~10s).
+  //   3. Mensagem de erro com contexto (cold start vs offline vs 5xx).
+  //   4. Botao "Tentar novamente" que chama de novo a funcao de load.
+  // ---------------------------------------------------------------------------
+
+  // Injeta keyframe da animacao de pulse uma vez por sessao
+  function _ensureSkeletonStyle() {
+    if (document.getElementById('bx-skeleton-style')) return;
+    var st = document.createElement('style');
+    st.id = 'bx-skeleton-style';
+    st.textContent = '@keyframes bxPulse{from{opacity:.55}to{opacity:1}}' +
+      '.bx-skeleton{background:#f5f7f0;border-radius:14px;animation:bxPulse 1.4s ease-in-out infinite alternate;}' +
+      '.bx-skeleton-line{background:#f5f7f0;border-radius:6px;height:14px;animation:bxPulse 1.4s ease-in-out infinite alternate;}';
+    document.head.appendChild(st);
+  }
+
+  // Renderiza skeleton de cards num <grid>. count = quantos placeholders.
+  function bxRenderGridSkeleton(host, count, height) {
+    _ensureSkeletonStyle();
+    var n = count || 6;
+    var h = height || 160;
+    host.innerHTML = '<div style="grid-column:1/-1;display:grid;' +
+      'grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">' +
+      Array(n).fill(0).map(function () {
+        return '<div class="bx-skeleton" style="height:' + h + 'px;"></div>';
+      }).join('') +
+    '</div>';
+  }
+
+  // Skeleton de linhas pra tabela <tbody>.
+  function bxRenderTableSkeleton(tbody, cols, rows) {
+    _ensureSkeletonStyle();
+    var nRows = rows || 5;
+    var nCols = cols || 5;
+    var rowHtml = '<tr>' + Array(nCols).fill(0).map(function () {
+      return '<td style="padding:14px;"><div class="bx-skeleton-line"></div></td>';
+    }).join('') + '</tr>';
+    tbody.innerHTML = Array(nRows).fill(rowHtml).join('');
+  }
+
+  // Renderiza erro com botao de retry. opts = {kind: 'grid'|'row', host, cols,
+  // message, hint, onRetry, color}.
+  function bxRenderError(opts) {
+    var color = opts.color || '#a83417';
+    var msg = opts.message || 'Falha ao carregar.';
+    var hint = opts.hint || 'Verifique sua conexao e tente de novo.';
+    var btnId = 'bx-retry-' + Math.random().toString(36).slice(2, 8);
+    var btn = '<button type="button" id="' + btnId + '" ' +
+      'style="background:var(--lime,#C6F432);color:var(--ink,#080907);border:0;padding:10px 20px;' +
+      'border-radius:999px;font-weight:700;cursor:pointer;margin-top:14px;font-size:13px;">' +
+      '↻ Tentar novamente</button>';
+    var body =
+      '<div style="text-align:center;padding:32px 24px;color:' + color + ';">' +
+        '<div style="font-size:32px;margin-bottom:8px;">⚠</div>' +
+        '<div style="font-size:16px;font-weight:700;margin-bottom:4px;color:var(--ink,#080907);">' + msg + '</div>' +
+        '<div style="font-size:13px;color:var(--muted,#5f665e);margin-bottom:6px;max-width:420px;margin-left:auto;margin-right:auto;">' +
+          hint +
+        '</div>' +
+        btn +
+      '</div>';
+    if (opts.kind === 'row') {
+      opts.host.innerHTML = '<tr><td colspan="' + (opts.cols || 5) + '">' + body + '</td></tr>';
+    } else {
+      opts.host.innerHTML = '<div style="grid-column:1/-1;">' + body + '</div>';
+    }
+    var b = document.getElementById(btnId);
+    if (b && typeof opts.onRetry === 'function') b.addEventListener('click', opts.onRetry);
+  }
+
+  // Helper: erro -> {message, hint} com base na causa (timeout vs offline vs 5xx)
+  function bxClassifyError(err, ctx) {
+    var name = (err && err.name) || '';
+    var status = (err && err.status) || 0;
+    if (name === 'AbortError') {
+      return {
+        message: 'Tempo esgotado',
+        hint: 'O servidor demorou demais (cold start até 30s no plano free do Render). Tente de novo em alguns segundos.',
+      };
+    }
+    if (status === 401) {
+      return { message: 'Sessão expirada', hint: 'Faça login novamente.' };
+    }
+    if (status === 404) {
+      return { message: 'Recurso não encontrado', hint: (ctx || 'O endpoint procurado nao existe neste servidor.') };
+    }
+    if (status >= 500) {
+      return { message: 'Erro no servidor (' + status + ')', hint: 'O backend reportou erro interno. Tente em alguns minutos.' };
+    }
+    if (status === 0 || !status) {
+      return { message: 'Sem conexão', hint: 'Verifique sua internet ou se o backend esta online.' };
+    }
+    return { message: 'Erro inesperado', hint: (err && err.message) || 'Tente recarregar a pagina.' };
+  }
+
+  // fetch + timeout duro + parse JSON. Retorna Promise com {data, status}.
+  // Em erro, throwa Error com .name='AbortError' (timeout) ou .status (HTTP).
+  function bxFetchJson(url, opts) {
+    opts = opts || {};
+    var timeoutMs = opts.timeoutMs || 20000;
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, timeoutMs);
+
+    var fetchOpts = Object.assign({}, opts, ctrl ? { signal: ctrl.signal } : {});
+    delete fetchOpts.timeoutMs;
+
+    return fetch(url, fetchOpts).then(function (r) {
+      clearTimeout(timer);
+      return r.text().then(function (raw) {
+        var data = {};
+        try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+        if (!r.ok) {
+          var e = new Error(data.error || ('HTTP ' + r.status));
+          e.status = r.status;
+          e.data = data;
+          throw e;
+        }
+        return data;
+      });
+    }).catch(function (err) {
+      clearTimeout(timer);
+      throw err;
     });
   }
 
@@ -1762,38 +1943,10 @@
 
     window.reloadResgates = render;
 
-    // Carrega beneficios com timeout duro (20s — backend Render free tier pode
-    // ter cold start ate 10s) + AbortController + retry button. Substitui o
-    // "Carregando..." infinito que ficava preso quando API estava offline.
     function loadBenefits() {
-      grid.innerHTML =
-        '<div id="rg-skeleton" style="grid-column:1/-1;display:grid;' +
-          'grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">' +
-          Array(6).fill(0).map(function () {
-            return '<div style="background:#f5f7f0;border-radius:14px;height:160px;' +
-              'animation:bxPulse 1.4s ease-in-out infinite alternate;"></div>';
-          }).join('') +
-        '</div>';
-      // Injeta keyframe da animacao uma vez
-      if (!document.getElementById('bx-skeleton-style')) {
-        var st = document.createElement('style');
-        st.id = 'bx-skeleton-style';
-        st.textContent = '@keyframes bxPulse{from{opacity:.6}to{opacity:1}}';
-        document.head.appendChild(st);
-      }
-
-      var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-      var timeoutId = setTimeout(function () {
-        if (ctrl) ctrl.abort();
-      }, 20000);
-
-      fetch(API + '/benefits/', ctrl ? { signal: ctrl.signal } : {})
-        .then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
+      bxRenderGridSkeleton(grid, 6, 160);
+      bxFetchJson(API + '/benefits/', { timeoutMs: 20000 })
         .then(function (data) {
-          clearTimeout(timeoutId);
           ALL_BENEFITS = data.items || [];
           var cats = {};
           ALL_BENEFITS.forEach(function (b) { if (b.category) cats[b.category] = true; });
@@ -1809,30 +1962,14 @@
           render();
         })
         .catch(function (err) {
-          clearTimeout(timeoutId);
-          var aborted = err && (err.name === 'AbortError');
-          var msgKind = aborted
-            ? 'Tempo esgotado.'
-            : 'Falha ao carregar benefícios.';
-          var hint = aborted
-            ? 'O servidor demorou demais pra responder. Pode estar em cold start (até 30s no plano free).'
-            : 'O backend pode estar offline ou indisponível neste momento.';
-          grid.innerHTML =
-            '<div style="grid-column:1/-1;text-align:center;padding:32px 24px;color:var(--ink);">' +
-              '<div style="font-size:32px;margin-bottom:8px;">⚠</div>' +
-              '<div style="font-size:16px;font-weight:700;margin-bottom:4px;">' + msgKind + '</div>' +
-              '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;max-width:420px;margin-left:auto;margin-right:auto;">' +
-                hint +
-              '</div>' +
-              '<button type="button" id="bx-retry-benefits" class="button" ' +
-                'style="background:var(--lime);color:var(--ink);border:0;padding:10px 20px;border-radius:999px;font-weight:700;cursor:pointer;">' +
-                '↻ Tentar novamente</button>' +
-            '</div>';
-          var retryBtn = document.getElementById('bx-retry-benefits');
-          if (retryBtn) retryBtn.addEventListener('click', loadBenefits);
+          var cls = bxClassifyError(err, 'Endpoint /benefits/ nao respondeu.');
+          bxRenderError({
+            kind: 'grid', host: grid,
+            message: cls.message, hint: cls.hint,
+            onRetry: loadBenefits,
+          });
         });
     }
-
     loadBenefits();
   }
 
@@ -1853,7 +1990,7 @@
       var typeFilter = ($('#ex-type') || {}).value || '';
       var search = (($('#ex-search') || {}).value || '').trim().toLowerCase();
       var tbody = $('#ex-tbody');
-      if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted);">Carregando…</td></tr>';
+      if (tbody) bxRenderTableSkeleton(tbody, 5, 6);
 
       var url = '/wallet/transactions?limit=200';
       api(url).then(function (r) {
@@ -1905,7 +2042,12 @@
         var $lf = document.getElementById('ex-last-fetch');
         if ($lf) $lf.textContent = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
       }).catch(function (e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:#a83417;">Erro: ' + (e.message || 'falha de rede') + '</td></tr>';
+        var cls = bxClassifyError(e, 'Endpoint /wallet/transactions nao respondeu.');
+        bxRenderError({
+          kind: 'row', host: tbody, cols: 5,
+          message: cls.message, hint: cls.hint,
+          onRetry: reload,
+        });
       });
 
       // Saldo atual da carteira (paridade Mac)
