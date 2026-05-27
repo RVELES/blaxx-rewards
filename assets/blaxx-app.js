@@ -2722,10 +2722,53 @@
     'central-notificacoes.html': initNotificacoes
   };
 
+  // A11y global: injeta skip link + marca aria-current nos nav items.
+  // Roda em TODAS as paginas (publicas e logadas), antes do init especifico.
+  function applyA11yGlobals() {
+    // 1. Skip link — primeiro elemento focavel da pagina, oculto ate Tab.
+    //    Pula direto pro <main>. Se main nao tem id, atribui um.
+    if (!document.querySelector('.bx-skip-link')) {
+      var mainEl = document.querySelector('main');
+      if (mainEl) {
+        if (!mainEl.id) mainEl.id = 'bx-main';
+        // Aria-label pra screen reader confirmar onde esta indo
+        if (!mainEl.hasAttribute('role')) mainEl.setAttribute('role', 'main');
+        var link = document.createElement('a');
+        link.className = 'bx-skip-link';
+        link.href = '#' + mainEl.id;
+        link.textContent = 'Pular para o conteúdo';
+        document.body.insertBefore(link, document.body.firstChild);
+      }
+    }
+
+    // 2. aria-current=page nos links de navegacao que apontam pra pagina atual.
+    //    Marca tanto rotas .html quanto pretty URLs. Screen readers anunciam
+    //    "current page" automaticamente nessa marcacao.
+    var here = PAGE.replace('.html', '');
+    var navLinks = document.querySelectorAll('header a[href], aside.sidebar a[href], aside.sidebar [onclick]');
+    navLinks.forEach(function (a) {
+      var href = (a.getAttribute('href') || '').replace(/^\//, '').replace('.html', '');
+      var onclick = a.getAttribute('onclick') || '';
+      // Detecta onclick="go('xxx.html')" ou href="xxx.html"
+      var matches = false;
+      if (href === here) matches = true;
+      var m = onclick.match(/go\(['"]([^'"]+)/);
+      if (m && m[1].replace('.html', '') === here) matches = true;
+      if (matches) a.setAttribute('aria-current', 'page');
+    });
+
+    // 3. Garante que <html lang="pt-BR"> esta presente (algumas paginas
+    //    podem ter sido criadas sem o attr).
+    if (!document.documentElement.lang) {
+      document.documentElement.lang = 'pt-BR';
+    }
+  }
+
   function bootstrap() {
     // Instala interceptador global de Sair/Entrar SEMPRE — funciona logado
     // ou deslogado e em qualquer página com links pra /login.html.
     installGlobalLogoutHandler();
+    applyA11yGlobals();
 
     var initFn = INITS[PAGE];
     if (initFn) initFn();
