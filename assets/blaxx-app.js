@@ -238,6 +238,215 @@
     });
   }
 
+  // ======================================================================
+  // ROTINA: exige email verificado antes de operações sensíveis (compra)
+  // ======================================================================
+  // Chame requireEmailVerifiedThen(callback) ANTES de qualquer fluxo que
+  // precise de email verificado. Se já está verificado, executa callback.
+  // Se não, mostra modal inline com:
+  //   1. Mensagem explicando que precisa confirmar email
+  //   2. Botão "Reenviar código" → POST /auth/verify-email/send
+  //   3. Input de 6 dígitos
+  //   4. Botão "Verificar" → POST /auth/verify-email
+  //   5. Após sucesso, fecha modal + executa callback original
+  //
+  // Estados:
+  //   - sending: animação no botão de reenviar
+  //   - sent: mostra "Código enviado para mar***@email.com"
+  //   - verifying: animação no Verificar
+  //   - success: marca email_verified_at em STORE.user() + chama callback
+  //   - error: mostra mensagem inline (código inválido, expirado, etc)
+  // ----------------------------------------------------------------------
+  // Exposto como global para que scripts externos (ex: comprar-livre.js)
+  // possam disparar a verificação de email antes de operações sensíveis.
+  window.requireEmailVerifiedThen = function (cb) { return requireEmailVerifiedThen(cb); };
+  function requireEmailVerifiedThen(callback) {
+    var u = STORE.user();
+    // Quick path: STORE indica que já está verificado
+    if (u && (u.email_verified_at || u.email_verified)) {
+      callback();
+      return;
+    }
+    // Verifica via /auth/me em caso de STORE desatualizado (ex: user verificou
+    // em outra aba; STORE local não sabe ainda)
+    api('/auth/me').then(function (r) {
+      var freshUser = r && (r.user || r);
+      if (freshUser) STORE.setUser(freshUser);
+      if (freshUser && (freshUser.email_verified_at || freshUser.email_verified)) {
+        callback();
+      } else {
+        showEmailVerificationModal(freshUser || u || {}, callback);
+      }
+    }).catch(function () {
+      // Sem /auth/me, mostra modal mesmo assim (assume não verificado)
+      showEmailVerificationModal(u || {}, callback);
+    });
+  }
+
+  function maskEmail(email) {
+    if (!email) return '***';
+    var parts = String(email).split('@');
+    if (parts.length !== 2) return email;
+    var local = parts[0];
+    if (local.length <= 3) return local[0] + '***@' + parts[1];
+    return local.slice(0, 3) + '***@' + parts[1];
+  }
+
+  function showEmailVerificationModal(user, onSuccess) {
+    // Idempotente — se já houver modal aberto, só atualiza callback
+    var existing = document.getElementById('bx-verify-modal');
+    if (existing) existing.remove();
+
+    var emailMasked = maskEmail(user.email || '');
+    var overlay = document.createElement('div');
+    overlay.id = 'bx-verify-modal';
+    overlay.style.cssText =
+      'position:fixed;inset:0;z-index:9000;background:rgba(8,9,7,0.7);' +
+      'display:flex;align-items:center;justify-content:center;padding:20px;' +
+      'font-family:Inter,system-ui,sans-serif;';
+    overlay.innerHTML =
+      '<div role="dialog" aria-modal="true" style="background:#fff;border-radius:14px;' +
+        'max-width:440px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;">' +
+          '<div>' +
+            '<div style="font-size:11px;color:#a83417;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Verificação necessária</div>' +
+            '<h3 style="margin:6px 0 0;font-size:22px;color:#080907;">Confirme seu email</h3>' +
+          '</div>' +
+          '<button type="button" id="bx-verify-close" aria-label="Fechar" style="background:none;border:0;font-size:24px;cursor:pointer;color:#666;line-height:1;">×</button>' +
+        '</div>' +
+        '<p style="font-size:14px;color:#5f665e;line-height:1.5;margin:0 0 18px;">' +
+          'Pra comprar pontos Blaxx, primeiro confirme o seu email. ' +
+          'Vamos enviar um código de 6 dígitos para <strong style="color:#080907;">' + emailMasked + '</strong>.' +
+        '</p>' +
+
+        // Etapa 1: enviar código
+        '<div id="bx-verify-step-send">' +
+          '<button id="bx-verify-send-btn" type="button" class="button full" style="margin-bottom:12px;">Enviar código por email</button>' +
+        '</div>' +
+
+        // Etapa 2: input do código (escondido até enviar)
+        '<div id="bx-verify-step-input" style="display:none;">' +
+          '<div id="bx-verify-sent-msg" style="font-size:13px;color:#2d651b;background:#efffe6;padding:10px 12px;border-radius:8px;margin-bottom:14px;"></div>' +
+          '<label for="bx-verify-code" style="display:block;font-size:13px;font-weight:700;color:#080907;margin-bottom:6px;">Código recebido</label>' +
+          '<input id="bx-verify-code" type="text" inputmode="numeric" maxlength="6" pattern="\\d{6}" placeholder="000000" autocomplete="one-time-code" ' +
+            'style="width:100%;padding:14px;font-size:24px;letter-spacing:0.4em;text-align:center;font-weight:700;' +
+            'border:2px solid #e6eadf;border-radius:10px;outline:none;box-sizing:border-box;">' +
+          '<button id="bx-verify-confirm-btn" type="button" class="button full" style="margin-top:14px;">Verificar e continuar</button>' +
+          '<div style="text-align:center;margin-top:10px;">' +
+            '<a href="#" id="bx-verify-resend" style="font-size:12px;color:#5f665e;text-decoration:underline;">Reenviar código</a>' +
+          '</div>' +
+        '</div>' +
+
+        // Área de erro/feedback compartilhada
+        '<p id="bx-verify-error" style="display:none;font-size:13px;color:#a83417;margin-top:10px;text-align:center;"></p>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    var sendBtn  = $('#bx-verify-send-btn');
+    var confirmBtn = $('#bx-verify-confirm-btn');
+    var codeInput = $('#bx-verify-code');
+    var errEl   = $('#bx-verify-error');
+    var sentMsg  = $('#bx-verify-sent-msg');
+    var stepSend  = $('#bx-verify-step-send');
+    var stepInput = $('#bx-verify-step-input');
+    var closeBtn = $('#bx-verify-close');
+    var resendLink = $('#bx-verify-resend');
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+    function clearErr() { errEl.style.display = 'none'; errEl.textContent = ''; }
+
+    function closeModal() {
+      try { overlay.remove(); } catch (e) {}
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal(); // fecha clicando fora
+    });
+
+    function sendCode(isResend) {
+      clearErr();
+      var btnToUse = isResend ? resendLink : sendBtn;
+      var origText = btnToUse.textContent;
+      if (btnToUse === sendBtn) {
+        sendBtn.disabled = true; sendBtn.textContent = 'Enviando…';
+      } else {
+        resendLink.style.opacity = '0.5'; resendLink.style.pointerEvents = 'none';
+        resendLink.textContent = 'Enviando…';
+      }
+      api('/auth/verify-email/send', { method: 'POST', body: JSON.stringify({}) })
+        .then(function () {
+          sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '. Confira sua caixa de entrada (e spam).';
+          stepSend.style.display = 'none';
+          stepInput.style.display = 'block';
+          setTimeout(function () { codeInput.focus(); }, 50);
+        })
+        .catch(function (err) {
+          if (err && err.status === 429) {
+            showErr('Aguarde alguns segundos antes de pedir novo código.');
+          } else if (err && err.status === 404) {
+            showErr('Endpoint indisponível no servidor atual.');
+          } else {
+            showErr((err && err.message) || 'Falha ao enviar código. Tente novamente.');
+          }
+        })
+        .then(function () {
+          if (btnToUse === sendBtn) { sendBtn.disabled = false; sendBtn.textContent = origText; }
+          else { resendLink.style.opacity = ''; resendLink.style.pointerEvents = ''; resendLink.textContent = origText; }
+        });
+    }
+    sendBtn.addEventListener('click', function () { sendCode(false); });
+    resendLink.addEventListener('click', function (e) { e.preventDefault(); sendCode(true); });
+
+    function submitCode() {
+      clearErr();
+      var code = (codeInput.value || '').trim();
+      if (!/^\d{6}$/.test(code)) { showErr('Digite os 6 dígitos do código.'); return; }
+      confirmBtn.disabled = true; confirmBtn.textContent = 'Verificando…';
+      api('/auth/verify-email', { method: 'POST', body: JSON.stringify({ code: code }) })
+        .then(function (r) {
+          // Atualiza STORE.user com email_verified_at preenchido
+          var freshUser = r && (r.user || r);
+          if (freshUser && (freshUser.email_verified_at || freshUser.email_verified)) {
+            STORE.setUser(freshUser);
+          } else {
+            // Resposta pode ser só {ok:true}. Marca manualmente.
+            var cur = STORE.user() || {};
+            cur.email_verified_at = new Date().toISOString();
+            cur.email_verified = true;
+            STORE.setUser(cur);
+          }
+          notify('Email confirmado! Seguindo pra compra…', 'ok');
+          closeModal();
+          // Executa callback original (ex: navegar pra comprar-livre)
+          if (typeof onSuccess === 'function') onSuccess();
+        })
+        .catch(function (err) {
+          var code2 = err && err.data && err.data.code;
+          if (code2 === 'wrong_code') showErr('Código incorreto. Confira o email.');
+          else if (code2 === 'code_expired' || code2 === 'token_expired') showErr('Código expirou. Reenvie um novo.');
+          else if (code2 === 'too_many_attempts') showErr('Tentativas excedidas. Reenvie um novo código.');
+          else showErr((err && err.message) || 'Falha ao verificar.');
+          confirmBtn.disabled = false; confirmBtn.textContent = 'Verificar e continuar';
+        });
+    }
+    confirmBtn.addEventListener('click', submitCode);
+    codeInput.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') submitCode();
+    });
+    // Auto-submit quando completa 6 dígitos
+    codeInput.addEventListener('input', function () {
+      var v = (codeInput.value || '').replace(/\D/g, '').slice(0, 6);
+      codeInput.value = v;
+      if (v.length === 6) submitCode();
+    });
+
+    sendBtn.focus();
+  }
+
   // ---- Helper: cta-row de páginas marketing vira widget de user logado ----
   // Páginas como comprar-pontos.html, vender-pontos.html, resgates.html,
   // parceiros.html, index.html têm:
@@ -1377,6 +1586,7 @@
 
     // Helper: handler unico de click pros cards de pacote
     // - Pre-check de auth: sem token → /login?next=...
+    // - Pre-check de email verificado: nao → modal de verificacao
     // - Feedback visual de loading enquanto navega
     function attachPkgClickHandlers() {
       $$('a.bx-buy-pkg', grid).forEach(function (a) {
@@ -1389,11 +1599,20 @@
             location.href = '/login.html?next=' + encodeURIComponent(target);
             return;
           }
-          // Logado: feedback visual + navega
+          // Logado: dá feedback e exige email verificado antes de seguir
+          var orig = a.textContent;
           a.style.opacity = '0.6';
           a.textContent = 'Carregando…';
           a.style.pointerEvents = 'none';
-          location.href = target;
+          requireEmailVerifiedThen(function () {
+            location.href = target;
+          });
+          // Se modal abrir, restaura o botão pra usuário poder clicar de novo
+          setTimeout(function () {
+            if (document.getElementById('bx-verify-modal')) {
+              a.style.opacity = ''; a.textContent = orig; a.style.pointerEvents = '';
+            }
+          }, 300);
         });
       });
     }
@@ -1401,9 +1620,14 @@
     var freeBtn = document.querySelector('a[href="comprar-livre.html"]');
     if (freeBtn) {
       freeBtn.addEventListener('click', function (ev) {
-        if (STORE.token()) return; // logado: deixa fluxo normal
         ev.preventDefault();
-        location.href = '/login.html?next=' + encodeURIComponent('/comprar-livre.html');
+        if (!STORE.token()) {
+          location.href = '/login.html?next=' + encodeURIComponent('/comprar-livre.html');
+          return;
+        }
+        requireEmailVerifiedThen(function () {
+          location.href = '/comprar-livre.html';
+        });
       });
     }
 

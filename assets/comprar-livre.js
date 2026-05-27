@@ -162,6 +162,23 @@
       body = { amount_brl: amount };
     }
 
+    // Pre-check de email verificado — se ja existe a rotina global do
+    // blaxx-app.js (carregado antes deste script), bloqueia a /pix/charge
+    // e mostra modal de verificacao. Se confirmar com sucesso, repeat a
+    // chamada de createCharge automaticamente.
+    if (typeof window.requireEmailVerifiedThen === 'function') {
+      var u = null;
+      try { u = JSON.parse(localStorage.getItem('blaxx_user') || 'null'); }
+      catch (_) {}
+      if (u && !u.email_verified_at && !u.email_verified) {
+        window.requireEmailVerifiedThen(function () {
+          // Apos verificacao, tenta criar a cobranca de novo
+          window.createCharge();
+        });
+        return; // aborta esta chamada — vai re-executar apos modal fechar
+      }
+    }
+
     var btn = document.getElementById('btn-create');
     if (btn) { btn.disabled = true; btn.textContent = 'Gerando QR…'; }
 

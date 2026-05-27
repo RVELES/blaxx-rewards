@@ -79,6 +79,13 @@
 </div>
 
 <script src="assets/blaxx-config.js"></script>
+<!--
+  Carrega blaxx-app.js ANTES do comprar-livre.js — disponibiliza o helper
+  requireEmailVerifiedThen() (modal de verificação) na cadeia de window.
+  blaxx-app.js não tem init pra comprar-livre.html no INITS, então só
+  injeta os helpers globais sem efeitos colaterais.
+-->
+<script src="assets/blaxx-app.js"></script>
 <script src="assets/comprar-livre.js"></script>
 </body>
 </html>
