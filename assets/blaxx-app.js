@@ -567,6 +567,45 @@
     sendBtn.focus();
   }
 
+  // ---- Helper: oculta TODOS os links de login/cadastro quando logado ----
+  // Cobre casos que replaceLandingCtaWithUserWidget nao alcanca:
+  //  - <li><a href="login.html">Entrar</a></li> no footer "Conta"
+  //  - <a href="cadastro.html"> isolados em CTAs no body
+  //  - .auth-foot ("Já tem conta? Entrar" / "Não tem conta? Cadastre-se")
+  //  - Botões "Sign in" / "Cadastrar" em qualquer outro lugar
+  //
+  // Estrategia: scan global de <a> com href para login/cadastro. Oculta o
+  // <li> pai (se for de lista) ou o proprio <a> (se nao). Pula explicitos
+  // de logout (data-bx-logout, data-bx-logout-side) e links de Sair.
+  function hideAuthLinksWhenLoggedIn() {
+    if (!STORE.token()) return; // so age quando logado
+
+    var anchors = document.querySelectorAll(
+      'a[href="login.html"], a[href="/login.html"], a[href="/login"],' +
+      'a[href="cadastro.html"], a[href="/cadastro.html"], a[href="/cadastro"]'
+    );
+    anchors.forEach(function (a) {
+      // Pula link explicito de logout (usa /login.html como destino apos clear)
+      if (a.hasAttribute('data-bx-logout') || a.hasAttribute('data-bx-logout-side')) return;
+      var txt = (a.textContent || '').trim().toLowerCase();
+      if (txt.indexOf('sair') >= 0 || txt.indexOf('logout') >= 0) return;
+      // Pula se ja for o widget de "Olá, nome" (botao secondary refeito)
+      if (txt.indexOf('olá') === 0) return;
+
+      // Oculta o <li> pai se estiver em lista (limpa o item inteiro do footer)
+      var li = a.closest('li');
+      var auth = a.closest('.auth-foot');
+      if (auth) {
+        // Linhas "Já tem conta? Entrar" / "Não tem conta? Cadastre-se" — esconde a frase inteira
+        auth.style.display = 'none';
+      } else if (li) {
+        li.style.display = 'none';
+      } else {
+        a.style.display = 'none';
+      }
+    });
+  }
+
   // ---- Helper: cta-row de páginas marketing vira widget de user logado ----
   // Páginas como comprar-pontos.html, vender-pontos.html, resgates.html,
   // parceiros.html, index.html têm:
@@ -723,6 +762,11 @@
     // parceiros) têm cta-row com "Entrar/Cadastre-se" em vez de "Olá X".
     // Quando logado, substitui pelo widget de user (notificações + nome + sair).
     replaceLandingCtaWithUserWidget(firstName);
+
+    // Oculta QUALQUER outro link de "Entrar/Cadastre-se" que tenha escapado
+    // do replaceLandingCtaWithUserWidget (footers, body, auth-foots).
+    // Usuario logado nunca deve ver convite pra logar de novo.
+    hideAuthLinksWhenLoggedIn();
 
     // Injeta sidebar dinamicamente em páginas de OPERAÇÃO logadas que estão
     // sem ela (comprar-pontos, vender-pontos, resgates, parceiros). Garante
