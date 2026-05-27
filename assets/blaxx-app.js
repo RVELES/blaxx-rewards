@@ -621,6 +621,61 @@
     }).join('');
   }
 
+  // ---- Helper: logos reais de parceiros via Clearbit Logo API ----
+  // Pedido do usuario: "Carregue com o logotipo estilizado e tamanho padrao
+  // para as proporcoes do site de cada parceiro. A ideia e trazer o maximo
+  // de realidade possivel."
+  //
+  // Estrategia:
+  // 1. Extrai um slug do partner (description "Parceiro Livelo · xyz" → xyz;
+  //    fallback nome lowercased sem espacos).
+  // 2. Tenta logo em https://logo.clearbit.com/<slug>.com.br (BR primeiro).
+  // 3. <img onerror> chama bxLogoErr — tenta .com como segunda chance,
+  //    e se tambem falhar, substitui pelo emoji/iniciais original.
+  // 4. CSS .partner-logo img usa object-fit: contain pra manter proporcao
+  //    real do logo de cada marca.
+  //
+  // Clearbit: gratuito, ~99% uptime, sem rate limit pra uso responsavel.
+  // Brasileiras dominantes (.com.br) entram primeiro porque a maioria dos
+  // parceiros Livelo sao varejistas BR.
+  // ---------------------------------------------------------------------------
+  function bxPartnerLogoUrl(p) {
+    if (!p) return null;
+    // Slug do description: "Parceiro Livelo · acer" → "acer"
+    var slug = null;
+    var desc = String(p.description || '');
+    var dotIdx = desc.indexOf('·');
+    if (dotIdx >= 0) {
+      slug = desc.slice(dotIdx + 1).trim().toLowerCase();
+    }
+    // Fallback: slugify do nome
+    if (!slug) {
+      slug = String(p.name || '').toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')   // remove acentos
+        .replace(/[^a-z0-9]/g, '');
+    }
+    if (!slug || slug.length < 2) return null;
+    return 'https://logo.clearbit.com/' + slug + '.com.br?size=128';
+  }
+
+  // Handler global de erro do <img>: tenta .com como fallback, depois emoji.
+  window.bxLogoErr = function (img, fallback) {
+    if (!img) return;
+    var tried = img.getAttribute('data-tried') || '';
+    if (!tried) {
+      // 1a falha: tenta .com (alem do .com.br que ja tentou)
+      img.setAttribute('data-tried', 'com');
+      var src = img.getAttribute('src') || '';
+      img.src = src.replace('.com.br?', '.com?');
+      return;
+    }
+    // 2a falha: troca img pelo texto/emoji fallback
+    var span = document.createElement('span');
+    span.className = 'partner-logo-fallback';
+    span.textContent = fallback || '◯';
+    if (img.parentNode) img.parentNode.replaceChild(span, img);
+  };
+
   // ---- Helper: atualiza icones de sidebars hardcoded no HTML ----
   // Paginas como dashboard.html, carteira.html, extrato.html, perfil.html,
   // seguranca.html etc tem sidebar inline com simbolos geometricos antigos
@@ -2010,8 +2065,17 @@
       }
       grid.innerHTML = filtered.map(function (p) {
         var initials = (p.name || '?').split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
+        var logoUrl = bxPartnerLogoUrl(p);
+        var fallback = (p.logo_emoji || initials).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        // Renderiza <img> com logo real (Clearbit) — fallback automatico
+        // pro emoji/iniciais via onerror se a marca nao tiver logo cadastrado.
+        var logoHtml = logoUrl
+          ? '<img src="' + logoUrl + '" alt="' + (p.name || '').replace(/"/g, '&quot;') +
+            '" class="partner-logo-img" loading="lazy" ' +
+            'onerror="bxLogoErr(this,\'' + fallback + '\')">'
+          : fallback;
         return '<a href="detalhe-parceiro.html?id=' + p.id + '" class="partner-card">' +
-          '<div class="partner-logo">' + (p.logo_emoji || initials) + '</div>' +
+          '<div class="partner-logo">' + logoHtml + '</div>' +
           '<div><h3>' + p.name + '</h3>' +
           '<div class="rate">' + (p.accrual_rule || '') + '</div></div></a>';
       }).join('');

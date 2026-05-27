@@ -861,13 +861,31 @@ textarea { resize: vertical; min-height: 100px; }
     width: 52px;
     height: 52px;
     border-radius: 14px;
-    background: var(--lime-soft);
+    background: #fff;            /* fundo neutro pra logos coloridos */
+    border: 1px solid var(--line);
     display: grid;
     place-items: center;
     font-weight: 900;
     color: var(--ink);
     font-size: 18px;
     flex-shrink: 0;
+    overflow: hidden;
+    padding: 4px;
+}
+/* Logo real (img Clearbit) — preserva proporcao original da marca */
+.partner-logo .partner-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+/* Fallback (emoji/iniciais) quando logo nao existe na Clearbit */
+.partner-logo .partner-logo-fallback {
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
 }
 .partner-card h3 { margin: 0 0 2px; font-size: 15px; }
 .partner-card .rate { font-size: 13px; color: var(--muted); }
