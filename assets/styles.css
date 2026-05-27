@@ -249,6 +249,13 @@ a[aria-current="page"] {
 html, body { overflow-x: hidden; max-width: 100%; }
 img, video, table, pre, code { max-width: 100%; }
 
+/* Botao "Sair" no widget de user — texto sempre visivel no desktop, escondido
+   em telas <=480px (mantem so o icone ⎋ pra economizar largura). */
+.bx-logout-label { display: inline; }
+@media (max-width: 480px) {
+    .bx-logout-label { display: none; }
+}
+
 /* ==========================================================================
    Buttons
    ========================================================================== */

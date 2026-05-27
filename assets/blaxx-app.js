@@ -567,6 +567,55 @@
     sendBtn.focus();
   }
 
+  // ---- Helper: unifica topbar nav quando logado ----
+  // Resolve 2 bugs reportados:
+  //  1. Em paginas tipo parceiros/comprar-pontos/index, o BRAND e o link
+  //     "Inicio" apontam pra index.html (marketing). Usuario logado clica
+  //     e cai na landing publica — parece "deslogou".
+  //  2. Topbar tem CONJUNTOS DIFERENTES de links entre paginas (dashboard
+  //     tem 5, parceiros tem 6 outros). Navegar = "links somem".
+  //
+  // Solucao: quando logado, reescreve TODOS os topbars com o mesmo conjunto
+  // canonico. Brand → dashboard. Links canonicos + aria-current na pagina ativa.
+  // ---------------------------------------------------------------------------
+  function unifyTopbarLinksWhenLoggedIn() {
+    if (!STORE.token()) return;
+    var nav = document.querySelector('header.topbar nav.nav');
+    if (!nav) return;
+
+    // Brand sempre aponta pra dashboard quando logado
+    var brand = nav.querySelector('.brand');
+    if (brand && brand.getAttribute('href') !== '/dashboard.html') {
+      brand.setAttribute('href', '/dashboard.html');
+    }
+
+    // Reescreve .links com conjunto canonico (mesmo em todas as paginas).
+    // Cobre 7 destinos principais que sao relevantes pra usuario logado.
+    var links = nav.querySelector('.links');
+    if (!links) return;
+
+    var pageBase = PAGE.replace('.html', '');
+    var menuItems = [
+      { id: 'dashboard',      href: '/dashboard.html',      label: 'Início' },
+      { id: 'carteira',       href: '/carteira.html',       label: 'Carteira' },
+      { id: 'extrato',        href: '/extrato.html',        label: 'Extrato' },
+      { id: 'parceiros',      href: '/parceiros.html',      label: 'Parceiros' },
+      { id: 'resgates',       href: '/resgates.html',       label: 'Resgates' },
+      { id: 'comprar-pontos', href: '/comprar-pontos.html', label: 'Comprar pontos' },
+      { id: 'campanhas',      href: '/campanhas.html',      label: 'Campanhas' }
+    ];
+    // "Inicio" ativa pra dashboard, index e qualquer pagina nao mapeada
+    var activeId = pageBase;
+    if (pageBase === 'index') activeId = 'dashboard';
+
+    links.innerHTML = menuItems.map(function (it) {
+      var active = (it.id === activeId) ? ' aria-current="page"' : '';
+      var activeClass = (it.id === activeId) ? ' active' : '';
+      return '<a href="' + it.href + '" data-link="' + it.id + '" class="' + activeClass.trim() + '"' + active + '>' +
+        it.label + '</a>';
+    }).join('');
+  }
+
   // ---- Helper: oculta TODOS os links de login/cadastro quando logado ----
   // Cobre casos que replaceLandingCtaWithUserWidget nao alcanca:
   //  - <li><a href="login.html">Entrar</a></li> no footer "Conta"
@@ -625,11 +674,18 @@
         if (txt === 'entrar' || txt === 'cadastre-se' || txt === 'cadastrar') hasEntrar = true;
       });
       if (!hasEntrar) return; // já é versão logada
-      // Substitui o conteúdo da cta-row
+      // Substitui o conteúdo da cta-row.
+      // IMPORTANTE: o botao de logout mostra "Sair" explicitamente (antes
+      // era so o icone ↩, que usuario confundia com "voltar" e clicava
+      // sem querer, derrubando a sessao). Em mobile pequeno (<=480px) o
+      // CSS abaixo esconde o texto e mantem so o icone na area compacta.
       row.innerHTML =
         '<a href="central-notificacoes.html" class="button ghost" aria-label="Notificações" title="Notificações">🔔</a>' +
         '<a href="perfil.html" class="button secondary">Olá, ' + firstName + '</a>' +
-        '<a href="login.html" class="button ghost" data-bx-logout="1" aria-label="Sair" title="Sair">↩</a>';
+        '<a href="login.html" class="button ghost" data-bx-logout="1" aria-label="Sair" title="Sair">' +
+          '<span class="bx-logout-label">Sair</span>' +
+          '<span style="margin-left:6px;" aria-hidden="true">⎋</span>' +
+        '</a>';
       // Wire o handler de logout no link novo
       var logoutLink = row.querySelector('[data-bx-logout]');
       if (logoutLink) {
@@ -767,6 +823,13 @@
     // do replaceLandingCtaWithUserWidget (footers, body, auth-foots).
     // Usuario logado nunca deve ver convite pra logar de novo.
     hideAuthLinksWhenLoggedIn();
+
+    // Unifica topbar nav (brand → dashboard, links canonicos) para que TODAS
+    // as paginas logadas tenham o mesmo menu superior. Antes:
+    //  - dashboard tinha 5 links, parceiros tinha 6 (diferentes) → "links somem"
+    //  - brand em parceiros/index/comprar apontava pra index.html (publica)
+    //    → clicar no logo "deslogava" visualmente
+    unifyTopbarLinksWhenLoggedIn();
 
     // Injeta sidebar dinamicamente em páginas de OPERAÇÃO logadas que estão
     // sem ela (comprar-pontos, vender-pontos, resgates, parceiros). Garante
