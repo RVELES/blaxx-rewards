@@ -144,37 +144,47 @@ a[aria-current="page"] {
     border-bottom: 1px solid var(--line);
 }
 .nav {
-    max-width: 1180px;
+    /* Sincronizado com .app-shell (max-width 1280px, padding 22px) para que
+       o logo na esquerda fique alinhado com a borda esquerda da sidebar
+       (256px) e o widget de user fique alinhado com a borda direita do
+       painel de conteudo. */
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 16px 22px;
-    display: flex;
+    padding: 14px 22px;
+    display: grid;
+    /* 3 colunas: brand (256px = mesmo que sidebar) | links centrais | cta-row direita */
+    grid-template-columns: 256px 1fr auto;
+    gap: 28px;
     align-items: center;
-    gap: 18px;
-    justify-content: space-between;
 }
+.nav > .brand { justify-self: start; grid-column: 1; }
+.nav > .links { justify-self: center; grid-column: 2; }
+.nav > .cta-row { justify-self: end; grid-column: 3; }
 .brand {
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 900;
     letter-spacing: -0.04em;
-    font-size: 17px;
+    font-size: 28px;          /* era 17px — 2x para destaque */
+    text-decoration: none;
 }
 /* Brand mark "BlaxX" — quadrado preto com texto lime, identidade oficial
    (mesmo padrão do AppIcon do Mac/iOS). Aceita filho com a letra "B" simples
-   (legado, virou texto "BlaxX") ou o texto "BlaxX" diretamente dentro. */
+   (legado, virou texto "BlaxX") ou o texto "BlaxX" diretamente dentro.
+   Tamanho 2x (era 36px → 72px) atendendo pedido de "logo 2x maior". */
 .mark {
-    min-width: 64px;
-    height: 36px;
-    padding: 0 10px;
-    border-radius: 10px;
+    min-width: 128px;
+    height: 72px;
+    padding: 0 18px;
+    border-radius: 16px;
     background: var(--black);
     color: var(--lime);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 17px;
+    font-size: 32px;
     letter-spacing: -0.02em;
     box-shadow: var(--shadow);
     line-height: 1;
@@ -182,9 +192,10 @@ a[aria-current="page"] {
 .brand-sub {
     color: var(--muted);
     font-weight: 500;
-    margin-left: 2px;
+    margin-left: 4px;
     text-transform: lowercase;
     letter-spacing: 0;
+    font-size: 18px;          /* proporcional ao .mark 2x */
 }
 .links {
     display: flex;
@@ -209,9 +220,34 @@ a[aria-current="page"] {
 @media (max-width: 880px) {
     .links { display: none; }
     .mobile-only { display: flex; gap: 8px; }
-    .nav { gap: 10px; }
+    /* Em mobile o grid 256/1fr/auto nao faz sentido — volta pra flex
+       brand vs cta-row, espacamento compacto, sem horizontal scroll. */
+    .nav {
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        padding: 10px 14px;
+    }
+    .nav > .brand { grid-column: 1; }
+    .nav > .links { display: none; }
+    .nav > .cta-row { grid-column: 2; }
     .cta-row .button.ghost { display: none; }
+    /* Logo reduzido pra caber em telas pequenas — mas ainda 1.5x do tamanho
+       legado pra manter destaque. */
+    .mark {
+        min-width: 76px;
+        height: 48px;
+        padding: 0 12px;
+        font-size: 20px;
+        border-radius: 12px;
+    }
+    .brand { font-size: 20px; }
+    .brand-sub { font-size: 13px; }
 }
+
+/* Anti horizontal scroll global — qualquer conteudo (tabelas, imagens,
+   pre, code) que vazar fica clipado em vez de empurrar a viewport. */
+html, body { overflow-x: hidden; max-width: 100%; }
+img, video, table, pre, code { max-width: 100%; }
 
 /* ==========================================================================
    Buttons
@@ -533,7 +569,7 @@ p.lead { font-size: 18px; color: var(--ink-2); }
 }
 .sidebar {
     position: sticky;
-    top: 84px;
+    top: 116px;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -1221,7 +1257,7 @@ textarea { resize: vertical; min-height: 100px; }
     border-radius: var(--radius);
     padding: 24px;
     position: sticky;
-    top: 84px;
+    top: 116px;
     box-shadow: var(--shadow);
 }
 
