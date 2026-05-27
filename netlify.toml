@@ -44,7 +44,111 @@
   to = "/index.html"
   status = 200
 
-# 404 customizado
+# -----------------------------------------------------------------------------
+# Aliases de URL: nomes amigaveis em portugues que apontam pras paginas reais.
+# Reduz quebra de navegacao externa (links compartilhados, anuncios, etc).
+# status=301 = redirect permanente (preserva SEO e atualiza bookmarks).
+# -----------------------------------------------------------------------------
+[[redirects]]
+  from = "/entrar"
+  to = "/login.html"
+  status = 301
+
+[[redirects]]
+  from = "/painel"
+  to = "/dashboard.html"
+  status = 301
+
+[[redirects]]
+  from = "/privacidade"
+  to = "/documentos-termos.html"
+  status = 301
+
+[[redirects]]
+  from = "/politica-privacidade"
+  to = "/documentos-termos.html"
+  status = 301
+
+[[redirects]]
+  from = "/mapa-do-site"
+  to = "/sitemap.html"
+  status = 301
+
+[[redirects]]
+  from = "/central-de-ajuda"
+  to = "/central-ajuda.html"
+  status = 301
+
+[[redirects]]
+  from = "/ajuda"
+  to = "/central-ajuda.html"
+  status = 301
+
+# -----------------------------------------------------------------------------
+# Rotas bonitas: URL sem extensao -> pagina .html correspondente.
+# JS no app usa caminhos .html historicamente; isso permite que ambas funcionem.
+# -----------------------------------------------------------------------------
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/cadastro"
+  to = "/cadastro.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/carteira"
+  to = "/carteira.html"
+  status = 200
+
+[[redirects]]
+  from = "/extrato"
+  to = "/extrato.html"
+  status = 200
+
+[[redirects]]
+  from = "/parceiros"
+  to = "/parceiros.html"
+  status = 200
+
+[[redirects]]
+  from = "/resgates"
+  to = "/resgates.html"
+  status = 200
+
+[[redirects]]
+  from = "/comprar-pontos"
+  to = "/comprar-pontos.html"
+  status = 200
+
+[[redirects]]
+  from = "/vender-pontos"
+  to = "/vender-pontos.html"
+  status = 200
+
+[[redirects]]
+  from = "/como-funciona"
+  to = "/como-funciona.html"
+  status = 200
+
+[[redirects]]
+  from = "/sitemap"
+  to = "/sitemap.html"
+  status = 200
+
+[[redirects]]
+  from = "/central-ajuda"
+  to = "/central-ajuda.html"
+  status = 200
+
+# 404 customizado — SEMPRE por ultimo (catch-all)
 [[redirects]]
   from = "/*"
   to = "/404.html"

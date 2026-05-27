@@ -1761,22 +1761,79 @@
     }
 
     window.reloadResgates = render;
-    fetch(API + '/benefits/').then(function (r) { return r.json(); }).then(function (data) {
-      ALL_BENEFITS = data.items || [];
-      var cats = {};
-      ALL_BENEFITS.forEach(function (b) { if (b.category) cats[b.category] = true; });
-      var $cat = document.getElementById('rg-cat');
-      if ($cat) {
-        Object.keys(cats).sort().forEach(function (c) {
-          var opt = document.createElement('option');
-          opt.value = c; opt.textContent = c;
-          $cat.appendChild(opt);
-        });
+
+    // Carrega beneficios com timeout duro (20s — backend Render free tier pode
+    // ter cold start ate 10s) + AbortController + retry button. Substitui o
+    // "Carregando..." infinito que ficava preso quando API estava offline.
+    function loadBenefits() {
+      grid.innerHTML =
+        '<div id="rg-skeleton" style="grid-column:1/-1;display:grid;' +
+          'grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">' +
+          Array(6).fill(0).map(function () {
+            return '<div style="background:#f5f7f0;border-radius:14px;height:160px;' +
+              'animation:bxPulse 1.4s ease-in-out infinite alternate;"></div>';
+          }).join('') +
+        '</div>';
+      // Injeta keyframe da animacao uma vez
+      if (!document.getElementById('bx-skeleton-style')) {
+        var st = document.createElement('style');
+        st.id = 'bx-skeleton-style';
+        st.textContent = '@keyframes bxPulse{from{opacity:.6}to{opacity:1}}';
+        document.head.appendChild(st);
       }
-      render();
-    }).catch(function () {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#a83417;">Falha ao carregar benefícios.</div>';
-    });
+
+      var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var timeoutId = setTimeout(function () {
+        if (ctrl) ctrl.abort();
+      }, 20000);
+
+      fetch(API + '/benefits/', ctrl ? { signal: ctrl.signal } : {})
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          clearTimeout(timeoutId);
+          ALL_BENEFITS = data.items || [];
+          var cats = {};
+          ALL_BENEFITS.forEach(function (b) { if (b.category) cats[b.category] = true; });
+          var $cat = document.getElementById('rg-cat');
+          if ($cat) {
+            $cat.innerHTML = '<option value="">Todas as categorias</option>';
+            Object.keys(cats).sort().forEach(function (c) {
+              var opt = document.createElement('option');
+              opt.value = c; opt.textContent = c;
+              $cat.appendChild(opt);
+            });
+          }
+          render();
+        })
+        .catch(function (err) {
+          clearTimeout(timeoutId);
+          var aborted = err && (err.name === 'AbortError');
+          var msgKind = aborted
+            ? 'Tempo esgotado.'
+            : 'Falha ao carregar benefícios.';
+          var hint = aborted
+            ? 'O servidor demorou demais pra responder. Pode estar em cold start (até 30s no plano free).'
+            : 'O backend pode estar offline ou indisponível neste momento.';
+          grid.innerHTML =
+            '<div style="grid-column:1/-1;text-align:center;padding:32px 24px;color:var(--ink);">' +
+              '<div style="font-size:32px;margin-bottom:8px;">⚠</div>' +
+              '<div style="font-size:16px;font-weight:700;margin-bottom:4px;">' + msgKind + '</div>' +
+              '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;max-width:420px;margin-left:auto;margin-right:auto;">' +
+                hint +
+              '</div>' +
+              '<button type="button" id="bx-retry-benefits" class="button" ' +
+                'style="background:var(--lime);color:var(--ink);border:0;padding:10px 20px;border-radius:999px;font-weight:700;cursor:pointer;">' +
+                '↻ Tentar novamente</button>' +
+            '</div>';
+          var retryBtn = document.getElementById('bx-retry-benefits');
+          if (retryBtn) retryBtn.addEventListener('click', loadBenefits);
+        });
+    }
+
+    loadBenefits();
   }
 
   // =========================================================================
@@ -2497,7 +2554,10 @@
   // Registra o service worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('/site/service-worker.js', { scope: '/site/' })
+      // SW registrado na raiz — site é servido em /, não em /site/.
+      // Bug anterior: registro em /site/service-worker.js retornava 404 e
+      // a PWA nunca instalava (manifest + scope tambem apontavam /site/).
+      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
         .catch(function (e) { console.warn('SW falhou:', e); });
     });
   }

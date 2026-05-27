@@ -11,27 +11,28 @@
 // descartar o cache antigo no próximo carregamento.
 // v2 = release Google Login.
 // v3 = PIX MP automático no Web + dashboard via IDs reais (não regex Mariana).
-const CACHE = 'blaxx-v3-pix-mp';
+// v4 = PWA scope corrigido — antes apontava pra /site/ inexistente (404), agora /.
+const CACHE = 'blaxx-v4-root-scope';
 const PRECACHE = [
-  '/site/',
-  '/site/login.html',
-  '/site/dashboard.html',
-  '/site/carteira.html',
-  '/site/extrato.html',
-  '/site/comprar-pontos.html',
-  '/site/pagamento-pix.html',
-  '/site/compra-aprovada.html',
-  '/site/enviar-pontos.html',
-  '/site/confirmar-envio.html',
-  '/site/envio-concluido.html',
-  '/site/resgate-pix.html',
-  '/site/app.html',
-  '/site/assets/styles.css',
-  '/site/assets/blaxx-app.js',
-  '/site/assets/icons/icon.svg',
-  '/site/assets/icons/icon-192.png',
-  '/site/assets/icons/icon-512.png',
-  '/site/manifest.json',
+  '/',
+  '/login.html',
+  '/dashboard.html',
+  '/carteira.html',
+  '/extrato.html',
+  '/comprar-pontos.html',
+  '/pagamento-pix.html',
+  '/compra-aprovada.html',
+  '/enviar-pontos.html',
+  '/confirmar-envio.html',
+  '/envio-concluido.html',
+  '/resgate-pix.html',
+  '/app.html',
+  '/assets/styles.css',
+  '/assets/blaxx-app.js',
+  '/assets/icons/icon.svg',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/manifest.json',
 ];
 
 const API_PREFIXES = ['/auth', '/wallet', '/pix', '/transfer', '/redeem', '/health'];
@@ -116,9 +117,9 @@ self.addEventListener('push', (ev) => {
   ev.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/site/assets/icons/icon-192.png',
-      badge: '/site/assets/icons/icon-192.png',
-      data: { url: data.url || '/site/dashboard.html' },
+      icon: '/assets/icons/icon-192.png',
+      badge: '/assets/icons/icon-192.png',
+      data: { url: data.url || '/dashboard.html' },
       vibrate: [120, 60, 120],
     })
   );
@@ -126,6 +127,6 @@ self.addEventListener('push', (ev) => {
 
 self.addEventListener('notificationclick', (ev) => {
   ev.notification.close();
-  const url = (ev.notification.data && ev.notification.data.url) || '/site/dashboard.html';
+  const url = (ev.notification.data && ev.notification.data.url) || '/dashboard.html';
   ev.waitUntil(clients.openWindow(url));
 });
