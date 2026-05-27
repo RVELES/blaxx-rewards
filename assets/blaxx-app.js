@@ -121,6 +121,60 @@
     return true;
   }
 
+  // ---- Banner proativo: Google-only → defina senha pra usar no Windows ----
+  // Mostra um banner discreto no topo das páginas autenticadas quando o user
+  // entrou via Google e ainda não tem senha local. Dismissível por 7 dias
+  // (localStorage). Não aparece em /seguranca.html (lá já tem o CTA dedicado)
+  // nem em telas públicas (login/cadastro).
+  function maybeShowSetPasswordBanner() {
+    var u = STORE.user();
+    if (!u) return;
+    // Critério: backend retornou has_password explicitamente false.
+    // Se has_password vier undefined (backend antigo não expõe), pula.
+    if (u.has_password !== false) return;
+    // Páginas onde NÃO mostramos (já tem CTA dedicado ou são públicas)
+    var skipPages = ['login.html','cadastro.html','recuperar-senha.html',
+                     'redefinir-senha.html','validacao.html','seguranca.html'];
+    if (skipPages.indexOf(PAGE) >= 0) return;
+    // Dismissed?
+    try {
+      var dismissed = localStorage.getItem('blaxx_set_password_dismissed_at');
+      if (dismissed) {
+        var when = parseInt(dismissed, 10);
+        var SEVEN_DAYS = 7 * 24 * 3600 * 1000;
+        if (!isNaN(when) && (Date.now() - when) < SEVEN_DAYS) return;
+      }
+    } catch (e) { /* localStorage indisponível */ }
+    if (document.getElementById('bx-setpwd-banner')) return; // idempotente
+
+    var bar = document.createElement('div');
+    bar.id = 'bx-setpwd-banner';
+    bar.style.cssText =
+      'position:sticky;top:0;z-index:50;background:#0B1820;color:#C6F432;' +
+      'padding:10px 16px;display:flex;align-items:center;gap:12px;' +
+      'font-size:13px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12);';
+    bar.innerHTML =
+      '<span style="flex:1;">' +
+        '🔑 Sua conta entra via Google. ' +
+        '<strong style="color:#fff;">Defina uma senha</strong> para também usar o app do Windows.' +
+      '</span>' +
+      '<button id="bx-setpwd-cta" style="background:#C6F432;color:#0B1820;border:0;padding:7px 14px;' +
+        'border-radius:18px;font-weight:700;cursor:pointer;font-size:12px;">Definir senha →</button>' +
+      '<button id="bx-setpwd-later" style="background:transparent;color:#C6F432;border:1px solid rgba(198,244,50,.3);' +
+        'padding:6px 10px;border-radius:18px;cursor:pointer;font-size:12px;">Mais tarde</button>';
+    document.body.insertBefore(bar, document.body.firstChild);
+
+    $('#bx-setpwd-cta').addEventListener('click', function () {
+      // Manda pra /seguranca.html — lá já tem o botão "Receber link"
+      location.href = '/seguranca.html';
+    });
+    $('#bx-setpwd-later').addEventListener('click', function () {
+      try { localStorage.setItem('blaxx_set_password_dismissed_at', String(Date.now())); }
+      catch (e) {}
+      bar.remove();
+    });
+  }
+
   // ---- Substitui textos hardcoded da Mariana pelos do user logado ----
   // Em duas etapas:
   //   1. Imediato — usa apenas STORE.user(), troca nome/avatar/botao "Olá".
@@ -156,6 +210,9 @@
       else if (field === 'email') inp.value = u.email || '';
       else if (field === 'phone') inp.value = u.phone || '';
     });
+
+    // Banner pro-active "defina senha" pra Google-only users
+    maybeShowSetPasswordBanner();
 
     // === 2. ASYNC — depende de /wallet/ ===
     api('/wallet/').then(function (w) {
