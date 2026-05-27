@@ -116,12 +116,65 @@
   };
 
   // ---- Fetch wrapper ----
+  // Contador passivo de falhas de rede. Apos 3 erros consecutivos de
+  // conectividade (fetch reject, status>=500, 0/timeout), mostra banner
+  // sticky "Backend instavel" com botao de retry. Reset no 1o sucesso.
+  // Nao dispara em 4xx (que sao falhas semanticas, nao infra).
+  var _bxNetFailCount = 0;
+
+  function _bxShowOfflineBanner() {
+    if (document.getElementById('bx-offline-banner')) return;
+    var bar = document.createElement('div');
+    bar.id = 'bx-offline-banner';
+    bar.setAttribute('role', 'status');
+    bar.setAttribute('aria-live', 'polite');
+    bar.style.cssText =
+      'position:fixed;top:0;left:0;right:0;z-index:9998;background:#fff7df;color:#8a6500;' +
+      'padding:10px 16px;font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:600;' +
+      'text-align:center;border-bottom:1px solid #f0c850;box-shadow:0 2px 6px rgba(0,0,0,.08);';
+    bar.innerHTML =
+      '<span>⚠ Conexao instavel com o servidor. Algumas operacoes podem falhar.</span> ' +
+      '<button id="bx-offline-retry" style="margin-left:12px;background:#8a6500;color:#fff;border:0;' +
+      'padding:4px 12px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;">' +
+      'Verificar agora</button>';
+    document.body.appendChild(bar);
+    var btn = document.getElementById('bx-offline-retry');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        btn.disabled = true; btn.textContent = 'Testando...';
+        bxFetchJson(API + '/health', { timeoutMs: 10000 })
+          .then(function () { _bxHideOfflineBanner(); _bxNetFailCount = 0; })
+          .catch(function () {
+            btn.disabled = false; btn.textContent = 'Verificar agora';
+          });
+      });
+    }
+  }
+  function _bxHideOfflineBanner() {
+    var b = document.getElementById('bx-offline-banner');
+    if (b) b.remove();
+  }
+  function _bxNetFailureTick() {
+    _bxNetFailCount++;
+    if (_bxNetFailCount >= 3) _bxShowOfflineBanner();
+  }
+  function _bxNetSuccessTick() {
+    if (_bxNetFailCount > 0) {
+      _bxNetFailCount = 0;
+      _bxHideOfflineBanner();
+    }
+  }
+
   function api(path, opts) {
     opts = opts || {};
     var headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
     var tok = STORE.token();
     if (tok) headers['Authorization'] = 'Bearer ' + tok;
     return fetch(API + path, Object.assign({}, opts, { headers: headers })).then(function (res) {
+      // Tracking de saude da conexao: 5xx conta como falha de infra; 4xx
+      // conta como sucesso (semantica do user, nao infra). 2xx/3xx = success.
+      if (res.status >= 500) _bxNetFailureTick();
+      else _bxNetSuccessTick();
       // Lê o body como texto bruto antes de tentar parsear como JSON.
       // Sem isso, se o servidor devolver HTML (página de erro 502, 404 do
       // proxy, etc), o JS quebra com "Unexpected token '<'" e o usuário
@@ -168,6 +221,10 @@
         }
         return data;
       });
+    }, function (networkErr) {
+      // fetch rejeitou (offline real, DNS, CORS etc) — falha de infra
+      _bxNetFailureTick();
+      throw networkErr;
     });
   }
 

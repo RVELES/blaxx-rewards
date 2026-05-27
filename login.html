@@ -51,14 +51,16 @@
     <h2>Entrar</h2>
     <p class="sub">Acesse sua carteira Blaxx Pontos.</p>
 
-    <form action="dashboard.html">
+    <form action="dashboard.html" aria-label="Formulário de login">
         <div class="form-row">
             <label for="email">E-mail ou CPF</label>
-            <input type="text" id="email" placeholder="seu@email.com" required>
+            <input type="text" id="email" placeholder="seu@email.com" required
+                   autocomplete="username" inputmode="email" aria-required="true">
         </div>
         <div class="form-row">
             <label for="password">Senha</label>
-            <input type="password" id="password" placeholder="••••••••" required>
+            <input type="password" id="password" placeholder="••••••••" required
+                   autocomplete="current-password" aria-required="true">
             <div style="text-align:right;margin-top:6px;"><a href="recuperar-senha.html" style="font-size:13px;color:var(--ink);font-weight:600;">Esqueci minha senha</a></div>
         </div>
         <div class="checkbox-row">
@@ -71,7 +73,8 @@
 
         <!-- Google Sign-In · renderizado pelo blaxx-app.js (gsi-button) -->
         <div id="g-signin-btn" style="display:flex;justify-content:center;margin-top:4px;"></div>
-        <p id="g-signin-error" style="display:none;color:#a83417;font-size:13px;margin-top:8px;text-align:center;"></p>
+        <p id="g-signin-error" style="display:none;color:#a83417;font-size:13px;margin-top:8px;text-align:center;"
+           role="alert" aria-live="assertive"></p>
     </form>
 
     <!-- SDK oficial Google Identity Services (FedCM-ready, sem cookies de 3rd party) -->
