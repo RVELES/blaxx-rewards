@@ -1,0 +1,55 @@
+/* ==========================================================================
+ * Sprint 4 (S4-9) · Inter self-hosted
+ * ==========================================================================
+ * Substitui o request blocking pro Google Fonts. Reduz LCP em ~150-300ms
+ * dependendo da rede e elimina dependencia de terceiros.
+ *
+ * Pesos incluidos: 400 (regular), 500 (medium), 600 (semibold), 700 (bold).
+ * Pesos 800/900 nao usados pelo design system — economizam ~120KB.
+ *
+ * Como atualizar:
+ *   1. Baixe Inter v4 em https://github.com/rsms/inter/releases
+ *   2. Pegue os WOFF2 individuais: Inter-Regular.woff2, Inter-Medium.woff2,
+ *      Inter-SemiBold.woff2, Inter-Bold.woff2
+ *   3. Coloque em assets/fonts/
+ *   4. Commit + deploy
+ *
+ * font-display: swap → mostra fallback ate Inter carregar (evita FOIT).
+ * unicode-range → pega so glifos latin+latin-ext (90% do conteudo PT-BR).
+ * ========================================================================== */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('Inter-Regular.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('Inter-Medium.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('Inter-SemiBold.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('Inter-Bold.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

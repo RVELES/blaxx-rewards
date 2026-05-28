@@ -94,13 +94,23 @@
             <input type="password" id="senha-confirm" placeholder="Repita a senha"
                    autocomplete="new-password" required aria-required="true">
         </div>
+        <!-- Sprint 1 (LGPD): 3 aceites SEPARADOS · backend exige os tres -->
         <div class="checkbox-row">
-            <input type="checkbox" id="termos" required>
-            <label for="termos">Concordo com os <a href="termos.html" style="color:var(--ink);font-weight:700;">termos de uso</a> e a <a href="documentos-termos.html" style="color:var(--ink);font-weight:700;">política de privacidade</a>.</label>
+            <input type="checkbox" id="termos" required aria-required="true">
+            <label for="termos">Li e aceito os <a href="termos.html" style="color:var(--ink);font-weight:700;">termos de uso</a>.</label>
         </div>
         <div class="checkbox-row">
-            <input type="checkbox" id="news" checked>
-            <label for="news">Quero receber novidades, campanhas e ofertas exclusivas por e-mail.</label>
+            <input type="checkbox" id="privacidade" required aria-required="true">
+            <label for="privacidade">Li e aceito a <a href="documentos-termos.html" style="color:var(--ink);font-weight:700;">política de privacidade</a>.</label>
+        </div>
+        <div class="checkbox-row">
+            <input type="checkbox" id="lgpd" required aria-required="true">
+            <label for="lgpd">Autorizo o tratamento dos meus dados pessoais conforme a <strong>LGPD</strong> (Lei 13.709/18) para uso no programa de pontos.</label>
+        </div>
+        <!-- Opt-in marketing · NAO obrigatorio (LGPD: precisa estar separado) -->
+        <div class="checkbox-row">
+            <input type="checkbox" id="news">
+            <label for="news">Quero receber novidades, campanhas e ofertas exclusivas por e-mail. <span style="color:var(--muted);font-size:12px;">(opcional)</span></label>
         </div>
         <button class="button full lg">Criar minha conta →</button>
 

@@ -280,15 +280,42 @@ async function refresh() {
 
   const t = await api('/wallet/transactions?limit=10');
   if (!t.items.length) { $('extrato').textContent = 'sem movimentações ainda.'; return; }
-  $('extrato').innerHTML = t.items.map(tx => {
+
+  // Sprint 3 (S3-6): construcao DOM em vez de innerHTML pra evitar XSS
+  // via tx.description (admin pode setar descricao quando confirma manual).
+  const container = $('extrato');
+  container.textContent = '';  // limpa
+  t.items.forEach(tx => {
     const cls = tx.amount_pts >= 0 ? 'tx-amt-pos' : 'tx-amt-neg';
     const sign = tx.amount_pts >= 0 ? '+' : '';
     const date = new Date(tx.created_at).toLocaleString('pt-BR');
-    return `<div class="tx-row">
-      <div><strong>${tx.description || tx.type}</strong> <span style="color:var(--muted-2);font-size:11px;">· ${tx.type}</span><br><span style="color:var(--muted-2);font-size:11px;">${date}</span></div>
-      <div class="${cls}">${sign}${fmt(tx.amount_pts)} pts</div>
-    </div>`;
-  }).join('');
+
+    const row = document.createElement('div');
+    row.className = 'tx-row';
+
+    const left = document.createElement('div');
+    const desc = document.createElement('strong');
+    desc.textContent = tx.description || tx.type;  // escape automatico
+    const sep = document.createElement('span');
+    sep.style.cssText = 'color:var(--muted-2);font-size:11px;';
+    sep.textContent = ' · ' + tx.type;
+    const br = document.createElement('br');
+    const dateEl = document.createElement('span');
+    dateEl.style.cssText = 'color:var(--muted-2);font-size:11px;';
+    dateEl.textContent = date;
+    left.appendChild(desc);
+    left.appendChild(sep);
+    left.appendChild(br);
+    left.appendChild(dateEl);
+
+    const right = document.createElement('div');
+    right.className = cls;
+    right.textContent = sign + fmt(tx.amount_pts) + ' pts';
+
+    row.appendChild(left);
+    row.appendChild(right);
+    container.appendChild(row);
+  });
 }
 
 // ---------- FLUXO 1 ----------

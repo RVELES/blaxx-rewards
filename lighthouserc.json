@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/GoogleChrome/lighthouse-ci/blob/main/docs/configuration.md",
+  "ci": {
+    "collect": {
+      "url": [
+        "https://blaxxpontos.netlify.app/",
+        "https://blaxxpontos.netlify.app/login.html",
+        "https://blaxxpontos.netlify.app/cadastro.html",
+        "https://blaxxpontos.netlify.app/comprar-pontos.html",
+        "https://blaxxpontos.netlify.app/parceiros.html"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1
+        },
+        "skipAudits": [
+          "uses-http2",
+          "canonical"
+        ]
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:recommended",
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.90 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["error", { "minScore": 0.95 }],
+        "categories:seo": ["error", { "minScore": 0.95 }],
+        "first-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 300 }],
+        "interactive": ["warn", { "maxNumericValue": 3500 }],
+        "speed-index": ["warn", { "maxNumericValue": 3000 }],
+        "uses-rel-preconnect": "off",
+        "csp-xss": "warn"
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

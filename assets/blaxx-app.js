@@ -16,6 +16,17 @@
   var API = window.BLAXX_API || location.origin;
   var DEFAULT_AVATAR = 'M';
 
+  // Sprint 2 (P4): Se o user esta logado (tem token), marca <html> com
+  // data-auth-loading="true" o mais cedo possivel (este script roda no
+  // final do <body>, mas antes de qualquer dado real ser pintado).
+  // O CSS em styles.css esconde body[data-auth-loading] para evitar
+  // FLASH visivel da Mariana Costa hardcoded nos HTMLs estaticos.
+  // O atributo eh removido no fim de applyUserToShell() apos popular dados.
+  try {
+    var _t = sessionStorage.getItem('blaxx_token');
+    if (_t) document.documentElement.setAttribute('data-auth-loading', 'true');
+  } catch (_) { /* sessionStorage bloqueado */ }
+
   // ---- Helpers ----
   var $ = function (sel, el) { return (el || document).querySelector(sel); };
   var $$ = function (sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); };
@@ -981,7 +992,13 @@
         n.textContent = 'Plano Plus · ' + fmt(w.balance_pts) + ' pts';
       });
       replaceHardcoded(w);
-    }).catch(function () { /* sem wallet (404/401/offline): mantem so o nome */ });
+    }).catch(function () { /* sem wallet (404/401/offline): mantem so o nome */ })
+      .then(function () {
+        // Sprint 2 (P4): so revela o body APOS hidratar com dados reais.
+        // Evita flash da Mariana Costa hardcoded nos HTMLs estaticos.
+        try { document.documentElement.removeAttribute('data-auth-loading'); }
+        catch (_) {}
+      });
   }
 
   function replaceHardcoded(w, opts) {
@@ -1616,6 +1633,59 @@
     var strengthEl = $('#bx-strength');
     attachPasswordStrength(senhaEl, strengthEl);
 
+    // Sprint 4 (S4-8) · Persiste rascunho do cadastro em sessionStorage.
+    // Se o user clicar em "termos de uso" ou "privacidade", vai pra outra
+    // pagina, e ao voltar nao perde o que ja preencheu. Senha NUNCA e'
+    // persistida.
+    var DRAFT_KEY = 'blaxx_signup_draft_v1';
+    var DRAFT_FIELDS = ['nome', 'email', 'cpf', 'celular', 'bday'];
+
+    function loadDraft() {
+      try {
+        var saved = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null');
+        if (!saved) return;
+        DRAFT_FIELDS.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el && !el.value && typeof saved[id] === 'string') el.value = saved[id];
+        });
+        var cbT = document.getElementById('termos');
+        var cbP = document.getElementById('privacidade');
+        var cbL = document.getElementById('lgpd');
+        var cbN = document.getElementById('news');
+        if (cbT && saved.termos) cbT.checked = true;
+        if (cbP && saved.privacidade) cbP.checked = true;
+        if (cbL && saved.lgpd) cbL.checked = true;
+        if (cbN && saved.news === false) cbN.checked = false;
+      } catch (_) {}
+    }
+
+    function saveDraft() {
+      var data = {};
+      DRAFT_FIELDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      });
+      data.termos       = !!(document.getElementById('termos') || {}).checked;
+      data.privacidade  = !!(document.getElementById('privacidade') || {}).checked;
+      data.lgpd         = !!(document.getElementById('lgpd') || {}).checked;
+      data.news         = !!(document.getElementById('news') || {}).checked;
+      try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch (_) {}
+    }
+
+    DRAFT_FIELDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', saveDraft);
+    });
+    ['termos','privacidade','lgpd','news'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('change', saveDraft);
+    });
+    loadDraft();
+    // Expoe pra clearDraft no submit success
+    window._blaxxClearSignupDraft = function () {
+      try { sessionStorage.removeItem(DRAFT_KEY); } catch (_) {}
+    };
+
     form.setAttribute('novalidate', 'novalidate');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -1624,38 +1694,44 @@
       var cpf = (cpfEl || {}).value || '';
       var senha = (senhaEl || {}).value || '';
       var senhaConfirm = (form.querySelector('#senha-confirm') || {}).value || '';
-      var termos = (form.querySelector('#termos') || {}).checked || false;
+      // Sprint 1 (LGPD): 3 aceites SEPARADOS no DOM e no payload
+      var aceiteTermos      = (form.querySelector('#termos') || {}).checked || false;
+      var aceitePrivacidade = (form.querySelector('#privacidade') || {}).checked || false;
+      var aceiteLGPD        = (form.querySelector('#lgpd') || {}).checked || false;
       var news = (form.querySelector('#news') || {}).checked || false;
 
       if (!nome.trim() || nome.trim().split(/\s+/).length < 2) { notify('Informe nome completo (nome e sobrenome)', 'warn'); return; }
       if (!email.trim()) { notify('Informe um email válido', 'warn'); return; }
       if (!passwordStrength(senha).ok) { notify('Senha fraca: use 10+ chars com maiúscula, minúscula, número e símbolo', 'warn'); return; }
       if (senha !== senhaConfirm) { notify('Confirmação de senha não confere', 'warn'); return; }
-      if (!termos) { notify('Você precisa aceitar os termos e a política de privacidade', 'warn'); return; }
+      if (!aceiteTermos)      { notify('Você precisa aceitar os termos de uso', 'warn'); return; }
+      if (!aceitePrivacidade) { notify('Você precisa aceitar a política de privacidade', 'warn'); return; }
+      if (!aceiteLGPD)        { notify('Você precisa autorizar o tratamento de dados (LGPD)', 'warn'); return; }
 
       var btn = form.querySelector('button[type="submit"], button.button');
       var orig = btn ? btn.textContent : '';
       if (btn) { btn.disabled = true; btn.textContent = 'Criando conta...'; }
 
-      // Body compativel com backend antigo (cpf obrigatorio) e novo (terms + confirm).
-      // Cada um ignora silenciosamente os campos que nao reconhece.
+      // Payload reflete o que o usuario REALMENTE marcou (sem mais
+      // "manda sempre true" — fraude documental de consentimento)
       var body = {
         name: nome.trim(),
         email: email.trim().toLowerCase(),
         cpf: cpf.replace(/\D/g, ''),
         password: senha,
         password_confirm: senhaConfirm,
-        // Backend exige 3 aceites separados (Termos, Privacidade, LGPD).
-        // Frontend simplifica com 1 checkbox cobrindo os 3 documentos —
-        // os links de "termos de uso" e "política de privacidade" do
-        // checkbox levam aos 3 docs.
-        accept_terms: true,
-        accept_privacy: true,
-        accept_lgpd: true,
+        accept_terms:    aceiteTermos,
+        accept_privacy:  aceitePrivacidade,
+        accept_lgpd:     aceiteLGPD,
+        accept_terms_at: new Date().toISOString(),
         marketing_optin: news
       };
       api('/auth/register', { method: 'POST', body: JSON.stringify(body) })
         .then(function (data) {
+          // Sprint 4 (S4-8): limpa o rascunho ao succeed
+          if (typeof window._blaxxClearSignupDraft === 'function') {
+            window._blaxxClearSignupDraft();
+          }
           if (data && data.token) {
             // Backend antigo: emite token na hora, sem verificacao de email
             STORE.setToken(data.token); STORE.setUser(data.user);
@@ -3043,23 +3119,180 @@
     }
   }
 
-  function bootstrap() {
-    // Instala interceptador global de Sair/Entrar SEMPRE — funciona logado
-    // ou deslogado e em qualquer página com links pra /login.html.
-    installGlobalLogoutHandler();
-    applyA11yGlobals();
+  // =========================================================================
+  // Sprint 3 (S3-2) · Hamburger menu mobile
+  // =========================================================================
+  // Antes deste fix, a nav some abaixo de 880px sem replacement — usuario
+  // mobile fica sem navegar. Agora injeta botao hamburger no .nav e drawer
+  // com aria + ESC + scroll lock + focus trap.
+  function installHamburgerMenu() {
+    var nav = document.querySelector('.nav');
+    if (!nav || nav.querySelector('.bx-hamburger')) return;  // ja instalado
 
-    var initFn = INITS[PAGE];
-    if (initFn) initFn();
-    // applyUserToShell é idempotente — chama SEMPRE que houver token,
-    // mesmo em páginas com init. Cobre sidebar/navbar/avatar que os
-    // inits específicos (initPerfil, initSeguranca, ...) não tocam.
-    if (STORE.token()) applyUserToShell();
+    // Coleta links existentes do .links pra replicar no drawer
+    var linksSrc = nav.querySelector('.links');
+    var linkItems = linksSrc
+      ? Array.prototype.slice.call(linksSrc.querySelectorAll('a'))
+      : [];
+
+    // CTAs (Entrar / Cadastre-se) — replicados do .cta-row se existir
+    var ctaSrc = nav.querySelector('.cta-row');
+    var ctaItems = ctaSrc
+      ? Array.prototype.slice.call(ctaSrc.querySelectorAll('a.button'))
+      : [];
+
+    // Botao hamburger — aparece via CSS so < 880px
+    var btn = document.createElement('button');
+    btn.className = 'bx-hamburger';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Abrir menu de navegacao');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', 'bx-mobile-drawer');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+
+    // Posiciona no fim do nav (ao lado da cta-row em mobile)
+    nav.appendChild(btn);
+
+    // Backdrop + drawer
+    var backdrop = document.createElement('div');
+    backdrop.className = 'bx-drawer-backdrop';
+
+    var drawer = document.createElement('aside');
+    drawer.className = 'bx-drawer';
+    drawer.id = 'bx-mobile-drawer';
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-modal', 'true');
+    drawer.setAttribute('aria-label', 'Menu de navegacao');
+
+    var head = document.createElement('div');
+    head.className = 'bx-drawer-head';
+    var title = document.createElement('strong');
+    title.textContent = 'Menu';
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'bx-drawer-close';
+    closeBtn.type = 'button';
+    closeBtn.setAttribute('aria-label', 'Fechar menu');
+    closeBtn.innerHTML = '&times;';
+    head.appendChild(title);
+    head.appendChild(closeBtn);
+    drawer.appendChild(head);
+
+    var navEl = document.createElement('nav');
+    linkItems.forEach(function (a) {
+      var link = document.createElement('a');
+      link.href = a.href;
+      link.textContent = a.textContent;
+      if (a.classList.contains('active')) link.classList.add('active');
+      navEl.appendChild(link);
+    });
+    drawer.appendChild(navEl);
+
+    if (ctaItems.length) {
+      var ctaGrp = document.createElement('div');
+      ctaGrp.className = 'bx-drawer-cta';
+      ctaItems.forEach(function (a) {
+        var link = document.createElement('a');
+        link.href = a.href;
+        link.textContent = a.textContent;
+        link.className = a.className;
+        ctaGrp.appendChild(link);
+      });
+      drawer.appendChild(ctaGrp);
+    }
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(drawer);
+
+    function openDrawer() {
+      drawer.setAttribute('data-open', '');
+      backdrop.setAttribute('data-open', '');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('bx-no-scroll');
+      // Foco no botao de fechar (acessibilidade)
+      setTimeout(function () { closeBtn.focus(); }, 100);
+    }
+
+    function closeDrawer() {
+      drawer.removeAttribute('data-open');
+      backdrop.removeAttribute('data-open');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('bx-no-scroll');
+      btn.focus();
+    }
+
+    btn.addEventListener('click', openDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+
+    // ESC fecha
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.hasAttribute('data-open')) closeDrawer();
+    });
+
+    // Focus trap basico — Tab cicla dentro do drawer
+    drawer.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var focusable = drawer.querySelectorAll(
+        'a, button, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    });
   }
 
-  // Re-aplica ao terminar transições, garantindo override em qualquer página
+  // Sprint 3 (S3-7): carrega cookie banner LGPD em todas as paginas.
+  // Idempotente — se ja tiver consent salvo, banner nao aparece.
+  function installCookieBanner() {
+    if (document.querySelector('script[data-bx-cookie]')) return;
+    var s = document.createElement('script');
+    s.src = 'assets/cookie-banner.js';
+    s.defer = true;
+    s.setAttribute('data-bx-cookie', '1');
+    document.head.appendChild(s);
+  }
+
+  // Sprint 4 (S4-5): carrega TOTP UI so se a pagina tiver o slot.
+  function installTotpUI() {
+    if (!document.getElementById('bx-totp-status')) return;
+    if (document.querySelector('script[data-bx-totp]')) return;
+    var s = document.createElement('script');
+    s.src = 'assets/totp-ui.js';
+    s.defer = true;
+    s.setAttribute('data-bx-totp', '1');
+    document.head.appendChild(s);
+  }
+
+
+  // Sprint 4 wrap-up · bootstrap restaurado apos truncamento Dropbox
+  function bootstrap() {
+    try {
+      if (typeof installGlobalLogoutHandler === 'function') installGlobalLogoutHandler();
+      if (typeof applyA11yGlobals === 'function') applyA11yGlobals();
+      if (typeof installHamburgerMenu === 'function') installHamburgerMenu();
+      if (typeof installCookieBanner === 'function') installCookieBanner();
+      if (typeof installTotpUI === 'function') installTotpUI();
+      var initFn = (typeof INITS !== 'undefined') ? INITS[PAGE] : null;
+      if (initFn) initFn();
+      if (typeof STORE !== 'undefined' && STORE.token && STORE.token()
+          && typeof applyUserToShell === 'function') {
+        applyUserToShell();
+      }
+    } catch (e) {
+      if (window.console) console.error('bootstrap fail:', e);
+    }
+  }
+
   window.addEventListener('pageshow', function () {
-    if (STORE.token()) applyUserToShell();
+    if (typeof STORE !== 'undefined' && STORE.token && STORE.token()
+        && typeof applyUserToShell === 'function') {
+      applyUserToShell();
+    }
   });
 
   if (document.readyState === 'loading') {
@@ -3068,162 +3301,11 @@
     bootstrap();
   }
 
-  // =========================================================================
-  // PWA: registro do service worker + install prompt + recursos mobile
-  // =========================================================================
-
-  // Registra o service worker
+  // Service Worker registration
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      // SW registrado na raiz — site é servido em /, não em /site/.
-      // Bug anterior: registro em /site/service-worker.js retornava 404 e
-      // a PWA nunca instalava (manifest + scope tambem apontavam /site/).
       navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-        .catch(function (e) { console.warn('SW falhou:', e); });
+        .catch(function (e) { if (window.console) console.warn('SW falhou:', e); });
     });
   }
-
-  // Install prompt (Android/Chrome). iOS exige instrucao manual.
-  var deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallButton();
-  });
-
-  function showInstallButton() {
-    if (document.getElementById('bx-install-btn')) return;
-    var btn = document.createElement('button');
-    btn.id = 'bx-install-btn';
-    btn.textContent = '+ Instalar app';
-    btn.style.cssText =
-      'position:fixed;bottom:20px;right:20px;z-index:9000;background:#C6F432;color:#080907;' +
-      'border:0;padding:12px 22px;border-radius:999px;font-weight:700;font-size:14px;' +
-      'box-shadow:0 12px 32px rgba(0,0,0,.18);cursor:pointer;font-family:Inter,sans-serif;';
-    btn.addEventListener('click', function () {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function (c) {
-        if (c.outcome === 'accepted') btn.remove();
-        deferredPrompt = null;
-      });
-    });
-    document.body.appendChild(btn);
-  }
-
-  // iOS: detecta Safari mobile e mostra dica para "Adicionar a tela inicial"
-  function showIOSInstallHint() {
-    if (sessionStorage.getItem('blaxx_ios_hint')) return;
-    var ua = navigator.userAgent;
-    var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    var isInStandalone = window.navigator.standalone === true;
-    if (!isIOS || isInStandalone) return;
-    sessionStorage.setItem('blaxx_ios_hint', '1');
-    var bar = document.createElement('div');
-    bar.style.cssText =
-      'position:fixed;bottom:0;left:0;right:0;z-index:9000;background:#080907;color:#C6F432;' +
-      'padding:14px 18px;font-family:Inter,sans-serif;font-size:13px;display:flex;align-items:center;gap:8px;';
-    bar.innerHTML =
-      '<span style="flex:1;line-height:1.4;">Para instalar como app: toque em <strong>Compartilhar</strong> ' +
-      'e depois em <strong>Adicionar à Tela de Início</strong>.</span>' +
-      '<button style="background:transparent;border:1px solid #C6F432;color:#C6F432;padding:6px 12px;border-radius:8px;font-weight:700;">OK</button>';
-    bar.querySelector('button').addEventListener('click', function () { bar.remove(); });
-    document.body.appendChild(bar);
-  }
-  setTimeout(showIOSInstallHint, 1500);
-
-  // =========================================================================
-  // Deep link PIX: abre o app do banco com BR Code (Android)
-  // =========================================================================
-  // Padrao Bacen (em estudo): nao ha esquema "pix:" universal aceito ainda.
-  // O caminho confiavel hoje e' "copiar codigo" + abrir o app do banco.
-  // Em Android e' possivel acionar Intent direto se o usuario tiver app que
-  // registre o esquema. Aqui exponho a funcao globalmente para a tela usar.
-  window.blaxxOpenBankApp = function (brCode) {
-    navigator.clipboard.writeText(brCode).then(function () {
-      notify('Código PIX copiado. Abra o app do seu banco e cole em "PIX Copia e Cola".', 'ok');
-    }).catch(function () {
-      notify('Selecione e copie o código manualmente.', 'warn');
-    });
-  };
-
-  // =========================================================================
-  // Leitor de QR Code (camera) - usado em parceiros para acumular pontos
-  // =========================================================================
-  // API exposta como window.blaxxScanQR(callback). Usa BarcodeDetector quando
-  // disponivel (Chrome Android), senao mostra instrucao para colar manual.
-  window.blaxxScanQR = function (cb) {
-    var overlay = document.createElement('div');
-    overlay.style.cssText =
-      'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;' +
-      'align-items:center;justify-content:center;flex-direction:column;color:white;font-family:Inter,sans-serif;';
-    overlay.innerHTML =
-      '<div style="font-size:14px;margin-bottom:10px;color:#C6F432;">Escanear QR Code</div>' +
-      '<video id="bx-cam" playsinline autoplay style="max-width:90vw;max-height:60vh;border-radius:18px;background:black;"></video>' +
-      '<div id="bx-cam-msg" style="font-size:12px;color:#888;margin-top:10px;text-align:center;max-width:80vw;">Aponte para o QR Code do parceiro</div>' +
-      '<button id="bx-cam-cancel" style="margin-top:14px;background:white;color:#080907;border:0;padding:10px 22px;border-radius:999px;font-weight:700;cursor:pointer;">Cancelar</button>';
-    document.body.appendChild(overlay);
-
-    var video = overlay.querySelector('#bx-cam');
-    var msg = overlay.querySelector('#bx-cam-msg');
-    var stream = null;
-    var detector = null;
-    var raf = null;
-
-    function close(result) {
-      cancelAnimationFrame(raf);
-      if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
-      overlay.remove();
-      if (cb) cb(result || null);
-    }
-    overlay.querySelector('#bx-cam-cancel').addEventListener('click', function () { close(null); });
-
-    if (!('mediaDevices' in navigator) || !navigator.mediaDevices.getUserMedia) {
-      msg.textContent = 'Seu navegador não tem câmera. Cole o código manualmente.';
-      return;
-    }
-    if ('BarcodeDetector' in window) {
-      try { detector = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) {}
-    }
-
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(function (s) {
-        stream = s; video.srcObject = s;
-        if (!detector) {
-          msg.textContent = 'Câmera ativa. Detecção automática de QR não disponível neste navegador — Capacitor resolve.';
-          return;
-        }
-        function tick() {
-          detector.detect(video).then(function (codes) {
-            if (codes && codes.length) { close(codes[0].rawValue); return; }
-            raf = requestAnimationFrame(tick);
-          }).catch(function () { raf = requestAnimationFrame(tick); });
-        }
-        raf = requestAnimationFrame(tick);
-      })
-      .catch(function () { msg.textContent = 'Não consegui acessar a câmera. Verifique a permissão.'; });
-  };
-
-  // =========================================================================
-  // Biometria (WebAuthn) - placeholder pronto para Capacitor
-  // =========================================================================
-  // No PWA puro, WebAuthn permite criar/usar credenciais ligadas ao Face ID
-  // (iOS) e Touch/Face do Android. A API completa exige um endpoint backend
-  // que ainda nao foi implementado (challenge + verify). Exponho stubs aqui:
-  window.blaxxBiometricsAvailable = function () {
-    return !!(window.PublicKeyCredential && navigator.credentials);
-  };
-
-  // =========================================================================
-  // Push notifications - subscribe se o backend tiver VAPID
-  // =========================================================================
-  // Stub que verifica suporte. Em prod precisa: backend gera VAPID keys, expõe
-  // /push/subscribe, e o SW handle o evento 'push' (já implementado).
-  window.blaxxPushAvailable = function () {
-    return 'Notification' in window && 'PushManager' in window && 'serviceWorker' in navigator;
-  };
-  window.blaxxRequestPushPermission = function () {
-    if (!window.blaxxPushAvailable()) return Promise.resolve('unsupported');
-    return Notification.requestPermission();
-  };
 })();

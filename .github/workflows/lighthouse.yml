@@ -1,0 +1,28 @@
+# Sprint 5 (S5-7) · Lighthouse CI · roda em todo PR + nightly
+name: Lighthouse CI
+on:
+  pull_request:
+    paths:
+      - '**/*.html'
+      - '**/*.css'
+      - '**/*.js'
+      - 'lighthouserc.json'
+  schedule:
+    - cron: '0 5 * * *'  # nightly 05h UTC
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.13.x
+      - name: Run Lighthouse CI
+        run: lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
