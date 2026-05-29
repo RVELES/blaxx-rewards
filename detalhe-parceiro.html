@@ -38,16 +38,21 @@
 </header>
 <main class="shell">
 <div class="page-head">
-    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> <a href="parceiros.html">Parceiros</a><span class="sep">/</span> Mercado Bom Preço</div>
+    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> <a href="parceiros.html">Parceiros</a><span class="sep">/</span> <span data-bx-partner-name>Carregando…</span></div>
 </div>
 
 <section class="section">
     <div class="band-dark" style="padding:40px;">
         <div class="grid two" style="gap:40px;align-items:center;">
             <div>
-                <span class="kicker">Supermercado</span>
-                <h1 style="margin-top:14px;color:white;">Mercado Bom Preço</h1>
-                <p>Mais de 80 lojas em todo o Brasil. Acumule pontos em todas as compras, presencial ou online, sem limite.</p>
+                <!-- Logo grande do parceiro (Clearbit) — escala automatica
+                     se ?id= na URL retornar partner valido. Cai pra emoji. -->
+                <div data-bx-partner-logo class="partner-hero-logo" aria-hidden="true">
+                  <span class="partner-logo-fallback">◯</span>
+                </div>
+                <span class="kicker" data-bx-partner-category>Categoria</span>
+                <h1 style="margin-top:14px;color:white;" data-bx-partner-name>Carregando…</h1>
+                <p data-bx-partner-description>Carregando descrição do parceiro…</p>
                 <div class="actions">
                     <a href="resgates.html" class="button">Ver resgates</a>
                     <a href="#" class="button secondary">Encontrar loja</a>
@@ -55,9 +60,9 @@
             </div>
             <div class="card" style="background:#1c1f19;border-color:#2a2d28;color:white;">
                 <h3 style="color:white;">Você ganha</h3>
-                <div style="font-size:48px;font-weight:900;letter-spacing:-0.04em;color:var(--lime);line-height:1;">10 pts</div>
-                <p style="color:#b8bdaf;">a cada R$ 1 gasto · crédito em 24h</p>
-                <span class="status ativo" style="margin-top:8px;">● Campanha ativa: +50%</span>
+                <div data-bx-partner-rule style="font-size:32px;font-weight:900;letter-spacing:-0.04em;color:var(--lime);line-height:1.1;">—</div>
+                <p style="color:#b8bdaf;">crédito em até 24h após a compra</p>
+                <span class="status ativo" style="margin-top:8px;">● Parceiro ativo</span>
             </div>
         </div>
     </div>

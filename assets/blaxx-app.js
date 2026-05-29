@@ -661,13 +661,28 @@
     }
     // Fallback: slugify do nome
     if (!slug) {
-      slug = String(p.name || '').toLowerCase()
-        .normalize('NFD').replace(/[̀-ͯ]/g, '')   // remove acentos
-        .replace(/[^a-z0-9]/g, '');
+      slug = bxSlugify(p.name);
     }
     if (!slug || slug.length < 2) return null;
     return 'https://logo.clearbit.com/' + slug + '.com.br?size=128';
   }
+
+  // Slugifier: nome → token sem acentos/espacos/pontuacao, lowercase.
+  function bxSlugify(name) {
+    return String(name || '').toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')   // remove acentos
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  // URL de logo para qualquer marca pelo nome (helper generico).
+  // Usado nos cards de resgates/beneficios onde so temos partner_name.
+  function bxLogoUrlFromName(name) {
+    var slug = bxSlugify(name);
+    if (!slug || slug.length < 2) return null;
+    return 'https://logo.clearbit.com/' + slug + '.com.br?size=128';
+  }
+  window.bxLogoUrlFromName = bxLogoUrlFromName;
+  window.bxSlugify = bxSlugify;
 
   // Handler global de erro do <img>: tenta .com como fallback, depois emoji.
   window.bxLogoErr = function (img, fallback) {
@@ -2322,6 +2337,64 @@
   // =========================================================================
   // Resgates (benefícios reais via /benefits/)
   // =========================================================================
+  // =========================================================================
+  // Detalhe do parceiro: fetch /partners/<id> + popula placeholders data-bx-*
+  // =========================================================================
+  function initDetalheParceiro() {
+    var id = new URLSearchParams(location.search).get('id');
+    if (!id) {
+      // Fallback: sem id, mostra parceiros generic
+      var firstName = document.querySelector('[data-bx-partner-name]');
+      if (firstName) firstName.textContent = 'Parceiro nao identificado';
+      return;
+    }
+    bxFetchJson(API + '/partners/' + id, { timeoutMs: 20000 })
+      .then(function (p) {
+        if (!p) return;
+        // Nome — todos os placeholders
+        document.querySelectorAll('[data-bx-partner-name]').forEach(function (el) {
+          el.textContent = p.name || 'Parceiro';
+        });
+        // Categoria
+        document.querySelectorAll('[data-bx-partner-category]').forEach(function (el) {
+          el.textContent = p.category || 'Parceiro';
+        });
+        // Descricao
+        document.querySelectorAll('[data-bx-partner-description]').forEach(function (el) {
+          el.textContent = p.description || 'Parceiro Blaxx Pontos.';
+        });
+        // Regra de acumulo
+        document.querySelectorAll('[data-bx-partner-rule]').forEach(function (el) {
+          el.textContent = p.accrual_rule || '—';
+        });
+        // Logo Clearbit no hero
+        var logoBox = document.querySelector('[data-bx-partner-logo]');
+        if (logoBox) {
+          var logoUrl = bxPartnerLogoUrl(p);
+          var fallback = (p.logo_emoji || '◯').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+          if (logoUrl) {
+            logoBox.innerHTML = '<img src="' + logoUrl +
+              '" alt="' + (p.name || '').replace(/"/g, '&quot;') + '" ' +
+              'class="partner-logo-img" loading="lazy" ' +
+              'onerror="bxLogoErr(this,\'' + fallback + '\')">';
+          } else {
+            logoBox.innerHTML = '<span class="partner-logo-fallback">' + fallback + '</span>';
+          }
+        }
+        // Atualiza title da pagina
+        document.title = (p.name || 'Parceiro') + ' | Blaxx Pontos';
+      })
+      .catch(function (err) {
+        document.querySelectorAll('[data-bx-partner-name]').forEach(function (el) {
+          el.textContent = 'Parceiro nao encontrado';
+        });
+        document.querySelectorAll('[data-bx-partner-description]').forEach(function (el) {
+          el.textContent = 'O parceiro solicitado nao foi encontrado ou esta inativo. ' +
+            (err && err.message ? '(' + err.message + ')' : '');
+        });
+      });
+  }
+
   function initResgatesReal() {
     var grid = document.getElementById('rg-grid');
     if (!grid) return;
@@ -2345,9 +2418,26 @@
       }
       grid.innerHTML = filtered.map(function (b) {
         var tag = b.tag ? '<div class="tag-row"><span class="glyph-sm">▣</span> ' + b.tag + '</div>' : '';
+        // Logo do parceiro (se houver partner_name) — Clearbit com fallback emoji.
+        var logoHtml = '';
+        if (b.partner_name) {
+          var logoUrl = bxLogoUrlFromName(b.partner_name);
+          var fallback = (b.image_emoji || '★').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+          if (logoUrl) {
+            logoHtml = '<div class="market-logo">' +
+              '<img src="' + logoUrl + '" alt="' + b.partner_name.replace(/"/g, '&quot;') +
+              '" class="partner-logo-img" loading="lazy" ' +
+              'onerror="bxLogoErr(this,\'' + fallback + '\')"></div>';
+          }
+        }
+        var partnerLine = b.partner_name
+          ? '<div class="market-partner">' + b.partner_name + '</div>'
+          : '';
         return '<a href="beneficio-detalhe.html?id=' + b.id + '" class="market-card">' +
           tag +
+          logoHtml +
           '<h3>' + b.name + '</h3>' +
+          partnerLine +
           '<div class="pts">' + fmt(b.cost_pts) + ' <small>pts</small></div>' +
           '<span class="market-cta">Resgatar</span></a>';
       }).join('');
@@ -3064,6 +3154,8 @@
     'extrato.html': initExtrato,
     'comprar-pontos.html': initComprarPontosReal,
     'parceiros.html': initParceirosReal,
+    'detalhe-parceiro.html': initDetalheParceiro,
+    'parceiro-detalhe.html': initDetalheParceiro,
     'resgates.html': initResgatesReal,
     'pagamento-pix.html': initPagamentoPix,
     'compra-aprovada.html': initCompraAprovada,

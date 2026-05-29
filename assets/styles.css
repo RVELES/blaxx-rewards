@@ -1600,6 +1600,64 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     color: var(--muted);
     font-weight: 600;
 }
+/* Logo do parceiro no topo do card de beneficio — Clearbit com proporcao
+   preservada (object-fit contain). Tamanho compacto pra nao dominar o card. */
+.market-card .market-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 6px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.market-card .market-logo img,
+.market-card .market-logo .partner-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.market-card .market-logo .partner-logo-fallback {
+    font-size: 28px;
+    line-height: 1;
+}
+.market-card .market-partner {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-top: -8px;
+}
+
+/* Logo hero na pagina detalhe-parceiro — 96x96px, fundo branco, scroll
+   ate o topo do card .band-dark pra dar destaque visual. */
+.partner-hero-logo {
+    width: 96px;
+    height: 96px;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid var(--line-soft);
+    padding: 10px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+.partner-hero-logo img,
+.partner-hero-logo .partner-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.partner-hero-logo .partner-logo-fallback {
+    font-size: 48px;
+    line-height: 1;
+}
 .market-card .tag-row .glyph-sm {
     width: 24px;
     height: 24px;
