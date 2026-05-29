@@ -7,11 +7,35 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Cache agressivo para CSS/JS/imagens (busta no nome do arquivo se mudar)
+# Imagens podem ficar 24h em cache (mudam pouco, sao bins grandes).
 [[headers]]
-  for = "/assets/*"
+  for = "/assets/*.png"
   [headers.values]
     Cache-Control = "public, max-age=86400"
+[[headers]]
+  for = "/assets/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+[[headers]]
+  for = "/assets/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+[[headers]]
+  for = "/assets/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# JS e CSS — no-cache + must-revalidate. Browser ainda cacheia (rapido),
+# mas faz uma request HEAD em cada reload pra checar se mudou via ETag.
+# Antes era max-age=86400 e usuario via codigo antigo ate 24h apos deploy.
+[[headers]]
+  for = "/assets/*.js"
+  [headers.values]
+    Cache-Control = "public, no-cache, must-revalidate"
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Cache-Control = "public, no-cache, must-revalidate"
 
 [[headers]]
   for = "/*.html"
