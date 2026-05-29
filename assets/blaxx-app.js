@@ -1184,9 +1184,29 @@
     if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
   }
 
+  // Lock global: previne envio duplicado quando o user clica Google duas
+  // vezes (popup demora carregar → user reclica → 2 callbacks disparam).
+  // Tambem suprime callbacks que cheguem APOS um login bem-sucedido (race
+  // window de 350ms entre setToken e redirect).
+  var _bxGoogleLoginInProgress = false;
+
   function handleGoogleCredential(response) {
     var err = document.getElementById('g-signin-error');
     if (err) { err.style.display = 'none'; err.textContent = ''; }
+
+    // Idempotencia: se ja temos token valido OU login esta em curso, ignora.
+    if (STORE.token()) {
+      console.warn('[Blaxx] Google credential ignorado: ja autenticado');
+      return;
+    }
+    if (_bxGoogleLoginInProgress) {
+      console.warn('[Blaxx] Google credential duplicado ignorado (lock ativo)');
+      return;
+    }
+    _bxGoogleLoginInProgress = true;
+    // Esconde o container do botao Google pra usuario nao clicar de novo
+    var gContainer = document.getElementById('g-signin-btn');
+    if (gContainer) gContainer.style.pointerEvents = 'none';
 
     if (!response || !response.credential) {
       if (err) {
@@ -1209,9 +1229,14 @@
         STORE.setUser(r.user);
         notify('Bem-vindo, ' + (r.user.name || '').split(' ')[0] + '!', 'ok');
         var next = safeNext(new URLSearchParams(location.search).get('next'));
-        setTimeout(function () { location.href = next; }, 350);
+        // Reduzido de 350ms pra 150ms — window menor pra duplo-callback.
+        // Container ja esta pointer-events:none, entao usuario nao consegue
+        // disparar callback adicional nesse intervalo.
+        setTimeout(function () { location.href = next; }, 150);
       })
       .catch(function (e) {
+        _bxGoogleLoginInProgress = false;
+        if (gContainer) gContainer.style.pointerEvents = '';
         if (err) {
           err.textContent = e.message || 'Falha ao validar Google login';
           err.style.display = 'block';
