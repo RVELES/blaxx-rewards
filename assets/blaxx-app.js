@@ -696,44 +696,97 @@
   window.bxLogoUrlFromName = bxLogoUrlFromName;
   window.bxSlugify = bxSlugify;
 
-  // Pipeline de fallback do <img onerror>:
-  // - data-tried="ddg-br"   já tentou DDG com .com.br → tenta Google .com
-  // - data-tried="g-com"    já tentou Google com .com → tenta DDG com .com
-  // - data-tried="ddg-com"  já tentou DDG com .com    → desiste, emoji
-  // - sem attr (1a falha)   estava em Google .com.br  → tenta DDG .com.br
-  window.bxLogoErr = function (img, fallback) {
+  // Threshold pra considerar logo "real". Google Favicon retorna 16x16 (icone
+  // globo generico) para dominios sem favicon proprio. Logos reais variam
+  // de 32x32 a 256x256. Threshold 32 cobre todos os casos validos.
+  var BX_LOGO_MIN_SIZE = 32;
+
+  // Pipeline de tentativas: Google .com.br → DDG .com.br → Google .com → DDG .com
+  // Em cada onload, verifica naturalWidth >= 32. Se <32, considera "fallback
+  // globo generico" e tenta proxima fonte. Se naturalWidth ok, revela o card.
+  // Em onerror, tenta proxima fonte. Se TUDO falhar, card fica oculto (user
+  // pediu: "so carregue parceiros com logo ativada").
+  window.bxLogoCheckReveal = function (img) {
+    if (!img) return;
+    if (img.naturalWidth >= BX_LOGO_MIN_SIZE) {
+      // Logo valido — revela o card
+      var card = img.closest('.partner-card, .market-card');
+      if (card && card.dataset.bxHidden === '1') {
+        card.style.display = '';
+        delete card.dataset.bxHidden;
+        bxCountVisibleSchedule();
+      }
+      return;
+    }
+    // naturalWidth < 32 → favicon generico do Google. Tenta proxima fonte.
+    bxLogoTryNext(img);
+  };
+
+  window.bxLogoTryNext = function (img) {
     if (!img) return;
     var tried = img.getAttribute('data-tried') || '';
     var src = img.getAttribute('src') || '';
-    // Extrai dominio atual da URL (Google ou DDG)
     var domainMatch = src.match(/domain=([^&]+)/) || src.match(/ip3\/([^.]+\.[^.]+)/);
     var domain = domainMatch ? decodeURIComponent(domainMatch[1]) : '';
 
     if (!tried && domain) {
-      // 1: Google .com.br falhou → DDG .com.br
       img.setAttribute('data-tried', 'ddg-br');
       img.src = bxDdgIconUrl(domain);
       return;
     }
     if (tried === 'ddg-br' && domain.endsWith('.com.br')) {
-      // 2: DDG .com.br falhou → Google .com
       var stem = domain.replace(/\.com\.br$/, '.com');
       img.setAttribute('data-tried', 'g-com');
       img.src = bxGoogleFaviconUrl(stem);
       return;
     }
     if (tried === 'g-com' && domain.endsWith('.com')) {
-      // 3: Google .com falhou → DDG .com
       img.setAttribute('data-tried', 'ddg-com');
       img.src = bxDdgIconUrl(domain);
       return;
     }
-    // 4: desiste, troca img pelo span fallback
-    var span = document.createElement('span');
-    span.className = 'partner-logo-fallback';
-    span.textContent = fallback || '◯';
-    if (img.parentNode) img.parentNode.replaceChild(span, img);
+    // Todas as 4 fontes falharam — card fica oculto.
+    bxLogoFailHide(img);
   };
+
+  window.bxLogoFailHide = function (img) {
+    var card = img && img.closest('.partner-card, .market-card');
+    if (card) {
+      card.style.display = 'none';
+      card.dataset.bxHidden = '1';
+      bxCountVisibleSchedule();
+    }
+  };
+
+  // Atualiza contador de cards visiveis (debounced ~500ms apos ultimo evento).
+  var _bxCountTimer = null;
+  function bxCountVisibleSchedule() {
+    clearTimeout(_bxCountTimer);
+    _bxCountTimer = setTimeout(function () {
+      // Parceiros
+      var ptGrid = document.getElementById('pt-grid');
+      var ptCount = document.getElementById('pt-count');
+      if (ptGrid && ptCount) {
+        var visible = ptGrid.querySelectorAll('.partner-card:not([data-bx-hidden])').length;
+        var total = ptGrid.querySelectorAll('.partner-card').length;
+        ptCount.textContent = visible > 0
+          ? 'Mostrando ' + visible + ' parceiros com logo'
+          : 'Nenhum parceiro com logo disponivel agora.';
+      }
+      // Resgates/Beneficios
+      var rgGrid = document.getElementById('rg-grid');
+      var rgCount = document.getElementById('rg-count');
+      if (rgGrid && rgCount) {
+        var rVisible = rgGrid.querySelectorAll('.market-card:not([data-bx-hidden])').length;
+        rgCount.textContent = rVisible > 0
+          ? 'Mostrando ' + rVisible + ' beneficios'
+          : 'Nenhum beneficio disponivel agora.';
+      }
+    }, 500);
+  }
+
+  // Compat: o bxLogoErr antigo agora delega para bxLogoTryNext + hide
+  window.bxLogoErr = function (img, fallback) { bxLogoTryNext(img); };
 
   // ---- Helper: atualiza icones de sidebars hardcoded no HTML ----
   // Paginas como dashboard.html, carteira.html, extrato.html, perfil.html,
@@ -2220,22 +2273,27 @@
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum parceiro encontrado.</div>';
         return;
       }
+      // Cards iniciam ocultos (display:none). bxLogoCheckReveal revela
+      // somente se o logo carregou com naturalWidth >= 32. Pedido do usuario:
+      // "so carregue parceiros com logo ativada" — sem logo real, fica fora.
       grid.innerHTML = filtered.map(function (p) {
-        var initials = (p.name || '?').split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
         var logoUrl = bxPartnerLogoUrl(p);
-        var fallback = (p.logo_emoji || initials).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        // Renderiza <img> com logo real (Clearbit) — fallback automatico
-        // pro emoji/iniciais via onerror se a marca nao tiver logo cadastrado.
-        var logoHtml = logoUrl
-          ? '<img src="' + logoUrl + '" alt="' + (p.name || '').replace(/"/g, '&quot;') +
+        // Sem dominio extraivel → nem renderiza o card
+        if (!logoUrl) return '';
+        return '<a href="detalhe-parceiro.html?id=' + p.id + '" class="partner-card" ' +
+          'style="display:none;" data-bx-hidden="1">' +
+          '<div class="partner-logo">' +
+            '<img src="' + logoUrl + '" alt="' + (p.name || '').replace(/"/g, '&quot;') +
             '" class="partner-logo-img" loading="lazy" ' +
-            'onerror="bxLogoErr(this,\'' + fallback + '\')">'
-          : fallback;
-        return '<a href="detalhe-parceiro.html?id=' + p.id + '" class="partner-card">' +
-          '<div class="partner-logo">' + logoHtml + '</div>' +
+            'onload="bxLogoCheckReveal(this)" ' +
+            'onerror="bxLogoTryNext(this)">' +
+          '</div>' +
           '<div><h3>' + p.name + '</h3>' +
           '<div class="rate">' + (p.accrual_rule || '') + '</div></div></a>';
       }).join('');
+      // Texto inicial enquanto logos carregam
+      var $c = document.getElementById('pt-count');
+      if ($c) $c.textContent = 'Carregando logos…';
     }
 
     window.reloadParceiros = render;
@@ -2482,31 +2540,28 @@
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum benefício encontrado.</div>';
         return;
       }
+      // Cards iniciam ocultos. bxLogoCheckReveal revela apenas os beneficios
+      // de marcas com logo real (paridade com parceiros).
       grid.innerHTML = filtered.map(function (b) {
+        if (!b.partner_name) return '';   // sem partner → nao tem logo, pula
+        var logoUrl = bxLogoUrlFromName(b.partner_name);
+        if (!logoUrl) return '';          // slug invalido → pula
         var tag = b.tag ? '<div class="tag-row"><span class="glyph-sm">▣</span> ' + b.tag + '</div>' : '';
-        // Logo do parceiro (se houver partner_name) — Clearbit com fallback emoji.
-        var logoHtml = '';
-        if (b.partner_name) {
-          var logoUrl = bxLogoUrlFromName(b.partner_name);
-          var fallback = (b.image_emoji || '★').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-          if (logoUrl) {
-            logoHtml = '<div class="market-logo">' +
-              '<img src="' + logoUrl + '" alt="' + b.partner_name.replace(/"/g, '&quot;') +
-              '" class="partner-logo-img" loading="lazy" ' +
-              'onerror="bxLogoErr(this,\'' + fallback + '\')"></div>';
-          }
-        }
-        var partnerLine = b.partner_name
-          ? '<div class="market-partner">' + b.partner_name + '</div>'
-          : '';
-        return '<a href="beneficio-detalhe.html?id=' + b.id + '" class="market-card">' +
+        return '<a href="beneficio-detalhe.html?id=' + b.id + '" class="market-card" ' +
+          'style="display:none;" data-bx-hidden="1">' +
           tag +
-          logoHtml +
+          '<div class="market-logo">' +
+            '<img src="' + logoUrl + '" alt="' + b.partner_name.replace(/"/g, '&quot;') +
+            '" class="partner-logo-img" loading="lazy" ' +
+            'onload="bxLogoCheckReveal(this)" ' +
+            'onerror="bxLogoTryNext(this)"></div>' +
           '<h3>' + b.name + '</h3>' +
-          partnerLine +
+          '<div class="market-partner">' + b.partner_name + '</div>' +
           '<div class="pts">' + fmt(b.cost_pts) + ' <small>pts</small></div>' +
           '<span class="market-cta">Resgatar</span></a>';
       }).join('');
+      var $c = document.getElementById('rg-count');
+      if ($c) $c.textContent = 'Carregando logos…';
     }
 
     window.reloadResgates = render;
