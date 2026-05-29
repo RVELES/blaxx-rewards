@@ -199,16 +199,18 @@ a[aria-current="page"] {
 }
 .links {
     display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
+    gap: 2px;
+    flex-wrap: nowrap;       /* nunca quebra linha — mantem layout consistente */
     align-items: center;
+    justify-content: center;
 }
 .links a {
-    padding: 10px 14px;
+    padding: 8px 11px;       /* compacto pra caber 6 itens em 1 linha */
     border-radius: 999px;
-    font-size: 14px;
+    font-size: 13px;
     color: #343b32;
     font-weight: 500;
+    white-space: nowrap;     /* "Como funciona" / "Comprar pontos" nao quebram */
     transition: all 0.18s;
 }
 .links a:hover { background: rgba(8, 9, 7, 0.06); }

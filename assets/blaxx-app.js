@@ -632,70 +632,103 @@
     }).join('');
   }
 
-  // ---- Helper: logos reais de parceiros via Clearbit Logo API ----
-  // Pedido do usuario: "Carregue com o logotipo estilizado e tamanho padrao
-  // para as proporcoes do site de cada parceiro. A ideia e trazer o maximo
-  // de realidade possivel."
+  // ---- Helper: logos reais via Google Favicon API + DuckDuckGo fallback ----
+  // Pedido do usuario: "logotipo estilizado e tamanho padrao... maximo de
+  // realidade possivel"
   //
-  // Estrategia:
-  // 1. Extrai um slug do partner (description "Parceiro Livelo · xyz" → xyz;
-  //    fallback nome lowercased sem espacos).
-  // 2. Tenta logo em https://logo.clearbit.com/<slug>.com.br (BR primeiro).
-  // 3. <img onerror> chama bxLogoErr — tenta .com como segunda chance,
-  //    e se tambem falhar, substitui pelo emoji/iniciais original.
-  // 4. CSS .partner-logo img usa object-fit: contain pra manter proporcao
-  //    real do logo de cada marca.
+  // HISTORICO: Tentamos Clearbit Logo API primeiro (Jan 2024), mas a HubSpot
+  // adquiriu a Clearbit e descontinuou a Logo API gratuita — todos os
+  // requests ficavam pendentes / 000.
   //
-  // Clearbit: gratuito, ~99% uptime, sem rate limit pra uso responsavel.
-  // Brasileiras dominantes (.com.br) entram primeiro porque a maioria dos
-  // parceiros Livelo sao varejistas BR.
+  // SOLUCAO ATUAL — pipeline com 3 niveis:
+  // 1. Google Favicon API (sz=128) — confiavel, retorna logo otimizado da
+  //    marca a partir do dominio. ~99% das marcas conhecidas.
+  // 2. DuckDuckGo Icons (.ico) — fallback secundario, similar mas menor.
+  // 3. Emoji do partner (logo_emoji do banco) ou iniciais do nome.
+  //
+  // Extrai slug do partner description ("Parceiro Livelo · xyz" → xyz) ou
+  // slugify do nome. Tenta .com.br primeiro (BR dominante), .com depois.
   // ---------------------------------------------------------------------------
-  function bxPartnerLogoUrl(p) {
+
+  // Domain a partir do partner: prioriza slug do description, fallback nome.
+  function bxPartnerDomain(p) {
     if (!p) return null;
-    // Slug do description: "Parceiro Livelo · acer" → "acer"
     var slug = null;
     var desc = String(p.description || '');
     var dotIdx = desc.indexOf('·');
     if (dotIdx >= 0) {
-      slug = desc.slice(dotIdx + 1).trim().toLowerCase();
+      slug = desc.slice(dotIdx + 1).trim().toLowerCase()
+        .replace(/[^a-z0-9-]/g, '');   // sanitize defensivo
     }
-    // Fallback: slugify do nome
     if (!slug) {
       slug = bxSlugify(p.name);
     }
     if (!slug || slug.length < 2) return null;
-    return 'https://logo.clearbit.com/' + slug + '.com.br?size=128';
+    return slug + '.com.br';
   }
 
-  // Slugifier: nome → token sem acentos/espacos/pontuacao, lowercase.
+  // URL Google Favicon (primary)
+  function bxGoogleFaviconUrl(domain) {
+    return 'https://www.google.com/s2/favicons?sz=128&domain=' + encodeURIComponent(domain);
+  }
+
+  // URL DuckDuckGo Icons (fallback secundario)
+  function bxDdgIconUrl(domain) {
+    return 'https://icons.duckduckgo.com/ip3/' + encodeURIComponent(domain) + '.ico';
+  }
+
+  function bxPartnerLogoUrl(p) {
+    var domain = bxPartnerDomain(p);
+    return domain ? bxGoogleFaviconUrl(domain) : null;
+  }
+
   function bxSlugify(name) {
     return String(name || '').toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')   // remove acentos
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]/g, '');
   }
 
-  // URL de logo para qualquer marca pelo nome (helper generico).
-  // Usado nos cards de resgates/beneficios onde so temos partner_name.
   function bxLogoUrlFromName(name) {
     var slug = bxSlugify(name);
     if (!slug || slug.length < 2) return null;
-    return 'https://logo.clearbit.com/' + slug + '.com.br?size=128';
+    return bxGoogleFaviconUrl(slug + '.com.br');
   }
   window.bxLogoUrlFromName = bxLogoUrlFromName;
   window.bxSlugify = bxSlugify;
 
-  // Handler global de erro do <img>: tenta .com como fallback, depois emoji.
+  // Pipeline de fallback do <img onerror>:
+  // - data-tried="ddg-br"   já tentou DDG com .com.br → tenta Google .com
+  // - data-tried="g-com"    já tentou Google com .com → tenta DDG com .com
+  // - data-tried="ddg-com"  já tentou DDG com .com    → desiste, emoji
+  // - sem attr (1a falha)   estava em Google .com.br  → tenta DDG .com.br
   window.bxLogoErr = function (img, fallback) {
     if (!img) return;
     var tried = img.getAttribute('data-tried') || '';
-    if (!tried) {
-      // 1a falha: tenta .com (alem do .com.br que ja tentou)
-      img.setAttribute('data-tried', 'com');
-      var src = img.getAttribute('src') || '';
-      img.src = src.replace('.com.br?', '.com?');
+    var src = img.getAttribute('src') || '';
+    // Extrai dominio atual da URL (Google ou DDG)
+    var domainMatch = src.match(/domain=([^&]+)/) || src.match(/ip3\/([^.]+\.[^.]+)/);
+    var domain = domainMatch ? decodeURIComponent(domainMatch[1]) : '';
+
+    if (!tried && domain) {
+      // 1: Google .com.br falhou → DDG .com.br
+      img.setAttribute('data-tried', 'ddg-br');
+      img.src = bxDdgIconUrl(domain);
       return;
     }
-    // 2a falha: troca img pelo texto/emoji fallback
+    if (tried === 'ddg-br' && domain.endsWith('.com.br')) {
+      // 2: DDG .com.br falhou → Google .com
+      var stem = domain.replace(/\.com\.br$/, '.com');
+      img.setAttribute('data-tried', 'g-com');
+      img.src = bxGoogleFaviconUrl(stem);
+      return;
+    }
+    if (tried === 'g-com' && domain.endsWith('.com')) {
+      // 3: Google .com falhou → DDG .com
+      img.setAttribute('data-tried', 'ddg-com');
+      img.src = bxDdgIconUrl(domain);
+      return;
+    }
+    // 4: desiste, troca img pelo span fallback
     var span = document.createElement('span');
     span.className = 'partner-logo-fallback';
     span.textContent = fallback || '◯';
