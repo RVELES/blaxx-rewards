@@ -709,16 +709,16 @@
   window.bxLogoCheckReveal = function (img) {
     if (!img) return;
     if (img.naturalWidth >= BX_LOGO_MIN_SIZE) {
-      // Logo valido — revela o card
+      // Logo valido. Card ja esta visivel (paint rapido); so confirma
+      // marcando-o como nao-hidden pro contador.
       var card = img.closest('.partner-card, .market-card');
       if (card && card.dataset.bxHidden === '1') {
-        card.style.display = '';
         delete card.dataset.bxHidden;
         bxCountVisibleSchedule();
       }
       return;
     }
-    // naturalWidth < 32 → favicon generico do Google. Tenta proxima fonte.
+    // Favicon generico → tenta proxima fonte
     bxLogoTryNext(img);
   };
 
@@ -2273,27 +2273,30 @@
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum parceiro encontrado.</div>';
         return;
       }
-      // Cards iniciam ocultos (display:none). bxLogoCheckReveal revela
-      // somente se o logo carregou com naturalWidth >= 32. Pedido do usuario:
-      // "so carregue parceiros com logo ativada" — sem logo real, fica fora.
+      // Cards iniciam VISIVEIS pra paint rapido (antes era display:none
+      // ate logo carregar — 258 imgs simultaneos saturavam pool e site
+      // ficava extremamente lento). Agora:
+      // - loading="lazy" nativo do browser → so requisita img quando
+      //   card entra no viewport. Brower controla concorrencia.
+      // - onload valida naturalWidth >= 32 (logo real, nao favicon globo)
+      // - onerror ou logo invalido → bxLogoTryNext cascade (Google/DDG)
+      // - Se TODAS as fontes falham → card vira display:none (filtro)
       grid.innerHTML = filtered.map(function (p) {
         var logoUrl = bxPartnerLogoUrl(p);
-        // Sem dominio extraivel → nem renderiza o card
-        if (!logoUrl) return '';
+        if (!logoUrl) return '';   // sem dominio extraivel: pula
         return '<a href="detalhe-parceiro.html?id=' + p.id + '" class="partner-card" ' +
-          'style="display:none;" data-bx-hidden="1">' +
+          'data-bx-hidden="1">' +
           '<div class="partner-logo">' +
             '<img src="' + logoUrl + '" alt="' + (p.name || '').replace(/"/g, '&quot;') +
-            '" class="partner-logo-img" loading="lazy" ' +
+            '" class="partner-logo-img" loading="lazy" decoding="async" ' +
             'onload="bxLogoCheckReveal(this)" ' +
             'onerror="bxLogoTryNext(this)">' +
           '</div>' +
           '<div><h3>' + p.name + '</h3>' +
           '<div class="rate">' + (p.accrual_rule || '') + '</div></div></a>';
       }).join('');
-      // Texto inicial enquanto logos carregam
       var $c = document.getElementById('pt-count');
-      if ($c) $c.textContent = 'Carregando logos…';
+      if ($c) $c.textContent = 'Mostrando ' + filtered.length + ' parceiros (logos carregando ao rolar)';
     }
 
     window.reloadParceiros = render;
@@ -2540,19 +2543,18 @@
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Nenhum benefício encontrado.</div>';
         return;
       }
-      // Cards iniciam ocultos. bxLogoCheckReveal revela apenas os beneficios
-      // de marcas com logo real (paridade com parceiros).
+      // Mesma estrategia rapida: visivel + lazy. Hide so se logo falhar.
       grid.innerHTML = filtered.map(function (b) {
-        if (!b.partner_name) return '';   // sem partner → nao tem logo, pula
+        if (!b.partner_name) return '';
         var logoUrl = bxLogoUrlFromName(b.partner_name);
-        if (!logoUrl) return '';          // slug invalido → pula
+        if (!logoUrl) return '';
         var tag = b.tag ? '<div class="tag-row"><span class="glyph-sm">▣</span> ' + b.tag + '</div>' : '';
         return '<a href="beneficio-detalhe.html?id=' + b.id + '" class="market-card" ' +
-          'style="display:none;" data-bx-hidden="1">' +
+          'data-bx-hidden="1">' +
           tag +
           '<div class="market-logo">' +
             '<img src="' + logoUrl + '" alt="' + b.partner_name.replace(/"/g, '&quot;') +
-            '" class="partner-logo-img" loading="lazy" ' +
+            '" class="partner-logo-img" loading="lazy" decoding="async" ' +
             'onload="bxLogoCheckReveal(this)" ' +
             'onerror="bxLogoTryNext(this)"></div>' +
           '<h3>' + b.name + '</h3>' +
@@ -2561,7 +2563,7 @@
           '<span class="market-cta">Resgatar</span></a>';
       }).join('');
       var $c = document.getElementById('rg-count');
-      if ($c) $c.textContent = 'Carregando logos…';
+      if ($c) $c.textContent = 'Mostrando ' + filtered.length + ' beneficios (logos ao rolar)';
     }
 
     window.reloadResgates = render;
