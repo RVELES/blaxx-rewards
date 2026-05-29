@@ -1017,9 +1017,17 @@
     // geometricos antigos). Reescreve os badges .ic via data-side.
     upgradeHardcodedSidebarIcons();
 
-    // Substituicao de texto generica (cobre <strong>Mariana Costa</strong> etc)
-    // — passa um wallet "vazio" pra nao tocar nos numericos ainda
-    replaceHardcoded({ balance_pts: 0, pending_pts: 0, balance_brl_equiv: 0 }, { skip_numeric: true });
+    // Substituicao IMEDIATA dos placeholders hardcoded.
+    //
+    // Bug anterior: passava skip_numeric:true, deixando o "84.750 pts"
+    // (saldo da Mariana de demo) visivel ate /wallet/ resolver. Quando o
+    // endpoint falhava (cold start, 401, offline), o usuario via valores
+    // antigos que NAO sao dele — pessimo UX e gera duvida.
+    //
+    // Agora: zera os placeholders na primeira passada. Se /wallet/ resolve,
+    // valores reais aparecem em <1s. Se falha, mostra 0 — informativo
+    // honesto em vez de mentira (84.750).
+    replaceHardcoded({ balance_pts: 0, pending_pts: 0, balance_brl_equiv: 0 });
 
     // Prefill de inputs marcados com data-bx-prefill="name|email|phone"
     // (so preenche se vazio — nao sobrescreve digitação do usuario)
