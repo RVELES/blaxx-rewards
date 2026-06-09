@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Cartão Blaxx</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .page-head { margin-bottom: 28px; }
+  .two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: start; }
+
+  /* Cartão visual — cor vem do nível atual */
+  .bcard { padding: 26px 28px; border-radius: 18px; color: #fff; }
+  .bcard__top { display:flex; align-items:center; justify-content:space-between; }
+  .bcard__brand { font-family: var(--font-mono); font-size: 11px; letter-spacing:.12em; text-transform: uppercase; opacity:.85; }
+  .bcard__tier { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(255,255,255,.15); }
+  .bcard__num { font-family: var(--font-mono); font-weight: 700; font-size: 56px; line-height: 1; letter-spacing: -0.03em; margin-top: 14px; }
+  .bcard__num small { font-size: 16px; font-weight: 600; opacity:.85; margin-left: 6px; }
+  .bcard__member { font-size: 12.5px; opacity:.85; margin-top: 4px; }
+  .bcard__prog { margin-top: 18px; }
+  .bcard__prog-row { display:flex; justify-content:space-between; font-size: 11.5px; opacity:.9; margin-bottom: 6px; }
+  .bcard__track { height: 8px; border-radius: var(--r-pill); background: rgba(255,255,255,.22); overflow: hidden; }
+  .bcard__fill { height: 100%; border-radius: var(--r-pill); background: #fff; transition: width 1s var(--ease-out); }
+
+  .btn-wallet { margin-top: 16px; }
+  .wallet-note { font-size: 12.5px; color: var(--fg-muted); margin-top: 8px; }
+
+  .panel { padding: 24px 26px; }
+  .panel__title { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .panel__lead { font-size: 13px; color: var(--fg-muted); margin-bottom: 16px; }
+
+  .tier { display:flex; align-items:center; gap: 14px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); }
+  .tier + .tier { margin-top: 10px; }
+  .tier.is-active { border-color: var(--lime); background: rgba(198,244,50,.08); }
+  .tier__dot { width: 16px; height: 16px; border-radius: 50%; flex: 0 0 auto; border: 1px solid rgba(14,15,11,.15); }
+  .tier__body { flex: 1; }
+  .tier__head { display:flex; justify-content:space-between; align-items:baseline; }
+  .tier__name { font-weight: 700; }
+  .tier__min { font-family: var(--font-mono); font-size: 12px; color: var(--fg-muted); }
+  .tier__perks { font-size: 12.5px; color: var(--fg-muted); margin-top: 2px; }
+  .tier__tag { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: var(--r-pill); background: rgba(198,244,50,.2); color: #5f7a10; }
+
+  @media (max-width: 900px){ .two { grid-template-columns: 1fr; } .bcard__num{font-size:46px;} }
+</style>
+</head>
+<body data-screen="cartao">
+<main>
+  <header class="page-head" data-screen-label="Cartão Blaxx">
+    <span class="eyebrow">SEU CARTÃO</span>
+    <h1 class="h-display">Cartão Blaxx.</h1>
+    <p class="lead">Seu nível é definido pelos <b>pontos acumulados</b> e nunca cai ao resgatar. Adicione o cartão à carteira do iPhone.</p>
+  </header>
+
+  <section class="two">
+    <div>
+      <div class="card bcard" id="bcard" style="background:#0B0B0C;">
+        <div class="bcard__top">
+          <span class="bcard__brand">Blaxx Pontos</span>
+          <span class="bcard__tier" id="tierLabel">—</span>
+        </div>
+        <div class="bcard__num"><span id="balance">—</span><small>pts</small></div>
+        <div class="bcard__member" id="member">—</div>
+        <div class="bcard__prog" id="prog"></div>
+      </div>
+      <a href="#" id="btnWallet" class="btn btn--primary btn--block btn-wallet" aria-disabled="true"> Adicionar à Apple Wallet</a>
+      <p class="wallet-note" id="walletNote" style="display:none;">O cartão na carteira do iPhone será habilitado assim que o certificado da Apple for configurado no servidor.</p>
+    </div>
+
+    <div class="card panel">
+      <div class="panel__title">Programa de níveis</div>
+      <div class="panel__lead">Quatro categorias progressivas. Você sobe conforme acumula pontos.</div>
+      <div id="tiers"></div>
+    </div>
+  </section>
+</main>
+<script src="chrome.js"></script>
+<script>
+  // Catálogo canônico dos 4 níveis (espelha Config.tiers() do backend).
+  const TIERS = [
+    { key:'bronze', label:'Bronze', min_points:0,     color:'#CD7F32', text_color:'#FFFFFF', perks:'Acesso ao programa, catálogo de benefícios e PIX.' },
+    { key:'prata',  label:'Prata',  min_points:5000,  color:'#9AA0A6', text_color:'#0B0B0C', perks:'Ofertas exclusivas Prata + atendimento prioritário.' },
+    { key:'ouro',   label:'Ouro',   min_points:20000, color:'#D4AF37', text_color:'#0B0B0C', perks:'Bônus em campanhas + benefícios premium.' },
+    { key:'black',  label:'Black',  min_points:50000, color:'#0B0B0C', text_color:'#C6F432', perks:'Tudo do Ouro + experiências Black e limites VIP.' },
+  ];
+
+  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
+  const fmt = n => Number(n||0).toLocaleString('pt-BR');
+
+  function tierForPoints(p){ let cur = TIERS[0]; for (const t of TIERS) if (p >= t.min_points) cur = t; return cur; }
+  function progress(p){
+    const cur = tierForPoints(p);
+    const idx = TIERS.findIndex(t => t.key === cur.key);
+    const next = TIERS[idx+1] || null;
+    if (!next) return { current:cur, next:null, points_to_next:0, progress_pct:100 };
+    const span = next.min_points - cur.min_points;
+    const gained = p - cur.min_points;
+    const pct = span <= 0 ? 100 : Math.max(0, Math.min(100, Math.round(gained*100/span)));
+    return { current:cur, next, points_to_next: Math.max(0, next.min_points - p), progress_pct: pct };
+  }
+
+  function render(state){
+    const tier = state.tier;
+    const card = document.getElementById('bcard');
+    card.style.background = tier.color;
+    card.style.color = tier.text_color;
+    document.getElementById('tierLabel').textContent = tier.label;
+    document.getElementById('balance').textContent = fmt(state.balance_pts);
+    document.getElementById('member').textContent = state.member.name + ' · ID ' + state.member.id;
+
+    const prog = document.getElementById('prog');
+    if (state.next_tier) {
+      prog.innerHTML = `
+        <div class="bcard__prog-row"><span>Acumulado: ${fmt(state.lifetime_points)} pts</span><span>Faltam ${fmt(state.points_to_next)} p/ ${state.next_tier.label}</span></div>
+        <div class="bcard__track"><div class="bcard__fill" style="width:0%"></div></div>`;
+      requestAnimationFrame(()=>{ const f=prog.querySelector('.bcard__fill'); if(f) f.style.width = state.progress_pct + '%'; });
+    } else {
+      prog.innerHTML = `<div class="bcard__prog-row"><span>Nível máximo · ${fmt(state.lifetime_points)} pts acumulados</span></div>`;
+    }
+
+    document.getElementById('tiers').innerHTML = TIERS.map(t => `
+      <div class="tier ${t.key===tier.key?'is-active':''}">
+        <span class="tier__dot" style="background:${t.color}"></span>
+        <div class="tier__body">
+          <div class="tier__head"><span class="tier__name">${t.label}</span><span class="tier__min">${fmt(t.min_points)}+ pts</span></div>
+          <div class="tier__perks">${t.perks}</div>
+        </div>
+        ${t.key===tier.key?'<span class="tier__tag">ATUAL</span>':''}
+      </div>`).join('');
+
+    // Botão Wallet
+    const btn = document.getElementById('btnWallet');
+    if (state.wallet_pass_available) {
+      btn.setAttribute('aria-disabled','false');
+      btn.style.opacity = '1';
+      btn.onclick = async (e) => {
+        e.preventDefault();
+        try {
+          const res = await fetch(apiBase()+'/card/pass', { headers: token()? {Authorization:'Bearer '+token()} : {} });
+          if (!res.ok) { alert(res.status===503 ? 'Apple Wallet ainda não disponível — em breve.' : 'Falha ao gerar o cartão.'); return; }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href=url; a.download='cartao-blaxx.pkpass';
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(()=>URL.revokeObjectURL(url), 4000);
+        } catch (err) { alert('Falha ao gerar o cartão: ' + err.message); }
+      };
+    } else {
+      btn.setAttribute('aria-disabled','true');
+      btn.style.opacity = '.55';
+      btn.style.pointerEvents = 'none';
+      btn.textContent = 'Apple Wallet · em breve';
+      document.getElementById('walletNote').style.display = 'block';
+    }
+  }
+
+  // Demo local (quando sem sessão): mostra Ouro com progresso até Black.
+  function demoState(){
+    const p = 24800, prog0 = progress(p);
+    return { member:{ id:'BLAXXDEMO', name:'Ricardo' }, balance_pts:16320, lifetime_points:p,
+             tier:prog0.current, next_tier:prog0.next, points_to_next:prog0.points_to_next,
+             progress_pct:prog0.progress_pct, tiers:TIERS, wallet_pass_available:false };
+  }
+
+  (async () => {
+    if (token()) {
+      try {
+        const res = await fetch(apiBase()+'/card/', { headers: {Authorization:'Bearer '+token()} });
+        if (res.ok) { render(await res.json()); return; }
+      } catch {}
+    }
+    render(demoState());
+  })();
+</script>
+</body>
+</html>
