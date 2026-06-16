@@ -1,145 +1,327 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
-<title>Parceiros | Blaxx Pontos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Blaxx">
-<meta name="mobile-web-app-capable" content="yes">
-</head>
-<body>
-<header class="topbar">
-    <nav class="nav">
-        <a href="index.html" class="brand">
-            <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-        </a>
-        <div class="links">
-            <a href="index.html" data-link="index">Início</a>
-            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
-            <a href="venda-pontos.html" data-link="venda-pontos">Vender pontos</a>
-        </div>
-        <div class="cta-row">
-            <a href="login.html" class="button ghost">Entrar</a>
-            <a href="cadastro.html" class="button">Cadastre-se</a>
-        </div>
-    </nav>
-</header>
-<main class="shell">
-<div class="page-head">
-    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> Parceiros</div>
-    <span class="kicker-trust"><span class="ck">✓</span> 80+ marcas em 8 categorias</span>
-    <h1>Onde acumular pontos <span style="color:#6f8a18;">todo dia</span>.</h1>
-    <p class="lead" style="max-width:60ch;margin-top:14px;">Mercados, farmácias, postos, viagens, moda, eletrônicos e muito mais. Compre nas marcas que você já usa e ganhe pontos automaticamente.</p>
-</div>
-
-<section class="section">
-    <input type="search" class="search" placeholder="Buscar parceiro · Ex: Carrefour, Drogasil, Shell">
-</section>
-
-<section class="section">
-    <div class="cat-grid">
-        <a href="#mercados" class="cat-card"><div class="glyph">▦</div><h4>Mercados</h4></a>
-        <a href="#farmacias" class="cat-card"><div class="glyph">⊕</div><h4>Farmácias</h4></a>
-        <a href="#combustivel" class="cat-card"><div class="glyph">⛁</div><h4>Combustível</h4></a>
-        <a href="#viagens" class="cat-card"><div class="glyph">✈</div><h4>Viagens</h4></a>
-        <a href="#moda" class="cat-card"><div class="glyph">▤</div><h4>Moda</h4></a>
-        <a href="#eletronicos" class="cat-card"><div class="glyph">▣</div><h4>Eletrônicos</h4></a>
-        <a href="#educacao" class="cat-card"><div class="glyph">◫</div><h4>Educação</h4></a>
-        <a href="#servicos" class="cat-card"><div class="glyph">◉</div><h4>Serviços</h4></a>
-    </div>
-</section>
-
-
-<section class="section">
-    <div class="card" style="padding:18px;margin-bottom:18px;">
-        <div class="toolbar">
-            <input id="pt-search" type="search" class="search" placeholder="Buscar parceiro…" oninput="window.reloadParceiros && reloadParceiros()">
-            <select id="pt-cat" style="width:auto;" onchange="window.reloadParceiros && reloadParceiros()">
-                <option value="">Todas as categorias</option>
-            </select>
-        </div>
-    </div>
-    <div class="grid four" id="pt-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Carregando parceiros…</div>
-    </div>
-    <div class="flex between mt-2">
-        <span class="muted" id="pt-count" style="font-size:13px;">—</span>
-    </div>
-</section>
-
-<section class="section">
-    <div class="card lime" style="padding:40px;text-align:center;">
-        <h2>Sua marca aqui?</h2>
-        <p>Empresas podem entrar como parceiras e oferecer acúmulo aos clientes Blaxx.</p>
-        <a href="venda-pontos.html" class="button dark">Quero ser parceiro →</a>
-    </div>
-</section>
-</main>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-            </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="venda-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
-                <li><a href="meus-chamados.html">Meus chamados</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Documentos</a></li>
-                <li><a href="sitemap.html">Mapa do site</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
-    </div>
-</footer>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Parceiros</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  [data-link="parceiros"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* ===== Parceiros — redesign premium (Nubank/XP/Livelo/Apple-like) ===== */
+  .pz { --pz-lime: var(--lime); }
+  .pz .page-head { margin-bottom: 22px; }
+
+  /* Métricas */
+  .pz-metrics { display:grid; grid-template-columns: repeat(5,1fr); gap:14px; margin: 4px 0 26px; }
+  .pz-metric { padding:18px 18px 16px; display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden; }
+  .pz-metric__label { font-family: var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color: var(--fg-subtle); }
+  .pz-metric__value { font-family: var(--font-display); font-weight:900; font-size:26px; letter-spacing:-.02em; line-height:1.05; color: var(--ink); }
+  .pz-metric__value small { font-size:14px; font-weight:800; color: var(--fg-muted); }
+  .pz-metric__cta { margin-top:auto; font-weight:700; font-size:13px; color: var(--ink); text-decoration:none; display:inline-flex; gap:5px; align-items:center; transition: gap .18s var(--ease); }
+  .pz-metric__cta:hover { gap:10px; }
+  .pz-metric__hint { font-size:12px; font-weight:700; }
+  .pz-metric__hint--warn { color:#E0483D; }
+  .pz-metric .pz-track { height:8px; border-radius:999px; background: var(--line); overflow:hidden; margin-top:4px; }
+  .pz-metric .pz-fill { height:100%; border-radius:999px; background: linear-gradient(90deg, var(--lime-deep), var(--lime)); width:0; transition: width 1s var(--ease-out); }
+  .pz-badge-tier { align-self:flex-start; font-family:var(--font-mono); font-weight:800; font-size:12px; padding:5px 12px; border-radius:999px; letter-spacing:.04em; }
+
+  /* Banner carrossel */
+  .pz-banner { position:relative; height:184px; border-radius:24px; overflow:hidden; margin-bottom:26px; background: var(--ink); }
+  .pz-slides { height:100%; }
+  .pz-slide { position:absolute; inset:0; display:grid; grid-template-columns: 1.4fr .9fr; opacity:0; transition: opacity .6s var(--ease); pointer-events:none; }
+  .pz-slide.on { opacity:1; pointer-events:auto; }
+  .pz-slide__body { padding:30px 34px; display:flex; flex-direction:column; justify-content:center; gap:8px; color: var(--fg-on-dark); }
+  .pz-slide__tag { font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color: var(--lime); }
+  .pz-slide__title { font-family: var(--font-display); font-weight:900; font-size:30px; letter-spacing:-.02em; }
+  .pz-slide__sub { color: var(--fg-on-dark-muted); font-size:14px; max-width:42ch; }
+  .pz-slide__cta { margin-top:8px; align-self:flex-start; }
+  .pz-slide__art { display:grid; place-items:center; background: radial-gradient(120% 120% at 80% 20%, var(--lime-20), transparent 62%); }
+  .pz-slide__art .emoji { font-size:78px; filter: drop-shadow(0 12px 28px rgba(0,0,0,.4)); }
+  .pz-banner__dots { position:absolute; left:34px; bottom:16px; display:flex; gap:7px; z-index:3; }
+  .pz-banner__dots button { width:8px; height:8px; border-radius:999px; border:none; background: rgba(255,255,255,.32); cursor:pointer; transition: all .2s var(--ease); padding:0; }
+  .pz-banner__dots button.on { background: var(--lime); width:22px; }
+  .pz-banner__arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:3; width:38px; height:38px; border-radius:999px; border:none; background: rgba(255,255,255,.10); color:#fff; cursor:pointer; backdrop-filter: blur(6px); display:grid; place-items:center; font-size:18px; transition: background .2s var(--ease); }
+  .pz-banner__arrow:hover { background: rgba(255,255,255,.22); }
+  .pz-banner__arrow.prev { left:14px; } .pz-banner__arrow.next { right:14px; }
+
+  /* Busca + favoritos */
+  .pz-searchrow { display:flex; gap:12px; margin-bottom:18px; }
+  .pz-search { position:relative; flex:1; }
+  .pz-search input { width:100%; height:56px; border-radius:18px; border:1px solid var(--line); background: var(--white); padding:0 18px 0 50px; font-size:15px; font-family: var(--font-body); color: var(--fg); transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
+  .pz-search input:focus { outline:none; border-color: var(--lime); box-shadow: 0 0 0 4px var(--lime-20); }
+  .pz-search svg { position:absolute; left:18px; top:50%; transform:translateY(-50%); color: var(--fg-subtle); }
+  .pz-favbtn { height:56px; padding:0 22px; border-radius:18px; border:1px solid var(--line); background: var(--white); font-weight:700; font-size:14px; color: var(--fg); cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition: all .18s var(--ease); white-space:nowrap; }
+  .pz-favbtn:hover { border-color: var(--line-strong); }
+  .pz-favbtn.on { background: var(--ink); color: var(--lime); border-color: var(--ink); }
+
+  /* Pills */
+  .pz-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+  .pz-pill { border:1px solid var(--line); background: var(--white); color: var(--fg-muted); font-weight:700; font-size:13px; padding:9px 17px; border-radius:999px; transition: all .16s var(--ease); cursor:pointer; }
+  .pz-pill.on { background: var(--lime); border-color: var(--lime); color: var(--ink); }
+  .pz-pill:hover:not(.on) { border-color: var(--line-strong); color: var(--fg); }
+
+  /* Grid de parceiros */
+  .pz-grid { display:grid; grid-template-columns: repeat(5,1fr); gap:16px; }
+  .pz-card { position:relative; padding:20px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition: transform .22s var(--ease), box-shadow .22s var(--ease); animation: pzfade .4s var(--ease-out) both; }
+  .pz-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: var(--sh-3); }
+  .pz-card__logo { width:54px; height:54px; border-radius:16px; display:grid; place-items:center; font-size:28px; background: var(--gray, #F6F7F8); }
+  .pz-card__name { font-weight:800; font-size:16px; letter-spacing:-.01em; color: var(--ink); }
+  .pz-card__cat { font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color: var(--fg-subtle); margin-top:-6px; }
+  .pz-card__pts { font-family: var(--font-mono); font-weight:800; font-size:12px; color: var(--ink); background: var(--lime); padding:5px 10px; border-radius:8px; align-self:flex-start; }
+  .pz-card__cash { font-size:12px; font-weight:700; color: var(--lime-deep); }
+  .pz-card__buy { margin-top:auto; font-weight:700; font-size:13px; color: var(--ink); display:inline-flex; gap:5px; align-items:center; transition: gap .18s var(--ease); }
+  .pz-card:hover .pz-card__buy { gap:9px; }
+  .pz-fav { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:999px; border:1px solid var(--line); background: var(--white); cursor:pointer; display:grid; place-items:center; font-size:15px; color: var(--fg-subtle); transition: all .18s var(--ease); z-index:2; }
+  .pz-fav:hover { border-color: var(--line-strong); transform: scale(1.1); }
+  .pz-fav.on { color:#E0483D; border-color: rgba(224,72,61,.3); background: rgba(224,72,61,.06); }
+  .pz-empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
+
+  /* Skeleton */
+  .pz-sk { background: linear-gradient(100deg, var(--line) 30%, rgba(255,255,255,.4) 50%, var(--line) 70%); background-size:200% 100%; animation: pzshim 1.2s infinite; border-radius:8px; }
+  .pz-card--sk { pointer-events:none; }
+  .pz-card--sk .pz-card__logo { background: var(--line); }
+
+  /* Rodapé benefícios */
+  .pz-benefits { display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin:34px 0 8px; }
+  .pz-benefit { padding:22px; }
+  .pz-benefit__ico { font-size:26px; }
+  .pz-benefit__t { font-weight:800; font-size:15px; margin:10px 0 5px; color: var(--ink); }
+  .pz-benefit__d { font-size:13px; color: var(--fg-muted); line-height:1.5; }
+
+  @keyframes pzfade { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+  @keyframes pzshim { to { background-position: -200% 0; } }
+
+  @media (max-width: 1100px){ .pz-metrics{grid-template-columns:repeat(3,1fr);} .pz-grid{grid-template-columns:repeat(3,1fr);} .pz-benefits{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width: 760px){ .pz-metrics{grid-template-columns:repeat(2,1fr);} .pz-grid{grid-template-columns:1fr 1fr;} .pz-slide{grid-template-columns:1fr;} .pz-slide__art{display:none;} .pz-banner{height:200px;} }
+  @media (max-width: 480px){ .pz-grid{grid-template-columns:1fr;} .pz-searchrow{flex-direction:column;} }
 </style>
-<script src="assets/blaxx-config.js"></script>
-<script src="assets/blaxx-app.js"></script>
+</head>
+<body data-screen="parceiros">
+<main class="pz">
+  <header class="page-head" data-screen-label="Parceiros">
+    <span class="eyebrow">PROGRAMA DE PONTOS</span>
+    <h1 class="h-display">Parceiros Blaxx</h1>
+    <p class="lead">Milhares de parceiros para você acumular ainda mais pontos.</p>
+  </header>
+
+  <!-- Métricas -->
+  <section class="pz-metrics" id="metrics">
+    <div class="card pz-metric"><span class="pz-metric__label">Saldo atual</span><span class="pz-metric__value" id="m-balance">—</span><a class="pz-metric__cta" href="carteira.html">Ver carteira →</a></div>
+    <div class="card pz-metric"><span class="pz-metric__label">Valor estimado</span><span class="pz-metric__value" id="m-brl">—</span><a class="pz-metric__cta" href="resgates.html">Resgatar agora →</a></div>
+    <div class="card pz-metric"><span class="pz-metric__label">Pontos pendentes</span><span class="pz-metric__value" id="m-pending">—</span><span class="pz-metric__hint" id="m-pending-hint">Em processamento</span></div>
+    <div class="card pz-metric"><span class="pz-metric__label">Nível atual</span><span class="pz-badge-tier" id="m-tier">—</span><a class="pz-metric__cta" href="cartao.html">Ver benefícios →</a></div>
+    <div class="card pz-metric"><span class="pz-metric__label">Progresso</span><span class="pz-metric__value" id="m-progress">—</span><div class="pz-track"><div class="pz-fill" id="m-fill"></div></div><span class="pz-metric__hint" id="m-next" style="color:var(--fg-muted)"></span></div>
+  </section>
+
+  <!-- Banner carrossel -->
+  <section class="pz-banner" id="banner">
+    <div class="pz-slides" id="slides"></div>
+    <button class="pz-banner__arrow prev" id="bprev" aria-label="Anterior">‹</button>
+    <button class="pz-banner__arrow next" id="bnext" aria-label="Próximo">›</button>
+    <div class="pz-banner__dots" id="bdots"></div>
+  </section>
+
+  <!-- Busca -->
+  <div class="pz-searchrow">
+    <div class="pz-search">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Buscar parceiro ou loja" autocomplete="off">
+    </div>
+    <button class="pz-favbtn" id="favBtn">♡ Meus Favoritos</button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="pz-pills" id="pills"></div>
+
+  <!-- Grid -->
+  <div class="pz-grid" id="grid"></div>
+
+  <!-- Benefícios -->
+  <section class="pz-benefits">
+    <div class="card pz-benefit"><div class="pz-benefit__ico">📈</div><div class="pz-benefit__t">Acumule Mais</div><div class="pz-benefit__d">Compre nas melhores lojas e acumule até 12 pts por real.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico">💵</div><div class="pz-benefit__t">Cashback</div><div class="pz-benefit__d">Receba parte do valor de volta em pontos ou saldo.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico">⭐</div><div class="pz-benefit__t">Parceiros Exclusivos</div><div class="pz-benefit__d">Benefícios reservados para clientes Black.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico">🔒</div><div class="pz-benefit__t">Segurança</div><div class="pz-benefit__d">Ambiente protegido e monitorado de ponta a ponta.</div></div>
+  </section>
+</main>
+
+<script src="chrome.js"></script>
+<script>
+(function(){
+  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
+  const fmt = n => Number(n||0).toLocaleString('pt-BR');
+  const brl = n => Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const FAV_KEY = 'blaxx_fav_partners';
+  const PRIMARY = ['Viagens','Tecnologia','Moda','Casa','Supermercado','Saúde'];
+
+  async function get(path){
+    try { const r = await fetch(apiBase()+path, { headers: token()? {Authorization:'Bearer '+token()} : {} }); if(!r.ok) return null; return await r.json(); }
+    catch { return null; }
+  }
+
+  // ---- estado ----
+  let PARTNERS = [], CATS = [], query = '', activeCat = '', favOnly = false, showAll = false, slide = 0, timer = null;
+  let favs = new Set();
+  try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]')); } catch {}
+  function saveFavs(){ try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch {} }
+
+  // ---- skeleton inicial ----
+  function skeleton(){
+    document.getElementById('grid').innerHTML = Array.from({length:10}).map(()=>`
+      <div class="card pz-card pz-card--sk">
+        <div class="pz-card__logo"></div>
+        <div class="pz-sk" style="height:16px;width:70%"></div>
+        <div class="pz-sk" style="height:11px;width:40%"></div>
+        <div class="pz-sk" style="height:22px;width:50%;border-radius:8px"></div>
+      </div>`).join('');
+  }
+
+  // ---- métricas ----
+  function renderMetrics(wallet, card){
+    document.getElementById('m-balance').innerHTML = wallet ? (fmt(wallet.balance_pts)+' <small>pts</small>') : '—';
+    document.getElementById('m-brl').textContent = wallet ? brl(wallet.balance_brl_equiv) : '—';
+    const pend = wallet ? Number(wallet.pending_pts||0) : 0;
+    document.getElementById('m-pending').innerHTML = fmt(pend)+' <small>pts</small>';
+    document.getElementById('m-pending-hint').textContent = pend>0 ? 'Em processamento' : 'Nada pendente';
+    if (card && card.tier){
+      const t = document.getElementById('m-tier');
+      t.textContent = (card.tier.label||'').toUpperCase();
+      t.style.background = card.tier.color || 'var(--ink)';
+      t.style.color = card.tier.text_color || '#fff';
+    }
+    const pct = card ? Number(card.progress_pct||0) : 0;
+    document.getElementById('m-progress').textContent = pct + '%';
+    requestAnimationFrame(()=>{ document.getElementById('m-fill').style.width = pct + '%'; });
+    document.getElementById('m-next').textContent = (card && card.next_tier)
+      ? `Faltam ${fmt(card.points_to_next)} pts para ${card.next_tier.label}`
+      : 'Nível máximo atingido';
+  }
+
+  // ---- banner ----
+  function ptsLabel(p){ return (p && p.accrual_rule) ? p.accrual_rule : 'Pontos por compra'; }
+  function renderBanner(){
+    const slides = PARTNERS.slice(0,4);
+    const wrap = document.getElementById('slides');
+    if (!slides.length){ document.getElementById('banner').style.display='none'; return; }
+    wrap.innerHTML = slides.map((p,i)=>`
+      <div class="pz-slide ${i===0?'on':''}" data-i="${i}">
+        <div class="pz-slide__body">
+          <span class="pz-slide__tag">CAMPANHA EM DESTAQUE</span>
+          <span class="pz-slide__title">${p.name}</span>
+          <span class="pz-slide__sub">${p.description || ptsLabel(p)}</span>
+          <a class="btn btn--primary pz-slide__cta" href="detalhe-parceiro.html?id=${encodeURIComponent(p.id)}">Ir para ${p.name} →</a>
+        </div>
+        <div class="pz-slide__art"><span class="emoji">${p.logo_emoji || '🏷️'}</span></div>
+      </div>`).join('');
+    document.getElementById('bdots').innerHTML = slides.map((_,i)=>`<button data-i="${i}" class="${i===0?'on':''}"></button>`).join('');
+    bindBanner(slides.length);
+    restartTimer(slides.length);
+  }
+  function goSlide(n, total){
+    slide = (n+total)%total;
+    document.querySelectorAll('.pz-slide').forEach((el,i)=>el.classList.toggle('on', i===slide));
+    document.querySelectorAll('#bdots button').forEach((el,i)=>el.classList.toggle('on', i===slide));
+  }
+  function bindBanner(total){
+    document.getElementById('bprev').onclick = ()=>{ goSlide(slide-1,total); restartTimer(total); };
+    document.getElementById('bnext').onclick = ()=>{ goSlide(slide+1,total); restartTimer(total); };
+    document.querySelectorAll('#bdots button').forEach(b=> b.onclick = ()=>{ goSlide(+b.dataset.i,total); restartTimer(total); });
+  }
+  function restartTimer(total){ if(timer) clearInterval(timer); if(total>1) timer = setInterval(()=>goSlide(slide+1,total), 6000); }
+
+  // ---- pills ----
+  function renderPills(){
+    const ordered = [...PRIMARY.filter(c=>CATS.includes(c)), ...CATS.filter(c=>!PRIMARY.includes(c))];
+    const shown = showAll ? ordered : ordered.slice(0,6);
+    const base = [{k:'',l:'Todos'},{k:'__fav__',l:'Favoritos'}];
+    let html = base.concat(shown.map(c=>({k:c,l:c}))).map(o=>
+      `<button class="pz-pill ${(o.k===activeCat && !(o.k==='' && favOnly))?'on':''}" data-c="${o.k}">${o.l}</button>`).join('');
+    if (!showAll && ordered.length>6) html += `<button class="pz-pill" data-more="1">Mais ▼</button>`;
+    document.getElementById('pills').innerHTML = html;
+    document.querySelectorAll('#pills .pz-pill').forEach(b=>{
+      b.onclick = ()=>{
+        if (b.dataset.more){ showAll=true; renderPills(); return; }
+        const k=b.dataset.c;
+        if (k==='__fav__'){ favOnly=true; activeCat='__fav__'; }
+        else { favOnly=false; activeCat=k; }
+        syncFavBtn(); renderPills(); renderGrid();
+      };
+    });
+  }
+  function syncFavBtn(){ const f=document.getElementById('favBtn'); const on = favOnly||activeCat==='__fav__'; f.classList.toggle('on',on); f.textContent = on ? '♥ Meus Favoritos' : '♡ Meus Favoritos'; }
+
+  // ---- grid ----
+  function filtered(){
+    const q = query.trim().toLowerCase();
+    return PARTNERS.filter(p=>{
+      if (activeCat==='__fav__'){ if(!favs.has(String(p.id))) return false; }
+      else if (activeCat){ if((p.category||'')!==activeCat) return false; }
+      if (q){ const hay=((p.name||'')+' '+(p.description||'')+' '+(p.category||'')).toLowerCase(); if(!hay.includes(q)) return false; }
+      return true;
+    });
+  }
+  function renderGrid(){
+    const list = filtered();
+    const grid = document.getElementById('grid');
+    if (!list.length){ grid.innerHTML = `<div class="pz-empty">Nenhum parceiro encontrado.</div>`; return; }
+    grid.innerHTML = list.map((p,i)=>{
+      const fav = favs.has(String(p.id));
+      return `<div class="card pz-card" data-id="${p.id}" style="animation-delay:${Math.min(i*30,300)}ms">
+        <button class="pz-fav ${fav?'on':''}" data-fav="${p.id}" aria-label="Favoritar">${fav?'♥':'♡'}</button>
+        <div class="pz-card__logo">${p.logo_emoji || '🏷️'}</div>
+        <div class="pz-card__name">${p.name}</div>
+        <div class="pz-card__cat">${p.category || 'Parceiro'}</div>
+        <span class="pz-card__pts">${ptsLabel(p)}</span>
+        ${p.city?`<div class="pz-card__cash">📍 ${p.city}</div>`:''}
+        <span class="pz-card__buy">Comprar →</span>
+      </div>`;
+    }).join('');
+    grid.querySelectorAll('.pz-card').forEach(c=>{
+      c.onclick = (e)=>{ if(e.target.closest('.pz-fav')) return; location.href='detalhe-parceiro.html?id='+encodeURIComponent(c.dataset.id); };
+    });
+    grid.querySelectorAll('.pz-fav').forEach(b=>{
+      b.onclick = (e)=>{ e.stopPropagation(); const id=String(b.dataset.fav); favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); renderGrid(); if(activeCat==='__fav__') renderPills(); };
+    });
+  }
+
+  // ---- busca instantânea ----
+  document.getElementById('search').addEventListener('input', e=>{ query=e.target.value; renderGrid(); });
+  document.getElementById('favBtn').onclick = ()=>{ favOnly=!favOnly; activeCat=favOnly?'__fav__':''; syncFavBtn(); renderPills(); renderGrid(); };
+
+  // ---- demo fallback (sem sessão / API offline) ----
+  function demo(){
+    PARTNERS = [
+      {id:'nexus',name:'Nexus Airlines',category:'Viagens',description:'Passagens nacionais e internacionais.',logo_emoji:'✈️',accrual_rule:'Até 6 pts/R$',city:'Brasil'},
+      {id:'mercadovivo',name:'Mercado Vivo',category:'Supermercado',description:'Supermercado com entrega grátis.',logo_emoji:'🛒',accrual_rule:'Até 4 pts/R$'},
+      {id:'pulse',name:'Pulse Eletro',category:'Tecnologia',description:'Eletrônicos e gadgets.',logo_emoji:'📱',accrual_rule:'Até 4 pts/R$'},
+      {id:'vertice',name:'Loja Vértice',category:'Moda',description:'Moda e lifestyle, online e lojas.',logo_emoji:'👟',accrual_rule:'Até 5 pts/R$'},
+      {id:'haven',name:'Hotéis Haven',category:'Viagens',description:'Rede de hotéis e resorts.',logo_emoji:'🏨',accrual_rule:'Até 5 pts/R$'},
+      {id:'orbita',name:'Posto Órbita',category:'Casa',description:'Combustível e conveniência 24h.',logo_emoji:'⛽',accrual_rule:'Até 3 pts/R$'},
+      {id:'stream',name:'Stream+',category:'Tecnologia',description:'Assinaturas de streaming.',logo_emoji:'🎬',accrual_rule:'Até 2 pts/R$'},
+      {id:'saude',name:'Farma Bem',category:'Saúde',description:'Farmácias e bem-estar.',logo_emoji:'💊',accrual_rule:'Até 4 pts/R$'},
+    ];
+    CATS = ['Viagens','Tecnologia','Moda','Casa','Supermercado','Saúde'];
+    renderMetrics({balance_pts:16320,pending_pts:1200,balance_brl_equiv:1468.80},
+                  {tier:{label:'Ouro',color:'#D4AF37',text_color:'#0B0B0C'},next_tier:{label:'Black'},points_to_next:25200,progress_pct:66});
+  }
+
+  // ---- boot ----
+  (async ()=>{
+    skeleton();
+    const [wallet, card, pres, cres] = await Promise.all([
+      get('/wallet/'), get('/card/'), get('/partners/'), get('/partners/categories')
+    ]);
+    if (pres && Array.isArray(pres.items) && pres.items.length){
+      PARTNERS = pres.items.map(p=>({ ...p, id:String(p.id) }));
+      CATS = (cres && Array.isArray(cres.items)) ? cres.items : [...new Set(PARTNERS.map(p=>p.category).filter(Boolean))];
+      renderMetrics(wallet, card);
+    } else {
+      demo();
+    }
+    renderBanner(); renderPills(); syncFavBtn(); renderGrid();
+  })();
+})();
+</script>
 </body>
 </html>
