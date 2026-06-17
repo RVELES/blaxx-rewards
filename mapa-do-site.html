@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Mapa do site</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .map { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .col { padding: 24px; }
+  .col h3 { font-family: var(--font-display); font-weight: 900; font-size: 18px; margin: 0 0 4px; }
+  .col .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--lime-deep); }
+  .col a { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--fg-muted); padding: 10px 0; border-top: 1px solid var(--line); transition: color .2s var(--ease), padding-left .2s var(--ease); }
+  .col a:first-of-type { margin-top: 14px; }
+  .col a:hover { color: var(--ink); padding-left: 4px; }
+  .col a::after { content: '→'; font-family: var(--font-mono); color: var(--fg-subtle); }
+  @media (max-width: 900px){ .map { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-screen="mapa">
+<main>
+  <header class="page-head" data-screen-label="Mapa do site" style="margin-bottom:32px">
+    <span class="eyebrow">NAVEGAÇÃO COMPLETA</span>
+    <h1 class="h-display">Mapa do site.</h1>
+    <p class="lead">Todas as páginas da plataforma, organizadas por área.</p>
+  </header>
+
+  <div class="map">
+    <div class="card col">
+      <span class="k">ÁREA 01</span>
+      <h3>Plataforma</h3>
+      <a href="index.html">Início (painel)</a>
+      <a href="carteira.html">Carteira</a>
+      <a href="extrato.html">Extrato</a>
+      <a href="parceiros.html">Parceiros</a>
+      <a href="campanhas.html">Campanhas</a>
+      <a href="resgates.html">Resgates</a>
+    </div>
+    <div class="card col">
+      <span class="k">ÁREA 02</span>
+      <h3>Pontos e conta</h3>
+      <a href="comprar.html">Comprar pontos</a>
+      <a href="vender-pontos.html">Vender pontos</a>
+      <a href="enviar.html">Enviar pontos</a>
+      <a href="indique.html">Indique e ganhe</a>
+      <a href="perfil.html">Perfil</a>
+      <a href="seguranca.html">Segurança</a>
+      <a href="login.html">Entrar</a>
+      <a href="cadastro.html">Cadastre-se</a>
+    </div>
+    <div class="card col">
+      <span class="k">ÁREA 03</span>
+      <h3>Suporte e legal</h3>
+      <a href="como-funciona.html">Como funciona</a>
+      <a href="ajuda.html">Central de ajuda</a>
+      <a href="faq.html">Perguntas frequentes</a>
+      <a href="abrir-chamado.html">Abrir chamado</a>
+      <a href="termos.html">Termos de uso</a>
+      <a href="regras-pontos.html">Regras de pontos</a>
+      <a href="politica-reembolso.html">Política de reembolso</a>
+      <a href="privacidade.html">Privacidade / LGPD</a>
+    </div>
+  </div>
+</main>
+<script src="chrome.js"></script>
+</body>
+</html>

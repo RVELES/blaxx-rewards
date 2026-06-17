@@ -1,144 +1,194 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
-<title>Resgates | Blaxx Pontos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Blaxx">
-<meta name="mobile-web-app-capable" content="yes">
-</head>
-<body>
-<header class="topbar">
-    <nav class="nav">
-        <a href="index.html" class="brand">
-            <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-        </a>
-        <div class="links">
-            <a href="index.html" data-link="index">Início</a>
-            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
-            <a href="venda-pontos.html" data-link="venda-pontos">Vender pontos</a>
-        </div>
-        <div class="cta-row">
-            <a href="login.html" class="button ghost">Entrar</a>
-            <a href="cadastro.html" class="button">Cadastre-se</a>
-        </div>
-    </nav>
-</header>
-<main class="shell">
-<div class="page-head">
-    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> Resgates</div>
-    <span class="kicker-trust"><span class="ck">✓</span> Marketplace de benefícios · 200+ opções</span>
-    <h1>Benefícios com cara de <span style="color:#6f8a18;">marketplace</span>.</h1>
-    <p class="lead" style="max-width:60ch;margin-top:14px;">Cards claros, pontos visíveis e tags de prioridade ajudam a decidir rapidamente onde usar o saldo.</p>
-</div>
-
-<section class="section">
-    <input type="search" class="search" placeholder="Buscar resgate · Ex: Netflix, iFood, milhas">
-</section>
-
-<section class="section">
-    <div class="chips">
-        <a href="#" class="chip active">Todos</a>
-        <a href="#" class="chip">Mais resgatados</a>
-        <a href="#" class="chip">Vouchers</a>
-        <a href="#" class="chip">Milhas e viagens</a>
-        <a href="#" class="chip">Cashback PIX</a>
-        <a href="#" class="chip">Assinaturas</a>
-        <a href="#" class="chip">Sorteios</a>
-    </div>
-</section>
-
-
-<section class="section">
-    <div class="card" style="padding:18px;margin-bottom:18px;">
-        <div class="toolbar">
-            <input id="rg-search" type="search" class="search" placeholder="Buscar benefício…" oninput="window.reloadResgates && reloadResgates()">
-            <select id="rg-cat" style="width:auto;" onchange="window.reloadResgates && reloadResgates()">
-                <option value="">Todas as categorias</option>
-            </select>
-        </div>
-    </div>
-    <div class="grid four" id="rg-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);">Carregando benefícios…</div>
-    </div>
-    <div class="flex between mt-2">
-        <span class="muted" id="rg-count" style="font-size:13px;">—</span>
-    </div>
-</section>
-
-<section class="section">
-    <div class="card lime" style="padding:32px;text-align:center;">
-        <h2>Falta pouco pro seu próximo resgate?</h2>
-        <p>Pacotes a partir de R$ 19,90 com até 40% de bônus.</p>
-        <a href="comprar-pontos.html" class="button dark">Comprar pontos →</a>
-    </div>
-</section>
-</main>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-            </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="venda-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
-                <li><a href="meus-chamados.html">Meus chamados</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Documentos</a></li>
-                <li><a href="sitemap.html">Mapa do site</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
-    </div>
-</footer>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Resgates</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  [data-link="resgates"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  .page-head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom: 24px; }
+  .bal-pill { display:flex; align-items:center; gap:12px; background: var(--ink); color: var(--fg-on-dark); border-radius: var(--r-lg); padding: 14px 22px; }
+  .bal-pill .n { font-family: var(--font-mono); font-weight:700; font-size: 24px; color: var(--lime); }
+  .bal-pill .l { font-family: var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color: var(--fg-on-dark-muted); }
+
+  .vtabs { display:flex; gap:6px; background: var(--white); border:1px solid var(--line); padding:5px; border-radius: var(--r-pill); width:max-content; margin-bottom: 20px; }
+  .vtabs button { border:0; background:transparent; font-weight:700; font-size:13.5px; color: var(--fg-muted); padding:9px 20px; border-radius: var(--r-pill); transition: all .18s var(--ease); }
+  .vtabs button.on { background: var(--ink); color: var(--lime); }
+
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 22px; }
+  .fchip { border:1px solid var(--line); background: var(--white); color: var(--fg-muted); font-weight:700; font-size:13px; padding:8px 16px; border-radius: var(--r-pill); transition: all .16s var(--ease); }
+  .fchip.on { background: var(--lime); border-color: var(--lime); color: var(--ink); }
+  .fchip:hover:not(.on) { border-color: var(--line-strong); color: var(--fg); }
+
+  .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .rw { padding: 18px; display:flex; flex-direction:column; transition: transform .22s var(--ease), box-shadow .22s var(--ease); }
+  .rw:hover { transform: translateY(-4px); box-shadow: var(--sh-3); }
+  .rw__img { height: 130px; border-radius: var(--r-md); display:grid; place-items:center; font-family: var(--font-display); font-weight:900; font-size: 30px; margin-bottom: 16px; position: relative; overflow:hidden; }
+  .rw__cat { position:absolute; top:12px; left:12px; font-family: var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background: rgba(255,255,255,.85); color: var(--ink); padding:4px 9px; border-radius: var(--r-pill); }
+  .rw__name { font-weight:800; font-size: 15.5px; letter-spacing:-.01em; }
+  .rw__desc { font-size: 12.5px; color: var(--fg-muted); margin: 3px 0 16px; flex:1; }
+  .rw__foot { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .rw__cost { font-family: var(--font-mono); font-weight:700; font-size: 17px; }
+  .rw__cost span { font-size:11px; color: var(--fg-muted); font-weight:500; }
+  .rw.locked { opacity: .96; }
+  .rw__lockbar { margin-top: 14px; }
+  .rw__lockmeta { display:flex; justify-content:space-between; font-family: var(--font-mono); font-size:11px; color: var(--fg-muted); margin-top:8px; }
+  .afford { font-family: var(--font-mono); font-size:10.5px; font-weight:700; color: var(--pos); display:inline-flex; align-items:center; gap:4px; }
+
+  /* meus resgates */
+  .vouchers { display:grid; grid-template-columns: repeat(2,1fr); gap:18px; }
+  .voucher { padding: 0; overflow:hidden; display:flex; }
+  .voucher__stub { width: 96px; flex-shrink:0; display:grid; place-items:center; font-family: var(--font-display); font-weight:900; font-size:26px; position:relative; }
+  .voucher__stub::after { content:''; position:absolute; right:0; top:0; bottom:0; border-right:2px dashed rgba(14,15,11,.18); }
+  .voucher__body { padding: 18px 22px; flex:1; }
+  .voucher__name { font-weight:800; font-size: 16px; }
+  .voucher__code { font-family: var(--font-mono); font-size:13px; background: rgba(14,15,11,.05); border:1px dashed var(--line-strong); padding:8px 12px; border-radius:8px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; }
+  .voucher__meta { font-family: var(--font-mono); font-size:11px; color: var(--fg-subtle); margin-top:10px; }
+  .st-on { background: var(--lime); color: var(--ink); } .st-used { background: rgba(14,15,11,.06); color: var(--fg-muted); }
+
+  .pane { display:none; } .pane.on { display:block; }
+  @media (max-width: 900px){ .grid{grid-template-columns:1fr 1fr;} .vouchers{grid-template-columns:1fr;} }
+  @media (max-width: 560px){ .grid{grid-template-columns:1fr;} }
 </style>
-<script src="assets/blaxx-config.js"></script>
-<script src="assets/blaxx-app.js"></script>
+</head>
+<body data-screen="resgates">
+<main>
+  <header class="page-head" data-screen-label="Resgates">
+    <div>
+      <span class="eyebrow">RESGATES</span>
+      <h1 class="h-display">Troque por algo real.</h1>
+    </div>
+    <div class="bal-pill"><div><div class="l">Seu saldo</div><div class="n" data-count="32480">32.480</div></div></div>
+  </header>
+
+  <div class="vtabs">
+    <button class="on" data-pane="catalogo">Catálogo</button>
+    <button data-pane="meus">Meus resgates</button>
+  </div>
+
+  <!-- CATÁLOGO -->
+  <section class="pane on" id="catalogo">
+    <div class="chips">
+      <button class="fchip on" data-c="all">Todos</button>
+      <button class="fchip" data-c="voucher">Vouchers</button>
+      <button class="fchip" data-c="cashback">Cashback</button>
+      <button class="fchip" data-c="milhas">Milhas</button>
+      <button class="fchip" data-c="streaming">Streaming</button>
+      <button class="fchip" data-c="produto">Produtos</button>
+    </div>
+
+    <div class="grid">
+      <div class="card rw" data-c="voucher">
+        <div class="rw__img" style="background:linear-gradient(135deg,#EA1D2C,#ff5a45);color:#fff"><span class="rw__cat">Voucher</span>iF</div>
+        <div class="rw__name">iFood · R$ 25</div>
+        <div class="rw__desc">Vale-refeição para usar no app.</div>
+        <div class="rw__foot"><div class="rw__cost">2.500 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw" data-c="voucher">
+        <div class="rw__img" style="background:linear-gradient(135deg,#EA1D2C,#ff5a45);color:#fff"><span class="rw__cat">Voucher</span>iF</div>
+        <div class="rw__name">iFood · R$ 50</div>
+        <div class="rw__desc">Vale-refeição para usar no app.</div>
+        <div class="rw__foot"><div class="rw__cost">5.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw" data-c="streaming">
+        <div class="rw__img" style="background:linear-gradient(135deg,#1DB954,#0c8c3d);color:#fff"><span class="rw__cat">Streaming</span>Sp</div>
+        <div class="rw__name">Spotify · 3 meses</div>
+        <div class="rw__desc">Premium individual, sem anúncios.</div>
+        <div class="rw__foot"><div class="rw__cost">4.500 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw" data-c="cashback">
+        <div class="rw__img" style="background:var(--ink);color:var(--lime)"><span class="rw__cat">Cashback</span>R$</div>
+        <div class="rw__name">Cashback · R$ 100</div>
+        <div class="rw__desc">Direto na sua conta via Pix.</div>
+        <div class="rw__foot"><div class="rw__cost">10.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw" data-c="milhas">
+        <div class="rw__img" style="background:linear-gradient(135deg,#0a2a66,#1f5fbf);color:#fff"><span class="rw__cat">Milhas</span>Nx</div>
+        <div class="rw__name">Nexus · 5.000 milhas</div>
+        <div class="rw__desc">Transferência para o programa Nexus.</div>
+        <div class="rw__foot"><div class="rw__cost">8.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw" data-c="streaming">
+        <div class="rw__img" style="background:linear-gradient(135deg,#E50914,#b00610);color:#fff"><span class="rw__cat">Streaming</span>Nf</div>
+        <div class="rw__name">Netflix · 1 mês</div>
+        <div class="rw__desc">Plano padrão, full HD.</div>
+        <div class="rw__foot"><div class="rw__cost">3.900 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw locked" data-c="produto">
+        <div class="rw__img" style="background:linear-gradient(135deg,#2b2b2b,#555);color:#fff"><span class="rw__cat">Produto</span>JBL</div>
+        <div class="rw__name">Fone JBL Tune</div>
+        <div class="rw__desc">Bluetooth, cancelamento de ruído.</div>
+        <div class="rw__foot"><div class="rw__cost">28.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+      <div class="card rw locked" data-c="produto">
+        <div class="rw__img" style="background:linear-gradient(135deg,#1b1b1f,#3a3a44);color:var(--lime)"><span class="rw__cat">Aspiracional</span>★</div>
+        <div class="rw__name">iPhone 16</div>
+        <div class="rw__desc">O grande prêmio. Continue acumulando.</div>
+        <div class="rw__foot"><div class="rw__cost">850.000 <span>pts</span></div><span class="chip chip--ink">BLOQUEADO</span></div>
+        <div class="rw__lockbar"><div class="bar"><div class="bar__fill" data-w="3.8%"></div></div><div class="rw__lockmeta"><span>32.480 / 850.000</span><span>faltam 817.520</span></div></div>
+      </div>
+      <div class="card rw" data-c="cashback">
+        <div class="rw__img" style="background:var(--ink);color:var(--lime)"><span class="rw__cat">Cashback</span>R$</div>
+        <div class="rw__name">Cashback · R$ 250</div>
+        <div class="rw__desc">Direto na sua conta via Pix.</div>
+        <div class="rw__foot"><div class="rw__cost">25.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
+        <div class="afford">✓ Você pode resgatar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEUS RESGATES -->
+  <section class="pane" id="meus">
+    <div class="vouchers">
+      <div class="card voucher">
+        <div class="voucher__stub" style="background:linear-gradient(160deg,#EA1D2C,#ff5a45);color:#fff">iF</div>
+        <div class="voucher__body">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name">iFood · R$ 50</span><span class="chip st-on">ATIVO</span></div>
+          <div class="voucher__code"><span>IFOOD-9K2L-44XQ</span><button class="btn btn--outline btn--sm" style="padding:5px 12px">Copiar</button></div>
+          <div class="voucher__meta">RESGATADO 28 MAI · VÁLIDO ATÉ 28 NOV 2026</div>
+        </div>
+      </div>
+      <div class="card voucher">
+        <div class="voucher__stub" style="background:linear-gradient(160deg,#1b1b1f,#3a3a44);color:var(--lime)">Ór</div>
+        <div class="voucher__body">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name">Posto Órbita · R$ 30</span><span class="chip st-on">ATIVO</span></div>
+          <div class="voucher__code"><span>ORB-7T1P-90ZD</span><button class="btn btn--outline btn--sm" style="padding:5px 12px">Copiar</button></div>
+          <div class="voucher__meta">RESGATADO 23 MAI · VÁLIDO ATÉ 23 AGO 2026</div>
+        </div>
+      </div>
+      <div class="card voucher">
+        <div class="voucher__stub" style="background:#e9ece1;color:var(--fg-muted)">Sp</div>
+        <div class="voucher__body">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name" style="color:var(--fg-muted)">Spotify · 1 mês</span><span class="chip st-used">USADO</span></div>
+          <div class="voucher__meta" style="margin-top:14px">RESGATADO 02 ABR · ATIVADO 02 ABR 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="chrome.js"></script>
+<script>
+  (function(){
+    // tabs
+    const tabs = document.querySelectorAll('.vtabs button');
+    function showPane(id){ document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on', p.id===id)); tabs.forEach(t=>t.classList.toggle('on', t.dataset.pane===id)); }
+    tabs.forEach(t => t.addEventListener('click', ()=> showPane(t.dataset.pane)));
+    if (location.hash === '#meus') showPane('meus');
+    // category filter
+    const chips = document.querySelectorAll('.fchip');
+    chips.forEach(c => c.addEventListener('click', () => {
+      chips.forEach(x=>x.classList.remove('on')); c.classList.add('on');
+      const cat = c.dataset.c;
+      document.querySelectorAll('.grid .rw').forEach(r => r.style.display = (cat==='all'||r.dataset.c===cat)?'flex':'none');
+    }));
+  })();
+</script>
 </body>
 </html>

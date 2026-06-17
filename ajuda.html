@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Central de ajuda</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .cats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .cat { padding: 22px; transition: transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease); }
+  .cat:hover { transform: translateY(-4px); box-shadow: var(--sh-2); border-color: var(--line-strong); }
+  .cat .ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--lime-12); font-size: 19px; }
+  .cat h4 { font-family: var(--font-display); font-weight: 900; font-size: 17px; margin: 14px 0 2px; }
+  .cat p { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); margin: 0; }
+
+  .sec-head { display:flex; align-items:center; justify-content:space-between; margin: 44px 0 18px; }
+  .qa { padding: 6px 0; }
+  details { border-top: 1px solid var(--line); }
+  details:first-of-type { border-top: 0; }
+  summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 24px; font-weight: 700; font-size: 14.5px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; font-family: var(--font-mono); font-size: 18px; color: var(--fg-subtle); transition: transform .25s var(--ease); }
+  details[open] summary::after { transform: rotate(45deg); }
+  details .a { padding: 0 24px 18px; font-size: 13.5px; color: var(--fg-muted); }
+  details .a a { text-decoration: underline; }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
+  .duo .card { padding: 26px; }
+  .duo h3 { font-family: var(--font-display); font-weight: 900; font-size: 20px; margin: 0 0 6px; }
+  .duo p { font-size: 13.5px; color: var(--fg-muted); margin: 0 0 16px; }
+  @media (max-width: 900px){ .cats { grid-template-columns: 1fr 1fr; } .duo { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-screen="ajuda">
+<main>
+  <header class="page-head" data-screen-label="Ajuda" style="margin-bottom:32px">
+    <span class="eyebrow">CENTRAL DE AJUDA</span>
+    <h1 class="h-display">Como podemos te ajudar?</h1>
+    <p class="lead">Navegue pelas categorias ou confira as <b>perguntas mais buscadas</b>. Se não encontrar, abra um chamado.</p>
+  </header>
+
+  <section class="cats">
+    <a class="card cat" href="faq.html"><span class="ico">★</span><h4>Acúmulo de pontos</h4><p>12 ARTIGOS</p></a>
+    <a class="card cat" href="faq.html"><span class="ico">🎁</span><h4>Resgates</h4><p>8 ARTIGOS</p></a>
+    <a class="card cat" href="faq.html"><span class="ico">＋</span><h4>Comprar pontos</h4><p>6 ARTIGOS</p></a>
+    <a class="card cat" href="faq.html"><span class="ico">→</span><h4>Enviar pontos</h4><p>5 ARTIGOS</p></a>
+    <a class="card cat" href="perfil.html"><span class="ico">⚙</span><h4>Conta &amp; perfil</h4><p>9 ARTIGOS</p></a>
+    <a class="card cat" href="seguranca.html"><span class="ico">🔒</span><h4>Segurança</h4><p>7 ARTIGOS</p></a>
+    <a class="card cat" href="campanhas.html"><span class="ico">▲</span><h4>Campanhas</h4><p>4 ARTIGOS</p></a>
+    <a class="card cat" href="termos.html"><span class="ico">📄</span><h4>Termos &amp; documentos</h4><p>3 ARTIGOS</p></a>
+  </section>
+
+  <div class="sec-head">
+    <h2 class="h-section">Perguntas mais buscadas</h2>
+    <a href="faq.html" class="mono" style="font-size:12px;font-weight:700;color:var(--fg-muted)">Ver FAQ completo →</a>
+  </div>
+  <div class="card qa">
+    <details open>
+      <summary>Meus pontos não foram creditados, e agora?</summary>
+      <div class="a">Pontos podem demorar até 24h para ser confirmados pelo parceiro. Após esse prazo, <a href="abrir-chamado.html">abra um chamado</a> com a nota fiscal anexada.</div>
+    </details>
+    <details>
+      <summary>Como uso meu voucher resgatado?</summary>
+      <div class="a">Cada voucher tem instruções específicas em <a href="resgates.html">Resgates</a>. Em geral, basta copiar o código e usar no site ou app do parceiro.</div>
+    </details>
+    <details>
+      <summary>Por que minha compra de pontos foi recusada?</summary>
+      <div class="a">Recusas geralmente ocorrem por dados incorretos, limite atingido ou bloqueio antifraude do banco. Tente novamente ou fale com seu banco. Veja também a <a href="politica-reembolso.html">política de reembolso</a>.</div>
+    </details>
+    <details>
+      <summary>Como ativar a verificação em duas etapas?</summary>
+      <div class="a">Acesse <a href="seguranca.html">Segurança</a> e ative a 2FA por SMS ou app autenticador. Recomendamos fortemente esta opção.</div>
+    </details>
+    <details>
+      <summary>Posso transferir pontos para qualquer pessoa?</summary>
+      <div class="a">Sim, desde que a pessoa tenha conta BlaxX com o e-mail ou CPF informado. <a href="enviar.html">Envio</a> sem taxa entre contas pessoais.</div>
+    </details>
+    <details>
+      <summary>Os pontos têm validade?</summary>
+      <div class="a">Sim: 24 meses a partir do acúmulo. Acompanhe a expiração no <a href="extrato.html">extrato</a> e confira as <a href="regras-pontos.html">regras completas</a>.</div>
+    </details>
+  </div>
+
+  <div class="duo">
+    <div class="card">
+      <h3>＋ Abrir um chamado</h3>
+      <p>Não encontrou a resposta? Fale com nossa equipe. Resposta em até <b>1 dia útil</b>.</p>
+      <a href="abrir-chamado.html" class="btn btn--dark">Abrir chamado →</a>
+    </div>
+    <div class="card">
+      <h3>📄 Documentos e regras</h3>
+      <p>Termos de uso, regras de pontos, reembolso e privacidade — tudo em um lugar.</p>
+      <a href="mapa-do-site.html" class="btn btn--outline">Ver documentos →</a>
+    </div>
+  </div>
+</main>
+<script src="chrome.js"></script>
+</body>
+</html>

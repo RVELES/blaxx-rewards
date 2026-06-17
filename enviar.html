@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Enviar pontos</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .page-head { margin-bottom: 24px; }
+  .send-grid { display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:start; }
+  .form-card { padding: 28px 30px; }
+  .field { margin-bottom: 22px; }
+  .field label { display:block; font-family: var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color: var(--fg-muted); margin-bottom:10px; }
+  .input { width:100%; border:1.5px solid var(--line); background: var(--cream); border-radius: var(--r-md); padding: 14px 16px; font-family: var(--font-body); font-size:15px; color: var(--fg); outline:none; transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
+  .input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+
+  .recents { display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 22px; }
+  .recent { display:flex; align-items:center; gap:9px; border:1.5px solid var(--line); background: var(--white); border-radius: var(--r-pill); padding:7px 14px 7px 7px; cursor:pointer; transition: all .16s var(--ease); }
+  .recent:hover { border-color: var(--line-strong); }
+  .recent.sel { border-color: var(--lime-deep); box-shadow: 0 0 0 2px var(--lime-20); }
+  .recent .av { width:28px; height:28px; border-radius:50%; background: var(--lime-12); color: var(--ink); display:grid; place-items:center; font-weight:800; font-size:12px; }
+  .recent .nm { font-weight:700; font-size:13.5px; }
+
+  .amount-wrap { position:relative; }
+  .amount-input { width:100%; border:1.5px solid var(--line); background: var(--cream); border-radius: var(--r-md); padding: 20px 16px; font-family: var(--font-mono); font-weight:700; font-size: 36px; letter-spacing:-.02em; color: var(--fg); outline:none; transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
+  .amount-input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  .quick { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .quick button { font-family: var(--font-mono); font-weight:700; font-size:12px; border:1px solid var(--line); background: var(--white); color: var(--fg-muted); padding:8px 14px; border-radius: var(--r-pill); cursor:pointer; transition: all .16s var(--ease); }
+  .quick button:hover { border-color: var(--lime-deep); color: var(--ink); }
+
+  .recap { padding: 26px; position:sticky; top:96px; }
+  .recap__eyebrow { font-family: var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color: var(--fg-on-dark-muted); }
+  .recap__to { display:flex; align-items:center; gap:12px; margin:18px 0; }
+  .recap__to .av { width:44px; height:44px; border-radius:50%; background: var(--lime); color: var(--ink); display:grid; place-items:center; font-weight:800; font-size:17px; }
+  .recap__amt { font-family: var(--font-mono); font-weight:700; font-size: 44px; color: var(--lime); letter-spacing:-.03em; }
+  .rline { display:flex; justify-content:space-between; padding:11px 0; font-size:14px; }
+  .rline + .rline { border-top:1px solid rgba(244,246,238,.1); }
+  .rline .k { color: var(--fg-on-dark-muted); } .rline .v { font-family: var(--font-mono); font-weight:700; }
+  .free-tag { display:inline-flex; align-items:center; gap:6px; font-family: var(--font-mono); font-size:11px; font-weight:700; color: var(--lime); }
+
+  @media (max-width: 900px){ .send-grid{grid-template-columns:1fr;} .recap{position:static;} }
+</style>
+</head>
+<body data-screen="enviar">
+<main>
+  <header class="page-head" data-screen-label="Enviar pontos">
+    <span class="eyebrow">ENVIAR PONTOS</span>
+    <h1 class="h-display">Pontos pra quem você curte.</h1>
+    <p class="lead"><b>Zero taxa</b> entre amigos BlaxX. A transferência cai na hora.</p>
+  </header>
+
+  <div class="send-grid">
+    <div class="card form-card">
+      <div class="field">
+        <label>Enviar para</label>
+        <div class="recents">
+          <div class="recent" data-name="Marina" data-initial="M"><span class="av">M</span><span class="nm">@marina</span></div>
+          <div class="recent" data-name="Bruno" data-initial="B"><span class="av">B</span><span class="nm">@bruno</span></div>
+          <div class="recent" data-name="Camila" data-initial="C"><span class="av">C</span><span class="nm">@camila</span></div>
+          <div class="recent" data-name="Diego" data-initial="D"><span class="av">D</span><span class="nm">@diego</span></div>
+        </div>
+        <input class="input" type="text" id="who" placeholder="Buscar por @usuário, e-mail ou telefone">
+      </div>
+
+      <div class="field">
+        <label>Quanto enviar</label>
+        <div class="amount-wrap">
+          <input class="amount-input" type="text" id="amt" value="1.500" inputmode="numeric">
+        </div>
+        <div class="quick">
+          <button data-v="500">500</button>
+          <button data-v="1500">1.500</button>
+          <button data-v="5000">5.000</button>
+          <button data-v="10000">10.000</button>
+          <button data-v="32480">Tudo</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:0">
+        <label>Mensagem (opcional)</label>
+        <input class="input" type="text" placeholder="Valeu pela força! 🙌" maxlength="60">
+      </div>
+    </div>
+
+    <aside class="card card--dark recap">
+      <span class="recap__eyebrow">Resumo do envio</span>
+      <div class="recap__to">
+        <span class="av" id="toAv">M</span>
+        <div><div style="font-weight:700" id="toName">@marina</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--fg-on-dark-muted)">Amigo BlaxX</div></div>
+      </div>
+      <div class="recap__amt" id="recapAmt">1.500</div>
+      <div style="font-family:var(--font-mono);font-size:12px;color:var(--fg-on-dark-muted);margin-bottom:18px">pontos</div>
+
+      <div class="rline"><span class="k">Taxa de envio</span><span class="free-tag">✓ GRÁTIS</span></div>
+      <div class="rline"><span class="k">Saldo atual</span><span class="v">32.480</span></div>
+      <div class="rline"><span class="k">Saldo após envio</span><span class="v" id="after">30.980</span></div>
+
+      <button class="btn btn--primary btn--block" style="margin-top:18px">Enviar agora →</button>
+      <p style="text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--fg-on-dark-muted);margin:12px 0 0">TRANSFERÊNCIA INSTANTÂNEA · IRREVERSÍVEL</p>
+    </aside>
+  </div>
+</main>
+<script src="chrome.js"></script>
+<script>
+  (function(){
+    const recents = document.querySelectorAll('.recent');
+    const who = document.getElementById('who');
+    const amt = document.getElementById('amt');
+    const parse = s => parseInt((s||'').replace(/\D/g,''))||0;
+    const fmt = n => n.toLocaleString('pt-BR');
+    function setTo(name, initial){ document.getElementById('toName').textContent='@'+name.toLowerCase(); document.getElementById('toAv').textContent=initial; }
+    function recalc(){ const v=parse(amt.value); document.getElementById('recapAmt').textContent=fmt(v); document.getElementById('after').textContent=fmt(Math.max(0,32480-v)); }
+    recents.forEach(r => r.addEventListener('click', () => { recents.forEach(x=>x.classList.remove('sel')); r.classList.add('sel'); setTo(r.dataset.name, r.dataset.initial); who.value=''; }));
+    recents[0].classList.add('sel');
+    document.querySelectorAll('.quick button').forEach(b => b.addEventListener('click', ()=>{ amt.value=fmt(+b.dataset.v); recalc(); }));
+    amt.addEventListener('input', ()=>{ const v=parse(amt.value); amt.value=v?fmt(v):''; recalc(); });
+    who.addEventListener('input', ()=>{ if(who.value){ recents.forEach(x=>x.classList.remove('sel')); const n=who.value.replace('@',''); setTo(n||'usuário', (n[0]||'?').toUpperCase()); } });
+    recalc();
+  })();
+</script>
+</body>
+</html>

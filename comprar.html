@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Comprar pontos</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .page-head { margin-bottom: 24px; }
+  .buy-grid { display:grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
+  .packs { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pack { padding: 22px; cursor:pointer; position:relative; transition: all .2s var(--ease); border:1.5px solid var(--line); }
+  .pack:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+  .pack.sel { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  .pack__pts { font-family: var(--font-mono); font-weight:700; font-size: 30px; letter-spacing:-.02em; }
+  .pack__pts span { font-size:13px; color: var(--fg-muted); font-weight:500; }
+  .pack__price { font-size: 14px; color: var(--fg-muted); margin-top:4px; }
+  .pack__price b { color: var(--ink); font-size: 16px; }
+  .pack__bonus { display:inline-flex; margin-top:14px; font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); background: var(--lime-12); color: var(--lime-deep); }
+  .pack__flag { position:absolute; top:-10px; right:16px; font-family: var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.06em; background: var(--ink); color: var(--lime); padding:4px 10px; border-radius: var(--r-pill); }
+  .pack__check { position:absolute; top:18px; right:18px; width:22px; height:22px; border-radius:50%; border:2px solid var(--line-strong); display:grid; place-items:center; transition: all .2s var(--ease); }
+  .pack.sel .pack__check { background: var(--lime); border-color: var(--lime); }
+  .pack__check svg { width:12px; height:12px; opacity:0; transition: opacity .2s; }
+  .pack.sel .pack__check svg { opacity:1; }
+
+  .custom { padding: 22px 24px; margin-top:16px; }
+  .custom h3 { font-family: var(--font-display); font-weight:900; font-size: 17px; margin:0 0 4px; }
+  .custom p { font-size:13px; color: var(--fg-muted); margin:0 0 18px; }
+  .slider { -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px; background: rgba(14,15,11,.1); outline:none; }
+  .slider::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background: var(--lime); border:3px solid var(--ink); cursor:pointer; box-shadow: var(--sh-1); }
+  .slider::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background: var(--lime); border:3px solid var(--ink); cursor:pointer; }
+  .slider-meta { display:flex; justify-content:space-between; font-family: var(--font-mono); font-size:11px; color: var(--fg-subtle); margin-top:10px; }
+
+  /* summary */
+  .summary { padding: 26px; position: sticky; top: 96px; }
+  .summary__eyebrow { font-family: var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color: var(--fg-on-dark-muted); }
+  .summary__total { font-family: var(--font-mono); font-weight:700; font-size: 48px; line-height:1; letter-spacing:-.03em; color: var(--lime); margin: 14px 0 2px; }
+  .summary__unit { font-family: var(--font-mono); font-size:13px; color: var(--fg-on-dark-muted); }
+  .sline { display:flex; justify-content:space-between; align-items:center; padding: 12px 0; font-size:14px; }
+  .sline + .sline { border-top:1px solid rgba(244,246,238,.1); }
+  .sline .k { color: var(--fg-on-dark-muted); }
+  .sline .v { font-family: var(--font-mono); font-weight:700; }
+  .sline .v.bonus { color: var(--lime); }
+  .sline.total .k { color: var(--fg-on-dark); font-weight:700; font-size:15px; }
+  .sline.total .v { font-size: 22px; }
+  .prime-note { display:flex; gap:12px; align-items:flex-start; background: rgba(174,230,58,.1); border:1px solid var(--lime-40); border-radius: var(--r-md); padding: 14px; margin: 18px 0; }
+  .prime-note .tile { width:34px; height:34px; }
+  .prime-note p { margin:0; font-size:12.5px; color: var(--fg-on-dark); }
+  .prime-note b { color: var(--lime); }
+  .pays { display:flex; gap:8px; margin-top:14px; }
+  .pay { flex:1; text-align:center; font-family: var(--font-mono); font-size:11px; font-weight:700; padding:10px; border-radius: var(--r-sm); background: rgba(244,246,238,.06); border:1px solid rgba(244,246,238,.14); color: var(--fg-on-dark-muted); cursor:pointer; }
+  .pay.on { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+
+  @media (max-width: 900px){ .buy-grid{grid-template-columns:1fr;} .packs{grid-template-columns:1fr 1fr;} .summary{position:static;} }
+  @media (max-width: 560px){ .packs{grid-template-columns:1fr;} }
+</style>
+</head>
+<body data-screen="comprar">
+<main>
+  <header class="page-head" data-screen-label="Comprar pontos">
+    <span class="eyebrow">COMPRAR PONTOS</span>
+    <h1 class="h-display">Acelere sua jornada.</h1>
+    <p class="lead">Quanto maior o pacote, maior o bônus. Membros <b>Plus</b> ganham pontos extras em toda compra.</p>
+  </header>
+
+  <div class="buy-grid">
+    <div>
+      <div class="packs">
+        <div class="card pack" data-pts="1000" data-bonus="0" data-price="10.00">
+          <div class="pack__check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E0F0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></div>
+          <div class="pack__pts">1.000 <span>pts</span></div>
+          <div class="pack__price"><b>R$ 10,00</b></div>
+        </div>
+        <div class="card pack" data-pts="5000" data-bonus="4" data-price="48.00">
+          <div class="pack__check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E0F0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></div>
+          <div class="pack__pts">5.000 <span>pts</span></div>
+          <div class="pack__price"><b>R$ 48,00</b></div>
+          <span class="pack__bonus">+4% bônus</span>
+        </div>
+        <div class="card pack sel" data-pts="10000" data-bonus="10" data-price="90.00">
+          <span class="pack__flag">POPULAR</span>
+          <div class="pack__check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E0F0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></div>
+          <div class="pack__pts">10.000 <span>pts</span></div>
+          <div class="pack__price"><b>R$ 90,00</b></div>
+          <span class="pack__bonus">+10% bônus</span>
+        </div>
+        <div class="card pack" data-pts="25000" data-bonus="15" data-price="215.00">
+          <div class="pack__check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E0F0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></div>
+          <div class="pack__pts">25.000 <span>pts</span></div>
+          <div class="pack__price"><b>R$ 215,00</b></div>
+          <span class="pack__bonus">+15% bônus</span>
+        </div>
+        <div class="card pack" data-pts="50000" data-bonus="20" data-price="410.00">
+          <span class="pack__flag">MELHOR VALOR</span>
+          <div class="pack__check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E0F0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></div>
+          <div class="pack__pts">50.000 <span>pts</span></div>
+          <div class="pack__price"><b>R$ 410,00</b></div>
+          <span class="pack__bonus">+20% bônus</span>
+        </div>
+        <div class="card pack" data-pts="100000" data-bonus="25" data-price="790.00">
+          <div class="pack__check"><svg viewBox="0 0 24 24" fill="none" stroke="#0E0F0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7"/></svg></div>
+          <div class="pack__pts">100.000 <span>pts</span></div>
+          <div class="pack__price"><b>R$ 790,00</b></div>
+          <span class="pack__bonus">+25% bônus</span>
+        </div>
+      </div>
+
+      <div class="card custom">
+        <h3>Valor personalizado</h3>
+        <p>Arraste para escolher exatamente quantos pontos quer comprar.</p>
+        <input type="range" class="slider" min="1000" max="100000" step="1000" value="10000" id="slider">
+        <div class="slider-meta"><span>1.000 pts</span><span id="sliderVal">10.000 pts</span><span>100.000 pts</span></div>
+      </div>
+    </div>
+
+    <!-- summary -->
+    <aside class="card card--dark summary">
+      <span class="summary__eyebrow">Você vai receber</span>
+      <div class="summary__total" id="sumTotal">11.000</div>
+      <div class="summary__unit">pontos · ≈ R$ 110,00 em resgates</div>
+
+      <div style="margin-top:18px">
+        <div class="sline"><span class="k">Pontos base</span><span class="v" id="sumBase">10.000</span></div>
+        <div class="sline"><span class="k">Bônus do pacote</span><span class="v bonus" id="sumBonus">+1.000</span></div>
+        <div class="sline"><span class="k">Bônus Plus</span><span class="v bonus">+200</span></div>
+      </div>
+
+      <div class="prime-note">
+        <span class="tile"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-7 5 7 4-4-2 12H5z"/></svg></span>
+        <p>No <b>Plano Prime</b> você ganharia <b>+20%</b> em todas as compras. Faltam 67.520 pts.</p>
+      </div>
+
+      <div class="sline total"><span class="k">Total a pagar</span><span class="v" id="sumPrice">R$ 90,00</span></div>
+
+      <div class="pays">
+        <button class="pay on">PIX</button>
+        <button class="pay">CARTÃO</button>
+        <button class="pay">BOLETO</button>
+      </div>
+
+      <button class="btn btn--primary btn--block" style="margin-top:16px">Comprar pontos →</button>
+      <p style="text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--fg-on-dark-muted);margin:12px 0 0">PAGAMENTO SEGURO · PONTOS LIBERADOS NA HORA</p>
+    </aside>
+  </div>
+</main>
+<script src="chrome.js"></script>
+<script>
+  (function(){
+    const packs = document.querySelectorAll('.pack');
+    const slider = document.getElementById('slider');
+    const fmt = n => Math.round(n).toLocaleString('pt-BR');
+    function recalc(base, bonusPct, price){
+      const bonus = Math.round(base * bonusPct/100);
+      const plus = Math.round(base * 0.02);
+      const total = base + bonus + plus;
+      document.getElementById('sumBase').textContent = fmt(base);
+      document.getElementById('sumBonus').textContent = '+'+fmt(bonus);
+      document.getElementById('sumTotal').textContent = fmt(total);
+      document.querySelector('.summary__unit').textContent = 'pontos · ≈ R$ '+(total*0.01).toLocaleString('pt-BR',{minimumFractionDigits:2})+' em resgates';
+      document.getElementById('sumPrice').textContent = price ? ('R$ '+price.replace('.',',')) : ('R$ '+(base*0.0088).toLocaleString('pt-BR',{minimumFractionDigits:2}));
+    }
+    packs.forEach(p => p.addEventListener('click', () => {
+      packs.forEach(x=>x.classList.remove('sel')); p.classList.add('sel');
+      slider.value = p.dataset.pts;
+      document.getElementById('sliderVal').textContent = fmt(+p.dataset.pts)+' pts';
+      recalc(+p.dataset.pts, +p.dataset.bonus, p.dataset.price);
+    }));
+    slider.addEventListener('input', () => {
+      const v = +slider.value;
+      document.getElementById('sliderVal').textContent = fmt(v)+' pts';
+      packs.forEach(x=>x.classList.remove('sel'));
+      const match = [...packs].find(p=>+p.dataset.pts===v);
+      let bonusPct = 0;
+      if (match){ match.classList.add('sel'); bonusPct = +match.dataset.bonus; recalc(v, bonusPct, match.dataset.price); }
+      else { bonusPct = v>=50000?20:v>=25000?15:v>=10000?10:v>=5000?4:0; recalc(v, bonusPct, null); }
+    });
+    document.querySelectorAll('.pay').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.pay').forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+  })();
+</script>
+</body>
+</html>

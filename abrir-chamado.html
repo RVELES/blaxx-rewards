@@ -1,187 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
-<title>Abrir chamado | Blaxx Pontos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Blaxx">
-<meta name="mobile-web-app-capable" content="yes">
-</head>
-<body>
-<header class="topbar">
-    <nav class="nav">
-        <a href="dashboard.html" class="brand">
-            <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-        </a>
-        <div class="links">
-            <a href="dashboard.html" data-link="dashboard">Início</a>
-            <a href="carteira.html" data-link="carteira">Carteira</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="campanhas.html" data-link="campanhas">Campanhas</a>
-        </div>
-        <div class="cta-row">
-            <a href="central-notificacoes.html" class="button ghost" aria-label="Notificações">🔔</a>
-            <a href="perfil.html" class="button secondary">Olá, Mariana</a>
-        </div>
-    </nav>
-</header>
-<div class="app-shell">
-<aside class="sidebar">
-    <div class="side-user">
-        <div class="avatar">M</div>
-        <div>
-            <div class="side-user-name">Mariana Costa</div>
-            <div class="side-user-tier">Plano Plus · 84.750 pts</div>
-        </div>
-    </div>
-    <ul class="side-nav">
-        <li><a href="dashboard.html" data-side="dashboard"><span class="ic">●</span> Início</a></li>
-        <li><a href="carteira.html" data-side="carteira"><span class="ic">◆</span> Carteira</a></li>
-        <li><a href="extrato.html" data-side="extrato"><span class="ic">≡</span> Extrato</a></li>
-        <li><a href="parceiros.html" data-side="parceiros"><span class="ic">⊙</span> Parceiros</a></li>
-        <li><a href="resgates.html" data-side="resgates"><span class="ic">★</span> Resgates</a></li>
-        <li><a href="meus-resgates.html" data-side="meus-resgates"><span class="ic">✓</span> Meus resgates</a></li>
-        <li><a href="campanhas.html" data-side="campanhas"><span class="ic">▲</span> Campanhas</a></li>
-        <li><a href="comprar-pontos.html" data-side="comprar-pontos"><span class="ic">+</span> Comprar pontos</a></li>
-        <li><a href="enviar-pontos.html" data-side="enviar-pontos"><span class="ic">→</span> Enviar pontos</a></li>
-        <li><a href="indique-ganhe.html" data-side="indique"><span class="ic">♥</span> Indique e ganhe</a></li>
-    </ul>
-    <div class="side-foot">
-        <ul class="side-nav">
-            <li><a href="perfil.html" data-side="perfil"><span class="ic">⚙</span> Perfil</a></li>
-            <li><a href="seguranca.html" data-side="seguranca"><span class="ic">🔒</span> Segurança</a></li>
-            <li><a href="central-ajuda.html" data-side="ajuda"><span class="ic">?</span> Ajuda</a></li>
-            <li><a href="login.html"><span class="ic">↩</span> Sair</a></li>
-        </ul>
-    </div>
-</aside>
-<main>
-<div class="page-head">
-    <div class="crumbs"><a href="dashboard.html">Início</a><span class="sep">/</span> <a href="central-ajuda.html">Ajuda</a><span class="sep">/</span> Abrir chamado</div>
-    <h1 style="font-size:32px;">Abrir um chamado</h1>
-    <p class="muted">Conte o que aconteceu. Respondemos em até 1 dia útil.</p>
-</div>
-
-<section class="section">
-    <div class="split-page">
-        <div class="card">
-            <form action="meus-chamados.html">
-                <div class="form-row">
-                    <label>Categoria</label>
-                    <select>
-                        <option>Selecione</option>
-                        <option>Pontos não creditados</option>
-                        <option>Problema com resgate</option>
-                        <option>Compra de pontos</option>
-                        <option>Envio de pontos</option>
-                        <option>Acesso e conta</option>
-                        <option>Cobrança</option>
-                        <option>Outros</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <label>Assunto</label>
-                    <input type="text" placeholder="Ex: pontos da compra de 22/04 não foram creditados">
-                </div>
-                <div class="form-row">
-                    <label>Descrição</label>
-                    <textarea placeholder="Conte com detalhes: data da compra, parceiro, valor, número de transação se houver…" style="min-height:160px;"></textarea>
-                    <span class="field-help">Quanto mais detalhes, mais rápido conseguimos resolver.</span>
-                </div>
-                <div class="form-row">
-                    <label>Anexar comprovante (opcional)</label>
-                    <input type="text" placeholder="📎 Selecionar arquivo (jpg, png ou pdf · máx 10MB)">
-                </div>
-                <div class="form-row">
-                    <label>Como prefere ser respondida?</label>
-                    <div class="checkbox-row"><input type="radio" name="ch" id="r1" checked><label for="r1">E-mail · mariana@email.com</label></div>
-                    <div class="checkbox-row"><input type="radio" name="ch" id="r2"><label for="r2">Telefone · (11) 9 8765-4321</label></div>
-                </div>
-                <button class="button full lg">Enviar chamado →</button>
-            </form>
-        </div>
-
-        <div class="summary-card">
-            <h3>Antes de enviar</h3>
-            <p>Procurou na <a href="central-ajuda.html" style="color:var(--ink);font-weight:700;">central de ajuda</a>? Muitas dúvidas comuns já têm resposta lá.</p>
-
-            <h3 class="mt-4">Tempo de resposta</h3>
-            <div class="dl mt-2">
-                <div><span class="k">Categoria geral</span><span class="v">Até 1 dia útil</span></div>
-                <div><span class="k">Cobrança</span><span class="v">Até 4h úteis</span></div>
-                <div><span class="k">Acesso e segurança</span><span class="v">Até 2h úteis</span></div>
-            </div>
-
-            <div class="alert info mt-4">
-                <div class="alert-icon">i</div>
-                <div><p>Você receberá um e-mail com o número do chamado e poderá acompanhar tudo em "Meus chamados".</p></div>
-            </div>
-        </div>
-    </div>
-</section>
-</main>
-</div>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-            </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="venda-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
-                <li><a href="meus-chamados.html">Meus chamados</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Documentos</a></li>
-                <li><a href="sitemap.html">Mapa do site</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
-    </div>
-</footer>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Abrir chamado</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side="ajuda"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side="ajuda"] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
+  .form { padding: 28px 30px; }
+  .f { margin-bottom: 18px; }
+  .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
+  .f input, .f select, .f textarea { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 12px 14px; font-family: var(--font-body); font-size: 14px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
+  .f input:focus, .f select:focus, .f textarea:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  .f textarea { min-height: 130px; resize: vertical; }
+  .ok { display: none; background: var(--lime-12); border: 1px solid var(--lime-40); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13.5px; margin-top: 16px; }
+  .ok.show { display: block; }
+  .side { padding: 24px 26px; }
+  .side h3 { font-family: var(--font-display); font-weight: 900; font-size: 19px; margin: 0 0 6px; }
+  .side p { font-size: 13px; color: var(--fg-muted); }
+  .side .row { display:flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 13px; color: var(--fg-muted); }
+  .side .row b { color: var(--ink); }
+  @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 </style>
+</head>
+<body data-screen="chamado">
+<main>
+  <header class="page-head" data-screen-label="Abrir chamado" style="margin-bottom:32px">
+    <span class="eyebrow">SUPORTE · RESPOSTA EM ATÉ 1 DIA ÚTIL</span>
+    <h1 class="h-display">Abrir um chamado.</h1>
+    <p class="lead">Conte o que aconteceu. Quanto mais detalhes, <b>mais rápida a solução</b>.</p>
+  </header>
+
+  <div class="grid">
+    <div class="card form">
+      <div class="f">
+        <label for="cat">Categoria</label>
+        <select id="cat">
+          <option>Pontos não creditados</option>
+          <option>Compra de pontos / Pix</option>
+          <option>Resgate ou voucher</option>
+          <option>Envio entre contas</option>
+          <option>Conta e acesso</option>
+          <option>Privacidade / LGPD</option>
+          <option>Suspeita de fraude</option>
+          <option>Outro assunto</option>
+        </select>
+      </div>
+      <div class="f">
+        <label for="assunto">Assunto</label>
+        <input id="assunto" type="text" placeholder="Ex.: pontos da compra no Mercado Vila não caíram">
+      </div>
+      <div class="f">
+        <label for="desc">Descrição</label>
+        <textarea id="desc" placeholder="Descreva o ocorrido com datas, valores e, se possível, o ID da transação (disponível no extrato)."></textarea>
+      </div>
+      <div class="f">
+        <label for="anexo">Anexo (opcional)</label>
+        <input id="anexo" type="file">
+      </div>
+      <button class="btn btn--dark btn--block" onclick="document.getElementById('okmsg').classList.add('show');this.textContent='Chamado enviado ✓';this.disabled=true">Enviar chamado →</button>
+      <div class="ok" id="okmsg"><b>Chamado registrado!</b> Você receberá a confirmação por e-mail com o número do protocolo. Resposta em até 1 dia útil.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card side">
+        <h3>Antes de abrir…</h3>
+        <p>Muita coisa se resolve na hora:</p>
+        <div class="row">→ <span>Pontos demoram até <b>24h</b> para serem confirmados pelo parceiro.</span></div>
+        <div class="row">→ <span>Consulte o <b><a href="extrato.html" style="text-decoration:underline">extrato</a></b> para ver o status de cada transação.</span></div>
+        <div class="row">→ <span>Dúvidas comuns estão no <b><a href="faq.html" style="text-decoration:underline">FAQ</a></b> e na <b><a href="ajuda.html" style="text-decoration:underline">central de ajuda</a></b>.</span></div>
+      </div>
+      <div class="card card--dark side">
+        <h3 style="color:var(--fg-on-dark)">Suspeita de fraude?</h3>
+        <p style="color:var(--fg-on-dark-muted)">Selecione a categoria "Suspeita de fraude" — esses chamados têm <b style="color:var(--lime)">prioridade máxima</b>. Enquanto isso, revise sua <a href="seguranca.html" style="color:var(--lime);text-decoration:underline">segurança</a>.</p>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="chrome.js"></script>
 </body>
 </html>

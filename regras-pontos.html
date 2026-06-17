@@ -1,224 +1,88 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
-<title>Regras dos pontos | Blaxx Pontos</title>
-<meta name="description" content="Regras oficiais do programa Blaxx Pontos: acúmulo, validade, expiração, limites de envio, conversão para resgate e cancelamento.">
-<meta name="robots" content="index,follow">
-<link rel="canonical" href="https://blaxxpontos.netlify.app/regras-pontos">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Blaxx Pontos">
-<meta property="og:title" content="Regras dos pontos | Blaxx Pontos">
-<meta property="og:description" content="Regras oficiais do programa: acúmulo, validade, limites e conversões.">
-<meta property="og:url" content="https://blaxxpontos.netlify.app/regras-pontos">
-<meta property="og:image" content="https://blaxxpontos.netlify.app/assets/icons/icon-512.png">
-<meta property="og:locale" content="pt_BR">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Regras de pontos</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .doc { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+  .toc { padding: 20px 22px; position: sticky; top: 94px; }
+  .toc h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-subtle); margin: 0 0 12px; }
+  .toc a { display: block; font-size: 13px; font-weight: 600; color: var(--fg-muted); padding: 6px 0; }
+  .toc a:hover { color: var(--ink); }
+  .body { padding: 32px 36px; }
+  .body h2 { font-family: var(--font-display); font-weight: 900; font-size: 21px; letter-spacing: -0.01em; margin: 34px 0 10px; scroll-margin-top: 94px; }
+  .body h2:first-of-type { margin-top: 0; }
+  .body h2 .n { font-family: var(--font-mono); font-size: 12px; color: var(--lime-deep); margin-right: 8px; }
+  .body p, .body li { font-size: 14px; color: var(--fg-muted); }
+  .body b { color: var(--ink); }
+  .body table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+  .body th, .body td { text-align: left; padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--line); }
+  .body th { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+  .note { background: var(--lime-06); border: 1px solid var(--lime-20); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13px; color: var(--fg-muted); margin: 16px 0; }
+  @media (max-width: 900px){ .doc { grid-template-columns: 1fr; } .toc { position: static; } .body { padding: 24px; } }
+</style>
 </head>
-<body>
-<header class="topbar">
-    <nav class="nav">
-        <a href="index.html" class="brand">
-            <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-        </a>
-        <div class="links">
-            <a href="index.html" data-link="index">Início</a>
-            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
-            <a href="vender-pontos.html" data-link="vender-pontos">Vender pontos</a>
-        </div>
-        <div class="cta-row">
-            <a href="login.html" class="button ghost">Entrar</a>
-            <a href="cadastro.html" class="button">Cadastre-se</a>
-        </div>
+<body data-screen="regras">
+<main>
+  <header class="page-head" data-screen-label="Regras" style="margin-bottom:28px">
+    <span class="eyebrow">DOCUMENTO · v1.0 · ATUALIZADO EM 27/05/2026</span>
+    <h1 class="h-display">Regras dos pontos.</h1>
+    <p class="lead">Como os pontos nascem, vivem, viajam e expiram — <b>sem letras miúdas</b>.</p>
+  </header>
+
+  <div class="doc">
+    <nav class="card toc">
+      <h4>Sumário</h4>
+      <a href="#natureza">1. Natureza dos pontos</a>
+      <a href="#acumulo">2. Acúmulo</a>
+      <a href="#validade">3. Validade e expiração</a>
+      <a href="#limites">4. Limites operacionais</a>
+      <a href="#envio">5. Envio entre contas</a>
+      <a href="#resgates">6. Resgates</a>
+      <a href="#fraude">7. Prevenção a fraude</a>
+      <a href="#alteracoes">8. Alterações</a>
     </nav>
-</header>
-<main class="shell">
-<div class="page-head">
-    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> Regras dos pontos</div>
-    <h1>Regras dos pontos</h1>
-    <p class="lead" style="max-width:60ch;margin-top:14px;">Última atualização: 27/05/2026 · v1.0 — <span style="color:#a83417;font-weight:700;">[REVISAR COM LEGAL]</span></p>
-</div>
 
-<section class="section">
-    <div class="grid" style="grid-template-columns:240px 1fr;gap:32px;align-items:start;">
-        <aside class="card" style="position:sticky;top:84px;padding:18px;">
-            <h4>Sumário</h4>
-            <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
-                <li><a href="#natureza" style="font-size:13px;color:var(--ink-2);">1. Natureza dos pontos</a></li>
-                <li><a href="#acumulo" style="font-size:13px;color:var(--ink-2);">2. Acúmulo</a></li>
-                <li><a href="#validade" style="font-size:13px;color:var(--ink-2);">3. Validade e expiração</a></li>
-                <li><a href="#limites" style="font-size:13px;color:var(--ink-2);">4. Limites operacionais</a></li>
-                <li><a href="#envio" style="font-size:13px;color:var(--ink-2);">5. Envio entre contas</a></li>
-                <li><a href="#resgate" style="font-size:13px;color:var(--ink-2);">6. Resgates</a></li>
-                <li><a href="#fraude" style="font-size:13px;color:var(--ink-2);">7. Prevenção a fraude</a></li>
-                <li><a href="#alteracoes" style="font-size:13px;color:var(--ink-2);">8. Alterações</a></li>
-            </ul>
-        </aside>
+    <article class="card body">
+      <h2 id="natureza"><span class="n">01</span>Natureza dos pontos</h2>
+      <p>Os pontos BlaxX são <b>créditos promocionais de uso restrito</b> dentro do programa BlaxX Pontos. Não constituem moeda de curso forçado, depósito ou investimento financeiro, valor mobiliário, criptoativo, nem direito de crédito transferível por endosso, cessão ou penhora.</p>
+      <p>Os pontos são pessoais, intransferíveis fora dos fluxos previstos no programa e não podem ser objeto de garantia ou compensação contra dívidas do usuário.</p>
 
-        <article class="card" style="padding:36px;">
-            <div class="alert warn">
-                <div class="alert-icon">⚠</div>
-                <div>
-                    <p><strong>Documento em revisão.</strong> Os valores, prazos e limites abaixo são parâmetros operacionais sugeridos. Devem ser validados pelo time jurídico antes da publicação definitiva. Marcações [REVISAR COM LEGAL] indicam pontos críticos.</p>
-                </div>
-            </div>
+      <h2 id="acumulo"><span class="n">02</span>Acúmulo</h2>
+      <p>O usuário pode acumular pontos por quatro mecanismos:</p>
+      <table>
+        <tr><th>Mecanismo</th><th>Como funciona</th><th>Custo</th></tr>
+        <tr><td><b>Rede de parceiros</b></td><td>Cada parceiro define a regra (ex.: 1 pt por R$ gasto).</td><td>Gratuito</td></tr>
+        <tr><td><b>Campanhas patrocinadas</b></td><td>Bônus em ações específicas por tempo limitado.</td><td>Gratuito</td></tr>
+        <tr><td><b>Compra direta (Pix)</b></td><td>Pacotes ou valor livre. 1 ponto = R$ 0,09.</td><td>Valor do pacote</td></tr>
+        <tr><td><b>Transferência</b></td><td>Outro usuário envia pontos pra você.</td><td>Gratuito</td></tr>
+      </table>
 
-            <h2 id="natureza" class="mt-4">1. Natureza dos pontos</h2>
-            <p>Os pontos Blaxx são <strong>créditos promocionais</strong> de uso restrito dentro do programa Blaxx Pontos. Não constituem:</p>
-            <ul style="margin:10px 0 10px 24px;color:var(--ink-2);">
-                <li>moeda de curso forçado;</li>
-                <li>depósito ou investimento financeiro;</li>
-                <li>valor mobiliário;</li>
-                <li>criptoativo;</li>
-                <li>direito de crédito transferível por endosso, cessão ou penhora.</li>
-            </ul>
-            <p>Os pontos são pessoais, intransferíveis fora dos fluxos previstos no programa e não podem ser objeto de garantia ou compensação contra dívidas do usuário.</p>
+      <h2 id="validade"><span class="n">03</span>Validade e expiração</h2>
+      <p>Cada lote de pontos tem validade de <b>24 meses</b> a partir da data do acúmulo, salvo regra específica de campanha comunicada no momento da participação.</p>
+      <p>Pontos próximos a expirar são notificados com <b>30 dias de antecedência</b> (push + e-mail). No vencimento, são debitados automaticamente e não podem ser restaurados.</p>
 
-            <h2 id="acumulo" class="mt-4">2. Acúmulo</h2>
-            <p>O usuário pode acumular pontos por quatro mecanismos:</p>
-            <table style="width:100%;border-collapse:collapse;margin-top:14px;">
-                <thead>
-                    <tr style="background:var(--lime-bg);text-align:left;">
-                        <th style="padding:10px;border-bottom:1px solid var(--line);">Mecanismo</th>
-                        <th style="padding:10px;border-bottom:1px solid var(--line);">Como funciona</th>
-                        <th style="padding:10px;border-bottom:1px solid var(--line);">Custo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td style="padding:10px;border-bottom:1px solid var(--line);">Rede de parceiros</td><td style="padding:10px;border-bottom:1px solid var(--line);">Cada parceiro define a regra (ex: 1pt por R$ gasto).</td><td style="padding:10px;border-bottom:1px solid var(--line);">Gratuito</td></tr>
-                    <tr><td style="padding:10px;border-bottom:1px solid var(--line);">Campanhas patrocinadas</td><td style="padding:10px;border-bottom:1px solid var(--line);">Bônus em ações específicas.</td><td style="padding:10px;border-bottom:1px solid var(--line);">Gratuito</td></tr>
-                    <tr><td style="padding:10px;border-bottom:1px solid var(--line);">Compra direta (PIX)</td><td style="padding:10px;border-bottom:1px solid var(--line);">Pacotes ou valor livre. 1 ponto = R$ 0,09.</td><td style="padding:10px;border-bottom:1px solid var(--line);">Valor do pacote</td></tr>
-                    <tr><td style="padding:10px;">Transferência de outra conta</td><td style="padding:10px;">Outro usuário envia pontos pra você.</td><td style="padding:10px;">Gratuito</td></tr>
-                </tbody>
-            </table>
+      <h2 id="limites"><span class="n">04</span>Limites operacionais</h2>
+      <p>Por segurança e prevenção a fraudes, aplicam-se limites diários de compra, envio e resgate, exibidos diretamente nos fluxos de <a href="comprar.html" style="text-decoration:underline">compra</a>, <a href="enviar.html" style="text-decoration:underline">envio</a> e <a href="resgates.html" style="text-decoration:underline">resgate</a>. Limites variam conforme o nível da conta (Start, Plus, Prime, Black).</p>
 
-            <h2 id="validade" class="mt-4">3. Validade e expiração</h2>
-            <p>Cada lote de pontos acumulado tem validade de <strong>24 meses</strong> a partir da data do acúmulo, salvo regra específica de campanha que esteja explicitamente comunicada no momento da participação.</p>
-            <p>Pontos próximos a expirar são notificados ao usuário com 30 dias de antecedência (push + email). No vencimento, são debitados automaticamente em ordem FIFO (first-in, first-out — os mais antigos saem primeiro nos resgates).</p>
+      <h2 id="envio"><span class="n">05</span>Envio entre contas</h2>
+      <p>Transferências entre contas pessoais BlaxX são gratuitas, respeitando os limites diários. <b>Transferências confirmadas não podem ser revertidas.</b> O destinatário deve possuir conta ativa identificada por e-mail ou CPF.</p>
 
-            <h2 id="limites" class="mt-4">4. Limites operacionais</h2>
-            <p>Para prevenir fraude e atender requisitos de antilavagem, aplicamos os limites abaixo. <span style="color:#a83417;font-weight:700;">[REVISAR COM LEGAL — confirmar valores]</span></p>
-            <table style="width:100%;border-collapse:collapse;margin-top:14px;">
-                <thead>
-                    <tr style="background:var(--lime-bg);text-align:left;">
-                        <th style="padding:10px;border-bottom:1px solid var(--line);">Operação</th>
-                        <th style="padding:10px;border-bottom:1px solid var(--line);">Conta padrão</th>
-                        <th style="padding:10px;border-bottom:1px solid var(--line);">Conta verificada</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td style="padding:10px;border-bottom:1px solid var(--line);">Compra de pontos / dia</td><td style="padding:10px;border-bottom:1px solid var(--line);">R$ 5.000</td><td style="padding:10px;border-bottom:1px solid var(--line);">R$ 20.000</td></tr>
-                    <tr><td style="padding:10px;border-bottom:1px solid var(--line);">Envio de pontos / dia</td><td style="padding:10px;border-bottom:1px solid var(--line);">50.000 pts</td><td style="padding:10px;border-bottom:1px solid var(--line);">500.000 pts</td></tr>
-                    <tr><td style="padding:10px;border-bottom:1px solid var(--line);">Resgate via PIX / dia</td><td style="padding:10px;border-bottom:1px solid var(--line);">R$ 2.000</td><td style="padding:10px;border-bottom:1px solid var(--line);">R$ 10.000</td></tr>
-                    <tr><td style="padding:10px;">Resgate via PIX / mês</td><td style="padding:10px;">R$ 10.000</td><td style="padding:10px;">R$ 50.000</td></tr>
-                </tbody>
-            </table>
-            <p class="mt-2" style="color:var(--muted);font-size:13px;">Contas novas (primeiros 30 dias) podem ter limites reduzidos como medida cautelar. Verificação de identidade desbloqueia o tier completo.</p>
+      <h2 id="resgates"><span class="n">06</span>Resgates</h2>
+      <p>Resgates dependem de disponibilidade do parceiro. Após confirmação, o resgate é <b>definitivo e não cancelável</b>. Cashback via Pix é enviado exclusivamente à chave cadastrada no <a href="perfil.html" style="text-decoration:underline">perfil</a> do titular.</p>
 
-            <h2 id="envio" class="mt-4">5. Envio entre contas</h2>
-            <ul style="margin:10px 0 10px 24px;color:var(--ink-2);">
-                <li>Apenas entre contas Blaxx pessoais (pessoa física), sem taxa.</li>
-                <li>Destinatário precisa ter email verificado.</li>
-                <li>Transferências são <strong>definitivas e irrevogáveis</strong> após confirmação. Confira o destinatário antes de enviar.</li>
-                <li>Operações acima de [REVISAR COM LEGAL — valor] pontos exigem 2FA por SMS.</li>
-                <li>Envios suspeitos podem ser bloqueados preventivamente. O usuário é notificado e pode contestar via Suporte.</li>
-            </ul>
+      <h2 id="fraude"><span class="n">07</span>Prevenção a fraude</h2>
+      <p>Contas com indícios de fraude, duplicidade, automação ou uso indevido podem ser suspensas para verificação. Pontos obtidos de forma irregular podem ser estornados. Suspeitas podem ser reportadas em <a href="abrir-chamado.html" style="text-decoration:underline">Abrir chamado</a>.</p>
 
-            <h2 id="resgate" class="mt-4">6. Resgates</h2>
-            <h3 style="margin-top:14px;">Resgate por benefício (catálogo)</h3>
-            <p>Vouchers gerados após confirmação. Validade do voucher segue regra do parceiro. Pontos descontados não são reembolsáveis após a geração.</p>
+      <h2 id="alteracoes"><span class="n">08</span>Alterações</h2>
+      <p>Estas regras podem ser atualizadas a qualquer momento. Mudanças relevantes são comunicadas com antecedência mínima de 30 dias por e-mail e dentro da plataforma.</p>
 
-            <h3 style="margin-top:14px;">Resgate via PIX</h3>
-            <ul style="margin:10px 0 10px 24px;color:var(--ink-2);">
-                <li><strong>Carência:</strong> disponível apenas após 6 meses do primeiro cadastro (prevenção antifraude).</li>
-                <li><strong>Conversão:</strong> a cotação ponto→BRL varia conforme demanda e categoria do usuário. A cotação atual é exibida na tela de resgate antes da confirmação.</li>
-                <li><strong>Tempo de liberação:</strong> até 1 dia útil após confirmação.</li>
-                <li><strong>Chave PIX:</strong> deve estar no nome do titular da conta Blaxx (CPF). Chaves de terceiros são rejeitadas automaticamente.</li>
-                <li>Resgates confirmados são <strong>definitivos</strong>.</li>
-            </ul>
-
-            <h2 id="fraude" class="mt-4">7. Prevenção a fraude</h2>
-            <p>A Blaxx Pontos pode suspender, congelar ou cancelar pontos em casos de:</p>
-            <ul style="margin:10px 0 10px 24px;color:var(--ink-2);">
-                <li>indícios de criação de múltiplas contas para a mesma pessoa;</li>
-                <li>uso de meios de pagamento de terceiros sem autorização;</li>
-                <li>tentativa de exploração de bugs ou bônus duplicados;</li>
-                <li>atividades incompatíveis com uso pessoal (volume / frequência atípicos);</li>
-                <li>denúncia ou ordem judicial.</li>
-            </ul>
-            <p>O usuário sempre é notificado e pode contestar via Suporte.</p>
-
-            <h2 id="alteracoes" class="mt-4">8. Alterações</h2>
-            <p>Estas regras podem ser atualizadas para refletir mudanças regulatórias, operacionais ou comerciais. Mudanças relevantes são comunicadas por email com pelo menos 7 dias de antecedência. O uso continuado do programa após a comunicação implica aceitação tácita das novas regras.</p>
-
-            <div class="alert info mt-4">
-                <div class="alert-icon">i</div>
-                <div>
-                    <p>Em caso de dúvida sobre a aplicação destas regras a um caso específico, abra um chamado em <a href="abrir-chamado.html" style="color:var(--ink);font-weight:700;">Suporte</a>. Decisões individuais não criam precedente vinculante para outros usuários.</p>
-                </div>
-            </div>
-        </article>
-    </div>
-</section>
+      <div class="note">Documentos relacionados: <a href="termos.html" style="text-decoration:underline">Termos de uso</a> · <a href="politica-reembolso.html" style="text-decoration:underline">Política de reembolso</a> · <a href="privacidade.html" style="text-decoration:underline">Privacidade / LGPD</a></div>
+    </article>
+  </div>
 </main>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-            </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="vender-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte e legal</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="faq.html">Perguntas frequentes</a></li>
-                <li><a href="regras-pontos.html">Regras de pontos</a></li>
-                <li><a href="politica-reembolso.html">Política de reembolso</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Privacidade / LGPD</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
-    </div>
-</footer>
-<script src="assets/blaxx-config.js"></script>
-<script src="assets/blaxx-app.js"></script>
+<script src="chrome.js"></script>
 </body>
 </html>
