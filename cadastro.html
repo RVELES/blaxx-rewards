@@ -14,17 +14,28 @@
   .auth-top a.alt b { color: var(--lime); }
   .auth-wrap { flex: 1; display: grid; place-items: center; padding: 24px; }
   .auth { width: 100%; max-width: 440px; padding: 36px; animation: rise .5s var(--ease-out) both; }
-  .auth h1 { font-family: var(--font-display); font-weight: 900; font-size: 30px; letter-spacing: -0.02em; margin: 0 0 4px; }
-  .auth .sub { font-size: 14px; color: var(--fg-muted); margin: 0 0 22px; }
-  .welcome { display: inline-flex; align-items: center; gap: 8px; background: var(--lime-12); border: 1px solid var(--lime-40); border-radius: var(--r-pill); padding: 7px 14px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--lime-deep); margin-bottom: 18px; }
+  .auth h1 { font-family: var(--font-display); font-weight: 900; font-size: 26px; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .auth .sub { font-size: 14px; color: var(--fg-muted); margin: 0 0 20px; }
+  .welcome { display: inline-flex; align-items: center; gap: 8px; background: var(--lime-12); border: 1px solid var(--lime-40); border-radius: var(--r-pill); padding: 7px 14px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--lime-deep); margin-bottom: 16px; }
   .f { margin-bottom: 15px; }
   .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
   .f input { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 13px 14px; font-family: var(--font-body); font-size: 14.5px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
   .f input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
-  .legal { font-size: 12px; color: var(--fg-subtle); margin: 14px 0 18px; }
+  .legal { font-size: 12px; color: var(--fg-subtle); margin: 4px 0 18px; }
   .legal a { text-decoration: underline; }
   .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--chrome-fg-muted); }
   .auth-foot a { text-decoration: underline; }
+
+  /* stepper */
+  .stepper { display: flex; gap: 8px; margin-bottom: 22px; }
+  .stepper .seg { flex: 1; height: 6px; border-radius: 999px; background: var(--line-strong); transition: background .25s var(--ease); }
+  .stepper .seg.on { background: var(--lime); }
+  .step-count { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 6px; }
+  .step { display: none; animation: rise .35s var(--ease-out) both; }
+  .step.on { display: block; }
+  .nav-row { display: flex; gap: 10px; margin-top: 4px; }
+  .nav-row .btn { flex: 1; }
+  .nav-row .btn.half { flex: 0 0 38%; }
 </style>
 </head>
 <body>
@@ -35,35 +46,70 @@
 
   <div class="auth-wrap">
     <div class="card auth">
-      <span class="welcome">🎁 GANHE 500 PTS DE BOAS-VINDAS</span>
-      <h1>Crie sua conta grátis.</h1>
-      <p class="sub">Menos de 2 minutos, sem mensalidade.</p>
-      <div class="f">
-        <label for="nome">Nome completo</label>
-        <input id="nome" type="text" placeholder="Seu nome" autocomplete="name">
+      <div class="stepper">
+        <div class="seg on" data-seg="0"></div>
+        <div class="seg" data-seg="1"></div>
+        <div class="seg" data-seg="2"></div>
       </div>
-      <div class="f">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" placeholder="voce@email.com" autocomplete="email">
-      </div>
-      <div class="f">
-        <label for="cpf">CPF</label>
-        <input id="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00" autocomplete="off">
-      </div>
-      <div class="f">
-        <label for="cel">Celular</label>
-        <input id="cel" type="tel" placeholder="(11) 9 0000-0000" autocomplete="tel">
-      </div>
-      <div class="f">
-        <label for="pass">Senha</label>
-        <input id="pass" type="password" placeholder="Mínimo 7 caracteres" autocomplete="new-password" minlength="7">
-      </div>
-      <label class="legal" style="display:flex;gap:9px;align-items:flex-start;cursor:pointer">
-        <input id="accept" type="checkbox" style="accent-color:var(--lime-deep);margin-top:2px">
-        <span>Li e aceito os <a href="termos.html">termos de uso</a>, as <a href="regras-pontos.html">regras de pontos</a> e a <a href="privacidade.html">política de privacidade</a> (LGPD).</span>
-      </label>
-      <div id="regErr" style="display:none;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.3);color:#c0392b;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin:0 0 14px"></div>
-      <button id="btnReg" type="button" class="btn btn--dark btn--block">Criar conta grátis →</button>
+
+      <div id="regErr" style="display:none;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.3);color:#c0392b;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin:0 0 16px"></div>
+
+      <!-- Passo 1 — Identificação -->
+      <section class="step on" data-step="0">
+        <span class="welcome">🎁 GANHE PONTOS DE BOAS-VINDAS</span>
+        <div class="step-count">Passo 1 de 3</div>
+        <h1>Quem é você?</h1>
+        <p class="sub">Vamos começar pelo básico.</p>
+        <div class="f">
+          <label for="nome">Nome completo</label>
+          <input id="nome" type="text" placeholder="Nome e sobrenome" autocomplete="name">
+        </div>
+        <div class="f">
+          <label for="cpf">CPF</label>
+          <input id="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00" autocomplete="off">
+        </div>
+        <div class="nav-row">
+          <button type="button" class="btn btn--dark btn--block" data-next>Continuar →</button>
+        </div>
+      </section>
+
+      <!-- Passo 2 — Contato -->
+      <section class="step" data-step="1">
+        <div class="step-count">Passo 2 de 3</div>
+        <h1>Como te encontramos?</h1>
+        <p class="sub">Usamos para login, avisos e segurança.</p>
+        <div class="f">
+          <label for="email">E-mail</label>
+          <input id="email" type="email" placeholder="voce@email.com" autocomplete="email">
+        </div>
+        <div class="f">
+          <label for="cel">Celular (opcional)</label>
+          <input id="cel" type="tel" placeholder="(11) 9 0000-0000" autocomplete="tel">
+        </div>
+        <div class="nav-row">
+          <button type="button" class="btn btn--outline half" data-back>← Voltar</button>
+          <button type="button" class="btn btn--dark" data-next>Continuar →</button>
+        </div>
+      </section>
+
+      <!-- Passo 3 — Acesso -->
+      <section class="step" data-step="2">
+        <div class="step-count">Passo 3 de 3</div>
+        <h1>Crie seu acesso.</h1>
+        <p class="sub">Quase lá! Defina sua senha e confirme os termos.</p>
+        <div class="f">
+          <label for="pass">Senha</label>
+          <input id="pass" type="password" placeholder="Mínimo 7 caracteres" autocomplete="new-password" minlength="7">
+        </div>
+        <label class="legal" style="display:flex;gap:9px;align-items:flex-start;cursor:pointer">
+          <input id="accept" type="checkbox" style="accent-color:var(--lime-deep);margin-top:2px">
+          <span>Li e aceito os <a href="termos.html">termos de uso</a>, as <a href="regras-pontos.html">regras de pontos</a> e a <a href="privacidade.html">política de privacidade</a> (LGPD).</span>
+        </label>
+        <div class="nav-row">
+          <button type="button" class="btn btn--outline half" data-back>← Voltar</button>
+          <button id="btnReg" type="button" class="btn btn--dark">Criar conta grátis →</button>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -80,15 +126,60 @@
 
     try { if ((JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token) location.replace('index.html'); } catch(e){}
 
+    // ---- wizard de 3 passos ----
+    var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+    var segs = Array.prototype.slice.call(document.querySelectorAll('.stepper .seg'));
+    var cur = 0;
+
+    function show(n){
+      cur = n;
+      steps.forEach(function(s, i){ s.classList.toggle('on', i === n); });
+      segs.forEach(function(s, i){ s.classList.toggle('on', i <= n); });
+      clearErr();
+      // foca o 1º input do passo
+      var inp = steps[n].querySelector('input:not([type=checkbox])');
+      if (inp) setTimeout(function(){ inp.focus(); }, 50);
+    }
+
+    function validate(n){
+      if (n === 0){
+        var name = $('nome').value.trim();
+        if (name.split(/\s+/).filter(Boolean).length < 2){ showErr('Informe nome e sobrenome.'); return false; }
+        if (!$('cpf').value.trim()){ showErr('Informe o CPF.'); return false; }
+      } else if (n === 1){
+        var email = $('email').value.trim();
+        if (!email || email.indexOf('@') < 1){ showErr('Informe um e-mail válido.'); return false; }
+      } else if (n === 2){
+        if (($('pass').value || '').length < 7){ showErr('A senha precisa ter no mínimo 7 caracteres.'); return false; }
+        if (!$('accept').checked){ showErr('Você precisa aceitar os termos e a LGPD.'); return false; }
+      }
+      return true;
+    }
+
+    document.querySelectorAll('[data-next]').forEach(function(b){
+      b.addEventListener('click', function(){ if (validate(cur)) show(cur + 1); });
+    });
+    document.querySelectorAll('[data-back]').forEach(function(b){
+      b.addEventListener('click', function(){ show(Math.max(0, cur - 1)); });
+    });
+    // Enter avança/valida o passo atual
+    document.querySelectorAll('.step input').forEach(function(inp){
+      inp.addEventListener('keydown', function(e){
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        if (cur < 2){ if (validate(cur)) show(cur + 1); }
+        else { doReg(); }
+      });
+    });
+
+    // ---- envio final ----
     function doReg(){
       clearErr();
+      if (!validate(0)){ show(0); return; }
+      if (!validate(1)){ show(1); return; }
+      if (!validate(2)) return;
       var name = $('nome').value.trim(), email = $('email').value.trim();
       var cpf = $('cpf').value.trim(), phone = $('cel').value.trim(), pw = $('pass').value;
-      if (name.split(/\s+/).filter(Boolean).length < 2){ showErr('Informe nome e sobrenome.'); return; }
-      if (!email){ showErr('Informe o e-mail.'); return; }
-      if (!cpf){ showErr('Informe o CPF.'); return; }
-      if (!pw || pw.length < 7){ showErr('A senha precisa ter no mínimo 7 caracteres.'); return; }
-      if (!$('accept').checked){ showErr('Você precisa aceitar os termos e a LGPD.'); return; }
       var body = { name:name, email:email, cpf:cpf, password:pw, accept_terms:true, accept_privacy:true, accept_lgpd:true };
       if (phone) body.phone = phone;
       btn.disabled = true; var old = btn.textContent; btn.textContent = 'Criando conta…';
@@ -100,12 +191,17 @@
             try { localStorage.setItem('blaxx_session', JSON.stringify(res.j)); } catch(e){}
             location.href = 'index.html'; return;
           }
-          showErr((res.j && res.j.error) || 'Não foi possível criar a conta.');
+          // erro de e-mail/CPF normalmente é do passo 1/2 — volta e mostra
+          var msg = (res.j && res.j.error) || 'Não foi possível criar a conta.';
+          if (/cpf/i.test(msg)) show(0);
+          else if (/mail/i.test(msg)) show(1);
+          showErr(msg);
         })
         .catch(function(e){ btn.disabled = false; btn.textContent = old; showErr('Falha de conexão: ' + e.message); });
     }
     btn.addEventListener('click', doReg);
-    $('pass').addEventListener('keydown', function(e){ if (e.key === 'Enter') doReg(); });
+
+    show(0);
   })();
   </script>
 </body>
