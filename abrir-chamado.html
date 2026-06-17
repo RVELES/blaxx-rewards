@@ -58,8 +58,8 @@
         <label for="anexo">Anexo (opcional)</label>
         <input id="anexo" type="file">
       </div>
-      <button class="btn btn--dark btn--block" onclick="document.getElementById('okmsg').classList.add('show');this.textContent='Chamado enviado ✓';this.disabled=true">Enviar chamado →</button>
-      <div class="ok" id="okmsg"><b>Chamado registrado!</b> Você receberá a confirmação por e-mail com o número do protocolo. Resposta em até 1 dia útil.</div>
+      <button class="btn btn--dark btn--block" id="btnChamado" type="button">Enviar chamado via WhatsApp →</button>
+      <div class="ok" id="okmsg"><b>Abrindo o WhatsApp…</b> Conclua o envio na conversa que abrir. Resposta em até 1 dia útil.</div>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:20px">
@@ -78,5 +78,28 @@
   </div>
 </main>
 <script src="chrome.js"></script>
+<script>
+(function(){
+  // TROCAR pelo número real (formato internacional, só dígitos): 55 + DDD + número
+  var WHATSAPP_NUMBER = '5511999999999';
+  var btn = document.getElementById('btnChamado');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    var cat = (document.getElementById('cat')||{}).value || '';
+    var assunto = (document.getElementById('assunto')||{}).value || '';
+    var desc = (document.getElementById('desc')||{}).value || '';
+    var sess = {}; try { sess = JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}; } catch(e){}
+    var who = (sess.user && (sess.user.name || sess.user.email)) ? ('\nCliente: ' + (sess.user.name||sess.user.email)) : '';
+    var txt = 'Olá! Abertura de chamado Blaxx Pontos.'
+      + '\nCategoria: ' + cat
+      + (assunto ? ('\nAssunto: ' + assunto) : '')
+      + (desc ? ('\n\n' + desc) : '')
+      + who;
+    var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(txt);
+    document.getElementById('okmsg').classList.add('show');
+    window.open(url, '_blank', 'noopener');
+  });
+})();
+</script>
 </body>
 </html>

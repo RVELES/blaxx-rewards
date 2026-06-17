@@ -1,119 +1,79 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
-<title>Recuperar senha | Blaxx Pontos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Blaxx">
-<meta name="mobile-web-app-capable" content="yes">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaxX · Recuperar senha</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: var(--chrome); min-height: 100vh; display: flex; flex-direction: column; }
+  .auth-top { display: flex; align-items: center; justify-content: space-between; padding: 22px 28px; }
+  .auth-top img { height: 40px; }
+  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: var(--chrome-fg-muted); }
+  .auth-top a.alt b { color: var(--lime); }
+  .auth-wrap { flex: 1; display: grid; place-items: center; padding: 24px; }
+  .auth { width: 100%; max-width: 420px; padding: 36px; animation: rise .5s var(--ease-out) both; }
+  .auth h1 { font-family: var(--font-display); font-weight: 900; font-size: 28px; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .auth .sub { font-size: 14px; color: var(--fg-muted); margin: 0 0 24px; }
+  .f { margin-bottom: 16px; }
+  .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
+  .f input { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 13px 14px; font-family: var(--font-body); font-size: 14.5px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
+  .f input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  .msg { font-size: 13px; padding: 11px 13px; border-radius: var(--r-sm); margin-bottom: 14px; }
+  .msg.ok { background: var(--lime-12); border: 1px solid var(--lime-40); color: var(--lime-deep); }
+  .msg.err { background: rgba(224,72,61,.08); border: 1px solid rgba(224,72,61,.3); color: #c0392b; }
+  .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--chrome-fg-muted); }
+  .auth-foot a { text-decoration: underline; }
+</style>
 </head>
 <body>
-<header class="topbar">
-    <nav class="nav">
-        <a href="index.html" class="brand">
-            <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-        </a>
-        <div class="links">
-            <a href="index.html" data-link="index">Início</a>
-            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
-            <a href="venda-pontos.html" data-link="venda-pontos">Vender pontos</a>
-        </div>
-        <div class="cta-row">
-            <a href="login.html" class="button ghost">Entrar</a>
-            <a href="cadastro.html" class="button">Cadastre-se</a>
-        </div>
-    </nav>
-</header>
-<div class="auth-wrap">
-<div class="auth-card">
-    <h2>Recuperar senha</h2>
-    <p class="sub">Informe o e-mail cadastrado e enviaremos um link para você criar uma nova senha.</p>
+  <div class="auth-top">
+    <a href="index.html"><img src="assets/blaxx-logo.png" alt="BLAXX Pontos"></a>
+    <a class="alt" href="login.html">Lembrou? <b>Entrar →</b></a>
+  </div>
 
-    <form id="form-recuperar" novalidate>
-        <div class="form-row">
-            <label for="email">E-mail cadastrado</label>
-            <input type="email" id="email" placeholder="voce@email.com" autocomplete="email" required>
-        </div>
-        <button type="submit" class="button full lg">Enviar link →</button>
-    </form>
+  <div class="auth-wrap">
+    <div class="card auth">
+      <h1>Recuperar senha.</h1>
+      <p class="sub">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+      <div id="msg" class="msg" style="display:none"></div>
+      <div class="f" id="formWrap">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" placeholder="voce@email.com" autocomplete="email">
+      </div>
+      <button id="btnSend" type="button" class="btn btn--dark btn--block">Enviar link de recuperação →</button>
+      <p style="font-size:12px;color:var(--fg-subtle);text-align:center;margin:16px 0 0">O link expira em 30 minutos.</p>
+    </div>
+  </div>
 
-    <div id="bx-state" class="alert info" style="margin-top:18px;">
-        <div class="alert-icon">i</div>
-        <div>
-            <p>Se o e-mail estiver cadastrado, você receberá uma mensagem em até 5 minutos. Confira também a pasta de spam.</p>
-        </div>
-    </div>
+  <div class="auth-foot">© 2026 BLAXX PONTOS · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
 
-    <div class="auth-foot">
-        Lembrou a senha? <a href="login.html">Voltar para entrar</a>
-    </div>
-</div>
-</div>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
-            </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="venda-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
-                <li><a href="meus-chamados.html">Meus chamados</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Documentos</a></li>
-                <li><a href="sitemap.html">Mapa do site</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
-    </div>
-</footer>
-<style>
-  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
-</style>
-<script src="assets/blaxx-config.js"></script>
-<script src="assets/blaxx-app.js"></script>
+  <script>
+  (function(){
+    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+    var $ = function(id){ return document.getElementById(id); };
+    var msg = $('msg'), btn = $('btnSend');
+    function show(type, text){ msg.className = 'msg ' + type; msg.textContent = text; msg.style.display = 'block'; }
+
+    function send(){
+      var email = $('email').value.trim();
+      if (!email){ show('err', 'Informe seu e-mail.'); return; }
+      btn.disabled = true; var old = btn.textContent; btn.textContent = 'Enviando…';
+      fetch(apiBase() + '/auth/forgot-password', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: email }) })
+        .then(function(r){ return r.json().catch(function(){ return {}; }); })
+        .then(function(){
+          // Resposta sempre 200 (anti-enumeração) — mensagem genérica.
+          show('ok', 'Se este e-mail estiver cadastrado, enviamos as instruções de redefinição. Verifique a caixa de entrada e o spam.');
+          $('formWrap').style.display = 'none';
+          btn.style.display = 'none';
+        })
+        .catch(function(e){ btn.disabled = false; btn.textContent = old; show('err', 'Falha de conexão: ' + e.message); });
+    }
+    btn.addEventListener('click', send);
+    $('email').addEventListener('keydown', function(e){ if (e.key === 'Enter') send(); });
+  })();
+  </script>
 </body>
 </html>

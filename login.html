@@ -46,13 +46,58 @@
       </div>
       <div class="row">
         <label style="display:flex;align-items:center;gap:7px;color:var(--fg-muted)"><input type="checkbox" checked style="accent-color:var(--lime-deep)"> Lembrar de mim</label>
-        <a href="ajuda.html">Esqueci a senha</a>
+        <a href="recuperar-senha.html">Esqueci a senha</a>
       </div>
-      <a href="index.html" class="btn btn--dark btn--block">Entrar →</a>
+      <div class="f" id="mfaWrap" style="display:none">
+        <label for="mfaCode">Código de verificação (2FA)</label>
+        <input id="mfaCode" type="text" inputmode="numeric" placeholder="000000" autocomplete="one-time-code">
+      </div>
+      <div id="loginErr" style="display:none;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.3);color:#c0392b;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin-bottom:14px"></div>
+      <button id="btnLogin" type="button" class="btn btn--dark btn--block">Entrar →</button>
       <p style="font-size:12px;color:var(--fg-subtle);text-align:center;margin:16px 0 0">Protegido por verificação em duas etapas (2FA).</p>
     </div>
   </div>
 
   <div class="auth-foot">© 2026 BLAXX PONTOS · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
+
+  <script>
+  (function(){
+    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+    var $ = function(id){ return document.getElementById(id); };
+    var err = $('loginErr'), btn = $('btnLogin');
+    function showErr(m){ err.textContent = m; err.style.display = 'block'; }
+    function clearErr(){ err.style.display = 'none'; }
+
+    // Se já está logado, vai direto pro app.
+    try { if ((JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token) location.replace('index.html'); } catch(e){}
+
+    function doLogin(){
+      clearErr();
+      var id = $('email').value.trim(), pw = $('pass').value;
+      if (!id || !pw){ showErr('Informe e-mail/CPF e senha.'); return; }
+      var body = { email: id, password: pw };
+      var mfa = $('mfaCode'); if (mfa && mfa.value.trim()) body.mfa_code = mfa.value.trim();
+      btn.disabled = true; var old = btn.textContent; btn.textContent = 'Entrando…';
+      fetch(apiBase() + '/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+        .then(function(r){ return r.json().then(function(j){ return { s:r.status, j:j }; }); })
+        .then(function(res){
+          btn.disabled = false; btn.textContent = old;
+          if (res.s === 200 && res.j.token){
+            try { localStorage.setItem('blaxx_session', JSON.stringify(res.j)); } catch(e){}
+            location.href = 'index.html'; return;
+          }
+          if (res.s === 401 && res.j.mfa_required){ $('mfaWrap').style.display='block'; showErr('Informe o código de verificação (2FA).'); return; }
+          if (res.j && res.j.mfa_challenge_token){ showErr('2FA por SMS ativo — conclua pelo app oficial.'); return; }
+          if (res.s === 423){ showErr(res.j.error || 'Conta bloqueada temporariamente. Tente mais tarde.'); return; }
+          showErr((res.j && res.j.error) || 'Não foi possível entrar.');
+        })
+        .catch(function(e){ btn.disabled = false; btn.textContent = old; showErr('Falha de conexão: ' + e.message); });
+    }
+    btn.addEventListener('click', doLogin);
+    $('pass').addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
+    var mfaEl = $('mfaCode'); if (mfaEl) mfaEl.addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
+  })();
+  </script>
 </body>
 </html>

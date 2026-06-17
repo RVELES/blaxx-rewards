@@ -47,6 +47,10 @@
         <input id="email" type="email" placeholder="voce@email.com" autocomplete="email">
       </div>
       <div class="f">
+        <label for="cpf">CPF</label>
+        <input id="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00" autocomplete="off">
+      </div>
+      <div class="f">
         <label for="cel">Celular</label>
         <input id="cel" type="tel" placeholder="(11) 9 0000-0000" autocomplete="tel">
       </div>
@@ -54,11 +58,55 @@
         <label for="pass">Senha</label>
         <input id="pass" type="password" placeholder="Mínimo 7 caracteres" autocomplete="new-password" minlength="7">
       </div>
-      <p class="legal">Ao criar a conta, você concorda com os <a href="termos.html">termos de uso</a>, as <a href="regras-pontos.html">regras de pontos</a> e a <a href="privacidade.html">política de privacidade</a>.</p>
-      <a href="index.html" class="btn btn--dark btn--block">Criar conta e ganhar 500 pts →</a>
+      <label class="legal" style="display:flex;gap:9px;align-items:flex-start;cursor:pointer">
+        <input id="accept" type="checkbox" style="accent-color:var(--lime-deep);margin-top:2px">
+        <span>Li e aceito os <a href="termos.html">termos de uso</a>, as <a href="regras-pontos.html">regras de pontos</a> e a <a href="privacidade.html">política de privacidade</a> (LGPD).</span>
+      </label>
+      <div id="regErr" style="display:none;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.3);color:#c0392b;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin:0 0 14px"></div>
+      <button id="btnReg" type="button" class="btn btn--dark btn--block">Criar conta grátis →</button>
     </div>
   </div>
 
   <div class="auth-foot">© 2026 BLAXX PONTOS · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
+
+  <script>
+  (function(){
+    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+    var $ = function(id){ return document.getElementById(id); };
+    var err = $('regErr'), btn = $('btnReg');
+    function showErr(m){ err.textContent = m; err.style.display = 'block'; }
+    function clearErr(){ err.style.display = 'none'; }
+
+    try { if ((JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token) location.replace('index.html'); } catch(e){}
+
+    function doReg(){
+      clearErr();
+      var name = $('nome').value.trim(), email = $('email').value.trim();
+      var cpf = $('cpf').value.trim(), phone = $('cel').value.trim(), pw = $('pass').value;
+      if (name.split(/\s+/).filter(Boolean).length < 2){ showErr('Informe nome e sobrenome.'); return; }
+      if (!email){ showErr('Informe o e-mail.'); return; }
+      if (!cpf){ showErr('Informe o CPF.'); return; }
+      if (!pw || pw.length < 7){ showErr('A senha precisa ter no mínimo 7 caracteres.'); return; }
+      if (!$('accept').checked){ showErr('Você precisa aceitar os termos e a LGPD.'); return; }
+      var body = { name:name, email:email, cpf:cpf, password:pw, accept_terms:true, accept_privacy:true, accept_lgpd:true };
+      if (phone) body.phone = phone;
+      btn.disabled = true; var old = btn.textContent; btn.textContent = 'Criando conta…';
+      fetch(apiBase() + '/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+        .then(function(r){ return r.json().then(function(j){ return { s:r.status, j:j }; }); })
+        .then(function(res){
+          btn.disabled = false; btn.textContent = old;
+          if (res.s === 201 && res.j.token){
+            try { localStorage.setItem('blaxx_session', JSON.stringify(res.j)); } catch(e){}
+            location.href = 'index.html'; return;
+          }
+          showErr((res.j && res.j.error) || 'Não foi possível criar a conta.');
+        })
+        .catch(function(e){ btn.disabled = false; btn.textContent = old; showErr('Falha de conexão: ' + e.message); });
+    }
+    btn.addEventListener('click', doReg);
+    $('pass').addEventListener('keydown', function(e){ if (e.key === 'Enter') doReg(); });
+  })();
+  </script>
 </body>
 </html>

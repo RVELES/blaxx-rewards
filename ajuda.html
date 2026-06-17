@@ -85,7 +85,10 @@
     <div class="card">
       <h3>＋ Abrir um chamado</h3>
       <p>Não encontrou a resposta? Fale com nossa equipe. Resposta em até <b>1 dia útil</b>.</p>
-      <a href="abrir-chamado.html" class="btn btn--dark">Abrir chamado →</a>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="abrir-chamado.html" class="btn btn--dark">Abrir chamado →</a>
+        <a id="waAjuda" href="#" target="_blank" rel="noopener" class="btn btn--outline">💬 WhatsApp</a>
+      </div>
     </div>
     <div class="card">
       <h3>📄 Documentos e regras</h3>
@@ -95,5 +98,13 @@
   </div>
 </main>
 <script src="chrome.js"></script>
+<script>
+(function(){
+  // TROCAR pelo número real (formato internacional, só dígitos): 55 + DDD + número
+  var WHATSAPP_NUMBER = '5511999999999';
+  var a = document.getElementById('waAjuda');
+  if (a) a.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent('Olá! Preciso de ajuda com a Blaxx Pontos.');
+})();
+</script>
 </body>
 </html>

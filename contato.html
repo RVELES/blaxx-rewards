@@ -89,15 +89,34 @@
                     <input type="checkbox" id="lgpd" checked>
                     <label for="lgpd">Concordo com o tratamento dos meus dados conforme a <a href="termos.html" style="color:var(--ink);font-weight:700;">política de privacidade</a>.</label>
                 </div>
-                <button class="button full lg">Enviar pedido →</button>
+                <button class="button full lg" id="btnContato" type="button">Enviar pedido via WhatsApp →</button>
             </form>
+            <script>
+            (function(){
+              // TROCAR pelo número real (formato internacional, só dígitos): 55 + DDD + número
+              var WHATSAPP_NUMBER = '5511999999999';
+              function waUrl(text){ return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text); }
+              var link = document.getElementById('waLink');
+              if (link) link.href = waUrl('Olá! Tenho interesse comercial na Blaxx Pontos.');
+              var btn = document.getElementById('btnContato');
+              if (btn) btn.addEventListener('click', function(){
+                var form = btn.closest('form');
+                var msg = form ? (form.querySelector('textarea') || {}).value : '';
+                var email = form ? (form.querySelector('input[type=email]') || {}).value : '';
+                var txt = 'Olá! Tenho interesse comercial na Blaxx Pontos.'
+                  + (email ? ('\nE-mail: ' + email) : '')
+                  + (msg ? ('\n\n' + msg) : '');
+                window.open(waUrl(txt), '_blank', 'noopener');
+              });
+            })();
+            </script>
         </div>
 
         <div class="summary-card">
             <h3>Outras formas de contato</h3>
             <div class="dl mt-2">
                 <div><span class="k">E-mail comercial</span><span class="v">comercial@blaxxpontos.com.br</span></div>
-                <div><span class="k">WhatsApp</span><span class="v">(11) 4000-0000</span></div>
+                <div><span class="k">WhatsApp</span><span class="v"><a id="waLink" href="#" target="_blank" rel="noopener" style="color:var(--ink);font-weight:700;text-decoration:underline">Falar no WhatsApp →</a></span></div>
                 <div><span class="k">Endereço</span><span class="v">Av. Faria Lima, 1234<br>São Paulo, SP</span></div>
             </div>
 
