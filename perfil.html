@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Perfil</title>
+<title>BlaXx · Perfil</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 20px; align-items: start; }
@@ -25,7 +25,7 @@
   .pref + .pref { border-top: 1px solid var(--line); }
   .pref .t { font-weight: 700; font-size: 14px; }
   .pref .s { font-size: 12.5px; color: var(--fg-muted); }
-  .switch { position: relative; width: 46px; height: 26px; border-radius: 99px; background: rgba(14,15,11,0.12); border: none; transition: background .25s var(--ease); flex-shrink: 0; }
+  .switch { position: relative; width: 46px; height: 26px; border-radius: 99px; background: rgba(14,15,11,0.12); border: none; transition: background .25s var(--ease); flex-shrink: 0; cursor:pointer; }
   .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--white); box-shadow: var(--sh-1); transition: transform .25s var(--ease); }
   .switch.on { background: var(--lime); }
   .switch.on::after { transform: translateX(20px); }
@@ -42,14 +42,14 @@
 
   <div class="grid">
     <div class="card me">
-      <div class="me__av">R</div>
-      <div class="me__name">Ricardo Veles</div>
-      <div class="me__mail">ricardo.veles@email.com</div>
-      <span class="chip chip--ink" style="margin-top:12px">PLANO PLUS</span>
+      <div class="me__av" id="meAv">?</div>
+      <div class="me__name" id="meName">—</div>
+      <div class="me__mail" id="meMail">—</div>
+      <span class="chip chip--ink" id="mePlan" style="margin-top:12px">—</span>
       <div class="me__stats">
-        <div><div class="v">32.480</div><div class="l">Pontos</div></div>
-        <div><div class="v">14</div><div class="l">Resgates</div></div>
-        <div><div class="v">6</div><div class="l">Indicações</div></div>
+        <div><div class="v" id="stPoints">—</div><div class="l">Pontos</div></div>
+        <div><div class="v" id="stPending">—</div><div class="l">Pendentes</div></div>
+        <div><div class="v" id="stBrl">—</div><div class="l">Em R$</div></div>
       </div>
       <a href="seguranca.html" class="btn btn--outline btn--block" style="margin-top:22px">Configurações de segurança →</a>
     </div>
@@ -57,11 +57,11 @@
     <div style="display:flex;flex-direction:column;gap:20px">
       <div class="card panel">
         <h2 class="panel__title">Dados pessoais</h2>
-        <div class="field"><div><div class="k">Nome completo</div><div class="v">Ricardo Veles</div></div><button class="btn btn--sm btn--outline">Editar</button></div>
-        <div class="field"><div><div class="k">E-mail</div><div class="v">ricardo.veles@email.com</div></div><button class="btn btn--sm btn--outline">Editar</button></div>
-        <div class="field"><div><div class="k">Celular</div><div class="v">+55 (11) 9 ****-4321</div></div><button class="btn btn--sm btn--outline">Editar</button></div>
-        <div class="field"><div><div class="k">CPF</div><div class="v">***.***.918-**</div></div><span class="chip">VERIFICADO ✓</span></div>
-        <div class="field"><div><div class="k">Chave Pix p/ resgates</div><div class="v">ricardo.veles@email.com</div></div><button class="btn btn--sm btn--outline">Alterar</button></div>
+        <div class="field"><div><div class="k">Nome completo</div><div class="v" id="fNome">—</div></div></div>
+        <div class="field"><div><div class="k">E-mail</div><div class="v" id="fEmail">—</div></div><span class="chip" id="fEmailV">—</span></div>
+        <div class="field"><div><div class="k">Celular</div><div class="v" id="fCel">—</div></div></div>
+        <div class="field"><div><div class="k">CPF</div><div class="v" id="fCpf">—</div></div></div>
+        <div class="field"><div><div class="k">Chave Pix p/ resgates</div><div class="v" id="fPix">—</div></div></div>
       </div>
 
       <div class="card panel">
@@ -73,11 +73,62 @@
 
       <div class="card panel" style="border-color:rgba(226,83,59,0.25)">
         <h2 class="panel__title" style="color:var(--neg)">Zona de risco</h2>
+        <div class="pref"><div><div class="t">Sair da conta</div><div class="s">Encerra a sessão neste dispositivo.</div></div><button id="btnLogout" class="btn btn--sm btn--outline">Sair</button></div>
         <div class="pref"><div><div class="t">Excluir minha conta</div><div class="s">Remove dados pessoais conforme a LGPD. Pontos remanescentes são perdidos.</div></div><a href="abrir-chamado.html" class="btn btn--sm btn--outline">Solicitar</a></div>
       </div>
     </div>
   </div>
 </main>
 <script src="chrome.js"></script>
+<script>
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function H(){ var t=token(); return t? {Authorization:'Bearer '+t} : {}; }
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
+  var brl = function(v){ return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
+
+  if (!token()) { location.href = 'login.html'; return; }
+
+  function maskCpf(c){ c=(c||'').replace(/\D/g,''); if(c.length!==11) return c||'—'; return '***.***.'+c.slice(6,9)+'-**'; }
+  function maskPhone(p){ if(!p) return '—'; var d=(''+p).replace(/\D/g,''); if(d.length<4) return p; return '+'+d.slice(0,2)+' (••) ••••-'+d.slice(-4); }
+
+  function fill(u, w){
+    if (u){
+      $('meAv').textContent = (u.name||'?').trim()[0].toUpperCase();
+      $('meName').textContent = u.name || '—';
+      $('meMail').textContent = u.email || '—';
+      $('fNome').textContent = u.name || '—';
+      $('fEmail').textContent = u.email || '—';
+      $('fEmailV').textContent = (u.email_verified || u.email_verified_at) ? 'VERIFICADO ✓' : 'NÃO VERIFICADO';
+      $('fCel').textContent = maskPhone(u.phone);
+      $('fCpf').textContent = maskCpf(u.cpf);
+      $('fPix').textContent = u.pix_key || u.email || '—';
+      $('mePlan').textContent = u.is_vip ? 'CLIENTE VIP' : 'CLIENTE';
+    }
+    if (w){
+      $('stPoints').textContent = fmt(w.balance_pts);
+      $('stPending').textContent = fmt(w.pending_pts);
+      $('stBrl').textContent = brl(w.balance_brl_equiv);
+    }
+  }
+
+  // sessão tem o user; busca /auth/me p/ dados frescos.
+  var sUser = null; try { sUser = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user; } catch(e){}
+  if (sUser) fill(sUser, null);
+
+  Promise.all([
+    fetch(apiBase()+'/auth/me', {headers:H()}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch(apiBase()+'/wallet/', {headers:H()}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+  ]).then(function(res){ fill(res[0]||sUser, res[1]); });
+
+  $('btnLogout').addEventListener('click', function(){
+    try { localStorage.removeItem('blaxx_session'); } catch(e){}
+    location.href = 'login.html';
+  });
+})();
+</script>
 </body>
 </html>

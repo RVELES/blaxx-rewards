@@ -1,5 +1,5 @@
 /* ==========================================================================
- * Blaxx Pontos - integracao das telas estaticas com o backend Flask.
+ * BlaXx - integracao das telas estaticas com o backend Flask.
  *
  * Detecta a pagina atual e instala a logica de cada fluxo, mantendo o
  * visual original intacto. Inclua este arquivo no final do <body> com:
@@ -328,7 +328,7 @@
     var bar = document.createElement('div');
     bar.id = 'bx-setpwd-banner';
     bar.style.cssText =
-      'position:sticky;top:0;z-index:50;background:#0B1820;color:#C6F432;' +
+      'position:sticky;top:0;z-index:50;background:#0B1820;color:#7CFF00;' +
       'padding:10px 16px;display:flex;align-items:center;gap:12px;' +
       'font-size:13px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12);';
     bar.innerHTML =
@@ -336,9 +336,9 @@
         '🔑 Sua conta entra via Google. ' +
         '<strong style="color:#fff;">Defina uma senha</strong> para também usar o app do Windows.' +
       '</span>' +
-      '<button id="bx-setpwd-cta" style="background:#C6F432;color:#0B1820;border:0;padding:7px 14px;' +
+      '<button id="bx-setpwd-cta" style="background:#7CFF00;color:#0B1820;border:0;padding:7px 14px;' +
         'border-radius:18px;font-weight:700;cursor:pointer;font-size:12px;">Definir senha →</button>' +
-      '<button id="bx-setpwd-later" style="background:transparent;color:#C6F432;border:1px solid rgba(198,244,50,.3);' +
+      '<button id="bx-setpwd-later" style="background:transparent;color:#7CFF00;border:1px solid rgba(124,255,0,.3);' +
         'padding:6px 10px;border-radius:18px;cursor:pointer;font-size:12px;">Mais tarde</button>';
     document.body.insertBefore(bar, document.body.firstChild);
 
@@ -1448,7 +1448,7 @@
     fab.innerHTML = '⊞';
     fab.style.cssText =
       'position:fixed;bottom:20px;left:20px;z-index:8000;width:56px;height:56px;' +
-      'background:#080907;color:#C6F432;border:0;border-radius:50%;font-size:24px;' +
+      'background:#080907;color:#7CFF00;border:0;border-radius:50%;font-size:24px;' +
       'box-shadow:0 12px 32px rgba(0,0,0,.18);cursor:pointer;';
     fab.addEventListener('click', function () {
       window.blaxxScanQR(function (code) {
@@ -1898,7 +1898,7 @@
           + '<div style="font-size:20px;">' + (p.logo_emoji || '◯') + ' <strong>' + p.name + '</strong></div>'
           + '<div style="color:#888;font-size:13px;margin-top:4px;">' + p.category + '</div>'
           + '<div style="margin-top:8px;font-size:14px;">' + (p.description || '') + '</div>'
-          + '<div style="margin-top:10px;background:#F0FAD9;color:#8FB81F;padding:6px 10px;border-radius:6px;display:inline-block;font-size:12px;font-weight:600;">'
+          + '<div style="margin-top:10px;background:#F0FAD9;color:#5AB800;padding:6px 10px;border-radius:6px;display:inline-block;font-size:12px;font-weight:600;">'
           + (p.accrual_rule || '') + '</div></div>';
       }).join('');
       var container = $('#bx-parceiros-list') || grid;
@@ -1917,7 +1917,7 @@
       if (!container) return;
       container.innerHTML = items.map(function (b) {
         return '<div class="bx-benefit-card" data-id="' + b.id + '" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;cursor:pointer;">'
-          + (b.tag ? '<span style="background:#F0FAD9;color:#8FB81F;padding:2px 8px;border-radius:4px;font-size:11px;">' + b.tag + '</span>' : '')
+          + (b.tag ? '<span style="background:#F0FAD9;color:#5AB800;padding:2px 8px;border-radius:4px;font-size:11px;">' + b.tag + '</span>' : '')
           + '<div style="font-size:28px;margin-top:6px;">' + (b.image_emoji || '★') + '</div>'
           + '<strong>' + b.name + '</strong>'
           + (b.partner_name ? '<div style="color:#888;font-size:12px;">' + b.partner_name + '</div>' : '')
@@ -1977,11 +1977,11 @@
       container.innerHTML = items.map(function (c) {
         var pct = c.progress_pct || 0;
         return '<div class="bx-camp-card" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;">'
-          + (c.completed_at ? '<span style="color:#8FB81F">✓ Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
+          + (c.completed_at ? '<span style="color:#5AB800">✓ Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
           + '<h3>' + c.name + '</h3>'
           + '<p>' + (c.description || '') + '</p>'
           + '<p style="color:#888;font-size:12px;">' + (c.mechanic || '') + '</p>'
-          + (c.joined ? '<div style="height:8px;background:#eee;border-radius:99px;"><div style="height:100%;width:' + pct + '%;background:#C6F432;border-radius:99px;"></div></div><small>' + pct + '%</small>' : '')
+          + (c.joined ? '<div style="height:8px;background:#eee;border-radius:99px;"><div style="height:100%;width:' + pct + '%;background:#7CFF00;border-radius:99px;"></div></div><small>' + pct + '%</small>' : '')
           + '<p><strong>Bônus:</strong> ' + fmt(c.reward_pts) + ' pts</p>'
           + (c.completed_at ? '' : c.joined
               ? '<button class="bx-camp-progress" data-id="' + c.id + '">Simular gasto R$ 100</button>'
@@ -2030,9 +2030,9 @@
       if (!items.length) { container.innerHTML = '<p>Sem notificações.</p>'; return; }
       container.innerHTML = items.map(function (n) {
         return '<div class="bx-notif" data-id="' + n.id + '" style="padding:12px;border-bottom:1px solid #eee;'
-          + (n.is_read ? '' : 'background:rgba(198,244,50,0.06);')
+          + (n.is_read ? '' : 'background:rgba(124,255,0,0.06);')
           + 'cursor:pointer;">'
-          + '<div style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#0A0A0A;color:#C6F432;text-align:center;line-height:32px;">' + (n.icon || '!') + '</div> '
+          + '<div style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#0A0A0A;color:#7CFF00;text-align:center;line-height:32px;">' + (n.icon || '!') + '</div> '
           + '<strong>' + n.title + (n.is_read ? '' : ' •') + '</strong>'
           + '<p style="margin:4px 0 0;color:#888;font-size:13px;">' + (n.body || '') + '</p>'
           + '</div>';
@@ -2385,7 +2385,7 @@
     var hint = opts.hint || 'Verifique sua conexao e tente de novo.';
     var btnId = 'bx-retry-' + Math.random().toString(36).slice(2, 8);
     var btn = '<button type="button" id="' + btnId + '" ' +
-      'style="background:var(--lime,#C6F432);color:var(--ink,#080907);border:0;padding:10px 20px;' +
+      'style="background:var(--lime,#7CFF00);color:var(--ink,#080907);border:0;padding:10px 20px;' +
       'border-radius:999px;font-weight:700;cursor:pointer;margin-top:14px;font-size:13px;">' +
       '↻ Tentar novamente</button>';
     var body =
@@ -2488,7 +2488,7 @@
         });
         // Descricao
         document.querySelectorAll('[data-bx-partner-description]').forEach(function (el) {
-          el.textContent = p.description || 'Parceiro Blaxx Pontos.';
+          el.textContent = p.description || 'Parceiro BlaXx.';
         });
         // Regra de acumulo
         document.querySelectorAll('[data-bx-partner-rule]').forEach(function (el) {
@@ -2509,7 +2509,7 @@
           }
         }
         // Atualiza title da pagina
-        document.title = (p.name || 'Parceiro') + ' | Blaxx Pontos';
+        document.title = (p.name || 'Parceiro') + ' | BlaXx';
       })
       .catch(function (err) {
         document.querySelectorAll('[data-bx-partner-name]').forEach(function (el) {

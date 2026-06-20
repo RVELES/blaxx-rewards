@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Indique e ganhe</title>
+<title>BlaXx · Indique e ganhe</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .page-head { margin-bottom: 24px; }
@@ -63,12 +63,12 @@
       <h2>Seu código de convite</h2>
       <p>Cada amigo que entrar e fizer a primeira compra rende <b>5.000 pts</b> pra você — e <b>2.500 pts</b> pra ele.</p>
       <div class="code-box">
-        <span class="code">RICARDO5K</span>
+        <span class="code" id="refCode">—</span>
         <button class="btn btn--primary btn--sm" id="copyBtn">Copiar</button>
       </div>
       <div class="share">
-        <button class="btn btn--ghost-dark">Compartilhar link →</button>
-        <button class="btn btn--ghost-dark">WhatsApp</button>
+        <button class="btn btn--ghost-dark" id="shareBtn">Compartilhar link →</button>
+        <button class="btn btn--ghost-dark" id="waBtn">WhatsApp</button>
       </div>
     </div>
     <div class="card reward-big">
@@ -100,7 +100,7 @@
       <div class="ms-node done" style="left:22%"><div class="ms-dot">3</div><span class="ms-cap">+2k bônus</span></div>
       <div class="ms-node current" style="left:44%"><div class="ms-dot">5</div><span class="ms-cap">Plano Plus grátis</span></div>
       <div class="ms-node" style="left:72%"><div class="ms-dot">8</div><span class="ms-cap">+10k bônus</span></div>
-      <div class="ms-node" style="left:100%"><div class="ms-dot">10</div><span class="ms-cap">Embaixador BlaxX</span></div>
+      <div class="ms-node" style="left:100%"><div class="ms-dot">10</div><span class="ms-cap">Embaixador BlaXx</span></div>
     </div>
   </div>
 
@@ -117,7 +117,45 @@
 </main>
 <script src="chrome.js"></script>
 <script>
-  document.getElementById('copyBtn').addEventListener('click', function(){ this.textContent='Copiado ✓'; setTimeout(()=>this.textContent='Copiar',1600); });
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  var $ = function(id){ return document.getElementById(id); };
+  var SITE = 'https://blaxx-pontos-app.netlify.app';
+
+  function deriveCode(u){
+    if (u && u.referral_code) return u.referral_code;
+    var base = (u && (u.name||'')).split(/\s+/)[0] || 'BLAXX';
+    var id = (u && u.id) ? (''+u.id).replace(/[^a-zA-Z0-9]/g,'').slice(-4).toUpperCase() : '';
+    return (base.toUpperCase().slice(0,8) + id);
+  }
+  var code = 'BLAXX', link = SITE + '/cadastro';
+  function setCode(c){ code = c; link = SITE + '/cadastro?ref=' + encodeURIComponent(c); $('refCode').textContent = c; }
+
+  // tenta usar o usuário logado p/ um código real
+  var sUser = null; try { sUser = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user; } catch(e){}
+  if (sUser) setCode(deriveCode(sUser));
+  if (token()){
+    fetch(apiBase()+'/auth/me', {headers:{Authorization:'Bearer '+token()}})
+      .then(function(r){ return r.ok?r.json():null; })
+      .then(function(u){ if(u) setCode(deriveCode(u)); })
+      .catch(function(){});
+  } else if (!sUser) { setCode('BLAXX'); }
+
+  var shareText = function(){ return 'Use meu código '+code+' no BlaXx e ganhe pontos de boas-vindas! '+link; };
+
+  $('copyBtn').addEventListener('click', function(){
+    navigator.clipboard.writeText(code + ' · ' + link).then(function(){ $('copyBtn').textContent='Copiado ✓'; setTimeout(function(){$('copyBtn').textContent='Copiar';},1600); });
+  });
+  $('shareBtn').addEventListener('click', function(){
+    if (navigator.share){ navigator.share({ title:'BlaXx', text:'Use meu código '+code, url:link }).catch(function(){}); }
+    else { navigator.clipboard.writeText(link).then(function(){ $('shareBtn').textContent='Link copiado ✓'; setTimeout(function(){$('shareBtn').textContent='Compartilhar link →';},1600); }); }
+  });
+  $('waBtn').addEventListener('click', function(){
+    window.open('https://wa.me/?text='+encodeURIComponent(shareText()), '_blank', 'noopener');
+  });
+})();
 </script>
 </body>
 </html>

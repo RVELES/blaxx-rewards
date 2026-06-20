@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Blaxx Pontos — Design System v2
+   BlaXx — Design System v2
    Paleta: preto, branco, verde-limão | Fonte: Inter | 100% HTML+CSS
    ========================================================================== */
 
@@ -14,13 +14,13 @@
     --bg: #f6f8f2;
     --bg-warm: #fafcf3;
     --card: #ffffff;
-    /* Verde-limão oficial do logo BlaxX — alinhado com Mac/iOS Theme.swift
+    /* Verde-limão oficial do logo BlaXx — alinhado com Mac/iOS Theme.swift
        e renderer design-system.css. */
-    --lime: #C6F432;
-    --lime-2: #d8ff75;
+    --lime: #7CFF00;
+    --lime-2: #A8FF4D;
     --lime-soft: #F0FAD9;
     --lime-bg: #f5fbe2;
-    --lime-dark: #8FB81F;
+    --lime-dark: #5AB800;
     --ok: #efffe6;
     --ok-text: #2d651b;
     --warn: #fff7df;
@@ -169,9 +169,9 @@ a[aria-current="page"] {
     font-size: 28px;          /* era 17px — 2x para destaque */
     text-decoration: none;
 }
-/* Brand mark "BlaxX" — quadrado preto com texto lime, identidade oficial
+/* Brand mark "BlaXx" — quadrado preto com texto lime, identidade oficial
    (mesmo padrão do AppIcon do Mac/iOS). Aceita filho com a letra "B" simples
-   (legado, virou texto "BlaxX") ou o texto "BlaxX" diretamente dentro.
+   (legado, virou texto "BlaXx") ou o texto "BlaXx" diretamente dentro.
    Tamanho 2x (era 36px → 72px) atendendo pedido de "logo 2x maior". */
 .mark {
     min-width: 128px;
@@ -2300,7 +2300,7 @@ html[data-auth-loading] body::after {
     width: 32px; height: 32px;
     margin: -16px 0 0 -16px;
     border: 3px solid rgba(0,0,0,0.10);
-    border-top-color: var(--lime, #C6F432);
+    border-top-color: var(--lime, #7CFF00);
     border-radius: 50%;
     animation: bx-auth-spin 0.8s linear infinite;
     z-index: 100000;

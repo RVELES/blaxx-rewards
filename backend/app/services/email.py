@@ -101,7 +101,7 @@ def _wrap(title: str, body: str, cta_text: str | None, cta_url: str | None) -> s
     cfg = current_app.config["_CONFIG"]
     cta = (
         f'<p style="text-align:center;margin:24px 0;">'
-        f'<a href="{cta_url}" style="background:#0B1820;color:#C6F432;padding:12px 24px;'
+        f'<a href="{cta_url}" style="background:#0B1820;color:#7CFF00;padding:12px 24px;'
         f'border-radius:24px;text-decoration:none;font-weight:600;">{cta_text}</a></p>'
         if cta_text and cta_url
         else ""
@@ -120,21 +120,21 @@ Se voce nao solicitou este email, pode ignora-lo com seguranca.<br>
 
 
 def send_verification_email(to: str, name: str, link: str) -> None:
-    subject = "Confirme seu email no Blaxx Pontos"
+    subject = "Confirme seu email no BlaXx"
     body_html = (
         f"<p>Ola {name},</p>"
         f"<p>Para ativar sua conta, clique no botao abaixo. O link expira em 24 horas.</p>"
     )
     body_text = (
         f"Ola {name},\n\n"
-        f"Para ativar sua conta no Blaxx Pontos, abra este link (expira em 24h):\n{link}\n\n"
+        f"Para ativar sua conta no BlaXx, abra este link (expira em 24h):\n{link}\n\n"
         "Se voce nao se cadastrou, ignore este email.\n"
     )
     _send(to, subject, _wrap("Confirme seu email", body_html, "Confirmar email", link), body_text)
 
 
 def send_password_reset_email(to: str, name: str, link: str) -> None:
-    subject = "Recuperacao de senha — Blaxx Pontos"
+    subject = "Recuperacao de senha — BlaXx"
     body_html = (
         f"<p>Ola {name},</p>"
         f"<p>Recebemos um pedido de redefinicao de senha. Clique no botao abaixo para "
@@ -142,14 +142,14 @@ def send_password_reset_email(to: str, name: str, link: str) -> None:
     )
     body_text = (
         f"Ola {name},\n\n"
-        f"Para redefinir sua senha do Blaxx Pontos, abra este link (expira em 1h):\n{link}\n\n"
+        f"Para redefinir sua senha do BlaXx, abra este link (expira em 1h):\n{link}\n\n"
         "Se voce nao solicitou, ignore este email — sua senha continua a mesma.\n"
     )
     _send(to, subject, _wrap("Redefinir senha", body_html, "Redefinir senha", link), body_text)
 
 
 def send_password_changed_email(to: str, name: str) -> None:
-    subject = "Sua senha foi alterada — Blaxx Pontos"
+    subject = "Sua senha foi alterada — BlaXx"
     body_html = (
         f"<p>Ola {name},</p>"
         f"<p>Sua senha foi alterada agora. Se nao foi voce, recupere o acesso "
@@ -164,7 +164,7 @@ def send_password_changed_email(to: str, name: str) -> None:
 
 def send_email_changed_email(to_old: str, to_new: str, name: str, link: str) -> None:
     """Notifica email antigo + envia confirmacao ao novo email."""
-    subject_new = "Confirme seu novo email — Blaxx Pontos"
+    subject_new = "Confirme seu novo email — BlaXx"
     body_new_html = (
         f"<p>Ola {name},</p>"
         f"<p>Voce solicitou alterar o email do seu cadastro. Clique no botao para confirmar. "
@@ -177,7 +177,7 @@ def send_email_changed_email(to_old: str, to_new: str, name: str, link: str) -> 
     )
     _send(to_new, subject_new, _wrap("Confirmar novo email", body_new_html, "Confirmar", link), body_new_text)
 
-    subject_old = "Solicitacao de troca de email — Blaxx Pontos"
+    subject_old = "Solicitacao de troca de email — BlaXx"
     body_old_html = (
         f"<p>Ola {name},</p>"
         f"<p>Recebemos um pedido para trocar o email da sua conta. Se nao foi voce, "

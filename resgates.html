@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Resgates</title>
+<title>BlaXx · Resgates</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .page-head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom: 24px; }
@@ -12,41 +12,38 @@
   .bal-pill .l { font-family: var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color: var(--fg-on-dark-muted); }
 
   .vtabs { display:flex; gap:6px; background: var(--white); border:1px solid var(--line); padding:5px; border-radius: var(--r-pill); width:max-content; margin-bottom: 20px; }
-  .vtabs button { border:0; background:transparent; font-weight:700; font-size:13.5px; color: var(--fg-muted); padding:9px 20px; border-radius: var(--r-pill); transition: all .18s var(--ease); }
+  .vtabs button { border:0; background:transparent; font-weight:700; font-size:13.5px; color: var(--fg-muted); padding:9px 20px; border-radius: var(--r-pill); transition: all .18s var(--ease); cursor:pointer; }
   .vtabs button.on { background: var(--ink); color: var(--lime); }
 
   .chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 22px; }
-  .fchip { border:1px solid var(--line); background: var(--white); color: var(--fg-muted); font-weight:700; font-size:13px; padding:8px 16px; border-radius: var(--r-pill); transition: all .16s var(--ease); }
+  .fchip { border:1px solid var(--line); background: var(--white); color: var(--fg-muted); font-weight:700; font-size:13px; padding:8px 16px; border-radius: var(--r-pill); cursor:pointer; transition: all .16s var(--ease); }
   .fchip.on { background: var(--lime); border-color: var(--lime); color: var(--ink); }
   .fchip:hover:not(.on) { border-color: var(--line-strong); color: var(--fg); }
 
   .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .rw { padding: 18px; display:flex; flex-direction:column; transition: transform .22s var(--ease), box-shadow .22s var(--ease); }
   .rw:hover { transform: translateY(-4px); box-shadow: var(--sh-3); }
-  .rw__img { height: 130px; border-radius: var(--r-md); display:grid; place-items:center; font-family: var(--font-display); font-weight:900; font-size: 30px; margin-bottom: 16px; position: relative; overflow:hidden; }
+  .rw__img { height: 130px; border-radius: var(--r-md); display:grid; place-items:center; font-size: 46px; margin-bottom: 16px; position: relative; overflow:hidden; background: var(--lime-12); }
   .rw__cat { position:absolute; top:12px; left:12px; font-family: var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background: rgba(255,255,255,.85); color: var(--ink); padding:4px 9px; border-radius: var(--r-pill); }
   .rw__name { font-weight:800; font-size: 15.5px; letter-spacing:-.01em; }
   .rw__desc { font-size: 12.5px; color: var(--fg-muted); margin: 3px 0 16px; flex:1; }
   .rw__foot { display:flex; align-items:center; justify-content:space-between; gap:10px; }
   .rw__cost { font-family: var(--font-mono); font-weight:700; font-size: 17px; }
   .rw__cost span { font-size:11px; color: var(--fg-muted); font-weight:500; }
-  .rw.locked { opacity: .96; }
-  .rw__lockbar { margin-top: 14px; }
-  .rw__lockmeta { display:flex; justify-content:space-between; font-family: var(--font-mono); font-size:11px; color: var(--fg-muted); margin-top:8px; }
-  .afford { font-family: var(--font-mono); font-size:10.5px; font-weight:700; color: var(--pos); display:inline-flex; align-items:center; gap:4px; }
+  .afford { font-family: var(--font-mono); font-size:10.5px; font-weight:700; color: var(--pos); display:inline-flex; align-items:center; gap:4px; margin-top:10px; }
+  .afford.no { color: var(--neg); }
 
-  /* meus resgates */
   .vouchers { display:grid; grid-template-columns: repeat(2,1fr); gap:18px; }
   .voucher { padding: 0; overflow:hidden; display:flex; }
-  .voucher__stub { width: 96px; flex-shrink:0; display:grid; place-items:center; font-family: var(--font-display); font-weight:900; font-size:26px; position:relative; }
-  .voucher__stub::after { content:''; position:absolute; right:0; top:0; bottom:0; border-right:2px dashed rgba(14,15,11,.18); }
+  .voucher__stub { width: 96px; flex-shrink:0; display:grid; place-items:center; font-size:34px; position:relative; background: var(--lime-12); }
   .voucher__body { padding: 18px 22px; flex:1; }
   .voucher__name { font-weight:800; font-size: 16px; }
-  .voucher__code { font-family: var(--font-mono); font-size:13px; background: rgba(14,15,11,.05); border:1px dashed var(--line-strong); padding:8px 12px; border-radius:8px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; }
+  .voucher__code { font-family: var(--font-mono); font-size:13px; background: rgba(14,15,11,.05); border:1px dashed var(--line-strong); padding:8px 12px; border-radius:8px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
   .voucher__meta { font-family: var(--font-mono); font-size:11px; color: var(--fg-subtle); margin-top:10px; }
   .st-on { background: var(--lime); color: var(--ink); } .st-used { background: rgba(14,15,11,.06); color: var(--fg-muted); }
 
   .pane { display:none; } .pane.on { display:block; }
+  .empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
   @media (max-width: 900px){ .grid{grid-template-columns:1fr 1fr;} .vouchers{grid-template-columns:1fr;} }
   @media (max-width: 560px){ .grid{grid-template-columns:1fr;} }
 </style>
@@ -58,7 +55,7 @@
       <span class="eyebrow">RESGATES</span>
       <h1 class="h-display">Troque por algo real.</h1>
     </div>
-    <div class="bal-pill"><div><div class="l">Seu saldo</div><div class="n" data-count="32480">32.480</div></div></div>
+    <div class="bal-pill"><div><div class="l">Seu saldo</div><div class="n" id="bal">—</div></div></div>
   </header>
 
   <div class="vtabs">
@@ -66,129 +63,109 @@
     <button data-pane="meus">Meus resgates</button>
   </div>
 
-  <!-- CATÁLOGO -->
   <section class="pane on" id="catalogo">
-    <div class="chips">
-      <button class="fchip on" data-c="all">Todos</button>
-      <button class="fchip" data-c="voucher">Vouchers</button>
-      <button class="fchip" data-c="cashback">Cashback</button>
-      <button class="fchip" data-c="milhas">Milhas</button>
-      <button class="fchip" data-c="streaming">Streaming</button>
-      <button class="fchip" data-c="produto">Produtos</button>
-    </div>
-
-    <div class="grid">
-      <div class="card rw" data-c="voucher">
-        <div class="rw__img" style="background:linear-gradient(135deg,#EA1D2C,#ff5a45);color:#fff"><span class="rw__cat">Voucher</span>iF</div>
-        <div class="rw__name">iFood · R$ 25</div>
-        <div class="rw__desc">Vale-refeição para usar no app.</div>
-        <div class="rw__foot"><div class="rw__cost">2.500 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw" data-c="voucher">
-        <div class="rw__img" style="background:linear-gradient(135deg,#EA1D2C,#ff5a45);color:#fff"><span class="rw__cat">Voucher</span>iF</div>
-        <div class="rw__name">iFood · R$ 50</div>
-        <div class="rw__desc">Vale-refeição para usar no app.</div>
-        <div class="rw__foot"><div class="rw__cost">5.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw" data-c="streaming">
-        <div class="rw__img" style="background:linear-gradient(135deg,#1DB954,#0c8c3d);color:#fff"><span class="rw__cat">Streaming</span>Sp</div>
-        <div class="rw__name">Spotify · 3 meses</div>
-        <div class="rw__desc">Premium individual, sem anúncios.</div>
-        <div class="rw__foot"><div class="rw__cost">4.500 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw" data-c="cashback">
-        <div class="rw__img" style="background:var(--ink);color:var(--lime)"><span class="rw__cat">Cashback</span>R$</div>
-        <div class="rw__name">Cashback · R$ 100</div>
-        <div class="rw__desc">Direto na sua conta via Pix.</div>
-        <div class="rw__foot"><div class="rw__cost">10.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw" data-c="milhas">
-        <div class="rw__img" style="background:linear-gradient(135deg,#0a2a66,#1f5fbf);color:#fff"><span class="rw__cat">Milhas</span>Nx</div>
-        <div class="rw__name">Nexus · 5.000 milhas</div>
-        <div class="rw__desc">Transferência para o programa Nexus.</div>
-        <div class="rw__foot"><div class="rw__cost">8.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw" data-c="streaming">
-        <div class="rw__img" style="background:linear-gradient(135deg,#E50914,#b00610);color:#fff"><span class="rw__cat">Streaming</span>Nf</div>
-        <div class="rw__name">Netflix · 1 mês</div>
-        <div class="rw__desc">Plano padrão, full HD.</div>
-        <div class="rw__foot"><div class="rw__cost">3.900 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw locked" data-c="produto">
-        <div class="rw__img" style="background:linear-gradient(135deg,#2b2b2b,#555);color:#fff"><span class="rw__cat">Produto</span>JBL</div>
-        <div class="rw__name">Fone JBL Tune</div>
-        <div class="rw__desc">Bluetooth, cancelamento de ruído.</div>
-        <div class="rw__foot"><div class="rw__cost">28.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-      <div class="card rw locked" data-c="produto">
-        <div class="rw__img" style="background:linear-gradient(135deg,#1b1b1f,#3a3a44);color:var(--lime)"><span class="rw__cat">Aspiracional</span>★</div>
-        <div class="rw__name">iPhone 16</div>
-        <div class="rw__desc">O grande prêmio. Continue acumulando.</div>
-        <div class="rw__foot"><div class="rw__cost">850.000 <span>pts</span></div><span class="chip chip--ink">BLOQUEADO</span></div>
-        <div class="rw__lockbar"><div class="bar"><div class="bar__fill" data-w="3.8%"></div></div><div class="rw__lockmeta"><span>32.480 / 850.000</span><span>faltam 817.520</span></div></div>
-      </div>
-      <div class="card rw" data-c="cashback">
-        <div class="rw__img" style="background:var(--ink);color:var(--lime)"><span class="rw__cat">Cashback</span>R$</div>
-        <div class="rw__name">Cashback · R$ 250</div>
-        <div class="rw__desc">Direto na sua conta via Pix.</div>
-        <div class="rw__foot"><div class="rw__cost">25.000 <span>pts</span></div><button class="btn btn--primary btn--sm">Resgatar</button></div>
-        <div class="afford">✓ Você pode resgatar</div>
-      </div>
-    </div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="catalog"><div class="empty">Carregando catálogo…</div></div>
   </section>
 
-  <!-- MEUS RESGATES -->
   <section class="pane" id="meus">
-    <div class="vouchers">
-      <div class="card voucher">
-        <div class="voucher__stub" style="background:linear-gradient(160deg,#EA1D2C,#ff5a45);color:#fff">iF</div>
-        <div class="voucher__body">
-          <div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name">iFood · R$ 50</span><span class="chip st-on">ATIVO</span></div>
-          <div class="voucher__code"><span>IFOOD-9K2L-44XQ</span><button class="btn btn--outline btn--sm" style="padding:5px 12px">Copiar</button></div>
-          <div class="voucher__meta">RESGATADO 28 MAI · VÁLIDO ATÉ 28 NOV 2026</div>
-        </div>
-      </div>
-      <div class="card voucher">
-        <div class="voucher__stub" style="background:linear-gradient(160deg,#1b1b1f,#3a3a44);color:var(--lime)">Ór</div>
-        <div class="voucher__body">
-          <div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name">Posto Órbita · R$ 30</span><span class="chip st-on">ATIVO</span></div>
-          <div class="voucher__code"><span>ORB-7T1P-90ZD</span><button class="btn btn--outline btn--sm" style="padding:5px 12px">Copiar</button></div>
-          <div class="voucher__meta">RESGATADO 23 MAI · VÁLIDO ATÉ 23 AGO 2026</div>
-        </div>
-      </div>
-      <div class="card voucher">
-        <div class="voucher__stub" style="background:#e9ece1;color:var(--fg-muted)">Sp</div>
-        <div class="voucher__body">
-          <div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name" style="color:var(--fg-muted)">Spotify · 1 mês</span><span class="chip st-used">USADO</span></div>
-          <div class="voucher__meta" style="margin-top:14px">RESGATADO 02 ABR · ATIVADO 02 ABR 2026</div>
-        </div>
-      </div>
-    </div>
+    <div class="vouchers" id="vouchers"><div class="empty">Carregando…</div></div>
   </section>
 </main>
 <script src="chrome.js"></script>
 <script>
-  (function(){
-    // tabs
-    const tabs = document.querySelectorAll('.vtabs button');
-    function showPane(id){ document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on', p.id===id)); tabs.forEach(t=>t.classList.toggle('on', t.dataset.pane===id)); }
-    tabs.forEach(t => t.addEventListener('click', ()=> showPane(t.dataset.pane)));
-    if (location.hash === '#meus') showPane('meus');
-    // category filter
-    const chips = document.querySelectorAll('.fchip');
-    chips.forEach(c => c.addEventListener('click', () => {
-      chips.forEach(x=>x.classList.remove('on')); c.classList.add('on');
-      const cat = c.dataset.c;
-      document.querySelectorAll('.grid .rw').forEach(r => r.style.display = (cat==='all'||r.dataset.c===cat)?'flex':'none');
-    }));
-  })();
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function H(){ var t=token(); return t? {'Content-Type':'application/json','Authorization':'Bearer '+t} : {'Content-Type':'application/json'}; }
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
+
+  if (!token()) { location.href = 'login.html'; return; }
+
+  var balance = 0, BENEFITS = [], cat = 'all';
+
+  // tabs
+  var tabs = document.querySelectorAll('.vtabs button');
+  function showPane(id){ document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on', p.id===id);}); tabs.forEach(function(t){t.classList.toggle('on', t.dataset.pane===id);}); if(id==='meus') loadVouchers(); }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ showPane(t.dataset.pane); }); });
+  if (location.hash === '#meus') showPane('meus');
+
+  function renderChips(){
+    var cats = ['all'].concat(BENEFITS.map(function(b){return b.category;}).filter(function(v,i,a){return v && a.indexOf(v)===i;}));
+    $('chips').innerHTML = cats.map(function(c){ return '<button class="fchip '+(c===cat?'on':'')+'" data-c="'+c+'">'+(c==='all'?'Todos':c)+'</button>'; }).join('');
+    $('chips').querySelectorAll('.fchip').forEach(function(b){ b.addEventListener('click', function(){ cat=b.dataset.c; renderChips(); renderCatalog(); }); });
+  }
+
+  function renderCatalog(){
+    var list = BENEFITS.filter(function(b){ return cat==='all' || b.category===cat; });
+    if (!list.length){ $('catalog').innerHTML='<div class="empty">Nenhum item nesta categoria.</div>'; return; }
+    $('catalog').innerHTML = list.map(function(b){
+      var can = balance >= b.cost_pts;
+      return '<div class="card rw">'
+        + '<div class="rw__img"><span class="rw__cat">'+(b.category||'')+'</span>'+(b.image_emoji||'🎁')+'</div>'
+        + '<div class="rw__name">'+(b.name||'')+'</div>'
+        + '<div class="rw__desc">'+(b.description||'')+'</div>'
+        + '<div class="rw__foot"><div class="rw__cost">'+fmt(b.cost_pts)+' <span>pts</span></div>'
+        + '<button class="btn btn--primary btn--sm" data-redeem="'+b.id+'" '+(can?'':'disabled')+'>Resgatar</button></div>'
+        + '<div class="afford '+(can?'':'no')+'">'+(can?'✓ Você pode resgatar':'Faltam '+fmt(b.cost_pts-balance)+' pts')+'</div>'
+        + '</div>';
+    }).join('');
+    $('catalog').querySelectorAll('[data-redeem]').forEach(function(btn){
+      btn.addEventListener('click', function(){ redeem(btn.dataset.redeem, btn); });
+    });
+  }
+
+  function redeem(id, btn){
+    var b = BENEFITS.filter(function(x){return x.id===id;})[0];
+    if (b && !confirm('Resgatar "'+b.name+'" por '+fmt(b.cost_pts)+' pts?')) return;
+    btn.disabled = true; var o = btn.textContent; btn.textContent = 'Resgatando…';
+    fetch(apiBase()+'/benefits/'+encodeURIComponent(id)+'/redeem', {method:'POST', headers:H()})
+      .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
+      .then(function(res){
+        if (res.s===200 || res.s===201){
+          loadWallet();
+          showPane('meus');
+        } else { btn.disabled=false; btn.textContent=o; alert((res.j&&res.j.error)||'Não foi possível resgatar.'); }
+      })
+      .catch(function(e){ btn.disabled=false; btn.textContent=o; alert('Falha: '+e.message); });
+  }
+
+  function loadWallet(){
+    fetch(apiBase()+'/wallet/', {headers:H()}).then(function(r){return r.ok?r.json():null;}).then(function(w){ if(w){ balance=Number(w.balance_pts||0); $('bal').textContent=fmt(balance); renderCatalog(); } }).catch(function(){});
+  }
+
+  function loadVouchers(){
+    fetch(apiBase()+'/vouchers/', {headers:H()}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      var items = (j && j.items) ? j.items : [];
+      if (!items.length){ $('vouchers').innerHTML='<div class="empty">Você ainda não tem resgates.</div>'; return; }
+      $('vouchers').innerHTML = items.map(function(v){
+        var name = v.benefit_name || (v.benefit && v.benefit.name) || 'Voucher';
+        var emoji = v.image_emoji || (v.benefit && v.benefit.image_emoji) || '🎟️';
+        var st = v.status || (v.used_at ? 'used' : 'active');
+        var stCls = st==='active' ? 'st-on' : 'st-used';
+        var stTxt = st==='active' ? 'ATIVO' : (st==='used' ? 'USADO' : 'EXPIRADO');
+        var code = v.code || '';
+        var exp = v.expires_at ? new Date(v.expires_at).toLocaleDateString('pt-BR') : '';
+        return '<div class="card voucher"><div class="voucher__stub">'+emoji+'</div>'
+          + '<div class="voucher__body"><div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name">'+name+'</span><span class="chip '+stCls+'">'+stTxt+'</span></div>'
+          + (st==='active' && code ? ('<div class="voucher__code"><span>'+code+'</span><button class="btn btn--outline btn--sm" style="padding:5px 12px" data-copy="'+code+'">Copiar</button></div>') : '')
+          + '<div class="voucher__meta">'+(v.points_spent?(fmt(v.points_spent)+' pts'):'')+(exp?(' · VÁLIDO ATÉ '+exp):'')+'</div>'
+          + '</div></div>';
+      }).join('');
+      $('vouchers').querySelectorAll('[data-copy]').forEach(function(b){
+        b.addEventListener('click', function(){ navigator.clipboard.writeText(b.dataset.copy).then(function(){ b.textContent='Copiado!'; setTimeout(function(){b.textContent='Copiar';},1500); }); });
+      });
+    }).catch(function(){ $('vouchers').innerHTML='<div class="empty">Não foi possível carregar.</div>'; });
+  }
+
+  fetch(apiBase()+'/benefits/', {headers:H()})
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ BENEFITS = (j && j.items) ? j.items : (Array.isArray(j)?j:[]); renderChips(); renderCatalog(); })
+    .catch(function(){ $('catalog').innerHTML='<div class="empty">Não foi possível carregar o catálogo.</div>'; });
+  loadWallet();
+})();
 </script>
 </body>
 </html>

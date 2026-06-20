@@ -1,5 +1,5 @@
 /* ==========================================================================
- * Blaxx Pontos — Service Worker (PWA)
+ * BlaXx — Service Worker (PWA)
  *
  * Estrategia:
  *   - HTML/CSS/JS estaticos: cache-first com revalidacao em background.
@@ -95,9 +95,9 @@ function offlinePage() {
 <style>
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:#080907;color:#fff;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px;}
 .card{background:#151515;padding:32px;border-radius:24px;max-width:360px;}
-h1{color:#C6F432;margin:0 0 12px;}
+h1{color:#7CFF00;margin:0 0 12px;}
 p{color:#8a918a;line-height:1.6;}
-button{background:#C6F432;color:#080907;border:0;padding:12px 24px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px;}
+button{background:#7CFF00;color:#080907;border:0;padding:12px 24px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px;}
 </style></head>
 <body><div class="card">
 <h1>Sem internet</h1>
@@ -110,7 +110,7 @@ button{background:#C6F432;color:#080907;border:0;padding:12px 24px;border-radius
 
 // ----- Push notifications (Web Push API) -----
 self.addEventListener('push', (ev) => {
-  let data = { title: 'Blaxx Pontos', body: 'Voce tem uma novidade.' };
+  let data = { title: 'BlaXx', body: 'Voce tem uma novidade.' };
   if (ev.data) {
     try { data = ev.data.json(); } catch (e) { data.body = ev.data.text(); }
   }

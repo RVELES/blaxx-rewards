@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Abrir chamado</title>
+<title>BlaXx · Abrir chamado</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
@@ -89,7 +89,7 @@
     var desc = (document.getElementById('desc')||{}).value || '';
     var sess = {}; try { sess = JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}; } catch(e){}
     var who = (sess.user && (sess.user.name || sess.user.email)) ? ('\nCliente: ' + (sess.user.name||sess.user.email)) : '';
-    var txt = 'Olá! Abertura de chamado Blaxx Pontos.'
+    var txt = 'Olá! Abertura de chamado BlaXx.'
       + '\nCategoria: ' + cat
       + (assunto ? ('\nAssunto: ' + assunto) : '')
       + (desc ? ('\n\n' + desc) : '')

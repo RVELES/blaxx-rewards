@@ -98,17 +98,17 @@ def send_otp(phone: str, code: str, purpose: str) -> None:
     """purpose: 'verify_phone' | 'login_2fa'."""
     if purpose == "verify_phone":
         body = (
-            f"Blaxx Pontos: seu codigo para validar o telefone e {code}. "
+            f"BlaXx: seu codigo para validar o telefone e {code}. "
             "Expira em 10 minutos. Nunca compartilhe este codigo."
         )
     else:
         body = (
-            f"Blaxx Pontos: seu codigo de login e {code}. "
+            f"BlaXx: seu codigo de login e {code}. "
             "Expira em 5 minutos. Se nao foi voce, troque sua senha imediatamente."
         )
     _send_safe(SmsMessage(to_phone=phone, body=body))
 
 
 def send_security_alert(phone: str, event: str) -> None:
-    body = f"Blaxx Pontos: alerta de seguranca - {event}. Se nao foi voce, contate o suporte."
+    body = f"BlaXx: alerta de seguranca - {event}. Se nao foi voce, contate o suporte."
     _send_safe(SmsMessage(to_phone=phone, body=body))

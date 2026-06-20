@@ -1,5 +1,5 @@
 /* ============================================================
-   BlaxX · Design System
+   BlaXx · Design System
    Conteúdo claro · Cabeçalho + menu escuros · Verde Limão
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -9,9 +9,9 @@
   --ink: #0E0F0B;          /* near-black, warm */
   --ink-soft: #1B1D14;     /* dark card base */
   --carbon: #16180F;       /* dark elevated */
-  --lime: #C6F432;         /* primary signal — marca oficial */
+  --lime: #7CFF00;         /* primary signal — marca oficial */
   --lime-bright: #D7FF5C;  /* highlight / reward */
-  --lime-deep: #8FB81F;    /* pressed */
+  --lime-deep: #5AB800;    /* pressed */
   --paper: #ECEFE3;        /* page ground */
   --paper-2: #F4F6EE;      /* lighter ground */
   --white: #FFFFFF;        /* card */

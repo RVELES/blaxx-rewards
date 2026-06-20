@@ -1,4 +1,4 @@
-/* Configuração do front Blaxx Pontos.
+/* Configuração do front BlaXx.
  *
  * Lógica:
  *  - Em localhost / 127.0.0.1 / IP da LAN → backend dev local (porta 5000 ou 5050)
@@ -31,7 +31,7 @@
   }
 
   // ---------------- Google OAuth ----------------
-  // Client ID Web do projeto "Blaxx Pontos" no Google Cloud Console.
+  // Client ID Web do projeto "BlaXx" no Google Cloud Console.
   // Esse valor é PÚBLICO por design — pode aparecer no JS do browser sem risco
   // (a segurança vem da validação do ID token no backend, não do Client ID).
   window.BLAXX_GOOGLE_CLIENT_ID = "105341431878-tj5vi2is40n8gbugugj9bgvi2b67v0el.apps.googleusercontent.com";

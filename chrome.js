@@ -1,5 +1,5 @@
 /* ============================================================
-   BlaxX · App shell (topnav + sidebar + mobile tabs)
+   BlaXx · App shell (topnav + sidebar + mobile tabs)
    Injected on every page. Set <body data-screen="inicio">.
    ============================================================ */
 (function () {
@@ -61,10 +61,28 @@
   (function(){
     let l = document.querySelector('link[rel="icon"]');
     if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); }
-    l.type = 'image/png'; l.href = 'assets/blaxx-icon.png';
+    l.type = 'image/svg+xml'; l.href = 'assets/favicon.svg';
   })();
 
   const screen = document.body.getAttribute('data-screen') || 'inicio';
+
+  // Marca oficial BlaXx (B-mark geométrico + wordmark "BlaXx"), recriada inline
+  // para herdar a fonte da página (Inter) e o verde neon #7CFF00 — paridade com
+  // o BlaxxBrand do app web. Usada sobre superfície escura (topbar/rodapé do
+  // app): "Bla" branco + "Xx" neon. Sem "Pontos".
+  const brandMarkup = (uid) => `
+    <svg class="brand__mark" width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#7CFF00">
+      <mask id="${uid}" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+        <rect width="64" height="64" fill="#000"/>
+        <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
+        <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
+        <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
+        <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
+        <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
+      </mask>
+      <rect width="64" height="64" fill="currentColor" mask="url(#${uid})"/>
+    </svg>
+    <span class="brand__txt" style="font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.03em;line-height:1;color:#fff">Bla<span style="color:#7CFF00">Xx</span></span>`;
 
   const navItem = (label, href, icoKey, key, badge) => `
     <a class="nav-item ${key === screen ? 'is-active' : ''}" href="${href}">
@@ -91,8 +109,8 @@
   topbar.className = 'topbar';
   topbar.innerHTML = `
     <button class="menu-btn" id="menuBtn" aria-label="Menu">${I.menu}</button>
-    <a class="brand" href="index.html" aria-label="BLAXX Pontos">
-      <img class="brand__img" src="assets/blaxx-logo.png" alt="BLAXX Pontos">
+    <a class="brand" href="index.html" aria-label="BlaXx">
+      ${brandMarkup('bxm-top')}
     </a>
     <nav class="topnav">
       ${TOPNAV.map(([l, h, k]) => `<a href="${h}" class="${k === screen ? 'is-active' : ''}">${l}</a>`).join('')}
@@ -136,7 +154,7 @@
     <div class="footer-inner">
       <div class="footer-top">
         <div class="footer-brand">
-          <div class="footer-logo"><img class="footer-logo__img" src="assets/blaxx-logo.png" alt="BLAXX Pontos"></div>
+          <div class="footer-logo" aria-label="BlaXx" style="display:flex;align-items:center;gap:10px">${brandMarkup('bxm-foot')}</div>
           <p class="footer-desc">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
         </div>
         ${FCOLS.map(([title, links]) => `
@@ -147,8 +165,8 @@
       </div>
       <hr class="footer-rule">
       <div class="footer-bottom">
-        <span class="footer-copy">© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
-        <span class="footer-disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
+        <span class="footer-copy">© 2026 BlaXx. Todos os direitos reservados.</span>
+        <span class="footer-disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</span>
       </div>
     </div>`;
   document.body.insertBefore(footer, shell.nextSibling);

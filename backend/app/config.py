@@ -30,7 +30,7 @@ class Config:
 
     EMAIL_BACKEND: str = os.environ.get("EMAIL_BACKEND", "console")
     EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@blaxx.com.br")
-    EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Blaxx Pontos")
+    EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "BlaXx")
 
     SMTP_HOST: str = os.environ.get("SMTP_HOST", "")
     SMTP_PORT: int = int(os.environ.get("SMTP_PORT", "587"))

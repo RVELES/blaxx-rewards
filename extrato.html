@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Extrato</title>
+<title>BlaXx · Extrato</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .page-head { margin-bottom: 24px; }
@@ -15,7 +15,7 @@
 
   .toolbar { display:flex; align-items:center; gap:12px; margin-bottom: 18px; flex-wrap: wrap; }
   .tabs { display:flex; gap:6px; background: var(--white); border:1px solid var(--line); padding:5px; border-radius: var(--r-pill); }
-  .tabs button { border:0; background:transparent; font-weight:700; font-size:13.5px; color: var(--fg-muted); padding:8px 18px; border-radius: var(--r-pill); transition: all .18s var(--ease); }
+  .tabs button { border:0; background:transparent; font-weight:700; font-size:13.5px; color: var(--fg-muted); padding:8px 18px; border-radius: var(--r-pill); transition: all .18s var(--ease); cursor:pointer; }
   .tabs button.on { background: var(--ink); color: var(--lime); }
   .search { margin-left:auto; display:flex; align-items:center; gap:8px; background: var(--white); border:1px solid var(--line); border-radius: var(--r-pill); padding: 9px 16px; min-width: 220px; color: var(--fg-muted); }
   .search input { border:0; background:transparent; outline:none; font-family: var(--font-body); font-size:14px; width:100%; color: var(--fg); }
@@ -35,6 +35,7 @@
   .row__v.pos { color: var(--pos); } .row__v.neg { color: var(--neg); }
   .row__bal { font-family: var(--font-mono); font-size:11px; color: var(--fg-subtle); margin-top:2px; }
   .hidden { display:none !important; }
+  .empty { padding:48px; text-align:center; color: var(--fg-subtle); }
 
   @media (max-width: 900px){ .sum-row{grid-template-columns:1fr;} .search{margin-left:0; order:3; width:100%;} }
 </style>
@@ -47,9 +48,9 @@
   </header>
 
   <section class="sum-row">
-    <div class="card sum"><div class="sum__label">Entradas · maio</div><div class="sum__val pos">+12.420</div></div>
-    <div class="card sum"><div class="sum__label">Saídas · maio</div><div class="sum__val neg">−6.500</div></div>
-    <div class="card sum"><div class="sum__label">Saldo final</div><div class="sum__val">32.480</div></div>
+    <div class="card sum"><div class="sum__label">Entradas · mês</div><div class="sum__val pos" id="sumIn">—</div></div>
+    <div class="card sum"><div class="sum__label">Saídas · mês</div><div class="sum__val neg" id="sumOut">—</div></div>
+    <div class="card sum"><div class="sum__label">Saldo atual</div><div class="sum__val" id="sumBal">—</div></div>
   </section>
 
   <div class="toolbar">
@@ -60,80 +61,100 @@
     </div>
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
-      <input type="text" placeholder="Buscar movimento...">
+      <input type="text" id="q" placeholder="Buscar movimento...">
     </div>
   </div>
 
-  <div class="day-label">Hoje · 29 mai</div>
-  <div class="card ledger" data-group>
-    <div class="row" data-type="in">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--pos)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
-      <div class="row__body"><div class="row__t">Compra · Mercado Vivo</div><div class="row__d">14:32 · 4x pontos</div></div>
-      <div class="row__amt"><div class="row__v pos">+1.240</div><div class="row__bal">32.480 pts</div></div>
-    </div>
-    <div class="row" data-type="in">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--pos)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
-      <div class="row__body"><div class="row__t">Bônus · Missão concluída</div><div class="row__d">09:05 · Complete o perfil</div></div>
-      <div class="row__amt"><div class="row__v pos">+500</div><div class="row__bal">31.240 pts</div></div>
-    </div>
-  </div>
-
-  <div class="day-label">Ontem · 28 mai</div>
-  <div class="card ledger" data-group>
-    <div class="row" data-type="out">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
-      <div class="row__body"><div class="row__t">Resgate · Voucher iFood R$ 50</div><div class="row__d">20:11 · Voucher gerado</div></div>
-      <div class="row__amt"><div class="row__v neg">−5.000</div><div class="row__bal">30.740 pts</div></div>
-    </div>
-    <div class="row" data-type="out">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/></svg></span>
-      <div class="row__body"><div class="row__t">Envio · para @marina</div><div class="row__d">17:48 · Sem taxa</div></div>
-      <div class="row__amt"><div class="row__v neg">−1.500</div><div class="row__bal">35.740 pts</div></div>
-    </div>
-  </div>
-
-  <div class="day-label">23 mai</div>
-  <div class="card ledger" data-group>
-    <div class="row" data-type="in">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--pos)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
-      <div class="row__body"><div class="row__t">Voo · Nexus Airlines</div><div class="row__d">11:20 · 6x pontos</div></div>
-      <div class="row__amt"><div class="row__v pos">+8.400</div><div class="row__bal">37.240 pts</div></div>
-    </div>
-    <div class="row" data-type="in">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--pos)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
-      <div class="row__body"><div class="row__t">Compra de pontos · Pacote 10k</div><div class="row__d">08:15 · +10% bônus</div></div>
-      <div class="row__amt"><div class="row__v pos">+11.000</div><div class="row__bal">28.840 pts</div></div>
-    </div>
-    <div class="row" data-type="out">
-      <span class="row__ico" style="background:var(--lime-12);color:var(--neg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>
-      <div class="row__body"><div class="row__t">Resgate · Posto Órbita R$ 30</div><div class="row__d">07:02 · Voucher gerado</div></div>
-      <div class="row__amt"><div class="row__v neg">−3.000</div><div class="row__bal">17.840 pts</div></div>
-    </div>
-  </div>
+  <div id="ledger"><div class="empty">Carregando…</div></div>
 </main>
 <script src="chrome.js"></script>
 <script>
-  (function(){
-    const tabs = document.querySelectorAll('.tabs button');
-    const rows = () => document.querySelectorAll('.row');
-    const search = document.querySelector('.search input');
-    let filter = 'all';
-    function apply(){
-      const q = (search.value||'').toLowerCase();
-      rows().forEach(r => {
-        const okF = filter==='all' || r.dataset.type===filter;
-        const okQ = !q || r.querySelector('.row__t').textContent.toLowerCase().includes(q);
-        r.classList.toggle('hidden', !(okF && okQ));
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function H(){ var t=token(); return t? {Authorization:'Bearer '+t} : {}; }
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
+
+  if (!token()) { location.href = 'login.html'; return; }
+
+  var ICON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  var ICON_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
+  var MONTHS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+  function dayKey(d){
+    var now = new Date(); var t0 = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var dd = new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    var diff = Math.round((t0 - dd)/86400000);
+    if (diff === 0) return 'Hoje';
+    if (diff === 1) return 'Ontem';
+    return d.getDate() + ' ' + MONTHS[d.getMonth()];
+  }
+  function hm(d){ return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+
+  var filter = 'all', query = '';
+  var TX = [];
+
+  function render(){
+    var q = query.toLowerCase();
+    var groups = {}; var order = [];
+    TX.forEach(function(t){
+      var inOut = (t.amount_pts >= 0) ? 'in' : 'out';
+      if (filter !== 'all' && inOut !== filter) return;
+      if (q && (t.description||'').toLowerCase().indexOf(q) < 0) return;
+      var d = new Date(t.created_at);
+      var key = dayKey(d);
+      if (!groups[key]){ groups[key] = []; order.push(key); }
+      groups[key].push({ t:t, d:d, inOut:inOut });
+    });
+    if (!order.length){ $('ledger').innerHTML = '<div class="empty">Nenhum movimento encontrado.</div>'; return; }
+    var html = '';
+    order.forEach(function(key){
+      html += '<div class="day-label">'+key+'</div><div class="card ledger">';
+      groups[key].forEach(function(it){
+        var pos = it.inOut === 'in';
+        var statusTxt = it.t.status && it.t.status !== 'confirmed' ? (' · '+it.t.status) : '';
+        html += '<div class="row">'
+          + '<span class="row__ico" style="background:var(--lime-12);color:var(--'+(pos?'pos':'neg')+')">'+(pos?ICON_UP:ICON_DOWN)+'</span>'
+          + '<div class="row__body"><div class="row__t">'+(it.t.description||'Movimento')+'</div>'
+          + '<div class="row__d">'+hm(it.d)+statusTxt+'</div></div>'
+          + '<div class="row__amt"><div class="row__v '+(pos?'pos':'neg')+'">'+(pos?'+':'−')+fmt(Math.abs(it.t.amount_pts))+'</div>'
+          + '<div class="row__bal">pts</div></div>'
+          + '</div>';
       });
-      document.querySelectorAll('[data-group]').forEach(g => {
-        const any = [...g.querySelectorAll('.row')].some(r=>!r.classList.contains('hidden'));
-        g.previousElementSibling.classList.toggle('hidden', !any);
-        g.classList.toggle('hidden', !any);
-      });
-    }
-    tabs.forEach(t => t.addEventListener('click', () => { tabs.forEach(x=>x.classList.remove('on')); t.classList.add('on'); filter=t.dataset.f; apply(); }));
-    search.addEventListener('input', apply);
-  })();
+      html += '</div>';
+    });
+    $('ledger').innerHTML = html;
+  }
+
+  function summarize(){
+    var now = new Date(); var inSum=0, outSum=0;
+    TX.forEach(function(t){
+      var d = new Date(t.created_at);
+      if (d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()){
+        if (t.amount_pts >= 0) inSum += t.amount_pts; else outSum += Math.abs(t.amount_pts);
+      }
+    });
+    $('sumIn').textContent = '+'+fmt(inSum);
+    $('sumOut').textContent = '−'+fmt(outSum);
+  }
+
+  document.querySelectorAll('.tabs button').forEach(function(b){
+    b.addEventListener('click', function(){ document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); filter=b.dataset.f; render(); });
+  });
+  $('q').addEventListener('input', function(e){ query=e.target.value; render(); });
+
+  Promise.all([
+    fetch(apiBase()+'/wallet/', {headers:H()}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch(apiBase()+'/wallet/transactions?limit=100', {headers:H()}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+  ]).then(function(res){
+    var w = res[0], tx = res[1];
+    if (w) $('sumBal').textContent = fmt(w.balance_pts);
+    TX = (tx && tx.items) ? tx.items : [];
+    summarize(); render();
+  });
+})();
 </script>
 </body>
 </html>

@@ -88,7 +88,7 @@
             var txt = el('div', { style: 'flex:1;min-width:240px;line-height:1.5;' });
             txt.innerHTML = 'Usamos cookies essenciais para o funcionamento do site e, '
                 + 'mediante seu consentimento, cookies de analytics e marketing. '
-                + '<a href="documentos-termos.html" style="color:#C6F432;">Saiba mais</a>.';
+                + '<a href="documentos-termos.html" style="color:#7CFF00;">Saiba mais</a>.';
 
             var btns = el('div', {
                 style: 'display:flex;gap:8px;flex-wrap:wrap;'
@@ -105,7 +105,7 @@
             }, ['Apenas essenciais']);
             var btnAccept = el('button', {
                 type: 'button',
-                style: 'background:#C6F432;color:#0A0A0A;border:none;'
+                style: 'background:#7CFF00;color:#0A0A0A;border:none;'
                      + 'padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;'
             }, ['Aceitar todos']);
 
@@ -139,10 +139,10 @@
                 if (locked) {
                     inp.checked = true;
                     inp.disabled = true;
-                    inp.style.cssText = 'accent-color:#C6F432;opacity:0.6;margin-top:3px;';
+                    inp.style.cssText = 'accent-color:#7CFF00;opacity:0.6;margin-top:3px;';
                 } else {
                     inp.checked = !!checked;
-                    inp.style.cssText = 'accent-color:#C6F432;margin-top:3px;';
+                    inp.style.cssText = 'accent-color:#7CFF00;margin-top:3px;';
                 }
                 var txt = el('span', { style: 'font-size:13px;line-height:1.4;' });
                 txt.innerHTML = '<strong>' + label + '</strong><br>'
@@ -163,7 +163,7 @@
 
             var bsave = el('button', {
                 type: 'button',
-                style: 'background:#C6F432;color:#0A0A0A;border:none;'
+                style: 'background:#7CFF00;color:#0A0A0A;border:none;'
                      + 'padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;'
             }, ['Salvar preferencias']);
             bsave.addEventListener('click', function () {

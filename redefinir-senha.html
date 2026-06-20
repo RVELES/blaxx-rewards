@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Redefinir senha</title>
-<link rel="icon" type="image/png" href="assets/favicon.png">
+<title>BlaXx · Redefinir senha</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="styles.css">
 <style>
   body { background: var(--chrome); min-height: 100vh; display: flex; flex-direction: column; }
@@ -29,7 +29,20 @@
 </head>
 <body>
   <div class="auth-top">
-    <a href="index.html"><img src="assets/blaxx-logo.png" alt="BLAXX Pontos"></a>
+    <a href="index.html" aria-label="BlaXx" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <svg width="32" height="32" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#7CFF00">
+        <mask id="bxm-redefinir" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+          <rect width="64" height="64" fill="#000"/>
+          <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
+          <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
+          <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
+          <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
+          <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
+        </mask>
+        <rect width="64" height="64" fill="currentColor" mask="url(#bxm-redefinir)"/>
+      </svg>
+      <span style="font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:26px;letter-spacing:-0.03em;line-height:1;color:#fff">Bla<span style="color:#7CFF00">Xx</span></span>
+    </a>
     <a class="alt" href="login.html">Voltar para <b>Entrar →</b></a>
   </div>
 
@@ -52,7 +65,7 @@
     </div>
   </div>
 
-  <div class="auth-foot">© 2026 BLAXX PONTOS · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
+  <div class="auth-foot">© 2026 BlaXx · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
 
   <script>
   (function(){

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Segurança</title>
+<title>BlaXx · Segurança</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
@@ -40,8 +40,8 @@
         <p class="panel__sub">Camadas extras de proteção no acesso à sua conta.</p>
         <div class="row">
           <span class="ico">🔑</span>
-          <div class="b"><div class="t">Senha</div><div class="s">Última alteração há 3 meses.</div></div>
-          <button class="btn btn--sm btn--outline">Alterar senha</button>
+          <div class="b"><div class="t">Senha</div><div class="s">Mantenha uma senha forte e exclusiva.</div></div>
+          <button id="btnChangePw" type="button" class="btn btn--sm btn--outline">Alterar senha</button>
         </div>
         <div class="row">
           <span class="ico">📱</span>
@@ -50,8 +50,8 @@
         </div>
         <div class="row">
           <span class="ico">✉️</span>
-          <div class="b"><div class="t">Confirmação por e-mail</div><div class="s">Exigida para resgates via Pix e envios acima de 5.000 pts.</div></div>
-          <span class="chip">ATIVA ✓</span>
+          <div class="b"><div class="t">Confirmação por e-mail</div><div class="s">Exigida para transferências e resgates.</div></div>
+          <span class="chip" id="emailVChip">—</span>
         </div>
       </div>
 
@@ -73,13 +73,66 @@
       </div>
       <div class="card panel">
         <h2 class="panel__title">Boas práticas</h2>
-        <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Nunca compartilhe códigos</div><div class="s">O BlaxX nunca pede o código 2FA por telefone ou WhatsApp.</div></div></div>
+        <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Nunca compartilhe códigos</div><div class="s">O BlaXx nunca pede o código 2FA por telefone ou WhatsApp.</div></div></div>
         <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Confira a chave Pix</div><div class="s">Resgates só vão para a chave cadastrada no seu <a href="perfil.html" style="text-decoration:underline">perfil</a>.</div></div></div>
         <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Desconfie de links</div><div class="s">Suspeita de fraude? <a href="abrir-chamado.html" style="text-decoration:underline">Abra um chamado</a> imediatamente.</div></div></div>
       </div>
     </div>
   </div>
+
+  <!-- Overlay: alterar senha -->
+  <div id="pwOverlay" style="position:fixed;inset:0;background:rgba(8,9,7,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px">
+    <div class="card" style="max-width:400px;width:100%;padding:28px">
+      <h2 class="panel__title">Alterar senha</h2>
+      <div id="pwMsg" style="display:none;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin-bottom:12px"></div>
+      <div class="field" style="display:block;padding:0 0 12px"><div class="k" style="margin-bottom:6px">Senha atual</div><input id="pwOld" type="password" class="input" style="width:100%;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--cream);padding:12px 14px;font-size:14.5px" placeholder="••••••••"></div>
+      <div class="field" style="display:block;padding:0 0 12px;border:0"><div class="k" style="margin-bottom:6px">Nova senha</div><input id="pwNew" type="password" class="input" style="width:100%;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--cream);padding:12px 14px;font-size:14.5px" placeholder="Mínimo 7 caracteres"></div>
+      <div class="field" style="display:block;padding:0 0 4px;border:0"><div class="k" style="margin-bottom:6px">Confirmar nova senha</div><input id="pwNew2" type="password" class="input" style="width:100%;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--cream);padding:12px 14px;font-size:14.5px" placeholder="••••••••"></div>
+      <button id="pwSave" type="button" class="btn btn--dark btn--block" style="margin-top:16px">Salvar nova senha</button>
+      <button id="pwCancel" type="button" class="btn btn--ghost btn--block" style="margin-top:8px">Cancelar</button>
+    </div>
+  </div>
 </main>
 <script src="chrome.js"></script>
+<script>
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function authHeaders(){ var t=token(); return t? {'Content-Type':'application/json','Authorization':'Bearer '+t} : {'Content-Type':'application/json'}; }
+  var $ = function(id){ return document.getElementById(id); };
+
+  if (!token()) { location.href = 'login.html'; return; }
+
+  // status de verificação de e-mail (real)
+  fetch(apiBase()+'/auth/me', {headers:{Authorization:'Bearer '+token()}})
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(u){ if(u){ $('emailVChip').textContent = (u.email_verified || u.email_verified_at) ? 'VERIFICADO ✓' : 'PENDENTE'; } })
+    .catch(function(){});
+
+  var ov = $('pwOverlay');
+  function open(){ ov.style.display='flex'; }
+  function close(){ ov.style.display='none'; $('pwOld').value=$('pwNew').value=$('pwNew2').value=''; $('pwMsg').style.display='none'; }
+  function msg(type,text){ var m=$('pwMsg'); m.textContent=text; m.style.display='block'; m.style.background = type==='ok'?'rgba(174,230,58,.14)':'rgba(224,72,61,.08)'; m.style.color = type==='ok'?'var(--lime-deep)':'#c0392b'; }
+
+  $('btnChangePw').addEventListener('click', open);
+  $('pwCancel').addEventListener('click', close);
+  $('pwSave').addEventListener('click', function(){
+    var old=$('pwOld').value, nw=$('pwNew').value, nw2=$('pwNew2').value;
+    if(!old){ msg('err','Informe a senha atual.'); return; }
+    if((nw||'').length<7){ msg('err','A nova senha precisa ter no mínimo 7 caracteres.'); return; }
+    if(nw!==nw2){ msg('err','As senhas não conferem.'); return; }
+    var b=$('pwSave'); b.disabled=true; var o=b.textContent; b.textContent='Salvando…';
+    fetch(apiBase()+'/auth/change-password', {method:'POST',headers:authHeaders(),body:JSON.stringify({old_password:old,new_password:nw})})
+      .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
+      .then(function(res){
+        b.disabled=false; b.textContent=o;
+        if(res.s===200 && res.j.ok){ msg('ok','Senha alterada com sucesso!'); setTimeout(close,1400); return; }
+        msg('err',(res.j&&res.j.error)||'Não foi possível alterar a senha.');
+      })
+      .catch(function(e){ b.disabled=false; b.textContent=o; msg('err','Falha de conexão: '+e.message); });
+  });
+})();
+</script>
 </body>
 </html>

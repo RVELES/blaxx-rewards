@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Vender pontos</title>
+<title>BlaXx · Vender pontos</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: start; }
@@ -21,8 +21,10 @@
   .side h3 { font-family: var(--font-display); font-weight: 900; font-size: 19px; margin: 0 0 6px; }
   .side p, .side li { font-size: 13px; color: var(--fg-muted); }
   .side ul { padding-left: 18px; margin: 8px 0 0; }
-  .ok { display:none; background: var(--lime-12); border: 1px solid var(--lime-40); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13.5px; margin-top: 16px; }
-  .ok.show { display:block; }
+  .msgbox { display:none; border-radius: var(--r-sm); padding: 14px 16px; font-size: 13.5px; margin-top: 16px; }
+  .msgbox.show { display:block; }
+  .msgbox.ok { background: var(--lime-12); border: 1px solid var(--lime-40); }
+  .msgbox.err { background: rgba(224,72,61,.08); border:1px solid rgba(224,72,61,.3); color:#c0392b; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -38,21 +40,25 @@
     <div class="card sell">
       <div class="f">
         <label for="pts">Quantos pontos quer vender?</label>
-        <input id="pts" type="number" min="1000" max="32480" step="100" value="10000" oninput="calc()">
+        <input id="pts" type="number" min="1000" step="100" value="1000">
       </div>
       <div class="calc">
-        <div class="l"><span>Saldo disponível</span><b>32.480 pts</b></div>
+        <div class="l"><span>Saldo disponível</span><b id="bal">—</b></div>
         <div class="l"><span>Cotação</span><b>R$ 0,09 / pt</b></div>
         <div class="l"><span>Taxa</span><b>R$ 0,00</b></div>
-        <div class="l tot"><span>Você recebe</span><b id="out">R$ 900,00</b></div>
+        <div class="l tot"><span>Você recebe</span><b id="out">R$ 0,00</b></div>
       </div>
       <div class="f">
         <label>Chave Pix de destino</label>
-        <input type="text" value="ricardo.veles@email.com" disabled style="font-family:var(--font-body);font-weight:500;font-size:14px;color:var(--fg-muted)">
+        <input id="pix" type="text" value="" disabled style="font-family:var(--font-body);font-weight:500;font-size:14px;color:var(--fg-muted)">
       </div>
-      <button class="btn btn--dark btn--block" onclick="document.getElementById('okmsg').classList.add('show');this.textContent='Solicitação enviada ✓';this.disabled=true">Vender pontos →</button>
-      <div class="ok" id="okmsg"><b>Solicitação registrada!</b> O Pix cai na sua conta em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.</div>
-      <p style="font-size:12px;color:var(--fg-subtle);margin:14px 0 0">Por segurança, o Pix é enviado apenas à chave cadastrada no <a href="perfil.html" style="text-decoration:underline">perfil</a>. Para alterar, confirme via 2FA em <a href="seguranca.html" style="text-decoration:underline">Segurança</a>.</p>
+      <div class="f" style="margin-bottom:8px">
+        <label for="pw">Sua senha (confirmação)</label>
+        <input id="pw" type="password" placeholder="••••••••" style="font-family:var(--font-body);font-weight:500;font-size:14px">
+      </div>
+      <button id="btnSell" type="button" class="btn btn--dark btn--block">Vender pontos →</button>
+      <div class="msgbox" id="msgBox"></div>
+      <p style="font-size:12px;color:var(--fg-subtle);margin:14px 0 0">Por segurança, o Pix é enviado apenas à chave cadastrada no <a href="perfil.html" style="text-decoration:underline">perfil</a>.</p>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:20px">
@@ -60,14 +66,13 @@
         <h3>Como funciona</h3>
         <ul>
           <li>Mínimo de <b>1.000 pontos</b> por operação.</li>
-          <li>Limite diário conforme o nível da conta (<a href="regras-pontos.html" style="text-decoration:underline">regras</a>).</li>
           <li>Pagamento via Pix em até <b>1 dia útil</b>.</li>
           <li>Operação confirmada é definitiva.</li>
         </ul>
       </div>
       <div class="card card--lime side">
         <h3>Vale mais usar?</h3>
-        <p>Em muitos resgates seus pontos rendem mais que R$ 0,09: vouchers e campanhas chegam a valer <b>até R$ 0,12 por ponto</b>. Dê uma olhada antes de vender.</p>
+        <p>Em muitos resgates seus pontos rendem mais: vouchers e campanhas podem valer mais por ponto. Dê uma olhada antes de vender.</p>
         <a href="resgates.html" class="btn btn--dark" style="margin-top:14px">Ver resgates →</a>
       </div>
     </div>
@@ -75,12 +80,46 @@
 </main>
 <script src="chrome.js"></script>
 <script>
-function calc(){
-  const v = Math.max(0, parseInt(document.getElementById('pts').value||0));
-  const brl = (v*0.09).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-  document.getElementById('out').textContent = brl;
-}
-calc();
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function H(){ var t=token(); return t? {'Content-Type':'application/json','Authorization':'Bearer '+t} : {'Content-Type':'application/json'}; }
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
+  var brl = function(v){ return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
+
+  if (!token()) { location.href = 'login.html'; return; }
+
+  var balance = 0, pixKey = '';
+  function calc(){ var v=Math.max(0, parseInt($('pts').value||0)); $('out').textContent = brl(v*0.09); }
+  $('pts').addEventListener('input', calc);
+  function show(type, text){ var b=$('msgBox'); b.className='msgbox show '+type; b.innerHTML=text; }
+
+  fetch(apiBase()+'/auth/me', {headers:H()}).then(function(r){return r.ok?r.json():null;}).then(function(u){ if(u){ pixKey = u.pix_key || u.email || ''; $('pix').value = pixKey; } });
+  fetch(apiBase()+'/wallet/', {headers:H()}).then(function(r){return r.ok?r.json():null;}).then(function(w){ if(w){ balance=Number(w.balance_pts||0); $('bal').textContent=fmt(balance)+' pts'; $('pts').max=balance; } });
+  calc();
+
+  $('btnSell').addEventListener('click', function(){
+    var points = parseInt($('pts').value||0);
+    var pw = $('pw').value;
+    if (points < 1000){ show('err','Mínimo de 1.000 pontos.'); return; }
+    if (points > balance){ show('err','Saldo insuficiente.'); return; }
+    if (!pixKey){ show('err','Cadastre uma chave Pix no seu perfil antes de vender.'); return; }
+    if (!pw){ show('err','Confirme com sua senha.'); return; }
+    var btn=$('btnSell'); btn.disabled=true; var o=btn.textContent; btn.textContent='Enviando…';
+    fetch(apiBase()+'/redeem/', {method:'POST', headers:H(), body: JSON.stringify({ points:points, pix_key:pixKey, password:pw })})
+      .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
+      .then(function(res){
+        btn.disabled=false; btn.textContent=o;
+        if (res.s===201 || (res.j && res.j.id)){
+          show('ok','<b>Resgate solicitado!</b> O Pix de '+brl(points*0.09)+' cai na sua conta em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.');
+          $('pw').value='';
+        } else { show('err', (res.j && res.j.error) || 'Não foi possível solicitar o resgate.'); }
+      })
+      .catch(function(e){ btn.disabled=false; btn.textContent=o; show('err','Falha de conexão: '+e.message); });
+  });
+})();
 </script>
 </body>
 </html>

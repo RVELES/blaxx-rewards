@@ -3,131 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaxX · Campanhas</title>
+<title>BlaXx · Campanhas</title>
 <link rel="stylesheet" href="styles.css">
 <style>
   .page-head { margin-bottom: 24px; }
-  .hero-camp { padding: 32px 36px; display:grid; grid-template-columns: 1fr auto; gap:24px; align-items:center; }
-  .hero-camp h2 { font-family: var(--font-display); font-weight:900; font-size: 32px; letter-spacing:-.025em; margin: 12px 0 8px; }
-  .hero-camp p { color: var(--fg-on-dark-muted); margin:0; max-width: 46ch; }
-  .hero-camp p b { color: var(--lime); }
-  .hero-camp__reward { text-align:center; padding-left:24px; border-left:1px solid rgba(244,246,238,.14); }
-  .hero-camp__reward .n { font-family: var(--font-mono); font-weight:700; font-size: 44px; color: var(--lime); line-height:1; }
-  .hero-camp__reward .l { font-family: var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color: var(--fg-on-dark-muted); margin-top:6px; }
-
   .cgrid { display:grid; grid-template-columns: repeat(2,1fr); gap:18px; }
   .camp { padding: 24px 26px; display:flex; flex-direction:column; }
-  .camp__top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; }
+  .camp__top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:12px; }
   .camp__title { font-family: var(--font-display); font-weight:900; font-size: 20px; letter-spacing:-.01em; }
   .camp__sub { font-size:13.5px; color: var(--fg-muted); margin-top:4px; }
   .camp__reward { font-family: var(--font-mono); font-weight:700; font-size:14px; color: var(--lime-deep); white-space:nowrap; }
   .camp__prog { margin-top:auto; padding-top:18px; }
   .camp__meta { display:flex; justify-content:space-between; font-family: var(--font-mono); font-size:11.5px; color: var(--fg-muted); margin-bottom:9px; }
-  .camp__foot { display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
+  .bar { height:8px; border-radius:999px; background: var(--line); overflow:hidden; }
+  .bar__fill { height:100%; border-radius:999px; background: linear-gradient(90deg,var(--lime-deep),var(--lime)); width:0; transition: width 1s var(--ease-out); }
+  .camp__foot { display:flex; align-items:center; justify-content:space-between; margin-top:16px; gap:10px; }
   .time-tag { font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); background: rgba(232,169,51,.15); color:#8a6a00; }
-  .time-tag.soon { background: rgba(226,83,59,.14); color: var(--neg); }
   .done-tag { background: var(--lime); color: var(--ink); font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); }
-
-  @media (max-width: 900px){ .hero-camp{grid-template-columns:1fr;} .hero-camp__reward{border-left:0;border-top:1px solid rgba(244,246,238,.14);padding-left:0;padding-top:18px;text-align:left;display:flex;align-items:baseline;gap:12px;} .cgrid{grid-template-columns:1fr;} }
+  .empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
+  @media (max-width: 900px){ .cgrid{grid-template-columns:1fr;} }
 </style>
 </head>
 <body data-screen="campanhas">
 <main>
   <header class="page-head" data-screen-label="Campanhas">
-    <span class="eyebrow">CAMPANHAS · MAIO 2026</span>
+    <span class="eyebrow">CAMPANHAS</span>
     <h1 class="h-display">Missões que valem pontos.</h1>
+    <p class="lead">Participe das campanhas ativas e ganhe pontos extras ao bater as metas.</p>
   </header>
 
-  <div class="card card--dark hero-camp">
-    <div>
-      <span class="chip chip--live"><span class="pd"></span>AO VIVO ATÉ 31 MAI</span>
-      <h2>Maratona de maio</h2>
-      <p>Complete <b>4 das 6 missões</b> do mês e leve um bônus turbo de <b>10.000 pts</b> direto na carteira.</p>
-      <div class="bar bar--dark" style="margin-top:18px;max-width:420px"><div class="bar__fill" data-w="50%"></div></div>
-      <div style="font-family:var(--font-mono);font-size:12px;color:var(--fg-on-dark-muted);margin-top:8px">3 de 6 missões concluídas</div>
-    </div>
-    <div class="hero-camp__reward"><div class="n">+10k</div><div class="l">Bônus final</div></div>
-  </div>
-
-  <div class="sec-head" style="display:flex;align-items:center;justify-content:space-between;margin:40px 0 18px">
-    <h2 class="h-section" style="font-size:26px">Missões ativas</h2>
-    <span class="chip chip--ink">3 / 6 CONCLUÍDAS</span>
-  </div>
-
-  <div class="cgrid">
-    <div class="card camp">
-      <div class="camp__top">
-        <div><div class="camp__title">Compre com 3 parceiros</div><div class="camp__sub">Use BlaxX em 3 lojas diferentes.</div></div>
-        <span class="camp__reward">+2.000</span>
-      </div>
-      <div class="camp__prog">
-        <div class="camp__meta"><span>Progresso</span><span>2 / 3</span></div>
-        <div class="bar"><div class="bar__fill" data-w="66%"></div></div>
-        <div class="camp__foot"><span class="time-tag">FALTAM 2 DIAS</span><a href="parceiros.html" class="btn btn--outline btn--sm">Ver parceiros →</a></div>
-      </div>
-    </div>
-
-    <div class="card camp">
-      <div class="camp__top">
-        <div><div class="camp__title">Indique 1 amigo</div><div class="camp__sub">Que faça a primeira compra.</div></div>
-        <span class="camp__reward">+5.000</span>
-      </div>
-      <div class="camp__prog">
-        <div class="camp__meta"><span>Progresso</span><span>0 / 1</span></div>
-        <div class="bar"><div class="bar__fill" data-w="0%"></div></div>
-        <div class="camp__foot"><span class="time-tag soon">ÚLTIMO DIA</span><a href="indique.html" class="btn btn--primary btn--sm">Indicar →</a></div>
-      </div>
-    </div>
-
-    <div class="card camp">
-      <div class="camp__top">
-        <div><div class="camp__title">Compre 10.000 pts</div><div class="camp__sub">Em um único pacote.</div></div>
-        <span class="camp__reward">+1.500</span>
-      </div>
-      <div class="camp__prog">
-        <div class="camp__meta"><span>Progresso</span><span style="color:var(--pos)">Concluída</span></div>
-        <div class="bar"><div class="bar__fill" data-w="100%"></div></div>
-        <div class="camp__foot"><span class="done-tag">✓ RESGATADA</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle)">23 mai</span></div>
-      </div>
-    </div>
-
-    <div class="card camp">
-      <div class="camp__top">
-        <div><div class="camp__title">Mantenha a sequência</div><div class="camp__sub">Acesse 7 dias seguidos.</div></div>
-        <span class="camp__reward">+500</span>
-      </div>
-      <div class="camp__prog">
-        <div class="camp__meta"><span>Progresso</span><span>6 / 7</span></div>
-        <div class="bar"><div class="bar__fill" data-w="85%"></div></div>
-        <div class="camp__foot"><span class="time-tag">FALTA 1 DIA</span><a href="index.html" class="btn btn--outline btn--sm">Ver streak →</a></div>
-      </div>
-    </div>
-
-    <div class="card camp">
-      <div class="camp__top">
-        <div><div class="camp__title">Resgate um voucher</div><div class="camp__sub">Qualquer item do catálogo.</div></div>
-        <span class="camp__reward">+800</span>
-      </div>
-      <div class="camp__prog">
-        <div class="camp__meta"><span>Progresso</span><span style="color:var(--pos)">Concluída</span></div>
-        <div class="bar"><div class="bar__fill" data-w="100%"></div></div>
-        <div class="camp__foot"><span class="done-tag">✓ RESGATADA</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle)">28 mai</span></div>
-      </div>
-    </div>
-
-    <div class="card camp">
-      <div class="camp__top">
-        <div><div class="camp__title">Complete o perfil</div><div class="camp__sub">Foto, telefone e preferências.</div></div>
-        <span class="camp__reward">+500</span>
-      </div>
-      <div class="camp__prog">
-        <div class="camp__meta"><span>Progresso</span><span style="color:var(--pos)">Concluída</span></div>
-        <div class="bar"><div class="bar__fill" data-w="100%"></div></div>
-        <div class="camp__foot"><span class="done-tag">✓ RESGATADA</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle)">12 mai</span></div>
-      </div>
-    </div>
-  </div>
+  <div class="cgrid" id="cgrid"><div class="empty">Carregando…</div></div>
 </main>
 <script src="chrome.js"></script>
+<script>
+(function(){
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function H(){ var t=token(); return t? {'Content-Type':'application/json','Authorization':'Bearer '+t} : {'Content-Type':'application/json'}; }
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
+
+  var ITEMS = [];
+
+  function daysLeft(end){
+    if(!end) return null;
+    var d = Math.ceil((new Date(end) - Date.now())/86400000);
+    return d;
+  }
+
+  function render(){
+    if (!ITEMS.length){ $('cgrid').innerHTML = '<div class="empty">Nenhuma campanha ativa no momento.</div>'; return; }
+    $('cgrid').innerHTML = ITEMS.map(function(c){
+      var pct = c.completed_at ? 100 : (c.progress_pct||0);
+      var dl = daysLeft(c.period_end);
+      var foot;
+      if (c.completed_at){ foot = '<span class="done-tag">✓ CONCLUÍDA</span>'; }
+      else if (!c.joined){ foot = '<button class="btn btn--primary btn--sm" data-join="'+c.id+'">Participar →</button>'; }
+      else { foot = '<span class="time-tag">EM ANDAMENTO</span>'; }
+      var timeInfo = (dl!==null && dl>=0 && !c.completed_at) ? ('<span class="time-tag">'+(dl===0?'ÚLTIMO DIA':('FALTAM '+dl+' DIAS'))+'</span>') : '<span></span>';
+      return '<div class="card camp">'
+        + '<div class="camp__top"><div><div class="camp__title">'+(c.name||'')+'</div>'
+        + '<div class="camp__sub">'+(c.description||c.mechanic||'')+'</div></div>'
+        + '<span class="camp__reward">+'+fmt(c.reward_pts)+'</span></div>'
+        + '<div class="camp__prog"><div class="camp__meta"><span>Meta R$ '+fmt(c.target_brl)+'</span><span>'+pct+'%</span></div>'
+        + '<div class="bar"><div class="bar__fill" style="width:'+pct+'%"></div></div>'
+        + '<div class="camp__foot">'+timeInfo+foot+'</div></div>'
+        + '</div>';
+    }).join('');
+    $('cgrid').querySelectorAll('[data-join]').forEach(function(b){
+      b.addEventListener('click', function(){ join(b.dataset.join, b); });
+    });
+  }
+
+  function join(id, btn){
+    if (!token()){ location.href='login.html'; return; }
+    btn.disabled = true; btn.textContent = 'Entrando…';
+    fetch(apiBase()+'/campaigns/'+encodeURIComponent(id)+'/join', {method:'POST', headers:H()})
+      .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
+      .then(function(res){
+        if (res.s===200 || res.s===201){
+          var c = ITEMS.filter(function(x){return x.id===id;})[0];
+          if (c) c.joined = true;
+          render();
+        } else { btn.disabled=false; btn.textContent='Participar →'; alert((res.j&&res.j.error)||'Não foi possível participar.'); }
+      })
+      .catch(function(e){ btn.disabled=false; btn.textContent='Participar →'; alert('Falha: '+e.message); });
+  }
+
+  fetch(apiBase()+'/campaigns/', {headers:H()})
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ ITEMS = (j && j.items) ? j.items : []; render(); })
+    .catch(function(){ $('cgrid').innerHTML='<div class="empty">Não foi possível carregar as campanhas.</div>'; });
+})();
+</script>
 </body>
 </html>
