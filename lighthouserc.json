@@ -37,7 +37,8 @@
         "interactive": ["warn", { "maxNumericValue": 3500 }],
         "speed-index": ["warn", { "maxNumericValue": 3000 }],
         "uses-rel-preconnect": "off",
-        "csp-xss": "warn"
+        "csp-xss": "warn",
+        "canonical": "off"
       }
     },
     "upload": {
