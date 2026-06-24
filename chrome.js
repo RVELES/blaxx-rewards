@@ -185,6 +185,13 @@
     });
   });
 
+  // ---- registra o service worker (PWA / instalável) ----
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+
   // ---- count-up for [data-count] (always lands on final value) ----
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('[data-count]').forEach(el => {
