@@ -144,10 +144,11 @@
   </section>
 </main>
 
+<script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
 <script>
 (function(){
-  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   const fmt = n => Number(n||0).toLocaleString('pt-BR');

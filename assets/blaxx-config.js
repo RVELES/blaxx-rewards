@@ -26,8 +26,9 @@
     // Modo produção — migrado do Fly.io pra Render.com em 2026-05-27.
     // Render builda nativo Python na cloud deles (sem Docker), o que evita
     // o problema crônico de DNS no buildkit local em ambientes WSL2.
-    // Backend antigo no Fly continua rodando paralelo até cutover completo.
-    window.BLAXX_API = "https://blaxx-pontos-backend.onrender.com";
+    // Backend canônico de produção (único liberado na CSP connect-src).
+    // O host antigo "-backend" foi desligado; usar "-exe".
+    window.BLAXX_API = "https://blaxx-pontos-exe.onrender.com";
   }
 
   // ---------------- Google OAuth ----------------

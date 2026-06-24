@@ -242,10 +242,11 @@
 
   <p class="cc-disclaimer">Pontos são créditos promocionais — não são moeda, depósito ou investimento. Seções marcadas “demo” são ilustrativas e ainda não refletem dados reais.</p>
 </main>
+<script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
 <script>
 (function(){
-  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   function user(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user || null; } catch { return null; } }

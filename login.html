@@ -60,9 +60,10 @@
 
   <div class="auth-foot">© 2026 BLAXX PONTOS · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
 
+  <script src="assets/blaxx-config.js"></script>
   <script>
   (function(){
-    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
     var $ = function(id){ return document.getElementById(id); };
     var err = $('loginErr'), btn = $('btnLogin');

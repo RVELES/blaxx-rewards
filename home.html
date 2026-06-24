@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="assets/blaxx-config.js"></script>
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 
@@ -445,7 +446,7 @@ const CONFIG = {
   // Saldo real da carteira: sobrepõe o número de exibição quando há sessão
   // ativa (reflete pontos creditados após compra PIX). Deslogado mantém o demo.
   (function(){
-    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     var base; try { base = (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ base = DEFAULT_API; }
     var tok; try { tok = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ tok = null; }
     if (!tok) return;
