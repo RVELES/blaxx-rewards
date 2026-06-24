@@ -1,7 +1,7 @@
-# Estratégia de Instagram — @blaxx.pontos
+# Estratégia de Instagram - @blaxx.pontos
 
 > Plano de conteúdo, público e crescimento para o Instagram da BlaXx Pontos.
-> Marca: programa de pontos que vira **Pix de verdade** — ganhe nas compras, troque por dinheiro, envie pontos, resgate com parceiros.
+> Marca: programa de pontos que vira **Pix de verdade** - ganhe nas compras, troque por dinheiro, envie pontos, resgate com parceiros.
 
 ---
 
@@ -14,9 +14,9 @@ Sendo honesto e direto, para não te vender ilusão:
   - **30 dias:** 5.000–15.000 seguidores (fundação + 1ª onda de Reels + sorteio)
   - **60 dias:** 20.000–50.000 (cadência diária + parcerias com micro-criadores)
   - **90 dias:** 50.000–150.000 (se 1–2 Reels estourarem + tráfego pago consistente)
-- **Para realmente mirar 1M:** precisa de orçamento de mídia (ordem de R$ 50k–200k+/mês), 3–5 criadores grandes em campanha simultânea, mecânica de sorteio com "convide amigos" e produto com gancho de compartilhamento embutido. O caminho mais rápido de uma marca de pontos crescer é **dar dinheiro/Pix** (o produto já faz isso) — isso é altamente compartilhável.
+- **Para realmente mirar 1M:** precisa de orçamento de mídia (ordem de R$ 50k–200k+/mês), 3–5 criadores grandes em campanha simultânea, mecânica de sorteio com "convide amigos" e produto com gancho de compartilhamento embutido. O caminho mais rápido de uma marca de pontos crescer é **dar dinheiro/Pix** (o produto já faz isso) - isso é altamente compartilhável.
 
-Este documento entrega o que **eu consigo fazer agora**: a estratégia, as personas, o conteúdo pronto e o calendário. A execução (postar, pagar mídia, fechar parcerias) é com a equipe — eu não tenho acesso à conta do Instagram.
+Este documento entrega o que **eu consigo fazer agora**: a estratégia, as personas, o conteúdo pronto e o calendário. A execução (postar, pagar mídia, fechar parcerias) é com a equipe - eu não tenho acesso à conta do Instagram.
 
 ---
 
@@ -27,7 +27,7 @@ Este documento entrega o que **eu consigo fazer agora**: a estratégia, as perso
 **Tom de voz:**
 - Direto, confiante, sem juridiquês. Fala como amigo que manja de dinheiro.
 - Prova > promessa: sempre mostrar valor real (R$, prints, contadores).
-- Brasileiro, leve, com humor — mas nunca "guru de hype". Transparência ganha confiança em fintech.
+- Brasileiro, leve, com humor - mas nunca "guru de hype". Transparência ganha confiança em fintech.
 
 **Bio sugerida (@blaxx.pontos):**
 ```
@@ -62,12 +62,12 @@ Envie pontos pra qualquer um • Resgate com parceiros
 
 ## 3. Pilares de conteúdo (80/20: valor x produto)
 
-1. **"Pontos viram dinheiro" (prova)** — prints de Pix recebido, contador de pontos→reais, demonstração do app. *Topo de funil, compartilhável.*
-2. **Educação financeira útil** — dicas de economia, "como ganhar grátis no que você já compra", erros que fazem você perder dinheiro. *Salvável, autoridade.*
-3. **Hacks e listas** — "5 compras que te dão mais pontos", parceiros, como acumular rápido. *Salvável.*
-4. **Prova social / UGC** — depoimentos, "quanto juntei em 1 mês", reações. *Confiança.*
-5. **Bastidores / marca** — cara da empresa, transparência, "como a BlaXx ganha dinheiro". *Confiança em fintech.*
-6. **Trend-jacking** — áudios em alta + gancho de pontos. *Alcance.*
+1. **"Pontos viram dinheiro" (prova)** - prints de Pix recebido, contador de pontos→reais, demonstração do app. *Topo de funil, compartilhável.*
+2. **Educação financeira útil** - dicas de economia, "como ganhar grátis no que você já compra", erros que fazem você perder dinheiro. *Salvável, autoridade.*
+3. **Hacks e listas** - "5 compras que te dão mais pontos", parceiros, como acumular rápido. *Salvável.*
+4. **Prova social / UGC** - depoimentos, "quanto juntei em 1 mês", reações. *Confiança.*
+5. **Bastidores / marca** - cara da empresa, transparência, "como a BlaXx ganha dinheiro". *Confiança em fintech.*
+6. **Trend-jacking** - áudios em alta + gancho de pontos. *Alcance.*
 
 ---
 
@@ -75,34 +75,34 @@ Envie pontos pra qualquer um • Resgate com parceiros
 
 ### Reels (roteiros completos)
 
-**REEL 1 — "Você tá deixando dinheiro na mesa"** *(pilar: prova)*
+**REEL 1 - "Você tá deixando dinheiro na mesa"** *(pilar: prova)*
 - **Gancho (0–2s, texto na tela):** "Você comprou pão hoje e perdeu dinheiro."
-- **Desenvolvimento:** "Toda compra que você faz pode te devolver pontos. E na BlaXx, ponto não fica preso — vira Pix." *(mostra app: saldo de pontos → botão "trocar por Pix" → notificação de Pix recebido)*
+- **Desenvolvimento:** "Toda compra que você faz pode te devolver pontos. E na BlaXx, ponto não fica preso - vira Pix." *(mostra app: saldo de pontos → botão "trocar por Pix" → notificação de Pix recebido)*
 - **CTA:** "Comenta PIX que eu te mando o link." / "Segue pra não comprar errado de novo."
 - **Áudio:** trend de "plot twist" / áudio de notificação de Pix.
 
-**REEL 2 — "Pontos que viram Pix vs pontos que morrem na conta"** *(pilar: hacks)*
+**REEL 2 - "Pontos que viram Pix vs pontos que morrem na conta"** *(pilar: hacks)*
 - **Gancho:** "Existem 2 tipos de programa de pontos:" (split screen)
 - **Esquerda (😤):** "Pontos que expiram, mínimo altíssimo, só serve pra passagem que nunca acha."
 - **Direita (😎):** "BlaXx: vira Pix quando você quiser. Sem pegadinha."
 - **CTA:** "Salva esse pra lembrar." / "Qual tipo você usa hoje? 👇"
 
-**REEL 3 — "Mandei pontos pro meu irmão pagar a pizza"** *(pilar: produto / social)*
+**REEL 3 - "Mandei pontos pro meu irmão pagar a pizza"** *(pilar: produto / social)*
 - **Gancho:** "Dá pra mandar dinheiro sem ser dinheiro?"
 - **Cena:** mostra enviar pontos pra outra pessoa no app, ela troca por Pix.
 - **CTA:** "Marca aquele amigo que te deve uma. 👀"
 
-**REEL 4 — "Quanto eu juntei só comprando o de sempre"** *(pilar: prova social)*
+**REEL 4 - "Quanto eu juntei só comprando o de sempre"** *(pilar: prova social)*
 - **Gancho:** "Não mudei nada na minha vida. Só passei a usar isso."
 - **Cena:** print/contador subindo de pontos ao longo de 30 dias → vira X reais em Pix.
 - **CTA:** "Quanto você gasta por mês? Te mostro quanto voltaria." (engaja comentário)
 
-**REEL 5 — Trend-jacking** *(pilar: alcance)*
+**REEL 5 - Trend-jacking** *(pilar: alcance)*
 - Pega o áudio EM ALTA da semana (checar aba de áudios em ascensão) + texto: "POV: você descobriu que dava pra transformar suas compras em Pix esse tempo todo."
 
 ### Carrosséis (salváveis = ouro pro algoritmo)
 
-**CARROSSEL 1 — "5 jeitos de ganhar dinheiro com o que você já faz"**
+**CARROSSEL 1 - "5 jeitos de ganhar dinheiro com o que você já faz"**
 1. Capa: "5 formas de transformar gasto em Pix 💸"
 2. Compre como sempre → ganhe pontos
 3. Indique amigos → ganhe por cada um
@@ -111,17 +111,17 @@ Envie pontos pra qualquer um • Resgate com parceiros
 6. Envie pontos pra quem quiser
 7. CTA: "Salva e começa hoje. Link na bio."
 
-**CARROSSEL 2 — "Por que seus pontos sempre 'desaparecem' (e como resolver)"**
+**CARROSSEL 2 - "Por que seus pontos sempre 'desaparecem' (e como resolver)"**
 - Mito por mito sobre programas de pontos + como a BlaXx resolve cada um. *Educa + posiciona.*
 
-**CARROSSEL 3 — "Glossário: pontos, cashback, milhas — qual rende mais?"**
+**CARROSSEL 3 - "Glossário: pontos, cashback, milhas - qual rende mais?"**
 - Conteúdo de autoridade, comparativo honesto. Gera salvamento e compartilhamento.
 
 ### Legendas (modelo)
 ```
 Você não precisa ganhar mais pra ter mais. Precisa parar de perder no que já gasta. 💸
 
-Na BlaXx, cada compra do dia a dia vira ponto — e ponto vira Pix. Dinheiro de verdade, sem expirar, sem pegadinha.
+Na BlaXx, cada compra do dia a dia vira ponto - e ponto vira Pix. Dinheiro de verdade, sem expirar, sem pegadinha.
 
 Comenta "PIX" que te mando o passo a passo. 👇
 
@@ -133,11 +133,11 @@ Comenta "PIX" que te mando o passo a passo. 👇
 ## 5. Sorteio viral (loop de crescimento)
 
 **Mecânica "Pix da Semana":**
-- Prêmio: R$ X em Pix (use o próprio produto — pontos resgatáveis).
+- Prêmio: R$ X em Pix (use o próprio produto - pontos resgatáveis).
 - Para participar: **seguir @blaxx.pontos + curtir + marcar 3 amigos + salvar.**
 - Bônus de chances: stories com print + repost.
 - Frequência: semanal nos 90 dias. Cada ciclo traz seguidores novos via "marcar amigos".
-- **Regras:** publicar regulamento (exigência legal de promoção no Brasil — ver se precisa de certificado de autorização SECAP/Ministério da Fazenda dependendo do formato; sorteio "marque amigos" sem compra geralmente é concurso cultural, mas valide com o jurídico).
+- **Regras:** publicar regulamento (exigência legal de promoção no Brasil - ver se precisa de certificado de autorização SECAP/Ministério da Fazenda dependendo do formato; sorteio "marque amigos" sem compra geralmente é concurso cultural, mas valide com o jurídico).
 
 ---
 
@@ -166,20 +166,20 @@ Comenta "PIX" que te mando o passo a passo. 👇
 
 ## 7. Plano de 90 dias
 
-**Fase 1 — Fundação (dias 1–30)**
+**Fase 1 - Fundação (dias 1–30)**
 - Otimizar perfil (bio, destaques, link, identidade visual).
 - Banco de 30 Reels + 12 carrosséis (este doc já dá ~10 prontos).
 - Lançar sorteio semanal.
 - Fechar 5–10 micro-criadores de finanças.
 - Meta: 5k–15k seguidores. Achar 1–2 formatos que performam.
 
-**Fase 2 — Escala (dias 31–60)**
+**Fase 2 - Escala (dias 31–60)**
 - Impulsionar (tráfego pago) os Reels que já bombaram organicamente.
 - Dobrar parcerias com criadores.
 - Ativar UGC: incentivar usuários a postar prints de Pix.
 - Meta: 20k–50k.
 
-**Fase 3 — Aceleração (dias 61–90)**
+**Fase 3 - Aceleração (dias 61–90)**
 - Campanha com 1–2 criadores médios/grandes.
 - Escalar mídia paga no que tem o melhor CPF (custo por seguidor).
 - Sorteio maior com co-patrocínio de parceiro.
@@ -203,7 +203,7 @@ Comenta "PIX" que te mando o passo a passo. 👇
 
 - Escrever mais lotes de Reels/carrosséis/legendas sob demanda.
 - Criar variações de teste A/B de ganchos.
-- Roteirizar a campanha de sorteio e o regulamento (rascunho — validar com jurídico).
+- Roteirizar a campanha de sorteio e o regulamento (rascunho - validar com jurídico).
 - Montar um deck de apresentação da estratégia (posso gerar via Gamma).
 - Escrever copy de anúncios para o tráfego pago.
 

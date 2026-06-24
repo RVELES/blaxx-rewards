@@ -1,4 +1,4 @@
-# Deck — Roteiro das lâminas para o Gamma — @blaxx.pontos
+# Deck - Roteiro das lâminas para o Gamma - @blaxx.pontos
 
 > Cole este conteúdo no Gamma (gamma.app → "Criar" → "Colar texto") usando **um traço de separação `---` como quebra de slide**.
 > Sugestão no Gamma: idioma PT-BR, tom "profissional/direto", imagens IA estilo 3D ou ilustração, tema na cor da marca (verde lima + tinta escura).
@@ -6,12 +6,12 @@
 ---
 
 # Estratégia de Instagram
-## BlaXx Pontos — Seus pontos viram Pix
+## BlaXx Pontos - Seus pontos viram Pix
 Plano de conteúdo, público e crescimento para **@blaxx.pontos**
 
 ---
 
-## A meta de 1.000.000 em 3 meses — falando sério
+## A meta de 1.000.000 em 3 meses - falando sério
 
 - 1M de seguidores em 90 dias **por orgânico é praticamente inalcançável** para conta nova de programa de pontos.
 - Quem cresce nesse ritmo usa: **tráfego pago pesado, Reels que estouram, sorteios virais e parcerias com grandes criadores.**
@@ -24,12 +24,12 @@ Plano de conteúdo, público e crescimento para **@blaxx.pontos**
 
 - **Promessa central:** "Seus pontos viram Pix. Dinheiro de verdade, no seu dia a dia."
 - Tom **direto, confiante, sem juridiquês.**
-- **Prova acima de promessa** — sempre mostrar R$, prints, contadores.
+- **Prova acima de promessa** - sempre mostrar R$, prints, contadores.
 - **Transparência** = a moeda da confiança em fintech.
 
 ---
 
-## Mapa de público — personas
+## Mapa de público - personas
 
 - **Caçador de cashback:** quer o máximo de volta → pontos viram Pix, não crédito travado.
 - **Jovem apertado:** todo real conta → ganha grátis no que já compra.
@@ -43,21 +43,21 @@ Plano de conteúdo, público e crescimento para **@blaxx.pontos**
 
 ## Aquisição em camadas
 
-1. **Orgânico (Reels)** — topo de funil, alcance frio amplo.
-2. **Parcerias com micro-criadores** de finanças — confiança + público qualificado (melhor custo que 1 criador gigante).
-3. **Tráfego pago** — impulsionar Reels que já performaram no orgânico.
-4. **Sorteio viral** — loop de crescimento "marque amigos".
+1. **Orgânico (Reels)** - topo de funil, alcance frio amplo.
+2. **Parcerias com micro-criadores** de finanças - confiança + público qualificado (melhor custo que 1 criador gigante).
+3. **Tráfego pago** - impulsionar Reels que já performaram no orgânico.
+4. **Sorteio viral** - loop de crescimento "marque amigos".
 
 ---
 
 ## 6 pilares de conteúdo (80% valor / 20% produto)
 
-1. **Pontos viram dinheiro** (prova) — prints de Pix, demonstração do app.
-2. **Educação financeira** útil — dicas de economia.
-3. **Hacks e listas** — como acumular mais rápido.
-4. **Prova social / UGC** — depoimentos, "quanto juntei".
-5. **Bastidores / marca** — transparência, rosto da empresa.
-6. **Trend-jacking** — áudios em alta + gancho de pontos.
+1. **Pontos viram dinheiro** (prova) - prints de Pix, demonstração do app.
+2. **Educação financeira** útil - dicas de economia.
+3. **Hacks e listas** - como acumular mais rápido.
+4. **Prova social / UGC** - depoimentos, "quanto juntei".
+5. **Bastidores / marca** - transparência, rosto da empresa.
+6. **Trend-jacking** - áudios em alta + gancho de pontos.
 
 ---
 
@@ -69,7 +69,7 @@ Plano de conteúdo, público e crescimento para **@blaxx.pontos**
 
 ---
 
-## Sorteio viral — "Pix da Semana"
+## Sorteio viral - "Pix da Semana"
 
 - **Prêmio:** Pix (usando o próprio produto).
 - **Mecânica:** seguir + curtir + marcar 3 amigos + salvar.
@@ -91,9 +91,9 @@ Plano de conteúdo, público e crescimento para **@blaxx.pontos**
 
 ## Plano de 90 dias
 
-- **Fase 1 — Fundação (1–30):** perfil, banco de conteúdo, sorteio, micro-criadores → **5k–15k**.
-- **Fase 2 — Escala (31–60):** tráfego pago no que bombou, dobrar parcerias, UGC → **20k–50k**.
-- **Fase 3 — Aceleração (61–90):** campanha com criadores médios/grandes, escalar mídia, sorteio maior → **50k–150k**.
+- **Fase 1 - Fundação (1–30):** perfil, banco de conteúdo, sorteio, micro-criadores → **5k–15k**.
+- **Fase 2 - Escala (31–60):** tráfego pago no que bombou, dobrar parcerias, UGC → **20k–50k**.
+- **Fase 3 - Aceleração (61–90):** campanha com criadores médios/grandes, escalar mídia, sorteio maior → **50k–150k**.
 
 ---
 

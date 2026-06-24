@@ -1,10 +1,10 @@
-# Conteúdo — Lote 2 + Variações A/B de ganchos — @blaxx.pontos
+# Conteúdo - Lote 2 + Variações A/B de ganchos - @blaxx.pontos
 
 > Continuação de `instagram-growth-blaxx-pontos.md`. Mais Reels, carrosséis e um banco de ganchos para teste A/B.
 
 ---
 
-## A. Banco de ganchos (primeiros 2 segundos) — para teste A/B
+## A. Banco de ganchos (primeiros 2 segundos) - para teste A/B
 
 > Regra: o gancho decide 90% do alcance. Grave o MESMO Reel com 2–3 ganchos diferentes e veja qual retém mais. Abaixo, agrupados por ângulo psicológico.
 
@@ -38,46 +38,46 @@
 
 ---
 
-## B. Reels — Lote 2 (roteiros)
+## B. Reels - Lote 2 (roteiros)
 
-**REEL 6 — "O teste do mercado"** *(prova/demonstração)*
+**REEL 6 - "O teste do mercado"** *(prova/demonstração)*
 - Gancho: "Fiz uma compra de mercado e filmei o que aconteceu depois."
 - Cena: compra normal → app mostrando pontos creditados → troca por Pix → notificação.
 - CTA: "Comenta 'TESTE' que te mando como fazer igual."
 
-**REEL 7 — "Respondendo: 'isso é pegadinha?'"** *(quebra de objeção)*
+**REEL 7 - "Respondendo: 'isso é pegadinha?'"** *(quebra de objeção)*
 - Gancho: "Todo mundo me pergunta: qual a pegadinha da BlaXx?"
 - Desenvolvimento: explica de forma transparente como funciona (ganha ponto na compra, vira Pix, sem mensalidade-surpresa). Transparência = confiança em fintech.
 - CTA: "Ficou alguma dúvida? Joga aqui 👇"
 
-**REEL 8 — "Dividindo a conta do rolê"** *(produto social: enviar pontos)*
+**REEL 8 - "Dividindo a conta do rolê"** *(produto social: enviar pontos)*
 - Gancho: "A conta veio e ninguém tinha dinheiro na mão."
 - Cena: enviar pontos pro amigo no app, ele troca por Pix na hora.
 - CTA: "Marca o amigo caloteiro 😂"
 
-**REEL 9 — "3 erros que fazem você perder dinheiro todo mês"** *(educação/lista)*
-- Gancho: "3 erros que te fazem perder dinheiro — o 2º todo mundo comete."
+**REEL 9 - "3 erros que fazem você perder dinheiro todo mês"** *(educação/lista)*
+- Gancho: "3 erros que te fazem perder dinheiro - o 2º todo mundo comete."
 - Lista rápida: (1) não usar programa de pontos, (2) juntar ponto que expira, (3) deixar cashback preso em crédito.
 - CTA: "Salva pra não esquecer."
 
-**REEL 10 — "POV trend"** *(alcance)*
+**REEL 10 - "POV trend"** *(alcance)*
 - Áudio em alta + texto: "POV: você finalmente entendeu que dá pra transformar compra em Pix."
 
-**REEL 11 — "Quanto rende em 1 ano?"** *(projeção/prova)*
+**REEL 11 - "Quanto rende em 1 ano?"** *(projeção/prova)*
 - Gancho: "Se você gasta R$ 2 mil/mês, olha quanto volta em 1 ano."
 - Cena: contador animado projetando o acúmulo → vira Pix.
 - CTA: "Calcula o seu: comenta seu gasto mensal 👇"
 
-**REEL 12 — "Reagindo aos prints dos usuários"** *(prova social/UGC)*
+**REEL 12 - "Reagindo aos prints dos usuários"** *(prova social/UGC)*
 - Gancho: "Vocês me mandaram os Pix que receberam. Olha isso."
 - Cena: carrossel de prints de Pix recebido (UGC, com permissão).
 - CTA: "Manda o seu no direct que eu reposto."
 
 ---
 
-## C. Carrosséis — Lote 2
+## C. Carrosséis - Lote 2
 
-**CARROSSEL 4 — "Pontos vs Cashback vs Milhas: o comparativo honesto"**
+**CARROSSEL 4 - "Pontos vs Cashback vs Milhas: o comparativo honesto"**
 1. Capa: "Qual rende MAIS de verdade? 🤔"
 2. Milhas: bom pra quem viaja muito, ruim de liquidez.
 3. Cashback: volta %, mas costuma virar crédito travado.
@@ -85,18 +85,18 @@
 5. Tabela comparativa.
 6. CTA: "Salva esse comparativo. Link na bio."
 
-**CARROSSEL 5 — "Como juntar pontos sem gastar a mais"**
+**CARROSSEL 5 - "Como juntar pontos sem gastar a mais"**
 1. Capa: "Não é gastar mais. É comprar inteligente."
 2–6. Dicas: concentrar compras, usar parceiros, indicar amigos, aproveitar campanhas.
 7. CTA: "Salva e aplica essa semana."
 
-**CARROSSEL 6 — "A pergunta que todo mundo faz: como a BlaXx ganha dinheiro?"**
+**CARROSSEL 6 - "A pergunta que todo mundo faz: como a BlaXx ganha dinheiro?"**
 1. Capa: "Se eu ganho Pix, de onde vem o dinheiro? 👀"
 2–5. Explicação transparente do modelo (parceiros, ecossistema). Constrói confiança.
 6. CTA: "Transparência total. Vem ver no link da bio."
 
-**CARROSSEL 7 — "5 sinais de que você devia estar usando BlaXx"**
-- Formato "você se identifica?" — alto compartilhamento (marca amigos).
+**CARROSSEL 7 - "5 sinais de que você devia estar usando BlaXx"**
+- Formato "você se identifica?" - alto compartilhamento (marca amigos).
 
 ---
 
