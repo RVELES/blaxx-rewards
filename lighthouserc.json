@@ -18,8 +18,7 @@
           "cpuSlowdownMultiplier": 1
         },
         "skipAudits": [
-          "uses-http2",
-          "canonical"
+          "uses-http2"
         ]
       }
     },

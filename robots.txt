@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /docs/
+
+Sitemap: https://www.blaxxpontos.com.br/sitemap.xml
