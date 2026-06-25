@@ -15,6 +15,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BlaXx">
 <meta name="mobile-web-app-capable" content="yes">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Progresso","item":"https://blaxxpontos.com.br/progresso-campanha.html"}]}
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -74,11 +77,11 @@
     <div class="card lime" style="padding:40px;">
         <div class="grid two" style="gap:32px;align-items:center;">
             <div>
-                <span class="kicker" style="background:white;color:var(--ink);border-color:var(--ink);">Em andamento</span>
+                <span class="kicker" style="background:#0c110c;color:var(--ink);border-color:var(--ink);">Em andamento</span>
                 <h1 style="margin-top:14px;font-size:42px;">Indique 3 amigos</h1>
                 <p style="color:var(--ink-2);">Convide amigos pelo seu link e ganhe <strong>5.000 pts</strong> ao completar 3 indicações válidas. Cada amigo também ganha 500 pts.</p>
             </div>
-            <div class="card" style="background:white;">
+            <div class="card" style="background:#0c110c;">
                 <h3>Recompensa final</h3>
                 <div style="font-size:48px;font-weight:900;letter-spacing:-0.04em;color:var(--ink);line-height:1;">5.000 pts</div>
                 <p>Creditados ao completar 3 indicações.</p>
@@ -184,5 +187,12 @@
   [data-side="campanhas"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side="campanhas"] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>

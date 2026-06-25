@@ -42,6 +42,9 @@
 
   @media (max-width: 900px){ .balance, .stat-row, .two { grid-template-columns: 1fr; } .balance__num{font-size:56px;} }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Carteira","item":"https://blaxxpontos.com.br/carteira.html"}]}
+</script>
 </head>
 <body data-screen="carteira">
 <main>
@@ -120,6 +123,7 @@
     </div>
   </section>
 </main>
+<script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
 <script>
   requestAnimationFrame(() => document.querySelectorAll('.chart__bar[data-h]').forEach(b => { const h=b.getAttribute('data-h'); b.style.height='0%'; setTimeout(()=>b.style.height=h, 200); }));
@@ -127,7 +131,7 @@
   // Saldo real da carteira: sobrepõe os números de demonstração quando há
   // sessão ativa (reflete pontos creditados após compra PIX / transferências).
   (function(){
-    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
     function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
     var tok = token(); if (!tok) return;

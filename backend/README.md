@@ -1,5 +1,10 @@
 # Blaxx Pontos — Backend (Fase 1)
 
+> ⚠️ **Este NÃO é o backend de produção.** É a referência da Fase 1 (auth).
+> O backend que roda em produção (carteira, PIX, resgates, parceiros, cartão)
+> está no repo **`RVELES/blaxx-pontos-exe`**, servido em
+> `https://blaxx-pontos-exe.onrender.com`. Ver `../ARCHITECTURE.md`.
+
 Backend Flask que serve a API de autenticação e perfil de usuário do Blaxx Pontos.
 
 **Estado atual (Fase 1):** fluxos de cadastro, login, confirmação de email,

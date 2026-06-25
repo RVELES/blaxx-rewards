@@ -19,8 +19,12 @@
     shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4.3 3 7.2 7 9 4-1.8 7-4.7 7-9V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></svg>',
     help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.2 1.8-2.2 3.3"/><circle cx="12" cy="16.6" r="0.6" fill="currentColor" stroke="none"/></svg>',
     bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V10a6 6 0 0 1 12 0v6l1.5 2.2H4.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>',
-    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>'
   };
+
+  // canais sociais oficiais
+  const INSTAGRAM_URL = 'https://instagram.com/blaxx.pontos';
 
   // primary sidebar nav  [label, href, iconKey, screenKey, badge]
   const PRIMARY = [
@@ -156,6 +160,10 @@
         <div class="footer-brand">
           <div class="footer-logo" aria-label="BlaXx" style="display:flex;align-items:center;gap:10px">${brandMarkup('bxm-foot')}</div>
           <p class="footer-desc">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+          <a class="footer-social" href="${INSTAGRAM_URL}" target="_blank" rel="noopener" aria-label="Siga @blaxx.pontos no Instagram" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;color:inherit;text-decoration:none;font-size:13.5px;font-weight:600">
+            <span class="ico" style="width:22px;height:22px;display:inline-flex">${I.instagram}</span>
+            <span>@blaxx.pontos</span>
+          </a>
         </div>
         ${FCOLS.map(([title, links]) => `
           <div class="footer-col">
@@ -194,6 +202,13 @@
       setTimeout(() => { el.style.width = w; }, 180);
     });
   });
+
+  // ---- registra o service worker (PWA / instalável) ----
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
 
   // ---- count-up for [data-count] (always lands on final value) ----
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

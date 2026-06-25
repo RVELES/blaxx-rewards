@@ -3,11 +3,11 @@
   "ci": {
     "collect": {
       "url": [
-        "https://blaxxpontos.netlify.app/",
-        "https://blaxxpontos.netlify.app/login.html",
-        "https://blaxxpontos.netlify.app/cadastro.html",
-        "https://blaxxpontos.netlify.app/comprar-pontos.html",
-        "https://blaxxpontos.netlify.app/parceiros.html"
+        "https://blaxxpontos.com.br/",
+        "https://blaxxpontos.com.br/login.html",
+        "https://blaxxpontos.com.br/cadastro.html",
+        "https://blaxxpontos.com.br/comprar-pontos.html",
+        "https://blaxxpontos.com.br/parceiros.html"
       ],
       "numberOfRuns": 3,
       "settings": {
@@ -18,8 +18,7 @@
           "cpuSlowdownMultiplier": 1
         },
         "skipAudits": [
-          "uses-http2",
-          "canonical"
+          "uses-http2"
         ]
       }
     },
@@ -37,7 +36,8 @@
         "interactive": ["warn", { "maxNumericValue": 3500 }],
         "speed-index": ["warn", { "maxNumericValue": 3000 }],
         "uses-rel-preconnect": "off",
-        "csp-xss": "warn"
+        "csp-xss": "warn",
+        "canonical": "off"
       }
     },
     "upload": {

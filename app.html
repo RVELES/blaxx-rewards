@@ -16,7 +16,7 @@
   @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
   .api-badge { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; background:var(--ink); color:var(--lime); padding:2px 8px; border-radius:6px; }
   .endpoint-tag { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; color:var(--muted); }
-  .qr-box { width:130px; height:130px; background:#fff; border-radius:12px; padding:6px; border:1px solid var(--line); }
+  .qr-box { width:130px; height:130px; background:#0c110c; border-radius:12px; padding:6px; border:1px solid var(--line); }
   .brcode-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:10px; word-break:break-all; line-height:1.4; background:var(--bg-warm); padding:10px; border-radius:8px; max-height:90px; overflow:auto; }
   .row-input { display:grid; gap:8px; margin-top:8px; }
   .row-input label { font-size:12px; color:var(--muted); }
@@ -47,6 +47,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BlaXx">
 <meta name="mobile-web-app-capable" content="yes">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"App","item":"https://blaxxpontos.com.br/app.html"}]}
+</script>
 </head>
 <body>
 
@@ -424,6 +427,13 @@ function drawQR(text) {
 
 // Auto-login se ja tem token
 if (token && me) showApp();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
 </script>
 </body>
 </html>

@@ -37,6 +37,9 @@
   .nav-row .btn { flex: 1; }
   .nav-row .btn.half { flex: 0 0 38%; }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Criar conta","item":"https://blaxxpontos.com.br/cadastro.html"}]}
+</script>
 </head>
 <body>
   <div class="auth-top">
@@ -57,7 +60,7 @@
     <a class="alt" href="login.html">Já tem conta? <b>Entrar →</b></a>
   </div>
 
-  <div class="auth-wrap">
+  <div class="auth-wrap" role="main">
     <div class="card auth">
       <div class="stepper">
         <div class="seg on" data-seg="0"></div>
@@ -128,9 +131,10 @@
 
   <div class="auth-foot">© 2026 BlaXx · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
 
+  <script src="assets/blaxx-config.js"></script>
   <script>
   (function(){
-    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
     var $ = function(id){ return document.getElementById(id); };
     var err = $('regErr'), btn = $('btnReg');
@@ -217,5 +221,12 @@
     show(0);
   })();
   </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>

@@ -25,6 +25,9 @@
   .status-paid { background: #efffe6; color: #2d651b; }
   .status-rejected { background: #ffede8; color: #a83417; }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Comprar livre","item":"https://blaxxpontos.com.br/comprar-livre.html"}]}
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -87,5 +90,12 @@
 -->
 <script src="assets/blaxx-app.js"></script>
 <script src="assets/comprar-livre.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>

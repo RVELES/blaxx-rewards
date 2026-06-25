@@ -15,6 +15,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BlaXx">
 <meta name="mobile-web-app-capable" content="yes">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Painel","item":"https://blaxxpontos.com.br/dashboard.html"}]}
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -101,7 +104,7 @@
 
                 <div class="actions" style="margin-top:22px;">
                     <a href="comprar-pontos.html" class="button">+ Comprar pontos</a>
-                    <a href="resgates.html" class="button" style="background:white;color:var(--ink);">Resgatar →</a>
+                    <a href="resgates.html" class="button" style="background:#0c110c;color:var(--ink);">Resgatar →</a>
                     <a href="enviar-pontos.html" class="button" style="background:transparent;color:white;border:1px solid #2a2d28;">Enviar pontos</a>
                 </div>
             </div>
@@ -292,5 +295,12 @@
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>

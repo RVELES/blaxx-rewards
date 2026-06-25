@@ -15,6 +15,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BlaXx">
 <meta name="mobile-web-app-capable" content="yes">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Contato","item":"https://blaxxpontos.com.br/contato.html"}]}
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -185,5 +188,12 @@
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>
