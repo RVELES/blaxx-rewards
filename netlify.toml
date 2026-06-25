@@ -67,12 +67,14 @@
   from = "/"
   to = "/blaxx-neon.html"
   status = 200
+  force = true
 
 # Evita home duplicada: /index.html redireciona para a raiz.
 [[redirects]]
   from = "/index.html"
   to = "/"
   status = 301
+  force = true
 
 # -----------------------------------------------------------------------------
 # Aliases de URL: nomes amigaveis em portugues que apontam pras paginas reais.
