@@ -62,11 +62,18 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Redireciona / para /index.html (default do Netlify ja faz, redundante por clareza)
+# Home: landing neon (force = true obrigatório para shadowing do index.html existente)
 [[redirects]]
   from = "/"
-  to = "/index.html"
+  to = "/blaxx-neon.html"
   status = 200
+  force = true
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
 
 # Rota /lander — legado de URL Forwarding do GoDaddy que aponta para este caminho.
 # Enquanto o DNS do GoDaddy não for corrigido para apontar diretamente ao Netlify,

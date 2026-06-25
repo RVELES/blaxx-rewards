@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#000000" />
+<title>BlaXx Rewards — Pontos que viram o mundo</title>
+<meta name="description" content="Acumule pontos no dia a dia e troque por Pix na hora, milhas, diárias de hotel ou salas VIP pelo planeta. Sem taxas escondidas." />
+<link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ============ TOKENS ============
+   neon=#59FD27  bg=#0a0a0a  panel=#0d0d0d  line=#1c1c1c
+   text=#fff  muted=#b7bbb2  muted2=#8a8f86
+================================== */
+:root{
+  --neon:#59FD27; --neon-soft:#59FD2733; --neon-line:#59FD2755;
+  --bg:#0a0a0a; --panel:#0d0d0d; --line:#1c1c1c;
+  --text:#ffffff; --muted:#b7bbb2; --muted2:#8a8f86; --maxw:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.kicker{font-family:'JetBrains Mono',monospace;color:var(--neon);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;margin:0}
+:focus-visible{outline:2px solid var(--neon);outline-offset:3px;border-radius:6px}
+
+header.nav{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 24px;max-width:var(--maxw);margin:0 auto}
+.brand{display:inline-flex;align-items:center}
+.brand svg{height:125px;width:auto;display:block}
+.nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
+.nav-links a{text-decoration:none}
+.nav-links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;border-radius:999px;transition:transform .12s ease,filter .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--neon);color:#06140a;padding:14px 26px}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{color:var(--text);border:1px solid #2a2a2a;padding:14px 26px}
+.btn-sm{padding:9px 18px;font-size:14px}
+
+.hero{padding:74px 0 48px;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--neon-line);color:var(--neon);border-radius:999px;padding:6px 14px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.hero h1{font-size:clamp(2.6rem,8.5vw,6rem);font-weight:700;line-height:.96;letter-spacing:-.03em;margin:24px 0 0}
+.hero h1 .fx{color:var(--neon)}
+.lede{max-width:540px;margin-top:22px;font-size:18px;line-height:1.6;color:var(--muted)}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:60px}
+.stat{border-left:2px solid var(--neon);padding-left:16px}
+.stat .num{font-family:'Space Grotesk';font-size:clamp(2rem,5vw,3.1rem);font-weight:700;line-height:1}
+.stat .lbl{color:var(--muted2);font-size:12px;margin-top:8px;text-transform:uppercase;letter-spacing:.07em}
+.stat.badge .num{color:var(--neon);font-size:clamp(1.3rem,3.5vw,1.9rem)}
+
+.marq-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;overflow:hidden;margin-top:30px}
+.marq{display:flex;gap:48px;width:max-content;animation:marq 26s linear infinite}
+.marq span{color:#6f746b;font-size:14px;letter-spacing:.04em;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+.blk{padding:86px 0}
+.sec-head{max-width:640px;margin-bottom:40px}
+.sec-head h2{font-size:clamp(1.8rem,4.4vw,2.8rem);font-weight:700;margin-top:10px;letter-spacing:-.02em}
+.sec-head p{color:var(--muted);margin-top:12px;font-size:16px;line-height:1.6}
+
+.globe-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+#globeWrap{position:relative;width:100%;max-width:460px;aspect-ratio:1;margin:0 auto;touch-action:none}
+#globe{width:100%;height:100%;display:block;cursor:grab}
+#globe.drag{cursor:grabbing}
+#globeTip{position:absolute;pointer-events:none;transform:translate(-50%,-130%);background:#000;border:1px solid var(--neon-line);color:var(--text);font-size:12px;font-family:'JetBrains Mono',monospace;padding:5px 9px;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .12s;z-index:5}
+#globeTip b{color:var(--neon)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.legend button{cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--muted);padding:6px 12px;border-radius:999px;font-size:12px;font-family:'Sora';transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.legend button .dot{width:7px;height:7px;border-radius:999px;background:var(--neon);box-shadow:0 0 8px var(--neon)}
+.legend button:hover{border-color:#39392f;color:var(--text)}
+.legend button.on{border-color:var(--neon);color:var(--text);background:var(--neon-soft)}
+.globe-meta{display:flex;gap:34px;margin-top:26px}
+.globe-meta b{font-family:'Space Grotesk';font-size:28px;display:block}
+.globe-meta span{color:var(--muted2);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.hint{color:var(--muted2);font-size:12px;margin-top:16px}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.card{background:var(--panel);padding:28px;position:relative}
+.card .ic{font-size:20px;color:var(--muted2)}
+.card .n{position:absolute;top:28px;right:28px;font-family:'JetBrains Mono';color:var(--neon);font-size:14px}
+.card h4{font-size:20px;font-weight:600;margin:16px 0 8px}
+.card p{color:#9a9e95;font-size:14px;line-height:1.55}
+
+.redeem{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.rcard{border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--panel)}
+.rcard .ic{font-size:22px}
+.rcard .tag{display:inline-block;margin-top:14px;color:var(--neon);font-size:11px;font-family:'JetBrains Mono';letter-spacing:.04em;border:1px solid var(--neon-line);padding:3px 8px;border-radius:999px}
+.rcard h4{margin:14px 0 6px;font-size:18px;font-weight:600}
+.rcard p{color:#9a9e95;font-size:14px;line-height:1.55}
+
+.band{display:grid;grid-template-columns:1.2fr .8fr;gap:36px;align-items:center;border:1px solid var(--neon-line);border-radius:24px;padding:clamp(28px,5vw,56px);background:radial-gradient(120% 140% at 0% 0%,var(--neon-soft),transparent 55%),var(--panel)}
+.band .big{font-family:'Space Grotesk';font-size:clamp(3rem,8vw,5.5rem);font-weight:700;color:var(--neon);line-height:1}
+.band h3{font-size:clamp(1.4rem,3.2vw,2rem);font-weight:600;margin-top:6px}
+.band-side{display:grid;gap:12px}
+.chip{display:flex;align-items:baseline;gap:10px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#0a0a0a}
+.chip b{font-family:'Space Grotesk';font-size:20px;color:var(--text)}
+.chip span{color:var(--muted2);font-size:13px}
+
+.partners{display:flex;flex-wrap:wrap;gap:14px 26px;justify-content:center;color:#9a9e95;font-size:15px}
+
+.faq{display:grid;gap:10px;max-width:820px}
+.qa{border:1px solid var(--line);border-radius:14px;padding:6px 20px;background:var(--panel)}
+.qa summary{cursor:pointer;list-style:none;padding:16px 0;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:'+';color:var(--neon);font-size:20px;font-family:'Space Grotesk'}
+.qa[open] summary::after{content:'–'}
+.qa p{color:var(--muted);font-size:15px;line-height:1.6;padding:0 0 16px;margin:0}
+
+.cta-band{position:relative;overflow:hidden;text-align:center;padding:clamp(64px,11vw,140px) 24px;background:radial-gradient(60% 90% at 50% 130%,var(--neon-soft),transparent 60%)}
+.cta-band .pill{display:inline-block;color:var(--neon);font-family:'JetBrains Mono';font-size:12px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--neon-line);padding:5px 12px;border-radius:999px}
+.cta-band h3{font-size:clamp(2.2rem,7vw,4.6rem);font-weight:700;line-height:.98;letter-spacing:-.03em;margin:16px 0 18px}
+.cta-band p{color:var(--muted);font-size:18px;max-width:460px;margin:0 auto 30px}
+
+footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted2);font-size:13px}
+.foot-in{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+
+.mobile-cta{display:none}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+.m-social,.m-trust,.m-testi{display:none}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:920px){
+  .globe-grid{grid-template-columns:1fr;gap:30px}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .redeem{grid-template-columns:repeat(2,1fr)}
+  .band{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .nav-links{display:none}
+  .brand svg{height:94px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:22px;margin-top:40px}
+  .hero{padding:44px 0 32px}
+  .hero h1{font-size:clamp(2.3rem,11vw,3rem)}
+  .blk{padding:58px 0}
+  .cards{grid-template-columns:1fr}
+  .redeem{grid-template-columns:1fr}
+  body{padding-bottom:84px}
+  .mobile-cta{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#0a0a0a 78%,transparent);border-top:1px solid var(--line)}
+  .mobile-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--neon);color:#06140a;padding:15px;border-radius:14px;font-weight:700;text-decoration:none}
+  .nav .btn-sm{padding:8px 14px}
+  .m-social{display:flex;align-items:center;gap:8px;margin-top:18px;color:var(--muted);font-size:13px}
+  .m-social .stars{color:var(--neon);letter-spacing:1px}
+  .m-trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .m-trust .tchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12px;color:#cfd2c9}
+  .m-trust .tchip b{color:var(--neon)}
+  .m-testi{display:block}
+  .m-testi .tcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .m-testi .stars{color:var(--neon);font-size:13px;letter-spacing:2px}
+  .m-testi p{color:#cfd2c9;font-size:14px;line-height:1.55;margin:8px 0 0}
+  .m-testi .who{color:var(--muted2);font-size:12px;margin-top:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .marq{animation:none}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="#topo" aria-label="BlaXx Rewards">
+      <svg viewBox="0 0 1254 1254" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BlaXx Rewards">
+        <path d="M439,234 L439,690 L440,691 L712,691 L713,690 L728,689 L747,684 L771,673 L787,662 L802,648 L819,624 L830,596 L833,581 L833,574 L834,573 L833,537 L830,522 L824,504 L817,490 L807,475 L791,458 L781,450 L782,447 L794,433 L804,415 L811,395 L814,381 L814,372 L815,371 L815,345 L814,344 L814,336 L810,317 L800,293 L787,274 L770,258 L753,247 L734,239 L710,234 Z M508,301 L700,301 L701,302 L711,303 L722,308 L728,312 L737,322 L743,333 L747,349 L747,368 L745,378 L738,394 L731,403 L722,411 L711,417 L696,421 L686,421 L685,422 L534,422 L533,423 L605,495 L714,495 L715,496 L720,496 L736,502 L744,508 L754,518 L763,535 L766,548 L766,570 L764,580 L757,595 L750,604 L741,612 L728,619 L712,623 L508,623 L506,621 L506,499 L508,495 L565,495 L507,436 L506,432 L506,305 Z M717,763 L798,854 L717,945 L720,946 L763,945 L821,881 L823,881 L881,946 L888,946 L889,945 L896,945 L897,946 L912,946 L913,945 L921,945 L922,946 L924,945 L926,946 L927,945 L846,856 L846,853 L927,763 L881,763 L823,828 L821,828 L762,763 Z M937,804 L1001,874 L997,880 L937,945 L944,945 L945,946 L979,946 L1023,899 L1031,906 L1067,945 L1069,946 L1080,946 L1081,945 L1107,946 L1110,945 L1046,875 L1078,839 L1104,812 L1110,804 L1067,804 L1025,850 L1023,850 L1011,838 L980,804 Z M364,987 L363,988 L363,1025 L370,1025 L370,1015 L371,1014 L380,1014 L388,1025 L396,1025 L388,1014 L395,1005 L395,996 L392,991 L383,987 Z M443,987 L443,1025 L472,1025 L472,1020 L471,1019 L451,1019 L450,1018 L450,1010 L451,1009 L468,1009 L469,1004 L468,1003 L451,1003 L450,1002 L450,994 L451,993 L471,993 L471,987 Z M517,988 L519,991 L521,1000 L530,1025 L538,1025 L544,1005 L547,1000 L549,1001 L556,1025 L564,1025 L566,1022 L566,1019 L577,987 L570,987 L563,1007 L563,1010 L561,1013 L558,1011 L551,987 L544,987 L543,988 L535,1013 L532,1011 L525,988 L524,987 L518,987 Z M636,987 L620,1025 L627,1025 L628,1021 L631,1017 L649,1017 L653,1025 L660,1025 L643,987 Z M705,987 L705,1025 L712,1025 L711,1016 L713,1014 L721,1014 L729,1025 L736,1025 L736,1023 L729,1014 L736,1006 L737,1000 L735,993 L732,990 L724,987 Z M784,987 L784,1025 L806,1025 L813,1022 L818,1017 L821,1009 L820,999 L817,994 L814,991 L805,987 Z M872,988 L868,991 L866,995 L867,1003 L871,1007 L886,1011 L888,1013 L888,1017 L884,1020 L876,1020 L867,1016 L865,1021 L869,1024 L877,1026 L888,1025 L895,1018 L894,1009 L889,1005 L876,1002 L873,999 L873,996 L876,993 L886,993 L892,995 L894,990 L888,987 L875,987 Z M370,994 L371,993 L382,993 L386,995 L388,998 L387,1005 L383,1008 L371,1008 L370,1007 Z M712,994 L713,993 L726,994 L729,997 L729,1004 L725,1008 L713,1008 L712,1007 Z M792,993 L803,993 L808,995 L812,999 L814,1007 L813,1012 L809,1017 L805,1019 L792,1019 L790,1016 L790,1001 Z M639,996 L641,997 L646,1009 L645,1011 L634,1011 L633,1010 Z M149,1006 L150,1008 L310,1008 L311,1007 L310,1005 L150,1005 Z M949,1006 L950,1008 L1110,1008 L1110,1005 L950,1005 Z" fill="#59FD27" fill-rule="evenodd"/>
+        <path d="M149,763 L149,945 L299,945 L311,942 L321,937 L333,926 L338,918 L342,906 L343,881 L337,863 L327,852 L327,850 L334,841 L338,832 L339,827 L339,803 L336,792 L333,786 L323,774 L311,767 L295,763 Z M399,763 L399,910 L402,921 L407,930 L413,936 L423,942 L433,945 L468,945 L468,916 L441,916 L436,914 L431,909 L429,905 L429,763 Z M180,794 L181,793 L293,793 L300,796 L306,802 L309,811 L309,819 L305,829 L301,833 L292,837 L181,837 L179,835 L179,801 L180,800 Z M521,818 L514,831 L512,839 L512,848 L542,848 L542,845 L545,838 L549,834 L560,830 L624,830 L637,835 L643,842 L645,851 L645,859 L643,861 L548,861 L536,864 L523,871 L515,880 L510,893 L510,913 L516,928 L524,936 L532,941 L545,945 L552,945 L553,946 L620,946 L633,943 L643,937 L645,938 L645,945 L675,945 L675,842 L672,831 L668,823 L657,811 L646,805 L631,801 L553,801 L539,805 L531,809 Z M180,868 L181,867 L294,867 L300,869 L309,877 L312,883 L312,890 L313,891 L312,899 L310,904 L304,911 L299,914 L291,916 L181,916 L179,914 L179,873 Z M540,906 L540,900 L543,894 L551,889 L556,888 L643,888 L645,890 L644,901 L641,907 L635,913 L625,917 L553,917 L547,915 L541,909 Z" fill="#FFFFFF" fill-rule="evenodd"/>
+      </svg>
+    </a>
+    <nav class="nav-links">
+      <a href="#globo">Mapa</a>
+      <a href="#como">Como funciona</a>
+      <a href="#resgates">Resgates</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+    <a href="#cta" class="btn btn-primary btn-sm">Entrar</a>
+  </div>
+</header>
+
+<section class="hero" id="topo">
+  <div class="wrap">
+    <span class="eyebrow">● BlaXx Rewards — pontos que viram o mundo</span>
+    <h1 class="font-display">COMPRE. GANHE.<br><span class="fx">TROQUE.</span> ENVIE.</h1>
+    <p class="lede">Acumule pontos no dia a dia e troque por Pix na hora, milhas, diárias de hotel ou salas VIP pelo planeta. Sem taxas escondidas.</p>
+    <div class="cta-row">
+      <a href="#cta" class="btn btn-primary">Criar conta grátis →</a>
+      <a href="#globo" class="btn btn-ghost">Ver o mapa</a>
+    </div>
+    <div class="m-social"><span class="stars">★★★★★</span> 4,9 · +50 mil contas ativas</div>
+    <div class="m-trust">
+      <span class="tchip"><b>⚡</b> Pix em 12s</span>
+      <span class="tchip"><b>✓</b> Sem taxas escondidas</span>
+      <span class="tchip"><b>⇄</b> Envio P2P grátis</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num"><span data-count="350">0</span>+</div><div class="lbl">salas VIP no mundo</div></div>
+      <div class="stat"><div class="num"><span data-count="60">0</span></div><div class="lbl">países atendidos</div></div>
+      <div class="stat"><div class="num"><span data-count="12">0</span>s</div><div class="lbl">tempo médio do Pix</div></div>
+      <div class="stat badge"><div class="num">Sem taxas</div><div class="lbl">escondidas, sempre</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marq-wrap" aria-hidden="true"><div class="marq" id="marq"></div></div>
+
+<section class="blk" id="globo">
+  <div class="wrap globe-grid">
+    <div id="globeWrap">
+      <canvas id="globe"></canvas>
+      <div id="globeTip"></div>
+    </div>
+    <div class="reveal">
+      <div class="kicker">// rede global</div>
+      <h2 class="font-display" style="font-size:clamp(2rem,5vw,3.2rem);margin-top:12px;letter-spacing:-.02em">Seus pontos<br>no mapa.</h2>
+      <p style="color:var(--muted);margin-top:14px;max-width:44ch;font-size:16px;line-height:1.6">Hotéis, companhias e salas VIP de cada parceiro, plotados sobre o globo. Passe o mouse para ver a cidade; <b style="color:var(--text)">clique numa legenda para realçar</b> o parceiro.</p>
+      <div class="legend" id="legend"></div>
+      <div class="globe-meta">
+        <div><b id="totalActive">0</b><span>destinos no mapa</span></div>
+        <div><b id="supCount">0</b><span>parceiros online</span></div>
+      </div>
+      <div class="hint">Arraste para girar · toque para explorar</div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="como">
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">// como funciona</div><h2>Como funciona</h2><p>Da compra do dia a dia até uma sala VIP do outro lado do mundo — todo o ciclo vive em um app só.</p></div>
+    <div class="cards">
+      <div class="card"><span class="ic">$</span><span class="n">01</span><h4>Compre</h4><p>Acumule pontos automaticamente nas compras do dia a dia com cartões e parceiros conectados.</p></div>
+      <div class="card"><span class="ic">×</span><span class="n">02</span><h4>Ganhe</h4><p>Multiplique com bônus de transferência de até 120% e missões por tempo limitado.</p></div>
+      <div class="card"><span class="ic">⇄</span><span class="n">03</span><h4>Troque</h4><p>Vire Pix na hora, milhas aéreas, diárias de hotel ou acesso a salas VIP.</p></div>
+      <div class="card"><span class="ic">↗</span><span class="n">04</span><h4>Envie</h4><p>Transfira pontos ou Pix para qualquer pessoa, em qualquer lugar, em segundos — sem taxa.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="resgates">
+  <div class="wrap">
+    <div class="sec-head"><div class="kicker">// catálogo de resgates</div><h2>Um saldo, vários destinos.</h2><p>Seus pontos são líquidos. Saque, voe ou faça check-in — com taxas que continuam honestas.</p></div>
+    <div class="redeem">
+      <div class="rcard"><div class="ic">⚡</div><div class="tag">a partir de 1.000 pts</div><h4>Pix na hora</h4><p>Converta pontos em dinheiro na sua conta em ~12 segundos, 24/7.</p></div>
+      <div class="rcard"><div class="ic">✈</div><div class="tag">20+ programas</div><h4>Milhas aéreas</h4><p>Transfira para mais de 20 programas de milhagem com bônus de até 120%.</p></div>
+      <div class="rcard"><div class="ic">⌂</div><div class="tag">60 países</div><h4>Diárias de hotel</h4><p>Troque por noites nas maiores redes — Accor, Marriott, Hilton e mais.</p></div>
+      <div class="rcard"><div class="ic">★</div><div class="tag">350+ lounges</div><h4>Salas VIP</h4><p>Acesso a salas VIP em aeroportos do mundo todo usando seus pontos.</p></div>
+      <div class="rcard"><div class="ic">⇄</div><div class="tag">P2P instantâneo</div><h4>Enviar pontos</h4><p>Transfira pontos para amigos e família em segundos, sem burocracia.</p></div>
+      <div class="rcard"><div class="ic">%</div><div class="tag">parceiros</div><h4>Descontos</h4><p>Use pontos como desconto direto em marcas e lojas parceiras.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk"><div class="wrap">
+  <div class="band">
+    <div>
+      <div class="big">+120%</div>
+      <h3 class="font-display">extra a cada<br>transferência.</h3>
+      <p style="color:var(--muted);margin-top:14px;max-width:46ch;line-height:1.6">Nas janelas certas, dobre seus pontos ao transferir entre programas parceiros. A gente avisa quando o bônus abre.</p>
+    </div>
+    <div class="band-side">
+      <div class="chip"><b>+120%</b><span>bônus máximo</span></div>
+      <div class="chip"><b>Missões</b><span>pontos extras</span></div>
+      <div class="chip"><b>Zero</b><span>taxa escondida</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="kicker" style="text-align:center;margin-bottom:18px">// parceiros conectados</div>
+  <div class="partners"><span>Smiles</span><span>LATAM Pass</span><span>Azul</span><span>Accor ALL</span><span>Marriott</span><span>Priority Pass</span><span>Livelo</span><span>Esfera</span><span>Itaú</span><span>Nubank</span></div>
+</div></section>
+
+<section class="blk" id="faq"><div class="wrap">
+  <div class="sec-head"><div class="kicker">// dúvidas</div><h2>Tudo o que você queria perguntar.</h2></div>
+  <div class="faq">
+    <details class="qa" open><summary>Como funciona o resgate via Pix?</summary><p>Você escolhe quantos pontos quer sacar, confirma com a chave Pix e o valor cai na sua conta em ~12 segundos, 24 horas por dia.</p></details>
+    <details class="qa"><summary>Quais são as taxas?</summary><p>Zero taxa escondida. O que você vê é o que recebe — a conversão de pontos é transparente em cada resgate.</p></details>
+    <details class="qa"><summary>Posso enviar pontos para outra pessoa?</summary><p>Sim. Transfira pontos ou Pix para qualquer pessoa, em qualquer lugar, em segundos e sem burocracia.</p></details>
+    <details class="qa"><summary>Como ganho o bônus de até 120%?</summary><p>Em janelas promocionais de transferência entre programas parceiros. Ativamos um aviso quando o bônus abre para você aproveitar.</p></details>
+  </div>
+</div></section>
+
+<section class="blk m-testi" style="padding-top:0"><div class="wrap">
+  <div class="tcard">
+    <div class="stars">★★★★★</div>
+    <p>"Resgatei pra Pix e caiu na hora. Usei os pontos numa sala VIP em Lisboa."</p>
+    <div class="who">— Marina R., há 2 dias</div>
+  </div>
+</div></section>
+
+<section class="cta-band" id="cta">
+  <span class="pill">Beta aberto</span>
+  <h3 class="font-display">PRONTO PARA<br>GIRAR O MUNDO?</h3>
+  <p>Crie sua conta grátis e comece a transformar pontos em experiências reais.</p>
+  <a href="/cadastro" class="btn btn-primary" style="font-size:17px;padding:16px 30px">Criar conta grátis →</a>
+</section>
+
+<footer><div class="wrap foot-in">
+  <span>© BlaXx Rewards · Pontos que viram o mundo</span>
+  <span class="mono" style="color:var(--neon)">preto + verde fluorescente</span>
+</div></footer>
+
+<div class="mobile-cta"><a href="/cadastro">Começar grátis →</a></div>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return; io.unobserve(e.target);
+    var el=e.target,target=+el.dataset.count,t0=performance.now(),dur=1300;
+    function tick(t){var p=Math.min(1,(t-t0)/dur);el.textContent=Math.round(target*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick);}
+    requestAnimationFrame(tick);
+  });},{threshold:.5});
+  document.querySelectorAll('[data-count]').forEach(function(el){io.observe(el);});
+  var ro=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(function(el){ro.observe(el);});
+})();
+
+(function(){
+  var p=['Smiles','LATAM Pass','Azul','Accor ALL','Marriott','Priority Pass','Livelo','Esfera','Itaú','Nubank'];
+  document.getElementById('marq').innerHTML=p.concat(p).map(function(x){return '<span>'+x+'</span>';}).join('');
+})();
+
+(function(){
+  var NODES=[
+    {p:'Smiles',c:'São Paulo',lat:-23.55,lng:-46.63},
+    {p:'LATAM Pass',c:'Santiago',lat:-33.45,lng:-70.66},
+    {p:'Azul',c:'Campinas',lat:-22.90,lng:-47.06},
+    {p:'Livelo',c:'Brasília',lat:-15.79,lng:-47.88},
+    {p:'Esfera',c:'Rio de Janeiro',lat:-22.91,lng:-43.17},
+    {p:'Itaú',c:'Belo Horizonte',lat:-19.92,lng:-43.94},
+    {p:'Nubank',c:'Buenos Aires',lat:-34.60,lng:-58.38},
+    {p:'Marriott',c:'Nova York',lat:40.71,lng:-74.00},
+    {p:'Priority Pass',c:'Miami',lat:25.76,lng:-80.19},
+    {p:'Accor ALL',c:'Paris',lat:48.85,lng:2.35},
+    {p:'Priority Pass',c:'Londres',lat:51.50,lng:-0.12},
+    {p:'Accor ALL',c:'Lisboa',lat:38.72,lng:-9.13},
+    {p:'Marriott',c:'Dubai',lat:25.20,lng:55.27},
+    {p:'Priority Pass',c:'Tóquio',lat:35.68,lng:139.69},
+    {p:'Accor ALL',c:'Cidade do Cabo',lat:-33.92,lng:18.42},
+    {p:'Marriott',c:'Cingapura',lat:1.35,lng:103.82}
+  ];
+  var PARTNERS=[]; NODES.forEach(function(n){if(PARTNERS.indexOf(n.p)<0)PARTNERS.push(n.p);});
+  var canvas=document.getElementById('globe'),ctx=canvas.getContext('2d');
+  var wrap=document.getElementById('globeWrap'),tip=document.getElementById('globeTip');
+  var DPR=Math.min(window.devicePixelRatio||1,2),W=0,H=0,R=0,cx=0,cy=0;
+  var rot=0,autoSpeed=0.0016,dragging=false,lastX=0,vel=0.0016,tilt=-0.32,active=null;
+
+  function resize(){var r=wrap.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*DPR;canvas.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);R=Math.min(W,H)*0.42;cx=W/2;cy=H/2;}
+  function project(lat,lng){var la=lat*Math.PI/180,lo=lng*Math.PI/180+rot;var x=Math.cos(la)*Math.sin(lo),y=Math.sin(la),z=Math.cos(la)*Math.cos(lo);var y2=y*Math.cos(tilt)-z*Math.sin(tilt),z2=y*Math.sin(tilt)+z*Math.cos(tilt);return {x:cx+x*R,y:cy-y2*R,z:z2};}
+  function drawSphere(){
+    var g=ctx.createRadialGradient(cx-R*0.35,cy-R*0.4,R*0.2,cx,cy,R);
+    g.addColorStop(0,'#123018');g.addColorStop(.6,'#08160d');g.addColorStop(1,'#040a06');
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,R+1,0,Math.PI*2);ctx.strokeStyle='rgba(89,253,39,.25)';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();ctx.lineWidth=1;
+    for(var la=-60;la<=60;la+=30){ctx.beginPath();var s=false;for(var lo=-180;lo<=180;lo+=6){var pt=project(la,lo);if(pt.z<0){s=false;continue;}if(!s){ctx.moveTo(pt.x,pt.y);s=true;}else ctx.lineTo(pt.x,pt.y);}ctx.strokeStyle='rgba(89,253,39,.10)';ctx.stroke();}
+    for(var lo2=-180;lo2<180;lo2+=30){ctx.beginPath();var st=false;for(var la2=-90;la2<=90;la2+=6){var p2=project(la2,lo2);if(p2.z<0){st=false;continue;}if(!st){ctx.moveTo(p2.x,p2.y);st=true;}else ctx.lineTo(p2.x,p2.y);}ctx.strokeStyle='rgba(89,253,39,.07)';ctx.stroke();}
+    ctx.restore();
+  }
+  function drawNodes(){
+    NODES.forEach(function(n){
+      var pt=project(n.lat,n.lng);n._x=pt.x;n._y=pt.y;n._z=pt.z;
+      if(pt.z<=0.02){n._vis=false;return;}n._vis=true;
+      var depth=(pt.z+1)/2,dim=(active&&n.p!==active)?0.18:1,r=(2.0+depth*2.6);
+      ctx.beginPath();ctx.arc(pt.x,pt.y,r+3,0,Math.PI*2);ctx.fillStyle='rgba(89,253,39,'+(0.16*dim*depth)+')';ctx.fill();
+      ctx.beginPath();ctx.arc(pt.x,pt.y,r,0,Math.PI*2);ctx.fillStyle='rgba(89,253,39,'+dim+')';ctx.fill();
+      if(active&&n.p===active){ctx.beginPath();ctx.arc(pt.x,pt.y,r+4,0,Math.PI*2);ctx.strokeStyle='rgba(89,253,39,.7)';ctx.lineWidth=1;ctx.stroke();}
+    });
+  }
+  function frame(){ctx.clearRect(0,0,W,H);if(!dragging){rot+=vel;vel+=(autoSpeed-vel)*0.03;}drawSphere();drawNodes();requestAnimationFrame(frame);}
+
+  var legend=document.getElementById('legend');
+  PARTNERS.forEach(function(p){
+    var b=document.createElement('button');b.innerHTML='<span class="dot"></span>'+p;
+    b.addEventListener('click',function(){
+      if(active===p){active=null;legend.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});}
+      else{active=p;legend.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
+    });
+    legend.appendChild(b);
+  });
+
+  function countTo(el,target){var t0=performance.now();function t(now){var p=Math.min(1,(now-t0)/1100);el.textContent=Math.round(target*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(t);}requestAnimationFrame(t);}
+  var seen=false;
+  new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;countTo(document.getElementById('totalActive'),NODES.length);countTo(document.getElementById('supCount'),PARTNERS.length);}});},{threshold:.4}).observe(wrap);
+
+  function pos(ev){var r=canvas.getBoundingClientRect();var t=ev.touches?ev.touches[0]:ev;return {x:t.clientX-r.left,y:t.clientY-r.top};}
+  function onMove(ev){
+    if(dragging){var t=ev.touches?ev.touches[0]:ev;var dx=t.clientX-lastX;lastX=t.clientX;rot+=dx*0.006;vel=dx*0.006;return;}
+    var p=pos(ev),best=null,bd=16;
+    NODES.forEach(function(n){if(!n._vis)return;var d=Math.hypot(n._x-p.x,n._y-p.y);if(d<bd){bd=d;best=n;}});
+    if(best){tip.style.left=best._x+'px';tip.style.top=best._y+'px';tip.innerHTML='<b>● '+best.c+'</b> · '+best.p;tip.style.opacity='1';}
+    else{tip.style.opacity='0';}
+  }
+  function onDown(ev){dragging=true;canvas.classList.add('drag');var t=ev.touches?ev.touches[0]:ev;lastX=t.clientX;tip.style.opacity='0';}
+  function onUp(){dragging=false;canvas.classList.remove('drag');}
+  canvas.addEventListener('mousemove',onMove);
+  canvas.addEventListener('mousedown',onDown);
+  window.addEventListener('mouseup',onUp);
+  canvas.addEventListener('mouseleave',function(){if(!dragging)tip.style.opacity='0';});
+  canvas.addEventListener('touchstart',onDown,{passive:true});
+  canvas.addEventListener('touchmove',function(e){onMove(e);},{passive:true});
+  window.addEventListener('touchend',onUp);
+  window.addEventListener('resize',resize);
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){autoSpeed=0;vel=0;}
+  resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
