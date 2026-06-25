@@ -68,7 +68,7 @@
   <script src="assets/blaxx-config.js"></script>
   <script>
   (function(){
-    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos.onrender.com');
     function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
     var $ = function(id){ return document.getElementById(id); };
     var msg = $('msg'), btn = $('btnSend');
