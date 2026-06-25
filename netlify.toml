@@ -62,11 +62,17 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Redireciona / para /index.html (default do Netlify ja faz, redundante por clareza)
+# Home = landing neon (blaxx-neon.html). Rewrite mantem a URL "/" limpa.
 [[redirects]]
   from = "/"
-  to = "/index.html"
+  to = "/blaxx-neon.html"
   status = 200
+
+# Evita home duplicada: /index.html redireciona para a raiz.
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
 
 # -----------------------------------------------------------------------------
 # Aliases de URL: nomes amigaveis em portugues que apontam pras paginas reais.
