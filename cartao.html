@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaxX · Cartão Blaxx</title>
+<!-- BlaxX SEO -->
+<meta name="description" content="Conheça o Cartão BlaxX e seus níveis. Acumule pontos, suba de nível e desbloqueie benefícios exclusivos do programa.">
+<meta name="theme-color" content="#080907">
+<link rel="canonical" href="https://blaxxpontos.com.br/cartao.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaxX Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://blaxxpontos.com.br/cartao.html">
+<meta property="og:title" content="Cartão BlaxX | BlaxX Pontos">
+<meta property="og:description" content="Conheça o Cartão BlaxX e seus níveis. Acumule pontos, suba de nível e desbloqueie benefícios exclusivos do programa.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cartão BlaxX | BlaxX Pontos">
+<meta name="twitter:description" content="Conheça o Cartão BlaxX e seus níveis. Acumule pontos, suba de nível e desbloqueie benefícios exclusivos do programa.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+
 <link rel="stylesheet" href="styles.css">
 <style>
   .page-head { margin-bottom: 28px; }
@@ -19,8 +35,8 @@
   .bcard__member { font-size: 12.5px; opacity:.85; margin-top: 4px; }
   .bcard__prog { margin-top: 18px; }
   .bcard__prog-row { display:flex; justify-content:space-between; font-size: 11.5px; opacity:.9; margin-bottom: 6px; }
-  .bcard__track { height: 8px; border-radius: var(--r-pill); background: rgba(255,255,255,.22); overflow: hidden; }
-  .bcard__fill { height: 100%; border-radius: var(--r-pill); background: #fff; transition: width 1s var(--ease-out); }
+  .bcard__track { height: 8px; border-radius: var(--r-pill); background: rgba(255,255,255,.06); overflow: hidden; }
+  .bcard__fill { height: 100%; border-radius: var(--r-pill); background: #0c110c; transition: width 1s var(--ease-out); }
 
   .btn-wallet { margin-top: 16px; }
   .wallet-note { font-size: 12.5px; color: var(--fg-muted); margin-top: 8px; }
@@ -42,6 +58,9 @@
 
   @media (max-width: 900px){ .two { grid-template-columns: 1fr; } .bcard__num{font-size:46px;} }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Cartão","item":"https://blaxxpontos.com.br/cartao.html"}]}
+</script>
 </head>
 <body data-screen="cartao">
 <main>
@@ -73,6 +92,7 @@
     </div>
   </section>
 </main>
+<script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
 <script>
   // Catálogo canônico dos 4 níveis (espelha Config.tiers() do backend).
@@ -80,11 +100,11 @@
     { key:'bronze', label:'Bronze', min_points:0,     color:'#CD7F32', text_color:'#FFFFFF', perks:'Acesso ao programa, catálogo de benefícios e PIX.' },
     { key:'prata',  label:'Prata',  min_points:5000,  color:'#9AA0A6', text_color:'#0B0B0C', perks:'Ofertas exclusivas Prata + atendimento prioritário.' },
     { key:'ouro',   label:'Ouro',   min_points:20000, color:'#D4AF37', text_color:'#0B0B0C', perks:'Bônus em campanhas + benefícios premium.' },
-    { key:'black',  label:'Black',  min_points:50000, color:'#0B0B0C', text_color:'#C6F432', perks:'Tudo do Ouro + experiências Black e limites VIP.' },
-    { key:'vip',    label:'BlaXx VIP', min_points:999999999, color:'#0A0A0A', text_color:'#C6F432', invite_only:true, perks:'Compras de pontos ilimitadas, exchange preferencial e concierge — exclusivo, apenas por convite.' },
+    { key:'black',  label:'Black',  min_points:50000, color:'#0B0B0C', text_color:'#39ff14', perks:'Tudo do Ouro + experiências Black e limites VIP.' },
+    { key:'vip',    label:'BlaXx VIP', min_points:999999999, color:'#0A0A0A', text_color:'#39ff14', invite_only:true, perks:'Compras de pontos ilimitadas, exchange preferencial e concierge — exclusivo, apenas por convite.' },
   ];
 
-  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   const fmt = n => Number(n||0).toLocaleString('pt-BR');

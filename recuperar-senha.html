@@ -4,6 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaxX · Recuperar senha</title>
+<!-- BlaxX SEO -->
+<meta name="description" content="Recupere o acesso à sua conta BlaxX. Informe seu e-mail e receba as instruções para redefinir sua senha.">
+<meta name="theme-color" content="#080907">
+<link rel="canonical" href="https://blaxxpontos.com.br/recuperar-senha.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaxX Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://blaxxpontos.com.br/recuperar-senha.html">
+<meta property="og:title" content="Recuperar senha | BlaxX Pontos">
+<meta property="og:description" content="Recupere o acesso à sua conta BlaxX. Informe seu e-mail e receba as instruções para redefinir sua senha.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recuperar senha | BlaxX Pontos">
+<meta name="twitter:description" content="Recupere o acesso à sua conta BlaxX. Informe seu e-mail e receba as instruções para redefinir sua senha.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -26,6 +47,9 @@
   .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--chrome-fg-muted); }
   .auth-foot a { text-decoration: underline; }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Recuperar senha","item":"https://blaxxpontos.com.br/recuperar-senha.html"}]}
+</script>
 </head>
 <body>
   <div class="auth-top">
@@ -49,9 +73,10 @@
 
   <div class="auth-foot">© 2026 BLAXX PONTOS · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
 
+  <script src="assets/blaxx-config.js"></script>
   <script>
   (function(){
-    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
     var $ = function(id){ return document.getElementById(id); };
     var msg = $('msg'), btn = $('btnSend');
@@ -75,5 +100,12 @@
     $('email').addEventListener('keydown', function(e){ if (e.key === 'Enter') send(); });
   })();
   </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>

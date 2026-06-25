@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BlaXx Rewards — Pontos que viram o mundo</title>
+<meta name="description" content="BlaXx Rewards: compre, ganhe e troque pontos por Pix na hora, milhas, diárias de hotel e salas VIP pelo mundo. Sem taxas escondidas.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html">
+<link rel="icon" href="assets/blaxx-rewards-b.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<style>
+  :root{
+    --bg:#000; --surface:#0c110c; --surface-2:#0a0f0a;
+    --text:#f1fff4; --muted:#8fae97; --dim:#5c7a63;
+    --neon:#39ff14; --rule:#173322; --border:rgba(57,255,20,.18);
+    --glow:0 0 42px rgba(57,255,20,.30); --maxw:1180px;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg); color:var(--text); font-family:'Manrope',system-ui,sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+  a{color:inherit; text-decoration:none}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+  ::selection{background:var(--neon); color:#000}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .kicker{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--neon); letter-spacing:.18em; text-transform:uppercase}
+  h1,h2,h3,h4{font-family:'Sora',sans-serif; letter-spacing:-.02em; line-height:1}
+
+  /* nav */
+  nav{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:14px 22px; backdrop-filter:blur(12px); background:rgba(0,0,0,.6); border-bottom:1px solid var(--rule)}
+  .nav-links{display:flex; gap:24px; font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.08em}
+  .nav-links a:hover{color:var(--neon)}
+  .nav-right{display:flex; align-items:center; gap:14px}
+  .lang{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim)}
+  .lang b{color:var(--neon)}
+  @media(max-width:820px){ .nav-links{display:none} }
+
+  /* botões */
+  .btn{display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:15px; padding:14px 26px; border:2px solid var(--neon); cursor:pointer; border-radius:0; text-transform:uppercase; letter-spacing:.04em; transition:background .12s,color .12s}
+  .btn-primary{background:var(--neon); color:#000; box-shadow:var(--glow)}
+  .btn-primary:hover{background:#000; color:var(--neon)}
+  .btn-ghost{background:transparent; color:var(--text); border-color:var(--border)}
+  .btn-ghost:hover{border-color:var(--neon); color:var(--neon)}
+  .btn-sm{padding:9px 16px; font-size:12.5px; border-width:2px}
+
+  /* hero */
+  .hero{position:relative; padding:80px 0 60px; text-align:center; overflow:hidden}
+  .hero::before{content:""; position:absolute; inset:-25% 0 auto 0; height:720px; z-index:0; background:radial-gradient(58% 58% at 50% 18%, rgba(57,255,20,.16), transparent 70%); pointer-events:none}
+  .hero>*{position:relative; z-index:1}
+  .eyebrow{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--neon); border:1px solid var(--border); padding:6px 13px; letter-spacing:.16em; text-transform:uppercase}
+  h1{font-weight:800; line-height:.95; font-size:clamp(44px,8.5vw,112px); margin:20px 0 0}
+  h1 .fx{color:var(--neon); text-shadow:var(--glow)}
+  .lede{max-width:620px; margin:22px auto 0; font-size:clamp(16px,2.2vw,20px); color:var(--muted)}
+  .cta-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:32px}
+  .scroll-cue{margin-top:46px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.2em; color:var(--dim); text-transform:uppercase}
+  .scroll-cue::after{content:"↓"; display:block; margin:8px auto 0; color:var(--neon); animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+  /* stats */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); border-top:2px solid var(--neon); border-bottom:2px solid var(--neon); margin:60px 0}
+  .stat{padding:28px 18px; text-align:left; border-left:1px solid var(--rule)}
+  .stat:first-child{border-left:0}
+  .stat .num{font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(32px,5vw,60px); line-height:1; color:var(--text)}
+  .stat .num em{color:var(--neon); font-style:normal}
+  .stat .lbl{margin-top:8px; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim)}
+  @media(max-width:760px){ .stats{grid-template-columns:repeat(2,1fr)} .stat:nth-child(3){border-left:0} }
+
+  section.blk{padding:60px 0}
+  .sec-head{margin-bottom:34px}
+  .sec-head h2{font-weight:800; font-size:clamp(28px,4.6vw,52px); margin:12px 0 0}
+  .sec-head p{color:var(--muted); margin:14px 0 0; max-width:60ch}
+
+  /* globo */
+  .globe-grid{display:grid; grid-template-columns:1.25fr .9fr; gap:42px; align-items:center}
+  @media(max-width:900px){ .globe-grid{grid-template-columns:1fr} }
+  #globeWrap{position:relative; width:100%; height:520px; cursor:grab}
+  #globe{width:100%; height:100%; display:block}
+  #globeTip{display:none; position:absolute; background:#0a0f0a; border:1px solid var(--border); padding:9px 13px; pointer-events:none; white-space:nowrap; z-index:6; box-shadow:var(--glow)}
+  .legend{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:22px}
+  .leg{display:flex; align-items:center; gap:9px; font-size:13px; color:#cfe8d6; padding:7px 9px; border:1px solid var(--rule); cursor:pointer; user-select:none; transition:border-color .15s,background .15s,opacity .15s}
+  .leg:hover{border-color:var(--border)}
+  .leg .dot{width:10px; height:10px; flex:none; border-radius:50%; box-shadow:0 0 8px currentColor}
+  .leg.on{border-color:var(--neon); background:rgba(57,255,20,.07)}
+  .leg.dim{opacity:.4}
+  .leg .nm{flex:1}
+  .leg .ct{font-size:10.5px; color:var(--dim); text-transform:uppercase; letter-spacing:.06em}
+  .globe-meta{display:flex; gap:30px; margin-top:24px}
+  .globe-meta b{font-family:'Sora',sans-serif; font-weight:800; font-size:40px; color:var(--neon); text-shadow:var(--glow); line-height:1; display:block}
+  .globe-meta span{font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim)}
+  .hint{margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); letter-spacing:.12em; text-transform:uppercase}
+
+  /* cards grid */
+  .cards{display:grid; grid-template-columns:repeat(4,1fr); gap:0; border-top:2px solid var(--neon)}
+  .card{padding:26px 20px 30px; border-left:1px solid var(--rule)}
+  .card:first-child{border-left:0}
+  .card .ic{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:26px; color:var(--neon)}
+  .card .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:var(--dim); float:right}
+  .card h4{font-weight:700; font-size:20px; margin:18px 0 8px}
+  .card p{color:var(--muted); font-size:14px; margin:0}
+  @media(max-width:760px){ .cards{grid-template-columns:1fr 1fr} .card:nth-child(3){border-left:0} }
+
+  /* catálogo de resgates */
+  .redeem{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  @media(max-width:820px){ .redeem{grid-template-columns:1fr} }
+  .rcard{background:var(--surface); border:1px solid var(--rule); padding:24px; transition:border-color .15s,transform .15s}
+  .rcard:hover{border-color:var(--neon); transform:translateY(-3px)}
+  .rcard .tag{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--neon); letter-spacing:.1em; text-transform:uppercase}
+  .rcard h4{font-size:22px; margin:14px 0 6px}
+  .rcard p{color:var(--muted); font-size:14px; margin:0}
+  .rcard .ic{font-size:24px}
+
+  /* banda +120% */
+  .band{display:grid; grid-template-columns:1.1fr .9fr; gap:30px; align-items:center; background:var(--surface-2); border:1px solid var(--rule); padding:40px}
+  @media(max-width:760px){ .band{grid-template-columns:1fr} }
+  .band h3{font-weight:800; font-size:clamp(26px,4vw,42px); margin:10px 0 0}
+  .band .big{font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(48px,9vw,96px); color:var(--neon); text-shadow:var(--glow); line-height:1}
+  .band-side{display:flex; gap:14px}
+  .chip{flex:1; border:1px solid var(--rule); padding:18px; text-align:center}
+  .chip b{display:block; font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:var(--text)}
+  .chip span{font-size:12px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em}
+
+  /* parceiros strip */
+  .partners{display:flex; flex-wrap:wrap; gap:12px 28px; align-items:center; justify-content:center; padding:8px 0}
+  .partners span{font-family:'Sora',sans-serif; font-weight:700; font-size:15px; color:var(--dim); letter-spacing:.04em; text-transform:uppercase; transition:color .15s}
+  .partners span:hover{color:var(--neon)}
+
+  /* FAQ */
+  .faq{border-top:1px solid var(--rule)}
+  .qa{border-bottom:1px solid var(--rule)}
+  .qa summary{list-style:none; cursor:pointer; padding:20px 4px; display:flex; justify-content:space-between; align-items:center; font-family:'Sora',sans-serif; font-weight:700; font-size:17px}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary::after{content:"+"; color:var(--neon); font-size:24px; font-weight:400}
+  .qa[open] summary::after{content:"−"}
+  .qa p{margin:0 4px 22px; color:var(--muted); font-size:15px; max-width:80ch}
+
+  /* CTA + footer */
+  .cta-band{background:var(--neon); color:#000; padding:64px 22px; text-align:center; margin-top:30px}
+  .cta-band h3{font-weight:800; font-size:clamp(30px,5vw,64px); line-height:.98; margin:0}
+  .cta-band p{max-width:520px; margin:14px auto 26px; font-weight:600; color:#0a2e06}
+  .cta-band .btn{border-color:#000; background:#000; color:var(--neon)}
+  .cta-band .btn:hover{background:#0a2e06}
+  .pill{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#000; background:#000; color:var(--neon); padding:4px 10px; letter-spacing:.1em; text-transform:uppercase; border:1px solid #0a2e06}
+  footer{padding:50px 22px; color:var(--dim); font-size:13px; border-top:1px solid var(--rule)}
+  .foot-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; align-items:center; max-width:var(--maxw); margin:0 auto}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" aria-label="BlaXx Rewards" style="display:flex;align-items:center"><img src="assets/blaxx-rewards-b.svg" alt="BlaXx Rewards" height="36"></a>
+  <div class="nav-links"><a href="#globo">Mapa</a><a href="#como">Como funciona</a><a href="#resgates">Recompensas</a><a href="#faq">Dúvidas</a></div>
+  <div class="nav-right"><span class="lang"><b>PT</b> / EN</span><a href="#cta" class="btn btn-primary btn-sm">Entrar</a></div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <img src="assets/blaxx-rewards-logo.svg" alt="BlaXx Rewards" width="186" style="display:block;margin:0 auto 22px">
+    <span class="eyebrow">● Pontos que viram o mundo</span>
+    <h1>COMPRE. GANHE.<br><span class="fx">TROQUE.</span> ENVIE.</h1>
+    <p class="lede">Acumule pontos no dia a dia e troque por Pix na hora, milhas, diárias de hotel ou salas VIP pelo planeta. Sem taxas escondidas.</p>
+    <div class="cta-row">
+      <a href="#cta" class="btn btn-primary">Criar conta grátis →</a>
+      <a href="#globo" class="btn btn-ghost">Ver o mapa</a>
+    </div>
+    <div class="scroll-cue">Role para explorar</div>
+
+    <div class="stats">
+      <div class="stat"><div class="num"><em><span data-count="350">0</span></em>+</div><div class="lbl">salas VIP no mundo</div></div>
+      <div class="stat"><div class="num"><em><span data-count="60">0</span></em></div><div class="lbl">países atendidos</div></div>
+      <div class="stat"><div class="num"><em><span data-count="12">0</span></em>s</div><div class="lbl">tempo médio do Pix</div></div>
+      <div class="stat"><div class="num"><em>0</em></div><div class="lbl">taxas escondidas</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="blk" id="globo">
+  <div class="wrap globe-grid">
+    <div id="globeWrap"><canvas id="globe"></canvas><div id="globeTip"></div></div>
+    <div>
+      <div class="kicker">// rede global</div>
+      <h2 style="font-size:clamp(30px,4.6vw,52px);margin-top:12px">Seus pontos<br>no mapa.</h2>
+      <p style="color:var(--muted);margin-top:14px;max-width:44ch">Hotéis, companhias e salas VIP de cada parceiro, plotados sobre o globo. Passe o mouse para ver a cidade; <b style="color:var(--text)">clique numa legenda para realçar</b> o parceiro.</p>
+      <div class="legend" id="legend"></div>
+      <div class="globe-meta">
+        <div><b id="totalActive">0</b><span>destinos no mapa</span></div>
+        <div><b id="supCount">0</b><span>parceiros online</span></div>
+      </div>
+      <div class="hint">Arraste para girar · toque para explorar</div>
+    </div>
+  </div>
+</section>
+
+<section class="blk wrap" id="como">
+  <div class="sec-head"><div class="kicker">// como funciona</div><h2>Como funciona</h2><p>Da compra do dia a dia até uma sala VIP do outro lado do mundo — todo o ciclo vive em um app só.</p></div>
+  <div class="cards">
+    <div class="card"><span class="ic">$</span><span class="n">01</span><h4>Compre</h4><p>Acumule pontos automaticamente nas compras do dia a dia com cartões e parceiros conectados.</p></div>
+    <div class="card"><span class="ic">×</span><span class="n">02</span><h4>Ganhe</h4><p>Multiplique com bônus de transferência de até 120% e missões por tempo limitado.</p></div>
+    <div class="card"><span class="ic">⇄</span><span class="n">03</span><h4>Troque</h4><p>Vire Pix na hora, milhas aéreas, diárias de hotel ou acesso a salas VIP.</p></div>
+    <div class="card"><span class="ic">↗</span><span class="n">04</span><h4>Envie</h4><p>Transfira pontos ou Pix para qualquer pessoa, em qualquer lugar, em segundos — sem taxa.</p></div>
+  </div>
+</section>
+
+<section class="blk wrap" id="resgates">
+  <div class="sec-head"><div class="kicker">// catálogo de resgates</div><h2>Um saldo, vários destinos.</h2><p>Seus pontos são líquidos. Saque, voe ou faça check-in — com taxas que continuam honestas.</p></div>
+  <div class="redeem">
+    <div class="rcard"><div class="ic">⚡</div><div class="tag">a partir de 1.000 pts</div><h4>Pix na hora</h4><p>Converta pontos em dinheiro na sua conta em ~12 segundos, 24/7.</p></div>
+    <div class="rcard"><div class="ic">✈</div><div class="tag">20+ programas</div><h4>Milhas aéreas</h4><p>Transfira para mais de 20 programas de milhagem com bônus de até 120%.</p></div>
+    <div class="rcard"><div class="ic">⌂</div><div class="tag">60 países</div><h4>Diárias de hotel</h4><p>Troque por noites nas maiores redes — Accor, Marriott, Hilton e mais.</p></div>
+    <div class="rcard"><div class="ic">★</div><div class="tag">350+ lounges</div><h4>Salas VIP</h4><p>Acesso a salas VIP em aeroportos do mundo todo usando seus pontos.</p></div>
+    <div class="rcard"><div class="ic">⇄</div><div class="tag">P2P instantâneo</div><h4>Enviar pontos</h4><p>Transfira pontos para amigos e família em segundos, sem burocracia.</p></div>
+    <div class="rcard"><div class="ic">%</div><div class="tag">parceiros</div><h4>Descontos</h4><p>Use pontos como desconto direto em marcas e lojas parceiras.</p></div>
+  </div>
+</section>
+
+<section class="blk wrap">
+  <div class="band">
+    <div>
+      <div class="big">+120%</div>
+      <h3>extra a cada<br>transferência.</h3>
+      <p style="color:var(--muted);margin-top:14px;max-width:46ch">Nas janelas certas, dobre seus pontos ao transferir entre programas parceiros. A gente avisa quando o bônus abre.</p>
+    </div>
+    <div class="band-side">
+      <div class="chip"><b>+120%</b><span>bônus máximo</span></div>
+      <div class="chip"><b>Missões</b><span>pontos extras</span></div>
+      <div class="chip"><b>Zero</b><span>taxa escondida</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk wrap">
+  <div class="kicker" style="text-align:center;margin-bottom:18px">// parceiros conectados</div>
+  <div class="partners"><span>Smiles</span><span>LATAM Pass</span><span>Azul</span><span>Accor ALL</span><span>Marriott</span><span>Priority Pass</span><span>Livelo</span><span>Esfera</span><span>Itaú</span><span>Nubank</span></div>
+</section>
+
+<section class="blk wrap" id="faq">
+  <div class="sec-head"><div class="kicker">// dúvidas</div><h2>Tudo o que você queria perguntar.</h2></div>
+  <div class="faq">
+    <details class="qa" open><summary>Como funciona o resgate via Pix?</summary><p>Você escolhe quantos pontos quer sacar, confirma com a chave Pix e o valor cai na sua conta em ~12 segundos, 24 horas por dia.</p></details>
+    <details class="qa"><summary>Quais são as taxas?</summary><p>Zero taxa escondida. O que você vê é o que recebe — a conversão de pontos é transparente em cada resgate.</p></details>
+    <details class="qa"><summary>Posso enviar pontos para outra pessoa?</summary><p>Sim. Transfira pontos ou Pix para qualquer pessoa, em qualquer lugar, em segundos e sem burocracia.</p></details>
+    <details class="qa"><summary>Como ganho o bônus de até 120%?</summary><p>Em janelas promocionais de transferência entre programas parceiros. Ativamos um aviso quando o bônus abre para você aproveitar.</p></details>
+  </div>
+</section>
+
+<section class="cta-band" id="cta">
+  <span class="pill">Beta aberto</span>
+  <h3 style="margin-top:16px">PRONTO PARA<br>GIRAR O MUNDO?</h3>
+  <p>Crie sua conta grátis e comece a transformar pontos em experiências reais.</p>
+  <a href="#" class="btn">Criar conta grátis →</a>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <img src="assets/blaxx-rewards-b.svg" alt="BlaXx Rewards" height="40">
+    <span>© 2026 BlaXx Rewards · Pontos que viram o mundo</span>
+    <span class="mono" style="color:var(--dim)">Pix · Milhas · Hotéis · Salas VIP</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const $=(id)=>document.getElementById(id);
+  const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const SUP={
+    smiles:{name:'Smiles',cat:'Milhas',rgb:'231,178,74'}, latam:{name:'LATAM Pass',cat:'Milhas',rgb:'224,96,160'},
+    azul:{name:'Azul',cat:'Milhas',rgb:'79,143,240'}, accor:{name:'Accor ALL',cat:'Hotéis',rgb:'79,201,106'},
+    marriott:{name:'Marriott',cat:'Hotéis',rgb:'155,108,240'}, priority:{name:'Priority Pass',cat:'Salas VIP',rgb:'63,198,216'}
+  };
+  const POINTS=[
+    {s:'smiles',c:'São Paulo',lat:-23.5,lon:-46.6,i:1},{s:'smiles',c:'Rio de Janeiro',lat:-22.9,lon:-43.2,i:.8},{s:'smiles',c:'Orlando',lat:28.5,lon:-81.3,i:.7},{s:'smiles',c:'Lisboa',lat:38.7,lon:-9.1,i:.6},
+    {s:'latam',c:'Santiago',lat:-33.4,lon:-70.6,i:.9},{s:'latam',c:'Madri',lat:40.4,lon:-3.7,i:.7},{s:'latam',c:'Miami',lat:25.7,lon:-80.2,i:.7},{s:'latam',c:'Sydney',lat:-33.8,lon:151.2,i:.6},
+    {s:'azul',c:'Campinas',lat:-23,lon:-47.1,i:.9},{s:'azul',c:'Manaus',lat:-3.1,lon:-60,i:.5},{s:'azul',c:'Recife',lat:-8.05,lon:-34.88,i:.6},
+    {s:'accor',c:'Paris',lat:48.8,lon:2.3,i:1},{s:'accor',c:'Londres',lat:51.5,lon:-0.1,i:.8},{s:'accor',c:'Dubai',lat:25.2,lon:55.3,i:.8},{s:'accor',c:'Singapura',lat:1.3,lon:103.8,i:.7},
+    {s:'marriott',c:'Nova York',lat:40.7,lon:-74,i:1},{s:'marriott',c:'Tóquio',lat:35.6,lon:139.7,i:.8},{s:'marriott',c:'Xangai',lat:31.2,lon:121.5,i:.7},
+    {s:'priority',c:'Dubai (DXB)',lat:25.25,lon:55.36,i:1},{s:'priority',c:'Londres (LHR)',lat:51.47,lon:-0.45,i:.8},{s:'priority',c:'Frankfurt (FRA)',lat:50.04,lon:8.56,i:.7},{s:'priority',c:'Guarulhos (GRU)',lat:-23.43,lon:-46.47,i:.8}
+  ];
+  let highlight=null;   // chave do parceiro realçado (null = nenhum)
+
+  // legenda clicável (realça, não apaga)
+  $('legend').innerHTML=Object.keys(SUP).map(k=>{const s=SUP[k];
+    return `<div class="leg" data-k="${k}"><span class="dot" style="color:rgb(${s.rgb})"></span><span class="nm">${esc(s.name)}</span><span class="ct">${esc(s.cat)}</span></div>`;}).join('');
+  function syncLegend(){
+    document.querySelectorAll('.leg').forEach(el=>{
+      const k=el.dataset.k;
+      el.classList.toggle('on', highlight===k);
+      el.classList.toggle('dim', !!highlight && highlight!==k);
+    });
+  }
+  document.querySelectorAll('.leg').forEach(el=>el.addEventListener('click',()=>{
+    const k=el.dataset.k; highlight = (highlight===k)? null : k; syncLegend();
+  }));
+  $('totalActive').textContent=POINTS.length;
+  $('supCount').textContent=Object.keys(SUP).length;
+
+  const canvas=$('globe'),ctx=canvas.getContext('2d'),tipEl=$('globeTip'),wrap=$('globeWrap');
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  let rotL=60,rotP=-14,dragging=false,autoR=true,lastX=0,lastY=0,hoverId=null;
+  const ACCENT='57,255,20';
+  function heat(x,y,col,intensity,z,a){
+    const hr=(16+14*intensity)*(0.55+0.6*z);
+    const g=ctx.createRadialGradient(x,y,0,x,y,hr);
+    g.addColorStop(0,'rgba('+col+','+((0.5*z+0.22)*a)+')'); g.addColorStop(1,'rgba('+col+',0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,hr,0,7); ctx.fill();
+    ctx.fillStyle='rgba('+col+','+((0.65+0.35*z)*a)+')'; ctx.beginPath(); ctx.arc(x,y,2.1*(0.7+0.5*z),0,7); ctx.fill();
+  }
+  function startGlobe(world){
+    const land=topojson.feature(world,world.objects.countries);
+    const borders=topojson.mesh(world,world.objects.countries,(a,b)=>a!==b);
+    const coast=topojson.mesh(world,world.objects.countries,(a,b)=>a===b);
+    function draw(){
+      const rect=canvas.getBoundingClientRect();
+      if(rect.width>0){const nW=Math.max(1,Math.round(rect.width*dpr)),nH=Math.max(1,Math.round(rect.height*dpr)); if(canvas.width!==nW||canvas.height!==nH){canvas.width=nW;canvas.height=nH;}}
+      const Wc=canvas.width/dpr,Hc=canvas.height/dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,Wc,Hc);
+      const cx=Wc/2,cy=Hc/2,R=Math.min(Wc,Hc)*0.42;
+      let atm=ctx.createRadialGradient(cx,cy,R*0.88,cx,cy,R*1.28); atm.addColorStop(0,'rgba('+ACCENT+',0.12)'); atm.addColorStop(1,'rgba('+ACCENT+',0)');
+      ctx.fillStyle=atm; ctx.beginPath(); ctx.arc(cx,cy,R*1.28,0,7); ctx.fill();
+      let sph=ctx.createRadialGradient(cx-R*0.35,cy-R*0.35,R*0.1,cx,cy,R); sph.addColorStop(0,'#12200f'); sph.addColorStop(0.65,'#0a0f0a'); sph.addColorStop(1,'#050705');
+      ctx.fillStyle=sph; ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.fill();
+      const proj=d3.geoOrthographic().translate([cx,cy]).scale(R).rotate([rotL,rotP]).clipAngle(90);
+      const path=d3.geoPath(proj,ctx);
+      ctx.beginPath(); path(d3.geoGraticule10()); ctx.strokeStyle='rgba(57,255,20,0.06)'; ctx.lineWidth=0.5; ctx.stroke();
+      ctx.beginPath(); path(land); ctx.fillStyle='rgba(40,60,42,0.95)'; ctx.fill();
+      ctx.beginPath(); path(coast); ctx.strokeStyle='rgba(150,210,160,0.45)'; ctx.lineWidth=0.8; ctx.stroke();
+      ctx.beginPath(); path(borders); ctx.strokeStyle='rgba(100,150,110,0.35)'; ctx.lineWidth=0.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle='rgba('+ACCENT+',0.35)'; ctx.lineWidth=1; ctx.stroke();
+      for(const m of POINTS){ m._vis=false;
+        const dist=d3.geoDistance([m.lon,m.lat],[-rotL,-rotP]); if(dist>=Math.PI/2)continue;
+        const p=proj([m.lon,m.lat]); if(!p)continue; const z=Math.cos(dist);
+        const a = highlight ? (m.s===highlight?1:0.14) : 1;   // realça selecionado, esmaece os outros
+        heat(p[0],p[1],SUP[m.s].rgb,m.i,z,a); m._sx=p[0]; m._sy=p[1]; m._vis=true; m._a=a;
+      }
+      if(autoR&&!dragging) rotL+=0.16; requestAnimationFrame(draw);
+    }
+    draw();
+    wrap.addEventListener('mousedown',e=>{dragging=true;autoR=false;lastX=e.clientX;lastY=e.clientY;wrap.style.cursor='grabbing';});
+    canvas.style.touchAction='none'; wrap.style.touchAction='none';
+    wrap.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;dragging=true;autoR=false;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;},{passive:true});
+    wrap.addEventListener('touchmove',e=>{if(!dragging||e.touches.length!==1)return;e.preventDefault();const t=e.touches[0];rotL+=(t.clientX-lastX)*0.28;rotP=Math.max(-88,Math.min(88,rotP-(t.clientY-lastY)*0.28));lastX=t.clientX;lastY=t.clientY;tipEl.style.display='none';hoverId=null;},{passive:false});
+    window.addEventListener('touchend',()=>{if(dragging){dragging=false;setTimeout(()=>{if(!dragging)autoR=true;},2500);}});
+    window.addEventListener('mouseup',()=>{if(dragging){dragging=false;wrap.style.cursor='grab';setTimeout(()=>{if(!dragging)autoR=true;},2500);}});
+    canvas.addEventListener('mousemove',e=>{
+      const rect=canvas.getBoundingClientRect(); const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+      if(dragging){rotL+=(e.clientX-lastX)*0.28;rotP=Math.max(-88,Math.min(88,rotP-(e.clientY-lastY)*0.28));lastX=e.clientX;lastY=e.clientY;tipEl.style.display='none';hoverId=null;return;}
+      let best=null,bestD=15;
+      for(const m of POINTS){ if(!m._vis||m._a<0.5)continue; const d=Math.hypot(m._sx-mx,m._sy-my); if(d<bestD){bestD=d;best=m;} }
+      if(best){const id=best.s+best.c;
+        if(id!==hoverId){hoverId=id; tipEl.innerHTML='<div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#fff">'+esc(best.c)+'</div><div style="font-size:12px;color:#8fae97;margin-top:2px">'+esc(SUP[best.s].name)+' · '+esc(SUP[best.s].cat)+'</div>'; tipEl.style.display='block';}
+        tipEl.style.left=best._sx+'px'; tipEl.style.top=best._sy+'px'; tipEl.style.transform='translate(-50%,-145%)'; wrap.style.cursor='pointer';
+      } else if(hoverId){hoverId=null;tipEl.style.display='none';wrap.style.cursor='grab';}
+    });
+    canvas.addEventListener('mouseleave',()=>{if(hoverId){hoverId=null;tipEl.style.display='none';}});
+  }
+  fetch('vendor/countries-110m.json').then(r=>r.json()).then(startGlobe).catch(e=>console.error('mapa-múndi:',e));
+
+  // contadores animados
+  function animateCount(el){const target=+el.dataset.count; let cur=0; const step=Math.max(1,Math.round(target/40));
+    const t=setInterval(()=>{cur+=step; if(cur>=target){cur=target;clearInterval(t);} el.textContent=cur;},22);}
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){animateCount(e.target);io.unobserve(e.target);}});},{threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>

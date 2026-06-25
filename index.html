@@ -4,44 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaxX · Início</title>
-<meta name="description" content="BlaxX Pontos: ganhe pontos nas compras do dia a dia e troque por Pix. Acumule, envie pontos, resgate com parceiros e acompanhe tudo em tempo real.">
+<!-- BlaxX SEO -->
+<meta name="description" content="BlaxX Pontos: compre, ganhe e troque pontos por benefícios reais. Pague via PIX, envie pontos para amigos e resgate vouchers de parceiros.">
 <meta name="theme-color" content="#080907">
-<link rel="canonical" href="https://www.blaxxpontos.com.br/">
+<link rel="canonical" href="https://blaxxpontos.com.br/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BlaxX Pontos">
 <meta property="og:locale" content="pt_BR">
-<meta property="og:url" content="https://www.blaxxpontos.com.br/">
-<meta property="og:title" content="BlaxX Pontos — Seus pontos viram Pix">
-<meta property="og:description" content="Ganhe pontos nas compras do dia a dia e troque por Pix. Envie pontos, resgate com parceiros e acompanhe tudo em tempo real.">
-<meta property="og:image" content="https://www.blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta property="og:url" content="https://blaxxpontos.com.br/">
+<meta property="og:title" content="Início | BlaxX Pontos">
+<meta property="og:description" content="BlaxX Pontos: compre, ganhe e troque pontos por benefícios reais. Pague via PIX, envie pontos para amigos e resgate vouchers de parceiros.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BlaxX Pontos — Seus pontos viram Pix">
-<meta name="twitter:description" content="Ganhe pontos nas compras do dia a dia e troque por Pix. Envie pontos, resgate com parceiros e acompanhe tudo em tempo real.">
-<meta name="twitter:image" content="https://www.blaxxpontos.com.br/assets/blaxx-logo.png">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "name": "BlaxX Pontos",
-      "url": "https://www.blaxxpontos.com.br/",
-      "logo": "https://www.blaxxpontos.com.br/assets/blaxx-logo.png",
-      "sameAs": ["https://instagram.com/blaxx.pontos"]
-    },
-    {
-      "@type": "WebSite",
-      "name": "BlaxX Pontos",
-      "url": "https://www.blaxxpontos.com.br/",
-      "inLanguage": "pt-BR"
-    }
-  ]
-}
-</script>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="twitter:title" content="Início | BlaxX Pontos">
+<meta name="twitter:description" content="BlaxX Pontos: compre, ganhe e troque pontos por benefícios reais. Pague via PIX, envie pontos para amigos e resgate vouchers de parceiros.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+
 <link rel="stylesheet" href="styles.css">
 <style>
   /* ===== Command Center — dashboard premium (dados reais + showcase) ===== */
@@ -149,6 +127,12 @@
     .cc-exps { grid-template-columns:1fr; }
   }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"BlaxX Pontos","url":"https://blaxxpontos.com.br/","logo":"https://blaxxpontos.com.br/assets/blaxx-logo.png","sameAs":["https://instagram.com/blaxx.pontos"]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"BlaxX Pontos","url":"https://blaxxpontos.com.br/"}
+</script>
 </head>
 <body data-screen="inicio">
 <main>
@@ -280,10 +264,11 @@
 
   <p class="cc-disclaimer">Pontos são créditos promocionais — não são moeda, depósito ou investimento. Seções marcadas “demo” são ilustrativas e ainda não refletem dados reais.</p>
 </main>
+<script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
 <script>
 (function(){
-  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   function user(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user || null; } catch { return null; } }

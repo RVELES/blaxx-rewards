@@ -4,19 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BlaXx Pontos — Compre. Ganhe. Troque. Envie.</title>
-<meta name="description" content="BlaxX Pontos: o programa de recompensas que transforma suas compras em pontos que viram Pix. Cadastre-se gratis.">
-<link rel="canonical" href="https://www.blaxxpontos.com.br/home.html">
-<meta property="og:title" content="BlaxX Pontos | Compras viram Pix">
-<meta property="og:description" content="BlaxX Pontos: o programa de recompensas que transforma suas compras em pontos que viram Pix. Cadastre-se gratis.">
+<!-- BlaxX SEO -->
+<meta name="theme-color" content="#080907">
+<link rel="canonical" href="https://blaxxpontos.com.br/home.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BlaxX Pontos">
 <meta property="og:locale" content="pt_BR">
-<meta property="og:url" content="https://www.blaxxpontos.com.br/home.html">
-<meta property="og:image" content="https://www.blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta property="og:url" content="https://blaxxpontos.com.br/home.html">
+<meta property="og:title" content="Compre. Ganhe. Troque. Envie. | BlaxX Pontos">
+<meta property="og:description" content="Conheça o BlaxX Pontos: compre pontos com PIX, acompanhe parceiros no globo, troque por benefícios e envie pontos para quem quiser.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BlaxX Pontos | Compras viram Pix">
-<meta name="twitter:description" content="BlaxX Pontos: o programa de recompensas que transforma suas compras em pontos que viram Pix. Cadastre-se gratis.">
-<meta name="twitter:image" content="https://www.blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta name="twitter:title" content="Compre. Ganhe. Troque. Envie. | BlaxX Pontos">
+<meta name="twitter:description" content="Conheça o BlaxX Pontos: compre pontos com PIX, acompanhe parceiros no globo, troque por benefícios e envie pontos para quem quiser.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="Transforme seus pontos em Pix, milhas, hotéis e salas VIP — com os melhores parceiros do Brasil e do mundo.">
 
 <!-- ============================================================= -->
 <!-- DEPENDÊNCIAS EXTERNAS (CDN) — necessárias para o globo e fontes -->
@@ -24,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="assets/blaxx-config.js"></script>
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 
@@ -82,6 +91,9 @@
     div[style*="padding:60px 48px"]{padding:34px 20px !important}
   }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Home","item":"https://blaxxpontos.com.br/home.html"}]}
+</script>
 </head>
 <body>
 <div id="app">
@@ -224,7 +236,7 @@
         <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:34px;letter-spacing:-1px;margin:0 0 14px;color:#fff">Quanto valem seus pontos?</h2>
         <p style="font-size:15.5px;line-height:1.6;color:#aaa498;margin:0 0 28px">Arraste e veja, em tempo real, o que seus pontos rendem em Pix, milhas e diárias de hotel.</p>
         <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:40px;color:#fff;letter-spacing:-1px;margin-bottom:18px"><span id="calcPoints">50.000</span> <span style="font-size:18px;color:#8b867b;font-weight:500">pontos</span></div>
-        <input id="calcRange" type="range" min="1000" max="500000" step="1000" value="50000" style="width:100%;accent-color:#b6f23d;height:6px;cursor:pointer">
+        <input id="calcRange" type="range" min="1000" max="500000" step="1000" value="50000" style="width:100%;accent-color:#39ff14;height:6px;cursor:pointer">
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#5a554c;margin-top:8px;font-family:'JetBrains Mono',monospace"><span>1k</span><span>500k</span></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
@@ -255,7 +267,7 @@
 
   <!-- ============ CTA BAND ============ -->
   <section class="wrap" style="margin-top:30px;padding:0 40px">
-    <div style="position:relative;overflow:hidden;background:linear-gradient(120deg,#b6f23d,#8fd11f);border-radius:26px;padding:60px 48px;text-align:center">
+    <div style="position:relative;overflow:hidden;background:linear-gradient(120deg,#39ff14,#8fd11f);border-radius:26px;padding:60px 48px;text-align:center">
       <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:42px;letter-spacing:-1.5px;margin:0 0 14px;color:#14210a">Seus pontos valem o mundo. Comece hoje.</h2>
       <p style="font-size:17px;color:#2e4310;margin:0 0 30px;font-weight:500">Crie sua conta grátis e resgate seu primeiro Pix em minutos.</p>
       <button style="background:#16140d;color:#fff;border:none;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;padding:16px 36px;border-radius:14px" onclick="location.href='cadastro.html'">Criar conta grátis</button>
@@ -293,7 +305,7 @@
 const CONFIG = {
   // -- Marca / tema --
   brandName: 'BlaXx',
-  accent: '#b6f23d',          // cor de destaque (verde limão)
+  accent: '#39ff14',          // cor de destaque (verde limão)
 
   // -- Cartão de saldo do hero (apenas exibição) --
   hero: {
@@ -461,7 +473,7 @@ const CONFIG = {
   // Saldo real da carteira: sobrepõe o número de exibição quando há sessão
   // ativa (reflete pontos creditados após compra PIX). Deslogado mantém o demo.
   (function(){
-    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     var base; try { base = (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ base = DEFAULT_API; }
     var tok; try { tok = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ tok = null; }
     if (!tok) return;
@@ -665,6 +677,13 @@ const CONFIG = {
     .then(startGlobe)
     .catch(e => console.error('Falha ao carregar o mapa-múndi:', e));
 })();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
 </script>
 </body>
 </html>

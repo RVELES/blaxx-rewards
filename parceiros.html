@@ -4,24 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaxX · Parceiros</title>
-<meta name="description" content="Conheça os parceiros BlaxX Pontos: acumule e resgate pontos em marcas que você já usa, com vantagens reais e troca por Pix.">
+<!-- BlaxX SEO -->
+<meta name="description" content="Descubra os parceiros BlaxX e troque pontos por benefícios, descontos e vouchers. Hotéis, salas VIP e marcas parceiras num só lugar.">
 <meta name="theme-color" content="#080907">
-<link rel="canonical" href="https://www.blaxxpontos.com.br/parceiros.html">
+<link rel="canonical" href="https://blaxxpontos.com.br/parceiros.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BlaxX Pontos">
 <meta property="og:locale" content="pt_BR">
-<meta property="og:url" content="https://www.blaxxpontos.com.br/parceiros.html">
-<meta property="og:title" content="Parceiros BlaxX Pontos">
-<meta property="og:description" content="Acumule e resgate pontos em marcas que você já usa, com vantagens reais e troca por Pix.">
-<meta property="og:image" content="https://www.blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta property="og:url" content="https://blaxxpontos.com.br/parceiros.html">
+<meta property="og:title" content="Parceiros | BlaxX Pontos">
+<meta property="og:description" content="Descubra os parceiros BlaxX e troque pontos por benefícios, descontos e vouchers. Hotéis, salas VIP e marcas parceiras num só lugar.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Parceiros BlaxX Pontos">
-<meta name="twitter:description" content="Acumule e resgate pontos em marcas que você já usa, com vantagens reais e troca por Pix.">
-<meta name="twitter:image" content="https://www.blaxxpontos.com.br/assets/blaxx-logo.png">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="twitter:title" content="Parceiros | BlaxX Pontos">
+<meta name="twitter:description" content="Descubra os parceiros BlaxX e troque pontos por benefícios, descontos e vouchers. Hotéis, salas VIP e marcas parceiras num só lugar.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+
 <link rel="stylesheet" href="styles.css">
 <style>
   /* ===== Parceiros — redesign premium (Nubank/XP/Livelo/Apple-like) ===== */
@@ -58,7 +56,7 @@
   .pz-banner__dots button { width:8px; height:8px; border-radius:999px; border:none; background: rgba(255,255,255,.32); cursor:pointer; transition: all .2s var(--ease); padding:0; }
   .pz-banner__dots button.on { background: var(--lime); width:22px; }
   .pz-banner__arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:3; width:38px; height:38px; border-radius:999px; border:none; background: rgba(255,255,255,.10); color:#fff; cursor:pointer; backdrop-filter: blur(6px); display:grid; place-items:center; font-size:18px; transition: background .2s var(--ease); }
-  .pz-banner__arrow:hover { background: rgba(255,255,255,.22); }
+  .pz-banner__arrow:hover { background: rgba(255,255,255,.06); }
   .pz-banner__arrow.prev { left:14px; } .pz-banner__arrow.next { right:14px; }
 
   /* Busca + favoritos */
@@ -112,7 +110,9 @@
   @media (max-width: 760px){ .pz-metrics{grid-template-columns:repeat(2,1fr);} .pz-grid{grid-template-columns:1fr 1fr;} .pz-slide{grid-template-columns:1fr;} .pz-slide__art{display:none;} .pz-banner{height:200px;} }
   @media (max-width: 480px){ .pz-grid{grid-template-columns:1fr;} .pz-searchrow{flex-direction:column;} }
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://www.blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Parceiros","item":"https://www.blaxxpontos.com.br/parceiros.html"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Parceiros","item":"https://blaxxpontos.com.br/parceiros.html"}]}
+</script>
 </head>
 <body data-screen="parceiros">
 <main class="pz">
@@ -163,10 +163,11 @@
   </section>
 </main>
 
+<script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
 <script>
 (function(){
-  const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
+  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   const fmt = n => Number(n||0).toLocaleString('pt-BR');
