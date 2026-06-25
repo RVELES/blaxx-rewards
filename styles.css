@@ -463,16 +463,16 @@ main {
 
 
 /* ===== NEON DARK THEME (override global) — preto + verde fluorescente ===== */
+/* Telas logadas (app): miolo levemente mais claro (elevado) + blocos mais escuros. */
 :root{
-  --paper:#000000; --paper-2:#050805; --white:#0c110c; --cream:#0a0f0a;
-  --ink:#0c110c; --ink-soft:#10160f; --carbon:#141a12;   /* superfícies ESCURAS */
-  --fg:#f1fff4; --fg-muted:#8fae97; --fg-subtle:#6f8f78; --fg-on-dark:#f1fff4; --fg-on-dark-muted:#9da68a;
-  --line:rgba(57,255,20,.12); --line-strong:rgba(57,255,20,.20); --line-dark:rgba(244,246,238,.12);
-  --chrome:#050805; --chrome-2:#0a0f0a;
+  --paper:#14181b; --paper-2:#1a201c; --white:#0d100e; --cream:#171c18;
+  --ink:#0d100e; --ink-soft:#0b0e0c; --carbon:#0f140e;   /* superfícies/blocos ESCUROS */
+  --fg:#f1fff4; --fg-muted:#9fbfa7; --fg-subtle:#7a9a82; --fg-on-dark:#f1fff4; --fg-on-dark-muted:#9da68a;
+  --line:rgba(57,255,20,.12); --line-strong:rgba(57,255,20,.22); --line-dark:rgba(244,246,238,.10);
+  --chrome:#0e1210; --chrome-2:#11160f; --chrome-surface:rgba(244,246,238,.045);
   --lime:#39ff14; --lime-bright:#7cff4d; --lime-deep:#26c10e;
   --lime-06:rgba(57,255,20,.06); --lime-12:rgba(57,255,20,.12); --lime-20:rgba(57,255,20,.20); --lime-40:rgba(57,255,20,.40);
   --pos:#39ff14; --neg:#ff6a4d; --warn:#ffcf4d; --info:#4db8ff;
 }
-body{ background:#000000 !important; color:var(--fg); }
-
-input,textarea,select{ background:#0c110c; color:var(--fg); border:1px solid var(--line); }
+body{ background:var(--paper) !important; color:var(--fg); }
+input,textarea,select{ background:var(--ink-soft); color:var(--fg); border:1px solid var(--line); }
