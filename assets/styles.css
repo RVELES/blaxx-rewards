@@ -16,7 +16,7 @@
     --card: #ffffff;
     /* Verde-limão oficial do logo BlaxX — alinhado com Mac/iOS Theme.swift
        e renderer design-system.css. */
-    --lime: #C6F432;
+    --lime: #39ff14;
     --lime-2: #d8ff75;
     --lime-soft: #F0FAD9;
     --lime-bg: #f5fbe2;
@@ -273,12 +273,12 @@ img, video, table, pre, code { max-width: 100%; }
     padding: 13px 22px;
     font-weight: 800;
     font-size: 14px;
-    box-shadow: 0 10px 28px rgba(207, 255, 26, 0.32);
+    box-shadow: 0 10px 28px rgba(57,255,20, 0.32);
     transition: transform 0.15s, box-shadow 0.15s;
     text-decoration: none;
     white-space: nowrap;
 }
-.button:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(207, 255, 26, 0.4); }
+.button:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(57,255,20, 0.4); }
 .button.secondary {
     background: var(--card);
     color: var(--black);
@@ -359,7 +359,7 @@ p.lead { font-size: 18px; color: var(--ink-2); }
     width: 280px;
     height: 280px;
     border-radius: 50%;
-    background: rgba(207, 255, 26, 0.22);
+    background: rgba(57,255,20, 0.22);
 }
 .hero-box h1 { color: white; margin: 18px 0 14px; }
 .hero-box p { color: #d6dccf; max-width: 60ch; font-size: 18px; }
@@ -367,9 +367,9 @@ p.lead { font-size: 18px; color: var(--ink-2); }
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(207, 255, 26, 0.14);
+    background: rgba(57,255,20, 0.14);
     color: var(--lime);
-    border: 1px solid rgba(207, 255, 26, 0.4);
+    border: 1px solid rgba(57,255,20, 0.4);
     padding: 8px 14px;
     border-radius: 999px;
     font-weight: 700;
@@ -455,7 +455,7 @@ p.lead { font-size: 18px; color: var(--ink-2); }
 .card.featured p { color: #d8decd; }
 .card.lime {
     background: var(--lime-bg);
-    border-color: rgba(207, 255, 26, 0.5);
+    border-color: rgba(57,255,20, 0.5);
 }
 .card.compact { padding: 18px; }
 .card-icon {
@@ -671,7 +671,7 @@ input[type="number"], input[type="search"], input[type="date"], select, textarea
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--lime);
-    box-shadow: 0 0 0 4px rgba(207, 255, 26, 0.2);
+    box-shadow: 0 0 0 4px rgba(57,255,20, 0.2);
 }
 /* Indicador adicional pra keyboard users — outline grosso sobre o ring */
 input:focus-visible, select:focus-visible, textarea:focus-visible {
@@ -863,7 +863,7 @@ textarea { resize: vertical; min-height: 100px; }
     width: 52px;
     height: 52px;
     border-radius: 14px;
-    background: #fff;            /* fundo neutro pra logos coloridos */
+    background: var(--card);            /* fundo neutro pra logos coloridos */
     border: 1px solid var(--line);
     display: grid;
     place-items: center;
@@ -914,7 +914,7 @@ textarea { resize: vertical; min-height: 100px; }
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: rgba(207, 255, 26, 0.18);
+    background: rgba(57,255,20, 0.18);
 }
 .campaign-cover h3 { color: white; position: relative; }
 .campaign-body { padding: 18px; }
@@ -1371,7 +1371,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
 /* Print-friendly fallback */
 @media print {
     .topbar, .footer, .sidebar { display: none; }
-    body { background: white; }
+    body { background: var(--card); }
 }
 
 /* ==========================================================================
@@ -1416,7 +1416,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(800px 320px at 80% -20%, rgba(207,255,26,.16), transparent 60%);
+    background: radial-gradient(800px 320px at 80% -20%, rgba(57,255,20,.16), transparent 60%);
     pointer-events: none;
 }
 .hero-v3 .stats-card .head {
@@ -1502,7 +1502,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: white;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: 999px;
     padding: 8px 14px 8px 8px;
@@ -1558,7 +1558,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
 }
 .step-card {
     position: relative;
-    background: white;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     padding: 28px;
@@ -1579,7 +1579,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
 
 /* Marketplace card de resgate (estilo oficial) */
 .market-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     padding: 24px;
@@ -1608,7 +1608,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     width: 64px;
     height: 64px;
     border-radius: 12px;
-    background: #fff;
+    background: var(--card);
     border: 1px solid var(--line);
     padding: 6px;
     display: grid;
@@ -1640,7 +1640,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     width: 96px;
     height: 96px;
     border-radius: 18px;
-    background: #fff;
+    background: var(--card);
     border: 1px solid var(--line-soft);
     padding: 10px;
     display: grid;
@@ -1711,7 +1711,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     margin: 24px 0;
 }
 .b2b-stats > div {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 18px;
@@ -1747,7 +1747,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(700px 280px at 90% 0, rgba(207,255,26,.14), transparent 55%);
+    background: radial-gradient(700px 280px at 90% 0, rgba(57,255,20,.14), transparent 55%);
     pointer-events: none;
 }
 .partner-dash .label {
@@ -1800,7 +1800,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     gap: 14px;
 }
 .cat-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 22px 18px;
@@ -1833,7 +1833,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     .pricing { grid-template-columns: repeat(2, 1fr); }
 }
 .price-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     padding: 28px;
@@ -2100,7 +2100,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     .table thead { display: none; }
     .table tbody, .table tr { display: block; }
     .table tr {
-        background: white;
+        background: var(--card);
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px;
@@ -2300,7 +2300,7 @@ html[data-auth-loading] body::after {
     width: 32px; height: 32px;
     margin: -16px 0 0 -16px;
     border: 3px solid rgba(0,0,0,0.10);
-    border-top-color: var(--lime, #C6F432);
+    border-top-color: var(--lime, #39ff14);
     border-radius: 50%;
     animation: bx-auth-spin 0.8s linear infinite;
     z-index: 100000;
@@ -2444,3 +2444,20 @@ body.bx-no-scroll { overflow: hidden; }
         transition: none;
     }
 }
+
+
+/* ===== NEON DARK THEME (override global) — preto + verde fluorescente ===== */
+:root{
+  --bg:#000000; --bg-warm:#050805; --card:#0c110c;
+  --black:#0a0e0a;                       /* ESCURO: usado em .mark/.chip.active/badges */
+  --ink:#f1fff4; --ink-2:#dbeee0;        /* texto claro */
+  --muted:#8fae97; --muted-2:#6f8f78;
+  --line:#16331f; --line-soft:#10231a;
+  --lime:#39ff14; --lime-2:#7cff4d; --lime-soft:rgba(57,255,20,.14); --lime-bg:rgba(57,255,20,.07); --lime-dark:#26c10e;
+  --ok:#0e2410; --ok-text:#7cff4d; --warn:#2a230d; --warn-text:#ffcf4d;
+  --danger:#2a110d; --danger-text:#ff6a4d; --info:#0d1f2a; --info-text:#4db8ff;
+  --shadow-sm:0 4px 12px rgba(0,0,0,.45); --shadow:0 12px 32px rgba(0,0,0,.55); --shadow-lg:0 20px 60px rgba(0,0,0,.65);
+}
+body{ background:#000000 !important; color:var(--ink); }
+h1,h2,h3,h4,h5,h6,.brand{ color:var(--ink); }
+.brand-sub{ color:var(--muted); }

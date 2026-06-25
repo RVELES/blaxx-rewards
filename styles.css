@@ -9,7 +9,7 @@
   --ink: #0E0F0B;          /* near-black, warm */
   --ink-soft: #1B1D14;     /* dark card base */
   --carbon: #16180F;       /* dark elevated */
-  --lime: #C6F432;         /* primary signal — marca oficial */
+  --lime: #39ff14;         /* primary signal — marca oficial */
   --lime-bright: #D7FF5C;  /* highlight / reward */
   --lime-deep: #8FB81F;    /* pressed */
   --paper: #ECEFE3;        /* page ground */
@@ -39,10 +39,10 @@
   --chrome-surface: rgba(244,246,238,0.05);
 
   /* ---- lime tints ---- */
-  --lime-06: rgba(174,230,58,0.06);
-  --lime-12: rgba(174,230,58,0.12);
-  --lime-20: rgba(174,230,58,0.20);
-  --lime-40: rgba(174,230,58,0.40);
+  --lime-06: rgba(57,255,20,0.06);
+  --lime-12: rgba(57,255,20,0.12);
+  --lime-20: rgba(57,255,20,0.20);
+  --lime-40: rgba(57,255,20,0.40);
 
   /* ---- signals ---- */
   --pos: #5FB733;     /* gain */
@@ -71,7 +71,7 @@
   --sh-1: 0 1px 2px rgba(14,15,11,0.05), 0 1px 0 rgba(14,15,11,0.02);
   --sh-2: 0 4px 16px rgba(14,15,11,0.06), 0 1px 3px rgba(14,15,11,0.05);
   --sh-3: 0 18px 48px rgba(14,15,11,0.14), 0 4px 12px rgba(14,15,11,0.08);
-  --glow-lime: 0 0 0 1px var(--lime-20), 0 18px 60px rgba(174,230,58,0.10);
+  --glow-lime: 0 0 0 1px var(--lime-20), 0 18px 60px rgba(57,255,20,0.10);
 
   /* ---- motion ---- */
   --ease: cubic-bezier(0.2, 0, 0, 1);
@@ -148,7 +148,7 @@ img { max-width: 100%; display: block; }
 .topnav a.is-active::after {
   content: ''; position: absolute; left: 15px; right: 15px; bottom: 3px;
   height: 2px; border-radius: 2px; background: var(--lime);
-  box-shadow: 0 0 8px rgba(174,230,58,0.6);
+  box-shadow: 0 0 8px rgba(57,255,20,0.6);
 }
 
 .topbar__right { display: flex; align-items: center; gap: 12px; }
@@ -164,7 +164,7 @@ img { max-width: 100%; display: block; }
   position: absolute; top: 9px; right: 10px;
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--lime); border: 2px solid var(--chrome);
-  box-shadow: 0 0 7px rgba(174,230,58,0.8);
+  box-shadow: 0 0 7px rgba(57,255,20,0.8);
 }
 .user-pill {
   display: flex; align-items: center; gap: 10px;
@@ -286,14 +286,14 @@ main {
 }
 .card--dark {
   background:
-    radial-gradient(120% 90% at 100% 0%, rgba(174,230,58,0.14), transparent 55%),
-    radial-gradient(90% 70% at 0% 100%, rgba(174,230,58,0.06), transparent 60%),
+    radial-gradient(120% 90% at 100% 0%, rgba(57,255,20,0.14), transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, rgba(57,255,20,0.06), transparent 60%),
     var(--ink);
   color: var(--fg-on-dark); border-color: rgba(244,246,238,0.08);
 }
 .card--lime {
   background:
-    radial-gradient(120% 120% at 100% 0%, rgba(174,230,58,0.30), transparent 60%),
+    radial-gradient(120% 120% at 100% 0%, rgba(57,255,20,0.30), transparent 60%),
     var(--paper-2);
   border-color: var(--lime-40);
 }
@@ -306,7 +306,7 @@ main {
   transition: all 180ms var(--ease); white-space: nowrap;
 }
 .btn--primary { background: var(--lime); color: var(--ink); }
-.btn--primary:hover { background: var(--lime-bright); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(174,230,58,0.35); }
+.btn--primary:hover { background: var(--lime-bright); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(57,255,20,0.35); }
 .btn--primary:active { background: var(--lime-deep); transform: translateY(0); }
 .btn--dark { background: var(--ink); color: var(--lime); }
 .btn--dark:hover { background: #000; transform: translateY(-1px); }
@@ -460,3 +460,17 @@ main {
   }
   .drawer.open { transform: translateX(0); }
 }
+
+
+/* ===== NEON DARK THEME (override global) — preto + verde fluorescente ===== */
+:root{
+  --paper:#000000; --paper-2:#050805; --white:#0c110c; --cream:#0a0f0a;
+  --ink:#0c110c; --ink-soft:#10160f; --carbon:#141a12;   /* superfícies ESCURAS */
+  --fg:#f1fff4; --fg-muted:#8fae97; --fg-subtle:#6f8f78; --fg-on-dark:#f1fff4; --fg-on-dark-muted:#9da68a;
+  --line:rgba(57,255,20,.12); --line-strong:rgba(57,255,20,.20); --line-dark:rgba(244,246,238,.12);
+  --chrome:#050805; --chrome-2:#0a0f0a;
+  --lime:#39ff14; --lime-bright:#7cff4d; --lime-deep:#26c10e;
+  --lime-06:rgba(57,255,20,.06); --lime-12:rgba(57,255,20,.12); --lime-20:rgba(57,255,20,.20); --lime-40:rgba(57,255,20,.40);
+  --pos:#39ff14; --neg:#ff6a4d; --warn:#ffcf4d; --info:#4db8ff;
+}
+body{ background:#000000 !important; color:var(--fg); }
