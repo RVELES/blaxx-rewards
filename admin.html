@@ -4,6 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin · Blaxx Pontos</title>
+<!-- BlaxX SEO -->
+<meta name="description" content="Área administrativa do BlaxX Pontos: gestão interna do programa, parceiros, campanhas e operações de pontos.">
+<meta name="theme-color" content="#080907">
+<link rel="canonical" href="https://blaxxpontos.com.br/admin.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaxX Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://blaxxpontos.com.br/admin.html">
+<meta property="og:title" content="Admin | BlaxX Pontos">
+<meta property="og:description" content="Área administrativa do BlaxX Pontos.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Admin | BlaxX Pontos">
+<meta name="twitter:description" content="Área administrativa do BlaxX Pontos.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   body { background: #faf8f3; }
@@ -41,6 +62,9 @@
   .tx-amount.pos { color: #2d651b; font-weight: 700; }
   .tx-amount.neg { color: #a83417; font-weight: 700; }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Admin","item":"https://blaxxpontos.com.br/admin.html"}]}
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -168,5 +192,12 @@
 
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/admin.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>

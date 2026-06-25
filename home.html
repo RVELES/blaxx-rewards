@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BlaXx Pontos — Compre. Ganhe. Troque. Envie.</title>
+<!-- BlaxX SEO -->
+<meta name="theme-color" content="#080907">
+<link rel="canonical" href="https://blaxxpontos.com.br/home.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaxX Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://blaxxpontos.com.br/home.html">
+<meta property="og:title" content="Compre. Ganhe. Troque. Envie. | BlaxX Pontos">
+<meta property="og:description" content="Conheça o BlaxX Pontos: compre pontos com PIX, acompanhe parceiros no globo, troque por benefícios e envie pontos para quem quiser.">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Compre. Ganhe. Troque. Envie. | BlaxX Pontos">
+<meta name="twitter:description" content="Conheça o BlaxX Pontos: compre pontos com PIX, acompanhe parceiros no globo, troque por benefícios e envie pontos para quem quiser.">
+<meta name="twitter:image" content="https://blaxxpontos.com.br/assets/blaxx-logo.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+
 <meta name="description" content="Transforme seus pontos em Pix, milhas, hotéis e salas VIP — com os melhores parceiros do Brasil e do mundo.">
 
 <!-- ============================================================= -->
@@ -71,6 +91,9 @@
     div[style*="padding:60px 48px"]{padding:34px 20px !important}
   }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Home","item":"https://blaxxpontos.com.br/home.html"}]}
+</script>
 </head>
 <body>
 <div id="app">
@@ -650,6 +673,13 @@ const CONFIG = {
     .then(startGlobe)
     .catch(e => console.error('Falha ao carregar o mapa-múndi:', e));
 })();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
 </script>
 </body>
 </html>
