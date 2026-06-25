@@ -30,7 +30,8 @@ front funciona sem novas mudanças).
 
 ### 1. Editar perfil — `PATCH /user/profile`
 Front chama: `PATCH /user/profile` body `{ name }` (autenticado). Hoje → **404**.
-Adicionar em `app/api/security.py` (blueprint `security`, montado em `/user`):
+Adicionar em `app/api/security.py` (blueprint `security`, montado em `/user`).
+**Imports já presentes no arquivo** (`Blueprint, g, jsonify, request`, `db`, `User`) — nada a adicionar.
 
 ```python
 @bp.patch("/profile")
@@ -39,38 +40,49 @@ def update_profile():
     data = request.get_json(silent=True) or {}
     user: User = g.current_user
     name = (data.get("name") or "").strip()
-    if not name or len(name) < 2:
-        return jsonify({"error": "Nome inválido"}), 400
-    user.name = name            # confirmar o campo real no modelo User
+    if len(name) < 2 or len(name) > 120:          # User.name é String(120)
+        return jsonify({"error": "Nome deve ter entre 2 e 120 caracteres"}), 400
+    user.name = name
     db.session.commit()
-    audit_svc.log(user.id, "profile.update")   # opcional
     return jsonify(user.to_dict())
 ```
-> Confirme o nome do campo no modelo `User` (`name` / `full_name`). Ajuste se preciso.
 
 ### 2. Reenviar verificação de e-mail (pré-login) — `POST /auth/resend-verification`
 Front chama: `POST /auth/resend-verification` body `{ email }` **sem token**
-(no fluxo de login/validação, onde o usuário ainda não está autenticado). Hoje → **404**.
-O `verify-email/send` existente exige login, então não cobre esse caso.
-
-Adicionar em `app/api/auth.py` (blueprint `auth`), **não autenticado**, com proteção
-contra enumeração de e-mail (sempre 200):
+(no fluxo de login/validação). Hoje → **404**.
+Adicionar em `app/api/auth.py` (blueprint `auth`), **não autenticado**, anti-enumeração
+(sempre 200), reusando a MESMA lógica de `verify-email/send`.
+**Imports já presentes** (`User, EmailVerification, db, generate_numeric_code,
+send_email_verification, limiter, datetime, timezone, timedelta, current_app`) — nada a adicionar.
 
 ```python
 @bp.post("/resend-verification")
 @limiter.limit("3 per minute; 10 per hour")
-def resend_verification():
+def resend_verification_public():
+    """Reenvia código de verificação SEM exigir login (fluxo pré-autenticação).
+    Resposta neutra — não revela se o e-mail existe (anti-enumeração)."""
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     user = User.query.filter_by(email=email).first()
     if user and not user.is_email_verified:
-        _send_verification_email(user)   # reusar a MESMA lógica de /verify-email/send
-    # resposta neutra — não revela se o e-mail existe
-    return jsonify({"message": "Se o e-mail existir e não estiver verificado, enviamos um novo link."}), 200
+        # invalida códigos pendentes (mesmo passo do verify-email/send)
+        db.session.query(EmailVerification).filter_by(
+            user_id=user.id, consumed_at=None
+        ).update({"consumed_at": datetime.now(timezone.utc)})
+        code = generate_numeric_code(6)
+        db.session.add(EmailVerification(
+            user_id=user.id,
+            code_hash=EmailVerification.hash_code(code),
+            expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
+        ))
+        db.session.commit()
+        try:
+            send_email_verification(user.email, user.name, code)
+        except Exception as e:
+            current_app.logger.warning("Falha ao reenviar (público): %s", e)
+    return jsonify({"ok": True, "message": "Se o e-mail existir e não estiver verificado, enviamos um novo código."}), 200
 ```
-> Reaproveite a geração de token + envio de e-mail já usados em `verify-email/send`.
-> Alternativa (sem patch de back): fazer o registro **sempre** retornar token (auto-login)
-> e usar `verify-email/send` autenticado — decisão de produto.
+> Contrato idêntico ao que o front já envia (`{email}` / `{name}`) → **nenhuma mudança no front** é necessária para estes dois, basta aplicar o backend.
 
 ---
 
