@@ -2960,7 +2960,7 @@
         if (nova !== confirm) { notify('Confirmação não confere', 'warn'); return; }
         var btn = formSenha.querySelector('button[type="submit"]');
         if (btn) btn.disabled = true;
-        api('/user/password', { method: 'PATCH', body: JSON.stringify({ current_password: current, new_password: nova, new_password_confirm: confirm }) })
+        api('/auth/change-password', { method: 'POST', body: JSON.stringify({ old_password: current, new_password: nova }) })
           .then(function () {
             notify('Senha alterada. Faça login novamente.', 'ok');
             STORE.clear();
@@ -3148,7 +3148,7 @@
       logoutAllBtn.addEventListener('click', function (e) {
         e.preventDefault();
         if (!confirm('Encerrar todas as outras sessões?')) return;
-        api('/auth/logout-all', { method: 'POST' })
+        api('/auth/sessions/revoke-all', { method: 'POST' })
           .then(function (d) { notify('Sessões encerradas: ' + (d.revoked || 0), 'ok'); STORE.clear(); location.href = '/login.html'; })
           .catch(function (e) { notify((e && e.message) || 'Falha', 'err'); });
       });
