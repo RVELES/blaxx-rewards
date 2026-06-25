@@ -138,7 +138,7 @@ a[aria-current="page"] {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(246, 248, 242, 0.92);
+    background: rgba(5,8,5, 0.92);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--line);
@@ -2461,3 +2461,5 @@ body.bx-no-scroll { overflow: hidden; }
 body{ background:#000000 !important; color:var(--ink); }
 h1,h2,h3,h4,h5,h6,.brand{ color:var(--ink); }
 .brand-sub{ color:var(--muted); }
+
+input,textarea,select{ background:#0c110c; color:var(--ink); border:1px solid var(--line); }

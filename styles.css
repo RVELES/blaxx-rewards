@@ -474,3 +474,5 @@ main {
   --pos:#39ff14; --neg:#ff6a4d; --warn:#ffcf4d; --info:#4db8ff;
 }
 body{ background:#000000 !important; color:var(--fg); }
+
+input,textarea,select{ background:#0c110c; color:var(--fg); border:1px solid var(--line); }
