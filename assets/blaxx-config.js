@@ -28,7 +28,7 @@
     // o problema crônico de DNS no buildkit local em ambientes WSL2.
     // Backend canônico de produção (único liberado na CSP connect-src).
     // O host antigo "-backend" foi desligado; usar "-exe".
-    window.BLAXX_API = "https://blaxx-pontos-exe.onrender.com";
+    window.BLAXX_API = "https://blaxx-pontos.onrender.com";
   }
 
   // ---------------- Google OAuth ----------------

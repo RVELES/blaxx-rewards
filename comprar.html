@@ -153,7 +153,7 @@
 <script src="chrome.js"></script>
 <script>
 (function(){
-  var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
+  var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
   function authHeaders(){ var t=token(); return t? {'Content-Type':'application/json','Authorization':'Bearer '+t} : {'Content-Type':'application/json'}; }

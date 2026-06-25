@@ -268,7 +268,7 @@
 <script src="chrome.js"></script>
 <script>
 (function(){
-  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
+  const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
   function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   function user(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user || null; } catch { return null; } }
