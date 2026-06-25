@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BlaXx · Neon — página piloto</title>
+<meta name="description" content="Piloto de design preto + verde fluorescente (neon brutalist + cinematic) para o BlaXx Pontos, com globo de parceiros ao vivo.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+
+<style>
+  :root{
+    --bg:#000000; --bg-alt:#050805; --surface:#0c110c;
+    --text:#f1fff4; --muted:#7fae8c; --dim:#4d6b54;
+    --neon:#39ff14;        /* verde fluorescente */
+    --neon-2:#b6ff00;      /* lima elétrica p/ grandes áreas */
+    --rule:#15291a; --border:rgba(57,255,20,.20);
+    --glow:0 0 42px rgba(57,255,20,.35);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Manrope',system-ui,sans-serif; line-height:1.5;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+  a{color:inherit; text-decoration:none}
+  ::selection{background:var(--neon); color:#000}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:16px 22px; backdrop-filter:blur(12px); background:rgba(0,0,0,.55);
+    border-bottom:1px solid var(--rule);
+  }
+  .logo{font-family:'Sora',sans-serif; font-weight:800; font-size:21px; letter-spacing:-.5px}
+  .logo b{color:var(--neon); text-shadow:var(--glow)}
+  .nav-links{display:flex; gap:26px; font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.08em}
+  .nav-links a:hover{color:var(--neon)}
+  @media(max-width:760px){ .nav-links{display:none} }
+
+  /* ---------- BOTÕES (neon brutalist: hard-edge, snap invert) ---------- */
+  .btn{display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:15px;
+    padding:14px 26px; border:2px solid var(--neon); cursor:pointer; border-radius:0;
+    text-transform:uppercase; letter-spacing:.04em; transition:none}
+  .btn-primary{background:var(--neon); color:#000; box-shadow:var(--glow)}
+  .btn-primary:hover{background:#000; color:var(--neon)}
+  .btn-ghost{background:transparent; color:var(--text); border-color:var(--border)}
+  .btn-ghost:hover{border-color:var(--neon); color:var(--neon)}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; padding:96px 0 70px; text-align:center; overflow:hidden}
+  .hero::before{content:""; position:absolute; inset:-30% 0 auto 0; height:680px; z-index:0;
+    background:radial-gradient(60% 60% at 50% 20%, rgba(57,255,20,.16), transparent 70%);
+    pointer-events:none}
+  .hero>*{position:relative; z-index:1}
+  .eyebrow{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+    color:var(--neon); border:1px solid var(--border); padding:6px 12px; letter-spacing:.18em; text-transform:uppercase}
+  h1{font-family:'Sora',sans-serif; font-weight:800; letter-spacing:-.03em; line-height:.96;
+    font-size:clamp(46px,9vw,116px); margin:22px 0 0}
+  h1 .fx{color:var(--neon); text-shadow:var(--glow)}
+  .lede{max-width:620px; margin:22px auto 0; font-size:clamp(16px,2.2vw,20px); color:var(--muted)}
+  .cta-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:34px}
+
+  /* ---------- STATS (numerais gigantes / 2px rules) ---------- */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); border-top:2px solid var(--neon); border-bottom:2px solid var(--neon); margin:64px 0}
+  .stat{padding:30px 18px; text-align:left; border-left:1px solid var(--rule)}
+  .stat:first-child{border-left:0}
+  .stat .num{font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(34px,5vw,62px); line-height:1; color:var(--text)}
+  .stat .num em{color:var(--neon); font-style:normal}
+  .stat .lbl{margin-top:8px; font-size:12.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim)}
+  @media(max-width:760px){ .stats{grid-template-columns:repeat(2,1fr)} .stat:nth-child(3){border-left:0} }
+
+  /* ---------- GLOBO ---------- */
+  .globe-sec{padding:30px 0 90px}
+  .globe-grid{display:grid; grid-template-columns:1.3fr .9fr; gap:42px; align-items:center}
+  @media(max-width:900px){ .globe-grid{grid-template-columns:1fr} }
+  #globeWrap{position:relative; width:100%; height:520px; cursor:grab}
+  #globe{width:100%; height:100%; display:block}
+  #globeTip{display:none; position:absolute; background:#0a0f0a; border:1px solid var(--border);
+    border-radius:0; padding:9px 13px; pointer-events:none; white-space:nowrap; z-index:6; box-shadow:var(--glow)}
+  .kicker{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--neon); letter-spacing:.18em; text-transform:uppercase}
+  .globe-grid h2{font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(30px,4.5vw,52px); line-height:1; letter-spacing:-.02em; margin:14px 0 16px}
+  .globe-grid p{color:var(--muted); font-size:16px; max-width:42ch}
+  .legend{display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; margin-top:24px}
+  .leg{display:flex; align-items:center; gap:9px; font-size:13px; color:#cfe8d6}
+  .leg span{width:9px; height:9px; flex:none; box-shadow:0 0 8px currentColor}
+  .total{margin-top:26px; display:flex; align-items:baseline; gap:10px}
+  .total b{font-family:'Sora',sans-serif; font-weight:800; font-size:46px; color:var(--neon); text-shadow:var(--glow); line-height:1}
+  .total span{font-size:13px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim)}
+
+  /* ---------- COMO FUNCIONA ---------- */
+  .steps{padding:30px 0 80px}
+  .steps h3{font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(26px,4vw,42px); letter-spacing:-.02em; margin:0 0 30px}
+  .step-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0; border-top:2px solid var(--neon)}
+  .step{padding:26px 20px 30px; border-left:1px solid var(--rule)}
+  .step:first-child{border-left:0}
+  .step .n{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:46px; color:var(--neon); line-height:1}
+  .step h4{font-family:'Sora',sans-serif; font-weight:700; font-size:20px; margin:14px 0 8px}
+  .step p{color:var(--muted); font-size:14px; margin:0}
+  @media(max-width:760px){ .step-grid{grid-template-columns:1fr 1fr} .step:nth-child(3){border-left:0} }
+
+  /* ---------- CTA INVERTIDO (brutalist inversion) ---------- */
+  .cta-band{background:var(--neon); color:#000; padding:64px 22px; text-align:center; margin-top:30px}
+  .cta-band h3{font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(30px,5vw,64px); letter-spacing:-.03em; line-height:.98; margin:0}
+  .cta-band p{max-width:520px; margin:14px auto 26px; font-weight:600; color:#0a2e06}
+  .cta-band .btn{border-color:#000; background:#000; color:var(--neon); box-shadow:none}
+  .cta-band .btn:hover{background:#0a2e06}
+
+  footer{padding:40px 22px; text-align:center; color:var(--dim); font-size:13px; border-top:1px solid var(--rule)}
+  .pill{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#000; background:var(--neon); padding:3px 9px; letter-spacing:.1em; text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BLA<b>XX</b></div>
+  <div class="nav-links"><a href="#globo">Mapa</a><a href="#como">Como funciona</a><a href="#cta">Começar</a></div>
+  <a href="#cta" class="btn btn-primary" style="padding:10px 18px;font-size:13px">Entrar</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">● Pontos que viram o mundo</span>
+    <h1>COMPRE.<br>GANHE.<br><span class="fx">TROQUE.</span> ENVIE.</h1>
+    <p class="lede">Acumule pontos no dia a dia e troque por Pix na hora, milhas, diárias de hotel ou salas VIP pelo planeta. Sem taxas escondidas.</p>
+    <div class="cta-row">
+      <a href="#cta" class="btn btn-primary">Criar conta grátis →</a>
+      <a href="#globo" class="btn btn-ghost">Ver o mapa</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num"><em>350</em>+</div><div class="lbl">salas VIP no mundo</div></div>
+      <div class="stat"><div class="num"><em>60</em></div><div class="lbl">países atendidos</div></div>
+      <div class="stat"><div class="num"><em>12</em>s</div><div class="lbl">tempo médio do Pix</div></div>
+      <div class="stat"><div class="num"><em>0</em></div><div class="lbl">taxas escondidas</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="globe-sec" id="globo">
+  <div class="wrap globe-grid">
+    <div id="globeWrap">
+      <canvas id="globe"></canvas>
+      <div id="globeTip"></div>
+    </div>
+    <div>
+      <div class="kicker">// rede global</div>
+      <h2>Seus pontos<br>no mapa.</h2>
+      <p>Hotéis, companhias e salas VIP de cada parceiro, plotados sobre o globo. Arraste para girar e toque para explorar.</p>
+      <div class="legend" id="legend"></div>
+      <div class="total"><b id="totalActive">0</b><span>destinos ativos agora</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="steps wrap" id="como">
+  <h3>Como funciona</h3>
+  <div class="step-grid">
+    <div class="step"><div class="n">01</div><h4>Compre</h4><p>Acumule pontos automaticamente nas compras do dia a dia.</p></div>
+    <div class="step"><div class="n">02</div><h4>Ganhe</h4><p>Multiplique com bônus de transferência de até 120% e missões.</p></div>
+    <div class="step"><div class="n">03</div><h4>Troque</h4><p>Vire Pix na hora, milhas, diárias de hotel ou salas VIP.</p></div>
+    <div class="step"><div class="n">04</div><h4>Envie</h4><p>Transfira pontos ou Pix para qualquer pessoa, em segundos.</p></div>
+  </div>
+</section>
+
+<section class="cta-band" id="cta">
+  <span class="pill">Beta aberto</span>
+  <h3 style="margin-top:16px">PRONTO PARA<br>GIRAR O MUNDO?</h3>
+  <p>Crie sua conta grátis e comece a transformar pontos em experiências reais.</p>
+  <a href="#" class="btn">Criar conta grátis →</a>
+</section>
+
+<footer>
+  Página piloto de design · preto + verde fluorescente (neon brutalist × cinematic) · BlaXx Pontos
+</footer>
+
+<script>
+(function(){
+  const $ = (id)=>document.getElementById(id);
+  const esc = (s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const SUP = {
+    smiles:{name:'Smiles',cat:'Milhas',rgb:'231,178,74'},
+    latam:{name:'LATAM Pass',cat:'Milhas',rgb:'224,96,160'},
+    azul:{name:'Azul',cat:'Milhas',rgb:'79,143,240'},
+    accor:{name:'Accor ALL',cat:'Hotéis',rgb:'79,201,106'},
+    marriott:{name:'Marriott',cat:'Hotéis',rgb:'155,108,240'},
+    priority:{name:'Priority Pass',cat:'Salas VIP',rgb:'63,198,216'}
+  };
+  const POINTS = [
+    {s:'smiles',c:'São Paulo',lat:-23.5,lon:-46.6,i:1},{s:'smiles',c:'Rio de Janeiro',lat:-22.9,lon:-43.2,i:.8},
+    {s:'smiles',c:'Orlando',lat:28.5,lon:-81.3,i:.7},{s:'smiles',c:'Lisboa',lat:38.7,lon:-9.1,i:.6},
+    {s:'latam',c:'Santiago',lat:-33.4,lon:-70.6,i:.9},{s:'latam',c:'Madri',lat:40.4,lon:-3.7,i:.7},
+    {s:'latam',c:'Miami',lat:25.7,lon:-80.2,i:.7},{s:'latam',c:'Sydney',lat:-33.8,lon:151.2,i:.6},
+    {s:'azul',c:'Campinas',lat:-23,lon:-47.1,i:.9},{s:'azul',c:'Manaus',lat:-3.1,lon:-60,i:.5},
+    {s:'accor',c:'Paris',lat:48.8,lon:2.3,i:1},{s:'accor',c:'Londres',lat:51.5,lon:-0.1,i:.8},
+    {s:'accor',c:'Dubai',lat:25.2,lon:55.3,i:.8},{s:'accor',c:'Singapura',lat:1.3,lon:103.8,i:.7},
+    {s:'marriott',c:'Nova York',lat:40.7,lon:-74,i:1},{s:'marriott',c:'Tóquio',lat:35.6,lon:139.7,i:.8},
+    {s:'marriott',c:'Xangai',lat:31.2,lon:121.5,i:.7},
+    {s:'priority',c:'Dubai (DXB)',lat:25.25,lon:55.36,i:1},{s:'priority',c:'Londres (LHR)',lat:51.47,lon:-0.45,i:.8},
+    {s:'priority',c:'Singapura (SIN)',lat:1.36,lon:103.99,i:.8},{s:'priority',c:'Frankfurt (FRA)',lat:50.04,lon:8.56,i:.7},
+    {s:'priority',c:'Guarulhos (GRU)',lat:-23.43,lon:-46.47,i:.8}
+  ];
+  const active = {}; Object.keys(SUP).forEach(k=>active[k]=true);
+
+  $('legend').innerHTML = Object.keys(SUP).map(k=>{
+    const s=SUP[k];
+    return `<div class="leg"><span style="color:rgb(${s.rgb})"></span>${esc(s.name)}</div>`;
+  }).join('');
+  $('totalActive').textContent = POINTS.filter(p=>active[p.s]).length;
+
+  const canvas=$('globe'), ctx=canvas.getContext('2d');
+  const tipEl=$('globeTip'), wrap=$('globeWrap');
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  let rotL=60,rotP=-14,dragging=false,autoR=true,lastX=0,lastY=0,hoverId=null;
+  const ACCENT='57,255,20';
+
+  function heat(x,y,col,intensity,z){
+    const hr=(16+14*intensity)*(0.55+0.6*z);
+    const g=ctx.createRadialGradient(x,y,0,x,y,hr);
+    g.addColorStop(0,'rgba('+col+','+(0.5*z+0.22)+')'); g.addColorStop(1,'rgba('+col+',0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,hr,0,7); ctx.fill();
+    ctx.fillStyle='rgba('+col+','+(0.65+0.35*z)+')'; ctx.beginPath(); ctx.arc(x,y,2.1*(0.7+0.5*z),0,7); ctx.fill();
+  }
+  function startGlobe(world){
+    const land=topojson.feature(world,world.objects.countries);
+    const borders=topojson.mesh(world,world.objects.countries,(a,b)=>a!==b);
+    const coast=topojson.mesh(world,world.objects.countries,(a,b)=>a===b);
+    function draw(){
+      const rect=canvas.getBoundingClientRect();
+      if(rect.width>0){ const nW=Math.max(1,Math.round(rect.width*dpr)),nH=Math.max(1,Math.round(rect.height*dpr));
+        if(canvas.width!==nW||canvas.height!==nH){canvas.width=nW;canvas.height=nH;} }
+      const Wc=canvas.width/dpr,Hc=canvas.height/dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,Wc,Hc);
+      const cx=Wc/2,cy=Hc/2,R=Math.min(Wc,Hc)*0.42;
+      let atm=ctx.createRadialGradient(cx,cy,R*0.88,cx,cy,R*1.28);
+      atm.addColorStop(0,'rgba('+ACCENT+',0.12)'); atm.addColorStop(1,'rgba('+ACCENT+',0)');
+      ctx.fillStyle=atm; ctx.beginPath(); ctx.arc(cx,cy,R*1.28,0,7); ctx.fill();
+      let sph=ctx.createRadialGradient(cx-R*0.35,cy-R*0.35,R*0.1,cx,cy,R);
+      sph.addColorStop(0,'#12200f'); sph.addColorStop(0.65,'#0a0f0a'); sph.addColorStop(1,'#050705');
+      ctx.fillStyle=sph; ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.fill();
+      const proj=d3.geoOrthographic().translate([cx,cy]).scale(R).rotate([rotL,rotP]).clipAngle(90);
+      const path=d3.geoPath(proj,ctx);
+      ctx.beginPath(); path(d3.geoGraticule10()); ctx.strokeStyle='rgba(57,255,20,0.06)'; ctx.lineWidth=0.5; ctx.stroke();
+      ctx.beginPath(); path(land); ctx.fillStyle='rgba(40,60,42,0.95)'; ctx.fill();
+      ctx.beginPath(); path(coast); ctx.strokeStyle='rgba(150,210,160,0.45)'; ctx.lineWidth=0.8; ctx.stroke();
+      ctx.beginPath(); path(borders); ctx.strokeStyle='rgba(100,150,110,0.35)'; ctx.lineWidth=0.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle='rgba('+ACCENT+',0.35)'; ctx.lineWidth=1; ctx.stroke();
+      for(const m of POINTS){ m._vis=false; if(!active[m.s])continue;
+        const dist=d3.geoDistance([m.lon,m.lat],[-rotL,-rotP]); if(dist>=Math.PI/2)continue;
+        const p=proj([m.lon,m.lat]); if(!p)continue; const z=Math.cos(dist);
+        heat(p[0],p[1],SUP[m.s].rgb,m.i,z); m._sx=p[0]; m._sy=p[1]; m._vis=true; }
+      if(autoR&&!dragging) rotL+=0.16;
+      requestAnimationFrame(draw);
+    }
+    draw();
+    wrap.addEventListener('mousedown',e=>{dragging=true;autoR=false;lastX=e.clientX;lastY=e.clientY;wrap.style.cursor='grabbing';});
+    canvas.style.touchAction='none'; wrap.style.touchAction='none';
+    wrap.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;dragging=true;autoR=false;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;},{passive:true});
+    wrap.addEventListener('touchmove',e=>{if(!dragging||e.touches.length!==1)return;e.preventDefault();const t=e.touches[0];rotL+=(t.clientX-lastX)*0.28;rotP=Math.max(-88,Math.min(88,rotP-(t.clientY-lastY)*0.28));lastX=t.clientX;lastY=t.clientY;tipEl.style.display='none';hoverId=null;},{passive:false});
+    window.addEventListener('touchend',()=>{if(dragging){dragging=false;setTimeout(()=>{if(!dragging)autoR=true;},2500);}});
+    window.addEventListener('mouseup',()=>{if(dragging){dragging=false;wrap.style.cursor='grab';setTimeout(()=>{if(!dragging)autoR=true;},2500);}});
+    canvas.addEventListener('mousemove',e=>{
+      const rect=canvas.getBoundingClientRect(); const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+      if(dragging){ rotL+=(e.clientX-lastX)*0.28; rotP=Math.max(-88,Math.min(88,rotP-(e.clientY-lastY)*0.28)); lastX=e.clientX; lastY=e.clientY; tipEl.style.display='none'; hoverId=null; return; }
+      let best=null,bestD=15;
+      for(const m of POINTS){ if(!m._vis)continue; const d=Math.hypot(m._sx-mx,m._sy-my); if(d<bestD){bestD=d;best=m;} }
+      if(best){ const id=best.s+best.c;
+        if(id!==hoverId){ hoverId=id; tipEl.innerHTML='<div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#fff">'+esc(best.c)+'</div><div style="font-size:12px;color:#7fae8c;margin-top:2px">'+esc(SUP[best.s].name)+' · '+esc(SUP[best.s].cat)+'</div>'; tipEl.style.display='block'; }
+        tipEl.style.left=best._sx+'px'; tipEl.style.top=best._sy+'px'; tipEl.style.transform='translate(-50%,-145%)'; wrap.style.cursor='pointer';
+      } else if(hoverId){ hoverId=null; tipEl.style.display='none'; wrap.style.cursor='grab'; }
+    });
+    canvas.addEventListener('mouseleave',()=>{ if(hoverId){hoverId=null;tipEl.style.display='none';} });
+  }
+  fetch('vendor/countries-110m.json').then(r=>r.json()).then(startGlobe).catch(e=>console.error('mapa-múndi:',e));
+})();
+</script>
+</body>
+</html>
