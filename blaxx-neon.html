@@ -351,6 +351,9 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted2);font-
     {p:'Marriott',c:'Cingapura',lat:1.35,lng:103.82}
   ];
   var PARTNERS=[]; NODES.forEach(function(n){if(PARTNERS.indexOf(n.p)<0)PARTNERS.push(n.p);});
+  // paleta multicolor dos blooms (mesmo modelo de blaxxpontos.com.br)
+  var PAL=['89,253,39','39,224,253','155,108,255','253,201,39','253,89,160','39,142,253','39,253,168'];
+  var PCOL={}; PARTNERS.forEach(function(p,i){PCOL[p]=PAL[i%PAL.length];});
   var canvas=document.getElementById('globe'),ctx=canvas.getContext('2d');
   var wrap=document.getElementById('globeWrap'),tip=document.getElementById('globeTip');
   var DPR=Math.min(window.devicePixelRatio||1,2),W=0,H=0,R=0,cx=0,cy=0;
@@ -381,12 +384,12 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted2);font-
     NODES.forEach(function(n){
       var pt=project(n.lat,n.lng);n._x=pt.x;n._y=pt.y;n._z=pt.z;
       if(pt.z<=0.02){n._vis=false;return;}n._vis=true;
-      var depth=(pt.z+1)/2,dim=(active&&n.p!==active)?0.18:1,hr=(13+10*depth);
+      var depth=(pt.z+1)/2,dim=(active&&n.p!==active)?0.18:1,hr=(13+10*depth),col=PCOL[n.p]||'89,253,39';
       var rg=ctx.createRadialGradient(pt.x,pt.y,0,pt.x,pt.y,hr);
-      rg.addColorStop(0,'rgba(89,253,39,'+(0.42*dim*depth)+')');rg.addColorStop(1,'rgba(89,253,39,0)');
+      rg.addColorStop(0,'rgba('+col+','+(0.42*dim*depth)+')');rg.addColorStop(1,'rgba('+col+',0)');
       ctx.fillStyle=rg;ctx.beginPath();ctx.arc(pt.x,pt.y,hr,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.arc(pt.x,pt.y,2.0+depth*1.4,0,Math.PI*2);ctx.fillStyle='rgba(89,253,39,'+(0.9*dim)+')';ctx.fill();
-      if(active&&n.p===active){ctx.beginPath();ctx.arc(pt.x,pt.y,hr*0.5,0,Math.PI*2);ctx.strokeStyle='rgba(89,253,39,.7)';ctx.lineWidth=1;ctx.stroke();}
+      ctx.beginPath();ctx.arc(pt.x,pt.y,2.0+depth*1.4,0,Math.PI*2);ctx.fillStyle='rgba('+col+','+(0.9*dim)+')';ctx.fill();
+      if(active&&n.p===active){ctx.beginPath();ctx.arc(pt.x,pt.y,hr*0.5,0,Math.PI*2);ctx.strokeStyle='rgba('+col+',.7)';ctx.lineWidth=1;ctx.stroke();}
     });
   }
   function frame(){ctx.clearRect(0,0,W,H);if(!dragging){rot+=vel;vel+=(autoSpeed-vel)*0.03;}proj=buildProj();gpath=d3.geoPath(proj,ctx);drawSphere();drawNodes();requestAnimationFrame(frame);}
@@ -399,7 +402,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted2);font-
 
   var legend=document.getElementById('legend');
   PARTNERS.forEach(function(p){
-    var b=document.createElement('button');b.innerHTML='<span class="dot"></span>'+p;
+    var b=document.createElement('button');var pc=PCOL[p]||'89,253,39';b.innerHTML='<span class="dot" style="background:rgb('+pc+');box-shadow:0 0 8px rgb('+pc+')"></span>'+p;
     b.addEventListener('click',function(){
       if(active===p){active=null;legend.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});}
       else{active=p;legend.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
