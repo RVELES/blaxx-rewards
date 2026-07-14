@@ -16,7 +16,7 @@
 
     function $(sel) { return document.querySelector(sel); }
     function api(path, opts) {
-        var token = sessionStorage.getItem('blaxx_token');
+        var token = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
         opts = opts || {};
         var headers = Object.assign(
             { 'Content-Type': 'application/json' },
@@ -44,7 +44,7 @@
     }
 
     function getUser() {
-        try { return JSON.parse(sessionStorage.getItem('blaxx_user') || 'null'); }
+        try { return JSON.parse(localStorage.getItem('blaxx_user') || sessionStorage.getItem('blaxx_user') || 'null'); }
         catch (_) { return null; }
     }
 

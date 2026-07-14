@@ -23,15 +23,26 @@
   // FLASH visivel da Mariana Costa hardcoded nos HTMLs estaticos.
   // O atributo eh removido no fim de applyUserToShell() apos popular dados.
   try {
-    var _t = sessionStorage.getItem('blaxx_token');
+    // Token vive em localStorage desde a migração de 2026-05-27 (STORE).
+    // Ler só sessionStorage nunca disparava o guard → flash da persona
+    // hardcoded pra quem tinha sessão só em localStorage.
+    var _t = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
     if (_t) document.documentElement.setAttribute('data-auth-loading', 'true');
-  } catch (_) { /* sessionStorage bloqueado */ }
+  } catch (_) { /* storage bloqueado */ }
 
   // ---- Helpers ----
   var $ = function (sel, el) { return (el || document).querySelector(sel); };
   var $$ = function (sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); };
   var fmt = function (n) { return Number(n).toLocaleString('pt-BR'); };
   var brl = function (v) { return 'R$ ' + Number(v).toFixed(2).replace('.', ','); };
+  // Escapa texto pra interpolação segura em innerHTML. Use SEMPRE que um
+  // valor vindo do backend ou do usuário (pix_key, failure_reason, etc.)
+  // entrar numa string HTML — senão é vetor de XSS.
+  var esc = function (s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
 
   function maskCpf(c) {
     if (!c) return '';
@@ -1707,13 +1718,17 @@
           box.style.display = 'block';
           if (r.status === 'paid') {
             box.className = 'alert success mt-2';
-            box.innerHTML = '<div class="alert-icon">✓</div><div><p><strong>' + brl(r.amount_brl) + ' enviados via PIX</strong> para <code>' + r.pix_key + '</code></p><p>EndToEndID: <code>' + r.end_to_end_id + '</code></p></div>';
+            box.innerHTML = '<div class="alert-icon">✓</div><div><p><strong>' + brl(r.amount_brl) + ' enviados via PIX</strong> para <code>' + esc(r.pix_key) + '</code></p><p>EndToEndID: <code>' + esc(r.end_to_end_id) + '</code></p></div>';
+          } else if (r.status === 'processing') {
+            // PAYOUT_MODE=manual: débito retido, PIX sai em até 1 dia útil.
+            box.className = 'alert info mt-2';
+            box.innerHTML = '<div class="alert-icon">⏱</div><div><p><strong>Resgate em processamento</strong></p><p>' + brl(r.amount_brl) + ' via PIX em até 1 dia útil. Acompanhe no extrato.</p></div>';
           } else if (r.status === 'failed') {
             box.className = 'alert warn mt-2';
-            box.innerHTML = '<div class="alert-icon">!</div><div><p><strong>Payout falhou:</strong> ' + r.failure_reason + '</p><p>' + fmt(r.points_debited) + ' pts <strong>estornados automaticamente</strong>.</p></div>';
+            box.innerHTML = '<div class="alert-icon">!</div><div><p><strong>Payout falhou:</strong> ' + esc(r.failure_reason) + '</p><p>' + fmt(r.points_debited) + ' pts <strong>estornados automaticamente</strong>.</p></div>';
           } else {
             box.className = 'alert info mt-2';
-            box.innerHTML = '<div class="alert-icon">i</div><div><p>Status: ' + r.status + '</p></div>';
+            box.innerHTML = '<div class="alert-icon">i</div><div><p>Status: ' + esc(r.status) + '</p></div>';
           }
           applyUserToShell(); // atualiza saldo
           btn.disabled = false; btn.textContent = 'Resgatar';

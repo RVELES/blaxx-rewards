@@ -18,7 +18,12 @@
 (function () {
   'use strict';
 
-  var API = window.BLAXX_API || location.origin;
+  // Mesma ordem de resolução do resto do site (login.html, vender-pontos):
+  // override manual blaxx_api_url → BLAXX_API (blaxx-config.js) → origin.
+  var API = (function () {
+    try { var o = localStorage.getItem('blaxx_api_url'); if (o) return o.replace(/\/+$/, ''); } catch (e) {}
+    return window.BLAXX_API || location.origin;
+  })();
   var POLL_INTERVAL_MS = 4000;
   var POLL_MAX_DURATION_MS = 30 * 60 * 1000; // 30 minutos
   var CENTS_PER_POINT = 9; // 1 pt = R$ 0,09 — sincronizar com backend Config.CENTS_PER_POINT
@@ -32,13 +37,22 @@
       var t = localStorage.getItem('blaxx_token');
       if (t) return t;
     } catch (e) { /* localStorage indisponível em iframe sandbox raro */ }
-    try { return sessionStorage.getItem('blaxx_token'); }
+    try {
+      var st = sessionStorage.getItem('blaxx_token');
+      if (st) return st;
+    } catch (e) {}
+    // Fallback pro formato legado blaxx_session (mesmo padrão do resto do
+    // site) — senão sessões antigas não conseguem comprar.
+    try { return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).token || null; }
     catch (e) { return null; }
   }
   function clearStoredCreds() {
+    // Limpa os DOIS formatos — se sobrasse blaxx_session, o login veria a
+    // sessão remanescente e devolveria pro app: loop de redirect no 401.
     try {
       localStorage.removeItem('blaxx_token');
       localStorage.removeItem('blaxx_user');
+      localStorage.removeItem('blaxx_session');
     } catch (e) {}
     try {
       sessionStorage.removeItem('blaxx_token');
@@ -64,6 +78,20 @@
   var currentCharge = null;
   var pollHandle = null;
   var pollStartedAt = 0;
+
+  // ---- Cartão de crédito (MercadoPago Brick) ----
+  // Config vem de GET /payments/card/config (público). Se enabled=false o
+  // seletor de método nem aparece e o fluxo segue 100% PIX como antes.
+  var cardCfg = { enabled: false, public_key: '', max_installments: 1 };
+  var currentMethod = 'pix';
+  var brickController = null;
+  var cardIdemKey = null;
+
+  function newIdemKey() {
+    cardIdemKey = 'web-' + Date.now().toString(36) + '-' +
+      Math.random().toString(36).slice(2, 10);
+    return cardIdemKey;
+  }
 
   // ---- fetch wrapper com tratamento de 401 mid-flow ----
   function api(path, opts) {
@@ -122,13 +150,19 @@
   function showInlineError(msg, kind) {
     kind = kind || 'err';
     var step2 = document.getElementById('step-2');
-    var host = step2 && step2.style.display !== 'none' ? step2 : document.querySelector('.buy-wrap');
+    var stepCard = document.getElementById('step-2-card');
+    // Host visível na ordem: passo do cartão → passo do QR PIX → wrap.
+    // Sem incluir o step-2-card, a mensagem de recusa do cartão era anexada
+    // ao fim da página, fora da vista do usuário no fluxo de cartão.
+    var host = (stepCard && stepCard.style.display !== 'none') ? stepCard
+             : (step2 && step2.style.display !== 'none') ? step2
+             : document.querySelector('.buy-wrap');
     if (!host) return;
     var box = document.getElementById('bx-err-box');
     if (!box) {
       box = document.createElement('div');
       box.id = 'bx-err-box';
-      box.style.cssText = 'margin-top:14px;padding:12px 14px;border-radius:10px;font-size:14px;font-weight:600;';
+      box.style.cssText = 'margin-top:14px;padding:12px 14px;border-radius:10px;font-size:14px;font-weight:600;overflow-wrap:anywhere;word-break:break-word;';
       host.appendChild(box);
     }
     var colors = {
@@ -167,8 +201,51 @@
     if (btn) btn.disabled = amount < 10;
   };
 
+  // ---- Seletor de método (PIX | Cartão) ----
+  window.setMethod = function (m) {
+    currentMethod = (m === 'card' && cardCfg.enabled) ? 'card' : 'pix';
+    var bp = document.getElementById('method-pix');
+    var bc = document.getElementById('method-card');
+    if (bp) { bp.classList.toggle('sel', currentMethod === 'pix'); bp.setAttribute('aria-checked', String(currentMethod === 'pix')); }
+    if (bc) { bc.classList.toggle('sel', currentMethod === 'card'); bc.setAttribute('aria-checked', String(currentMethod === 'card')); }
+    var btn = document.getElementById('btn-create');
+    if (btn) btn.textContent = currentMethod === 'card'
+      ? 'Pagar com cartão' : 'Gerar QR Code de pagamento';
+    var title = document.getElementById('page-title');
+    if (title) title.textContent = currentMethod === 'card'
+      ? 'Comprar pontos no cartão' : 'Comprar pontos via PIX';
+  };
+
+  function getQueryMethod() {
+    var m = location.search.match(/[?&]method=(card|pix)/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+
+  function loadCardConfig() {
+    // Público — sem Authorization (não passa pelo api() de propósito:
+    // 401 aqui não pode derrubar a sessão).
+    return fetch(API + '/payments/card/config')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (cfg) {
+        var enabled = !!(cfg && cfg.enabled && cfg.public_key);
+        if (enabled) {
+          cardCfg = cfg;
+          var row = document.getElementById('method-row');
+          if (row) row.classList.add('on');
+          if (getQueryMethod() === 'card') window.setMethod('card');
+        } else if (getQueryMethod() === 'card') {
+          // Veio de comprar-pontos.html?method=card mas o cartão está
+          // desligado (CARD_ENABLED=0) — avisa e segue com PIX em vez de
+          // deixar um método morto selecionado.
+          showInlineError('Pagamento com cartão indisponível no momento — use PIX.', 'info');
+        }
+      })
+      .catch(function () { /* cartão indisponível → segue PIX-only */ });
+  }
+
   window.createCharge = function () {
     clearInlineError();
+    if (currentMethod === 'card') { startCardFlow(); return; }
     var pkg = getQueryPkg();
     var body;
     if (pkg) {
@@ -228,6 +305,199 @@
         if (loading) loading.remove();
       });
   };
+
+  // =====================================================================
+  // Cartão de crédito — MercadoPago CardPayment Brick
+  //
+  // PCI (SAQ-A): o Brick tokeniza o cartão NO NAVEGADOR com a public key;
+  // o backend recebe apenas card_token single-use. Nunca enviar número de
+  // cartão/CVV para a API BlaXx — o endpoint recusa (RAW_CARD_DATA).
+  // =====================================================================
+
+    // Restaura o passo de valor livre e volta pra PIX — evita a tela
+    // ficar num beco sem saída (step-1 escondido, sem Brick).
+    function recoverToStep1() {
+      var s1 = document.getElementById('step-1');
+      if (s1) s1.style.display = 'block';
+      var loading = document.getElementById('pkg-loading');
+      if (loading) loading.remove();
+      currentMethod = 'pix';
+      var bc = document.getElementById('method-card');
+      var bp = document.getElementById('method-pix');
+      if (bc) bc.classList.remove('sel');
+      if (bp) bp.classList.add('sel');
+    }
+
+  function startCardFlow() {
+    var pkg = getQueryPkg();
+    if (pkg) {
+      // Pacote: preço vem do catálogo do backend
+      api('/pix/packages').then(function (packages) {
+        var p = packages && packages[pkg];
+        if (!p || !p.price_brl) {
+          showInlineError('Pacote desconhecido — escolha um valor livre.', 'warn');
+          recoverToStep1();
+          return;
+        }
+        mountCardBrick(Number(p.price_brl), { package: pkg });
+      }).catch(function (e) {
+        if (e.status !== 401) {
+          showInlineError(e.message || 'Falha ao carregar o pacote — tente PIX.');
+          recoverToStep1();
+        }
+      });
+      return;
+    }
+    var amount = parseInputAmount(document.getElementById('amount-input').value);
+    if (amount < 10) {
+      showInlineError('Valor mínimo: R$ 10,00', 'warn');
+      return;
+    }
+    mountCardBrick(amount, { amount_brl: amount });
+  }
+
+  function mountCardBrick(amountBRL, chargeBody) {
+    if (typeof MercadoPago !== 'function') {
+      showInlineError('SDK de pagamento não carregou — recarregue a página.', 'err');
+      return;
+    }
+    var step1 = document.getElementById('step-1');
+    var stepCard = document.getElementById('step-2-card');
+    if (step1) step1.style.display = 'none';
+    if (stepCard) stepCard.style.display = 'block';
+    newIdemKey(); // protege retry por timeout SEM travar retry pós-recusa
+
+    // Botão voltar do passo do cartão
+    var back = document.getElementById('bx-card-back');
+    if (!back && stepCard) {
+      back = document.createElement('button');
+      back.id = 'bx-card-back';
+      back.type = 'button';
+      back.className = 'button ghost';
+      back.style.cssText = 'margin-top:14px;width:100%;';
+      back.textContent = '← Voltar';
+      back.addEventListener('click', function () {
+        if (brickController) { try { brickController.unmount(); } catch (e) {} brickController = null; }
+        stepCard.style.display = 'none';
+        if (step1) step1.style.display = 'block';
+        clearInlineError();
+      });
+      stepCard.appendChild(back);
+    }
+
+    if (brickController) { try { brickController.unmount(); } catch (e) {} brickController = null; }
+
+    // Watchdog: o SDK do MP às vezes só loga "initialization failed" no
+    // console SEM rejeitar a promise nem chamar onError (ex.: public key
+    // inválida). Se o form não montar em 6s, mostramos o erro amigável.
+    var brickWatchdog = setTimeout(function () {
+      var box = document.getElementById('cardPaymentBrick_container');
+      if (box && box.childElementCount === 0) {
+        showInlineError('Não foi possível carregar o formulário do cartão. ' +
+          'Recarregue a página ou pague via PIX.', 'err');
+      }
+    }, 6000);
+
+    var mp = new MercadoPago(cardCfg.public_key, { locale: 'pt-BR' });
+    mp.bricks().create('cardPayment', 'cardPaymentBrick_container', {
+      initialization: { amount: amountBRL },
+      customization: {
+        paymentMethods: { maxInstallments: cardCfg.max_installments || 1 },
+      },
+      callbacks: {
+        onReady: function () { clearTimeout(brickWatchdog); clearInlineError(); },
+        onError: function (err) {
+          clearTimeout(brickWatchdog);
+          try { console.warn('[card] brick error', err); } catch (e) {}
+          showInlineError('Não foi possível carregar o formulário do cartão. ' +
+            'Recarregue a página ou pague via PIX.', 'err');
+        },
+        onSubmit: function (formData) {
+          return submitCardPayment(formData, chargeBody);
+        },
+      },
+    }).then(function (controller) {
+      brickController = controller;
+    }).catch(function (err) {
+      clearTimeout(brickWatchdog);
+      try { console.warn('[card] brick create fail', err); } catch (e) {}
+      showInlineError('Falha ao iniciar o pagamento com cartão. Tente PIX.', 'err');
+    });
+  }
+
+  function submitCardPayment(formData, chargeBody) {
+    var body = Object.assign({}, chargeBody, {
+      card_token: formData.token,
+      payment_method_id: formData.payment_method_id,
+      installments: formData.installments || 1,
+      issuer_id: formData.issuer_id ? String(formData.issuer_id) : '',
+    });
+    return api('/payments/card/charge', {
+      method: 'POST',
+      headers: { 'Idempotency-Key': cardIdemKey },
+      body: JSON.stringify(body),
+    }).then(function (charge) {
+      // Resposta FINAL do servidor recebida (aprovado/análise) → a próxima
+      // tentativa é uma compra nova, então rotaciona a key.
+      newIdemKey();
+      if (charge.status === 'approved') {
+        showStep3Success(charge, 'card');
+        return;
+      }
+      if (charge.status === 'in_process') {
+        showCardProcessing(charge);
+        return;
+      }
+      showInlineError('Pagamento em estado ' + String(charge.status || '') + ' — acompanhe na carteira.', 'warn');
+    }).catch(function (e) {
+      if (e.status === 401) throw e; // já redirecionou pro login
+      // CRÍTICO: só rotaciona a Idempotency-Key quando o servidor deu uma
+      // resposta DEFINITIVA (HTTP com status → o cartão foi decidido). Em
+      // falha de REDE/timeout (sem e.status) mantém a MESMA key: o retry
+      // dedupe no backend e no MP, evitando dupla cobrança do cartão.
+      if (e.status) newIdemKey();
+      showInlineError(e.message || 'Pagamento recusado. Tente outro cartão ou PIX.', 'err');
+      throw e; // rejeita a promise → Brick reabilita o botão de pagar
+    });
+  }
+
+  function showCardProcessing(charge) {
+    var stepCard = document.getElementById('step-2-card');
+    if (stepCard) {
+      stepCard.innerHTML =
+        '<h3 style="margin-bottom:12px;"><span class="step-num">2</span> Pagamento em análise</h3>' +
+        '<div style="text-align:center;padding:18px;">' +
+          '<span class="status-pill status-confirming">⏱ Aguardando aprovação do emissor…</span>' +
+          '<div style="font-size:13px;color:#5f665e;margin-top:10px;">' +
+            'Isso pode levar alguns instantes. Assim que aprovar, os pontos ' +
+            'entram automaticamente na sua carteira.' +
+          '</div>' +
+        '</div>';
+    }
+    pollCardCharge(charge.id);
+  }
+
+  function pollCardCharge(chargeId) {
+    if (pollHandle) clearInterval(pollHandle);
+    pollStartedAt = Date.now();
+    pollHandle = setInterval(function () {
+      if (Date.now() - pollStartedAt > POLL_MAX_DURATION_MS) {
+        clearInterval(pollHandle); pollHandle = null;
+        showInlineError('A análise está demorando — acompanhe o status na sua carteira.', 'warn');
+        return;
+      }
+      api('/payments/card/charge/' + chargeId).then(function (c) {
+        if (c.status === 'approved') {
+          clearInterval(pollHandle); pollHandle = null;
+          showStep3Success(c, 'card');
+        } else if (c.status === 'rejected' || c.status === 'cancelled') {
+          clearInterval(pollHandle); pollHandle = null;
+          showInlineError('O pagamento não foi aprovado pelo emissor. ' +
+            'Tente outro cartão ou PIX.', 'err');
+        }
+      }).catch(function () { /* tenta de novo no próximo tick */ });
+    }, POLL_INTERVAL_MS);
+  }
 
   function showStep2(charge) {
     var step1 = document.getElementById('step-1');
@@ -369,10 +639,13 @@
     }, POLL_INTERVAL_MS);
   }
 
-  function showStep3Success(charge) {
+  function showStep3Success(charge, method) {
     var step2 = document.getElementById('step-2');
+    var step2card = document.getElementById('step-2-card');
     var step3 = document.getElementById('step-3');
     if (step2) step2.style.display = 'none';
+    if (step2card) step2card.style.display = 'none';
+    if (brickController) { try { brickController.unmount(); } catch (e) {} brickController = null; }
     if (!step3) return;
     step3.style.display = 'block';
     step3.innerHTML =
@@ -396,9 +669,22 @@
 
   // ---- Bootstrap: roda quando DOM estiver pronto, sem race ----
   function boot() {
+    // Config do cartão primeiro: decide se o seletor aparece e se
+    // ?method=card é honrado (senão cai no PIX, comportamento antigo).
+    loadCardConfig().then(bootAfterConfig);
+  }
+
+  function bootAfterConfig() {
     var pkg = getQueryPkg();
     if (!pkg) {
       // Fluxo valor livre — aguarda usuario digitar
+      return;
+    }
+    if (currentMethod === 'card') {
+      // Pacote no cartão: Brick monta com o preço do catálogo
+      var s1 = document.getElementById('step-1');
+      if (s1) s1.style.display = 'none';
+      startCardFlow();
       return;
     }
     // Compra de pacote: esconde step-1 e auto-gera

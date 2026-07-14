@@ -90,7 +90,7 @@
 
   const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
-  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
+  function token(){ try { var _bt=localStorage.getItem('blaxx_token'); return _bt || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
   const fmt = n => Number(n||0).toLocaleString('pt-BR');
 
   function tierForPoints(p){ let cur = TIERS[0]; for (const t of TIERS) if (p >= t.min_points) cur = t; return cur; }

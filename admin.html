@@ -75,6 +75,9 @@
     <button data-tab="payments" onclick="switchTab('payments')">
       Pagamentos pendentes <span id="pending-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
+    <button data-tab="payouts" onclick="switchTab('payouts')">
+      Resgates PIX <span id="payouts-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
+    </button>
   </div>
 
   <!-- Tab: Users -->
@@ -131,6 +134,28 @@
         </tr>
       </thead>
       <tbody id="payments-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Tab: Payouts (venda/resgate PIX aguardando execução manual) -->
+  <div id="tab-payouts" style="display:none;">
+    <p style="color:#5f665e;font-size:13px;margin-bottom:12px;">
+      Resgates em que os pontos já foram <b>debitados</b> e aguardam a transferência PIX.
+      Faça o PIX no banco para a chave indicada, cole o <b>EndToEndID</b> do comprovante e clique <b>Confirmar</b>.
+      Se a chave for inválida, clique <b>Falhou</b> para <b>estornar</b> os pontos automaticamente.
+    </p>
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Solicitado em</th>
+          <th>Usuário</th>
+          <th>Chave PIX</th>
+          <th>Valor (R$)</th>
+          <th>Pontos</th>
+          <th style="text-align:center;">Ação</th>
+        </tr>
+      </thead>
+      <tbody id="payouts-tbody"></tbody>
     </table>
   </div>
 

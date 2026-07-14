@@ -87,7 +87,7 @@
 (function(){
   var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
-  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  function token(){ try { var _bt=localStorage.getItem('blaxx_token'); return _bt || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
   function H(){ var t=token(); return t? {Authorization:'Bearer '+t} : {}; }
   var $ = function(id){ return document.getElementById(id); };
   var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
@@ -119,7 +119,7 @@
   }
 
   // sessão tem o user; busca /auth/me p/ dados frescos.
-  var sUser = null; try { sUser = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user; } catch(e){}
+  var sUser = null; try { try { sUser = JSON.parse(localStorage.getItem('blaxx_user')||'null'); } catch(e){} if (!sUser) sUser = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user; } catch(e){}
   if (sUser) fill(sUser, null);
 
   Promise.all([
@@ -128,7 +128,15 @@
   ]).then(function(res){ fill(res[0]||sUser, res[1]); });
 
   $('btnLogout').addEventListener('click', function(){
-    try { localStorage.removeItem('blaxx_session'); } catch(e){}
+    // Limpa os DOIS formatos de sessão — senão login.html vê o blaxx_token
+    // remanescente e redireciona de volta pro dashboard (loop de logout).
+    try {
+      localStorage.removeItem('blaxx_session');
+      localStorage.removeItem('blaxx_token');
+      localStorage.removeItem('blaxx_user');
+      sessionStorage.removeItem('blaxx_token');
+      sessionStorage.removeItem('blaxx_user');
+    } catch(e){}
     location.href = 'login.html';
   });
 })();

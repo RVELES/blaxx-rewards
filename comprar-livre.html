@@ -24,7 +24,15 @@
   .status-confirming { background: #e8f3ff; color: #1c4f87; }
   .status-paid { background: #efffe6; color: #2d651b; }
   .status-rejected { background: #ffede8; color: #a83417; }
+  /* Seletor de método de pagamento (PIX | Cartão) */
+  .method-row { display: none; gap: 10px; margin: 14px 0 4px; }
+  .method-row.on { display: flex; }
+  .method-btn { flex: 1; padding: 12px 10px; border: 2px solid #e6eadf; border-radius: 12px; background: #fff; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .method-btn.sel { border-color: #7CFF00; background: #f6ffe9; }
 </style>
+<!-- SDK MercadoPago v2 — tokenização do cartão NO NAVEGADOR (o número do
+     cartão nunca chega ao backend BlaXx, só o token single-use). -->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Comprar livre","item":"https://blaxxpontos.com.br/comprar-livre.html"}]}
 </script>
@@ -42,18 +50,34 @@
 </header>
 
 <div class="buy-wrap">
-  <h1 style="font-size:32px;margin-bottom:4px;">Comprar pontos via PIX</h1>
+  <h1 style="font-size:32px;margin-bottom:4px;" id="page-title">Comprar pontos</h1>
   <p style="color:#5f665e;margin-bottom:24px;">Valor livre — você define quanto pagar. Conversão: 1 ponto = R$ 0,09.</p>
 
-  <!-- Etapa 1: Valor -->
+  <!-- Etapa 1: Valor + método -->
   <div class="step-card" id="step-1">
     <h3 style="margin-bottom:12px;"><span class="step-num">1</span> Quanto você quer comprar?</h3>
     <input class="amount-input" id="amount-input" type="text" inputmode="decimal"
            placeholder="R$ 0,00" oninput="onAmountChange(this.value)">
     <div class="points-preview">você vai receber <b><span id="points-preview">0</span> pts</b></div>
+    <!-- Seletor de método — só aparece quando o backend confirma que o
+         cartão está habilitado (GET /payments/card/config). -->
+    <div class="method-row" id="method-row" role="radiogroup" aria-label="Forma de pagamento">
+      <button type="button" class="method-btn sel" id="method-pix" role="radio" aria-checked="true" onclick="setMethod('pix')">⚡ PIX</button>
+      <button type="button" class="method-btn" id="method-card" role="radio" aria-checked="false" onclick="setMethod('card')">▣ Cartão de crédito</button>
+    </div>
     <button class="button full lg" onclick="createCharge()" id="btn-create" disabled>
       Gerar QR Code de pagamento
     </button>
+  </div>
+
+  <!-- Etapa 2 (cartão): formulário do Brick MercadoPago -->
+  <div class="step-card" id="step-2-card" style="display:none;">
+    <h3 style="margin-bottom:12px;"><span class="step-num">2</span> Dados do cartão</h3>
+    <div style="font-size:13px;color:#5f665e;margin-bottom:10px;">
+      Pagamento processado pelo Mercado Pago. Os dados do cartão são
+      criptografados no seu navegador e não passam pelos servidores BlaXx.
+    </div>
+    <div id="cardPaymentBrick_container"></div>
   </div>
 
   <!-- Etapa 2: QR -->

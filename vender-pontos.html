@@ -80,13 +80,28 @@
       </div>
     </div>
   </div>
+
+  <section class="section" style="margin-top:8px">
+    <div class="alert info">
+      <div class="alert-icon">i</div>
+      <div>
+        <h4>Aviso importante</h4>
+        <p>Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</p>
+      </div>
+    </div>
+  </section>
 </main>
 <script src="chrome.js"></script>
 <script>
 (function(){
   var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
   function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
-  function token(){ try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
+  // Lê a sessão nos DOIS formatos: blaxx_token (STORE do blaxx-app.js,
+  // formato do app) com fallback pro legado blaxx_session (login antigo).
+  function token(){
+    try { var t = localStorage.getItem('blaxx_token'); if (t) return t; } catch(e){}
+    try { return (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; }
+  }
   function H(){ var t=token(); return t? {'Content-Type':'application/json','Authorization':'Bearer '+t} : {'Content-Type':'application/json'}; }
   var $ = function(id){ return document.getElementById(id); };
   var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
@@ -97,10 +112,17 @@
   var balance = 0, pixKey = '';
   function calc(){ var v=Math.max(0, parseInt($('pts').value||0)); $('out').textContent = brl(v*0.09); }
   $('pts').addEventListener('input', calc);
-  function show(type, text){ var b=$('msgBox'); b.className='msgbox show '+type; b.innerHTML=text; }
+  // show() usa textContent (à prova de XSS) — mensagens de erro vêm do
+  // backend e nunca devem ser interpretadas como HTML. showHtml() é só pra
+  // a mensagem de sucesso ESTÁTICA (com <b>/<a>), sem dado do servidor.
+  function show(type, text){ var b=$('msgBox'); b.className='msgbox show '+type; b.textContent=text; }
+  function showHtml(type, html){ var b=$('msgBox'); b.className='msgbox show '+type; b.innerHTML=html; }
 
-  fetch(apiBase()+'/auth/me', {headers:H()}).then(function(r){return r.ok?r.json():null;}).then(function(u){ if(u){ pixKey = u.pix_key || u.email || ''; $('pix').value = pixKey; } });
-  fetch(apiBase()+'/wallet/', {headers:H()}).then(function(r){return r.ok?r.json():null;}).then(function(w){ if(w){ balance=Number(w.balance_pts||0); $('bal').textContent=fmt(balance)+' pts'; $('pts').max=balance; } });
+  // 401 em qualquer chamada → sessão expirou: volta pro login preservando destino.
+  function on401(){ location.href = 'login.html?next=' + encodeURIComponent('/vender-pontos.html'); }
+
+  fetch(apiBase()+'/auth/me', {headers:H()}).then(function(r){ if(r.status===401){ on401(); return null;} return r.ok?r.json():null;}).then(function(u){ if(u){ pixKey = u.pix_key || u.email || ''; $('pix').value = pixKey; } }).catch(function(){});
+  fetch(apiBase()+'/wallet/', {headers:H()}).then(function(r){ if(r.status===401){ on401(); return null;} return r.ok?r.json():null;}).then(function(w){ if(w){ balance=Number(w.balance_pts||0); $('bal').textContent=fmt(balance)+' pts'; $('pts').max=balance; } }).catch(function(){});
   calc();
 
   $('btnSell').addEventListener('click', function(){
@@ -115,8 +137,10 @@
       .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
       .then(function(res){
         btn.disabled=false; btn.textContent=o;
+        if (res.s===401){ on401(); return; }
         if (res.s===201 || (res.j && res.j.id)){
-          show('ok','<b>Resgate solicitado!</b> O Pix de '+brl(points*0.09)+' cai na sua conta em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.');
+          // brl(points*...) é numérico/controlado — seguro em innerHTML.
+          showHtml('ok','<b>Resgate solicitado!</b> O Pix de '+brl(points*0.09)+' cai na sua conta em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.');
           $('pw').value='';
         } else { show('err', (res.j && res.j.error) || 'Não foi possível solicitar o resgate.'); }
       })

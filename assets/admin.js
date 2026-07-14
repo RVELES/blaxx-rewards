@@ -6,11 +6,27 @@
 (function () {
   'use strict';
 
-  var API = window.BLAXX_API || location.origin;
-  var TOKEN = sessionStorage.getItem('blaxx_token');
+  var API = (function () {
+    try { var o = localStorage.getItem('blaxx_api_url'); if (o) return o.replace(/\/+$/, ''); } catch (e) {}
+    return window.BLAXX_API || location.origin;
+  })();
+  // Sessão: STORE do blaxx-app.js grava em localStorage (e apaga do
+  // sessionStorage na migração). Ler só sessionStorage deixava o /admin
+  // permanentemente inacessível. Ordem: localStorage → sessionStorage →
+  // formato legado blaxx_session.
+  var TOKEN = (function () {
+    try {
+      var t = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
+      if (t) return t;
+      return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).token || null;
+    } catch (e) { return null; }
+  })();
   var USER = (function () {
-    try { return JSON.parse(sessionStorage.getItem('blaxx_user') || 'null'); }
-    catch (e) { return null; }
+    try {
+      var u = localStorage.getItem('blaxx_user') || sessionStorage.getItem('blaxx_user');
+      if (u) return JSON.parse(u);
+      return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).user || null;
+    } catch (e) { return null; }
   })();
 
   // ── Guard ──────────────────────────────────────────────────────────────
@@ -259,6 +275,63 @@
       .catch(function (e) { alert('Erro: ' + e.message); });
   };
 
+  // ── Payouts tab (venda/resgate PIX aguardando execução manual) ─────────
+  function loadProcessingPayouts() {
+    api('/admin/payouts/processing').then(function (r) {
+      var tbody = document.getElementById('payouts-tbody');
+      var items = r.items || [];
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum resgate aguardando.</td></tr>';
+      } else {
+        tbody.innerHTML = items.map(function (p) {
+          var when = p.created_at ? shortDate(p.created_at) : (p.requested_at ? shortDate(p.requested_at) : '—');
+          var brl = Number(p.amount_brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          return '<tr>' +
+            '<td>' + when + '</td>' +
+            '<td>' + escapeHtml(p.user_name || '—') + '<br><small style="color:#8a918a;">' + escapeHtml(p.user_email || '') + '</small></td>' +
+            '<td><code>' + escapeHtml(p.pix_key || '—') + '</code></td>' +
+            '<td>R$ ' + brl + '</td>' +
+            '<td>' + fmt(p.points_debited) + ' pts</td>' +
+            '<td style="text-align:center;">' +
+              '<button class="button" onclick="confirmPayout(\'' + p.id + '\')" style="font-size:12px;padding:6px 12px;margin-right:4px;">Confirmar</button>' +
+              '<button class="button ghost" onclick="failPayout(\'' + p.id + '\')" style="font-size:12px;padding:6px 12px;color:#a83417;">Falhou</button>' +
+            '</td>' +
+            '</tr>';
+        }).join('');
+      }
+      var badge = document.getElementById('payouts-count');
+      if (items.length > 0) { badge.textContent = items.length; badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }).catch(function (e) {
+      var tbody = document.getElementById('payouts-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Erro ao carregar: ' + escapeHtml(e.message) + '</td></tr>';
+    });
+  }
+
+  window.confirmPayout = function (payoutId) {
+    var e2e = prompt('EndToEndID do comprovante PIX (opcional, mas recomendado):', '');
+    if (e2e === null) return; // cancelou
+    if (!confirm('Confirma que o PIX foi transferido? Isso finaliza o resgate.')) return;
+    api('/admin/payouts/' + payoutId + '/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ end_to_end_id: (e2e || '').trim() }),
+    })
+      .then(function () { loadProcessingPayouts(); loadStats(); })
+      .catch(function (e) { alert('Erro: ' + e.message); });
+  };
+
+  window.failPayout = function (payoutId) {
+    var reason = prompt('Motivo da falha (os pontos serão estornados ao usuário):', 'Chave PIX inválida ou não localizada');
+    if (!reason) return;
+    if (!confirm('Marcar como falho e ESTORNAR os pontos ao usuário?')) return;
+    api('/admin/payouts/' + payoutId + '/fail', {
+      method: 'POST',
+      body: JSON.stringify({ reason: reason }),
+    })
+      .then(function () { loadProcessingPayouts(); loadStats(); })
+      .catch(function (e) { alert('Erro: ' + e.message); });
+  };
+
   // ── Tabs ───────────────────────────────────────────────────────────────
   window.switchTab = function (tab) {
     document.querySelectorAll('.tab-row button').forEach(function (b) {
@@ -267,8 +340,10 @@
     document.getElementById('tab-users').style.display = tab === 'users' ? '' : 'none';
     document.getElementById('tab-transactions').style.display = tab === 'transactions' ? '' : 'none';
     document.getElementById('tab-payments').style.display = tab === 'payments' ? '' : 'none';
+    document.getElementById('tab-payouts').style.display = tab === 'payouts' ? '' : 'none';
     if (tab === 'transactions' && TX_TOTAL === 0) loadTransactions();
     if (tab === 'payments') loadPendingPayments();
+    if (tab === 'payouts') loadProcessingPayouts();
   };
 
   window.adminLogout = function () {
