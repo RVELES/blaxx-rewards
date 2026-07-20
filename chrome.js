@@ -71,11 +71,11 @@
   const screen = document.body.getAttribute('data-screen') || 'inicio';
 
   // Marca oficial BlaXx (B-mark geométrico + wordmark "BlaXx"), recriada inline
-  // para herdar a fonte da página (Inter) e o verde neon #7CFF00 — paridade com
+  // para herdar a fonte da página (Inter) e o verde neon #59FD27 — paridade com
   // o BlaxxBrand do app web. Usada sobre superfície escura (topbar/rodapé do
   // app): "Bla" branco + "Xx" neon. Sem "Pontos".
   const brandMarkup = (uid) => `
-    <svg class="brand__mark" width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#7CFF00">
+    <svg class="brand__mark" width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#59FD27">
       <mask id="${uid}" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
         <rect width="64" height="64" fill="#000"/>
         <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
@@ -86,7 +86,7 @@
       </mask>
       <rect width="64" height="64" fill="currentColor" mask="url(#${uid})"/>
     </svg>
-    <span class="brand__txt" style="font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.03em;line-height:1;color:#fff">Bla<span style="color:#7CFF00">Xx</span></span>`;
+    <span class="brand__txt" style="font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.03em;line-height:1;color:#fff">Bla<span style="color:#59FD27">Xx</span></span>`;
 
   const navItem = (label, href, icoKey, key, badge) => `
     <a class="nav-item ${key === screen ? 'is-active' : ''}" href="${href}">

@@ -1004,7 +1004,7 @@ Indicadores que disparam análise regulatória:
 | Search | Postgres FTS no MVP; OpenSearch se >100k ofertas | futuro |
 | Filas | Celery + Redis (notificações, KYC async, payouts) | adicionar |
 | Storage | S3-compatible com SSE-KMS (docs KYC) | adicionar |
-| Infra | Fly.io ou AWS (V2). CDN: Cloudflare | mudar |
+| Infra | **Render** (prod atual: `blaxx-pontos-exe.onrender.com`) → AWS (V2). CDN: Cloudflare. *(Fly.io descartado)* | mudar |
 
 ### Headers e práticas obrigatórias
 

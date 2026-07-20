@@ -8,5 +8,5 @@
     <rect x="25" y="17" width="11" height="9" rx="2.2" fill="#000"/>
     <rect x="25" y="36" width="12" height="11" rx="2.2" fill="#000"/>
   </mask>
-  <rect width="64" height="64" fill="#7CFF00" mask="url(#blaxxFav)"/>
+  <rect width="64" height="64" fill="#59FD27" mask="url(#blaxxFav)"/>
 </svg>

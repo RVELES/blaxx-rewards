@@ -1,10 +1,34 @@
-# Deploy Blaxx Pontos: Fly.io (backend) + Netlify (front)
+# Deploy Blaxx Pontos
+
+> 🟢 **ESTADO ATUAL (verificado 27/06/2026) — leia antes de seguir o guia abaixo.**
+>
+> A produção **não** usa mais Fly.io + SQLite. O guia histórico (Fly.io) está
+> preservado abaixo só como referência. A topologia real hoje é:
+>
+> | Camada | Onde | Detalhe |
+> |---|---|---|
+> | Frontend (domínio) | **Netlify** · `blaxxpontos.com.br` | landing estática `blaxx-neon.html`, verde neon `#59FD27` |
+> | Backend (prod) | **Render** · `blaxx-pontos-exe.onrender.com` | Flask + Gunicorn (Dockerfile + `render.yaml`); repo `rveles-blaxx/blaxx-pontos` |
+> | Banco | **Neon PostgreSQL** (região `gru`) | + migrações Alembic; `DATABASE_URL` secret |
+> | Healthcheck | `/healthz` → 200 · `/readyz` (DB + rotas + JWT) | `render.yaml` aponta `healthCheckPath: /readyz` |
+>
+> Variáveis de ambiente de produção: ver `LAUNCH_PENDING_CREDENTIALS.md` (raiz)
+> §2.1. Pipeline de deploy/CI e fail-fast de env: mesma referência, §7.
+> A CSP (`netlify.toml`/`_headers`) libera `connect-src` só para
+> `blaxx-pontos-exe.onrender.com`.
+
+---
+
+## (LEGADO) Guia histórico Fly.io — não usar
+
+> ⚠️ Tudo a partir daqui é o procedimento **antigo** (Fly.io + SQLite),
+> mantido apenas como registro. Não reflete a produção atual (Render + Neon).
 
 Tempo total: ~30 minutos. Custo: gratuito (free tier de ambos).
 
 ---
 
-## Arquitetura final
+## Arquitetura final (legado)
 
 ```
 [Celular / Browser]
@@ -14,7 +38,7 @@ Tempo total: ~30 minutos. Custo: gratuito (free tier de ambos).
         |
    chamada fetch
         v
-  Fly.io (backend Flask + SQLite em volume persistente)
+  Fly.io (backend Flask + SQLite em volume persistente)   ← LEGADO: hoje é Render + Neon
 ```
 
 ---

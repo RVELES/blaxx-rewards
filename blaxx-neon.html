@@ -1,439 +1,529 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#000000" />
-<title>BlaXx Rewards — Pontos que viram o mundo</title>
-<meta name="description" content="Acumule pontos no dia a dia e troque por Pix na hora, milhas, diárias de hotel ou salas VIP pelo planeta. Sem taxas escondidas." />
-<link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<!-- Globo de países (modelo blaxxpontos.com.br): d3 + topojson vendorizados (sem CDN) -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>BlaXx Pontos — Seus pontos. Suas regras.</title>
+<meta name="description" content="Compre pontos, envie para amigos e resgate em dinheiro de verdade via PIX. A plataforma de pontos mais direta do Brasil.">
+<link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Globo de parceiros: d3 + topojson vendorizados (sem CDN) -->
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <style>
-/* ============ TOKENS ============
-   neon=#59FD27  bg=#0a0a0a  panel=#0d0d0d  line=#1c1c1c
-   text=#fff  muted=#b7bbb2  muted2=#8a8f86
-================================== */
+/* ============ TOKENS — Neo-Brutal (Brand Book v1.0) ============
+   Sistema portado do protótipo design/blaxx-home-prototipo.html.
+   neon #59FD27 pontual · preto oficial #0A0B0E · fundo papel #E8E6DD.
+   Globo direção Cinema, esfera Safira #8EC3EA. */
 :root{
-  --neon:#59FD27; --neon-soft:#59FD2733; --neon-line:#59FD2755;
-  --bg:#0a0a0a; --panel:#0d0d0d; --line:#1c1c1c;
-  --text:#ffffff; --muted:#b7bbb2; --muted2:#8a8f86; --maxw:1180px;
+  --neon:#59FD27; --black:#0A0B0E; --ink:#13161C; --grey:#8A929E; --white:#F4F4F0;
+  --paper:#E8E6DD;
+  --grotesk:'Space Grotesk','Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,'Courier New',monospace;
 }
-*{box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{background:var(--paper);color:var(--black);font-family:var(--grotesk);-webkit-font-smoothing:antialiased}
+::selection{background:var(--neon);color:var(--black)}
 a{color:inherit}
-.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
-.mono{font-family:'JetBrains Mono',monospace}
-.kicker{font-family:'JetBrains Mono',monospace;color:var(--neon);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;margin:0}
-:focus-visible{outline:2px solid var(--neon);outline-offset:3px;border-radius:6px}
+:focus-visible{outline:3px solid var(--black);outline-offset:2px}
 
-header.nav{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.nav-in{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 24px;max-width:var(--maxw);margin:0 auto}
-.brand{display:inline-flex;align-items:center}
-.brand svg{height:125px;width:auto;display:block}
-.nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
-.nav-links a{text-decoration:none}
-.nav-links a:hover{color:var(--text)}
-.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;border-radius:999px;transition:transform .12s ease,filter .12s ease}
-.btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--neon);color:#06140a;padding:14px 26px}
-.btn-primary:hover{filter:brightness(1.06)}
-.btn-ghost{color:var(--text);border:1px solid #2a2a2a;padding:14px 26px}
-.btn-sm{padding:9px 18px;font-size:14px}
+/* ============ LOGO (Brand Book §03) ============
+   Assinatura "Bla" + "Xx" (Xx neon). Sobre o header preto → versão positiva
+   (Bla branco). Só o símbolo vetorial; sem sombra/contorno na marca — a
+   sombra dura do neo-brutal fica nos cards/CTAs, nunca no logo. */
+.logo{display:inline-flex;align-items:center;gap:11px;color:var(--white);text-decoration:none}
+.logo-mark{height:60px;width:auto;flex:none;display:block}
+.logo-word{font-family:var(--grotesk);font-weight:700;font-size:26px;letter-spacing:-.02em;line-height:1}
+.logo-word b{font-weight:700;color:var(--neon)}
 
-.hero{padding:74px 0 48px;position:relative}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--neon-line);color:var(--neon);border-radius:999px;padding:6px 14px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
-.hero h1{font-size:clamp(2.6rem,8.5vw,6rem);font-weight:700;line-height:.96;letter-spacing:-.03em;margin:24px 0 0}
-.hero h1 .fx{color:var(--neon)}
-.lede{max-width:540px;margin-top:22px;font-size:18px;line-height:1.6;color:var(--muted)}
-.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:60px}
-.stat{border-left:2px solid var(--neon);padding-left:16px}
-.stat .num{font-family:'Space Grotesk';font-size:clamp(2rem,5vw,3.1rem);font-weight:700;line-height:1}
-.stat .lbl{color:var(--muted2);font-size:12px;margin-top:8px;text-transform:uppercase;letter-spacing:.07em}
-.stat.badge .num{color:var(--neon);font-size:clamp(1.3rem,3.5vw,1.9rem)}
+/* ============ NEO-BRUTAL ============ */
+.frame{min-height:100vh;overflow-x:hidden}
+.nb{background:var(--paper);color:var(--black);font-family:var(--grotesk);padding-bottom:40px}
+.nb .bar{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:14px 22px;background:var(--black);border-bottom:4px solid var(--black)}
+.nb .pill{border:3px solid var(--black);background:var(--neon);box-shadow:5px 5px 0 var(--white);
+  padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--grotesk);
+  color:var(--black);text-decoration:none;display:inline-block;transition:transform .08s,box-shadow .08s}
+.nb .pill:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--white)}
+.nb .wrap{max-width:1080px;margin:0 auto;padding:34px 22px;position:relative}
+.nb h1{font-family:var(--grotesk);font-weight:700;font-size:clamp(38px,7vw,80px);line-height:.97;letter-spacing:-.03em;text-transform:uppercase}
+.nb h1 .tag{display:inline-block;background:var(--neon);border:4px solid var(--black);box-shadow:8px 8px 0 var(--black);
+  padding:2px 16px;transform:rotate(-2deg)}
+.nb .sub{font-size:16px;max-width:520px;margin:20px 0 26px;font-weight:500;line-height:1.5}
+.nb .btn{display:inline-block;border:4px solid var(--black);background:var(--neon);box-shadow:8px 8px 0 var(--black);
+  font-family:var(--grotesk);font-weight:700;font-size:18px;padding:16px 28px;text-transform:uppercase;cursor:pointer;
+  text-decoration:none;color:var(--black);transition:all .08s}
+.nb .btn:hover{transform:translate(4px,4px);box-shadow:4px 4px 0 var(--black)}
+.nb .btn.ghost{background:var(--white)}
+.nb .stick{position:absolute;right:4vw;top:16px;background:#fff;border:4px solid var(--black);
+  box-shadow:8px 8px 0 var(--black);padding:12px 16px;font-family:var(--mono);font-size:11px;transform:rotate(4deg);z-index:1}
+.nb .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:26px;margin-top:44px}
+.nb .card{border:4px solid var(--black);background:var(--white);box-shadow:10px 10px 0 var(--black);padding:20px}
+.nb .card:nth-child(2){transform:rotate(1.2deg);background:var(--neon)}
+.nb .card:nth-child(3){transform:rotate(-1deg)}
+.nb .card h3{font-family:var(--grotesk);font-weight:700;font-size:20px;text-transform:uppercase}
+.nb .card .pts{font-family:var(--grotesk);font-weight:700;font-size:40px;margin:8px 0}
+.nb .card .prc{font-family:var(--mono);font-size:13px}
+.nb .card .mini{margin-top:14px;display:inline-block;border:3px solid var(--black);background:var(--white);
+  box-shadow:4px 4px 0 var(--black);padding:6px 12px;font-weight:700;font-size:12px;cursor:pointer;
+  font-family:var(--grotesk);text-decoration:none;color:var(--black);transition:transform .08s,box-shadow .08s}
+.nb .card .mini:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--black)}
+.nb .footnote{font-family:var(--mono);font-size:11px;color:#555;margin-top:40px;padding-top:16px;border-top:2px dashed #999}
+.nb .footnote a{color:#555;text-decoration:none}
+.nb .footnote a:hover{color:var(--black)}
 
-.marq-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;overflow:hidden;margin-top:30px}
-.marq{display:flex;gap:48px;width:max-content;animation:marq 26s linear infinite}
-.marq span{color:#6f746b;font-size:14px;letter-spacing:.04em;font-family:'JetBrains Mono',monospace;white-space:nowrap}
-@keyframes marq{to{transform:translateX(-50%)}}
+/* globo */
+.nb .globe-block{max-width:1080px;margin:60px auto 0;padding:0 22px}
+.nb .globe-head .ann{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:#556}
+.nb .globe-head h2{font-family:var(--grotesk);font-weight:700;font-size:clamp(26px,4vw,40px);text-transform:uppercase;letter-spacing:-.02em;margin-top:6px}
+.nb .globe-hint{font-family:var(--mono);font-size:11px;color:#556;margin:14px 0}
+.nb .cinema-frame{position:relative;border:5px solid var(--black);box-shadow:14px 14px 0 var(--black);aspect-ratio:16/9;
+  overflow:visible;background:#8EC3EA;max-width:900px;margin:0 auto}
+.nb .cinema-frame canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.nb .cinema-card{position:absolute;left:24px;top:24px;background:var(--white);border:4px solid var(--black);
+  box-shadow:8px 8px 0 var(--black);padding:14px 18px;transform:rotate(-2deg);color:var(--black)}
+.nb .cinema-card small{font-family:var(--mono);font-size:10px;letter-spacing:2px}
+.nb .cinema-card b{display:block;font-family:var(--grotesk);font-weight:700;font-size:36px;line-height:1}
+.nb .cinema-card span{font-family:var(--mono);font-size:11px}
+.nb .cinema-marq{position:absolute;left:0;right:0;bottom:0;background:var(--black);color:var(--neon);
+  font-family:var(--mono);font-size:12px;letter-spacing:2px;padding:8px 0;white-space:nowrap;overflow:hidden;border-top:3px solid var(--neon)}
+.nb .cinema-marq span{display:inline-block;animation:gv-mq 22s linear infinite}
+@keyframes gv-mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.nb .globe-tip{position:absolute;display:none;pointer-events:none;background:var(--black);border:2px solid var(--neon);
+  padding:7px 11px;font-family:var(--mono);font-size:11px;white-space:nowrap;z-index:5;line-height:1.5;color:#F4F4F0}
 
-.blk{padding:86px 0}
-.sec-head{max-width:640px;margin-bottom:40px}
-.sec-head h2{font-size:clamp(1.8rem,4.4vw,2.8rem);font-weight:700;margin-top:10px;letter-spacing:-.02em}
-.sec-head p{color:var(--muted);margin-top:12px;font-size:16px;line-height:1.6}
+/* telas (home ↔ parceiros público) */
+.screen[hidden]{display:none}
+/* PARCEIROS (tela pública, portada do protótipo) */
+.nb .p-filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.nb .p-chip{border:3px solid var(--black);background:var(--white);box-shadow:4px 4px 0 var(--black);
+  padding:8px 16px;font-family:var(--grotesk);font-weight:700;font-size:13px;cursor:pointer;color:var(--black)}
+.nb .p-chip.on{background:var(--neon)}
+.nb .p-chip:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--black)}
+.nb .partners-grid{max-width:1080px;margin:30px auto 0;padding:0 22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:26px}
+.nb .p-card{border:4px solid var(--black);background:var(--white);box-shadow:10px 10px 0 var(--black);padding:22px;border-top:10px solid var(--dot)}
+.nb .p-card .p-cat{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#556}
+.nb .p-card h3{font-family:var(--grotesk);font-weight:700;font-size:24px;text-transform:uppercase;margin-top:6px}
+.nb .p-card p{font-family:var(--mono);font-size:12px;color:#445;margin-top:10px;line-height:1.6}
+.nb .p-card.p-hidden{display:none}
 
-.globe-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
-#globeWrap{position:relative;width:100%;max-width:460px;aspect-ratio:1;margin:0 auto;touch-action:none}
-#globe{width:100%;height:100%;display:block;cursor:grab}
-#globe.drag{cursor:grabbing}
-#globeTip{position:absolute;pointer-events:none;transform:translate(-50%,-130%);background:#000;border:1px solid var(--neon-line);color:var(--text);font-size:12px;font-family:'JetBrains Mono',monospace;padding:5px 9px;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .12s;z-index:5}
-#globeTip b{color:var(--neon)}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.legend button{cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--muted);padding:6px 12px;border-radius:999px;font-size:12px;font-family:'Sora';transition:.15s;display:inline-flex;align-items:center;gap:7px}
-.legend button .dot{width:7px;height:7px;border-radius:999px;background:var(--neon);box-shadow:0 0 8px var(--neon)}
-.legend button:hover{border-color:#39392f;color:var(--text)}
-.legend button.on{border-color:var(--neon);color:var(--text);background:var(--neon-soft)}
-.globe-meta{display:flex;gap:34px;margin-top:26px}
-.globe-meta b{font-family:'Space Grotesk';font-size:28px;display:block}
-.globe-meta span{color:var(--muted2);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-.hint{color:var(--muted2);font-size:12px;margin-top:16px}
-
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.card{background:var(--panel);padding:28px;position:relative}
-.card .ic{font-size:20px;color:var(--muted2)}
-.card .n{position:absolute;top:28px;right:28px;font-family:'JetBrains Mono';color:var(--neon);font-size:14px}
-.card h4{font-size:20px;font-weight:600;margin:16px 0 8px}
-.card p{color:#9a9e95;font-size:14px;line-height:1.55}
-
-.redeem{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.rcard{border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--panel)}
-.rcard .ic{font-size:22px}
-.rcard .tag{display:inline-block;margin-top:14px;color:var(--neon);font-size:11px;font-family:'JetBrains Mono';letter-spacing:.04em;border:1px solid var(--neon-line);padding:3px 8px;border-radius:999px}
-.rcard h4{margin:14px 0 6px;font-size:18px;font-weight:600}
-.rcard p{color:#9a9e95;font-size:14px;line-height:1.55}
-
-.band{display:grid;grid-template-columns:1.2fr .8fr;gap:36px;align-items:center;border:1px solid var(--neon-line);border-radius:24px;padding:clamp(28px,5vw,56px);background:radial-gradient(120% 140% at 0% 0%,var(--neon-soft),transparent 55%),var(--panel)}
-.band .big{font-family:'Space Grotesk';font-size:clamp(3rem,8vw,5.5rem);font-weight:700;color:var(--neon);line-height:1}
-.band h3{font-size:clamp(1.4rem,3.2vw,2rem);font-weight:600;margin-top:6px}
-.band-side{display:grid;gap:12px}
-.chip{display:flex;align-items:baseline;gap:10px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#0a0a0a}
-.chip b{font-family:'Space Grotesk';font-size:20px;color:var(--text)}
-.chip span{color:var(--muted2);font-size:13px}
-
-.partners{display:flex;flex-wrap:wrap;gap:14px 26px;justify-content:center;color:#9a9e95;font-size:15px}
-
-.faq{display:grid;gap:10px;max-width:820px}
-.qa{border:1px solid var(--line);border-radius:14px;padding:6px 20px;background:var(--panel)}
-.qa summary{cursor:pointer;list-style:none;padding:16px 0;font-weight:600;display:flex;justify-content:space-between;align-items:center}
-.qa summary::-webkit-details-marker{display:none}
-.qa summary::after{content:'+';color:var(--neon);font-size:20px;font-family:'Space Grotesk'}
-.qa[open] summary::after{content:'–'}
-.qa p{color:var(--muted);font-size:15px;line-height:1.6;padding:0 0 16px;margin:0}
-
-.cta-band{position:relative;overflow:hidden;text-align:center;padding:clamp(64px,11vw,140px) 24px;background:radial-gradient(60% 90% at 50% 130%,var(--neon-soft),transparent 60%)}
-.cta-band .pill{display:inline-block;color:var(--neon);font-family:'JetBrains Mono';font-size:12px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--neon-line);padding:5px 12px;border-radius:999px}
-.cta-band h3{font-size:clamp(2.2rem,7vw,4.6rem);font-weight:700;line-height:.98;letter-spacing:-.03em;margin:16px 0 18px}
-.cta-band p{color:var(--muted);font-size:18px;max-width:460px;margin:0 auto 30px}
-
-footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted2);font-size:13px}
-.foot-in{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
-
-.mobile-cta{display:none}
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
-.reveal.in{opacity:1;transform:none}
-
-.m-social,.m-trust,.m-testi{display:none}
-
-/* ============ RESPONSIVE ============ */
-@media (max-width:920px){
-  .globe-grid{grid-template-columns:1fr;gap:30px}
-  .cards{grid-template-columns:repeat(2,1fr)}
-  .redeem{grid-template-columns:repeat(2,1fr)}
-  .band{grid-template-columns:1fr}
+@media(max-width:760px){
+  .nb .cinema-card b{font-size:28px}
+  .nb .stick{display:none}
+  .logo-word{font-size:22px}
 }
-@media (max-width:760px){
-  .nav-links{display:none}
-  .brand svg{height:94px}
-  .stats{grid-template-columns:repeat(2,1fr);gap:22px;margin-top:40px}
-  .hero{padding:44px 0 32px}
-  .hero h1{font-size:clamp(2.3rem,11vw,3rem)}
-  .blk{padding:58px 0}
-  .cards{grid-template-columns:1fr}
-  .redeem{grid-template-columns:1fr}
-  body{padding-bottom:84px}
-  .mobile-cta{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#0a0a0a 78%,transparent);border-top:1px solid var(--line)}
-  .mobile-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--neon);color:#06140a;padding:15px;border-radius:14px;font-weight:700;text-decoration:none}
-  .nav .btn-sm{padding:8px 14px}
-  .m-social{display:flex;align-items:center;gap:8px;margin-top:18px;color:var(--muted);font-size:13px}
-  .m-social .stars{color:var(--neon);letter-spacing:1px}
-  .m-trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-  .m-trust .tchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12px;color:#cfd2c9}
-  .m-trust .tchip b{color:var(--neon)}
-  .m-testi{display:block}
-  .m-testi .tcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
-  .m-testi .stars{color:var(--neon);font-size:13px;letter-spacing:2px}
-  .m-testi p{color:#cfd2c9;font-size:14px;line-height:1.55;margin:8px 0 0}
-  .m-testi .who{color:var(--muted2);font-size:12px;margin-top:10px}
-}
-@media (prefers-reduced-motion:reduce){
-  .marq{animation:none}
-  .reveal{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .nb .cinema-marq span{animation:none}
 }
 </style>
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-in">
-    <a class="brand" href="#topo" aria-label="BlaXx Rewards">
-      <svg viewBox="0 0 1254 1254" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BlaXx Rewards">
-        <path d="M439,234 L439,690 L440,691 L712,691 L713,690 L728,689 L747,684 L771,673 L787,662 L802,648 L819,624 L830,596 L833,581 L833,574 L834,573 L833,537 L830,522 L824,504 L817,490 L807,475 L791,458 L781,450 L782,447 L794,433 L804,415 L811,395 L814,381 L814,372 L815,371 L815,345 L814,344 L814,336 L810,317 L800,293 L787,274 L770,258 L753,247 L734,239 L710,234 Z M508,301 L700,301 L701,302 L711,303 L722,308 L728,312 L737,322 L743,333 L747,349 L747,368 L745,378 L738,394 L731,403 L722,411 L711,417 L696,421 L686,421 L685,422 L534,422 L533,423 L605,495 L714,495 L715,496 L720,496 L736,502 L744,508 L754,518 L763,535 L766,548 L766,570 L764,580 L757,595 L750,604 L741,612 L728,619 L712,623 L508,623 L506,621 L506,499 L508,495 L565,495 L507,436 L506,432 L506,305 Z M717,763 L798,854 L717,945 L720,946 L763,945 L821,881 L823,881 L881,946 L888,946 L889,945 L896,945 L897,946 L912,946 L913,945 L921,945 L922,946 L924,945 L926,946 L927,945 L846,856 L846,853 L927,763 L881,763 L823,828 L821,828 L762,763 Z M937,804 L1001,874 L997,880 L937,945 L944,945 L945,946 L979,946 L1023,899 L1031,906 L1067,945 L1069,946 L1080,946 L1081,945 L1107,946 L1110,945 L1046,875 L1078,839 L1104,812 L1110,804 L1067,804 L1025,850 L1023,850 L1011,838 L980,804 Z M364,987 L363,988 L363,1025 L370,1025 L370,1015 L371,1014 L380,1014 L388,1025 L396,1025 L388,1014 L395,1005 L395,996 L392,991 L383,987 Z M443,987 L443,1025 L472,1025 L472,1020 L471,1019 L451,1019 L450,1018 L450,1010 L451,1009 L468,1009 L469,1004 L468,1003 L451,1003 L450,1002 L450,994 L451,993 L471,993 L471,987 Z M517,988 L519,991 L521,1000 L530,1025 L538,1025 L544,1005 L547,1000 L549,1001 L556,1025 L564,1025 L566,1022 L566,1019 L577,987 L570,987 L563,1007 L563,1010 L561,1013 L558,1011 L551,987 L544,987 L543,988 L535,1013 L532,1011 L525,988 L524,987 L518,987 Z M636,987 L620,1025 L627,1025 L628,1021 L631,1017 L649,1017 L653,1025 L660,1025 L643,987 Z M705,987 L705,1025 L712,1025 L711,1016 L713,1014 L721,1014 L729,1025 L736,1025 L736,1023 L729,1014 L736,1006 L737,1000 L735,993 L732,990 L724,987 Z M784,987 L784,1025 L806,1025 L813,1022 L818,1017 L821,1009 L820,999 L817,994 L814,991 L805,987 Z M872,988 L868,991 L866,995 L867,1003 L871,1007 L886,1011 L888,1013 L888,1017 L884,1020 L876,1020 L867,1016 L865,1021 L869,1024 L877,1026 L888,1025 L895,1018 L894,1009 L889,1005 L876,1002 L873,999 L873,996 L876,993 L886,993 L892,995 L894,990 L888,987 L875,987 Z M370,994 L371,993 L382,993 L386,995 L388,998 L387,1005 L383,1008 L371,1008 L370,1007 Z M712,994 L713,993 L726,994 L729,997 L729,1004 L725,1008 L713,1008 L712,1007 Z M792,993 L803,993 L808,995 L812,999 L814,1007 L813,1012 L809,1017 L805,1019 L792,1019 L790,1016 L790,1001 Z M639,996 L641,997 L646,1009 L645,1011 L634,1011 L633,1010 Z M149,1006 L150,1008 L310,1008 L311,1007 L310,1005 L150,1005 Z M949,1006 L950,1008 L1110,1008 L1110,1005 L950,1005 Z" fill="#59FD27" fill-rule="evenodd"/>
-        <path d="M149,763 L149,945 L299,945 L311,942 L321,937 L333,926 L338,918 L342,906 L343,881 L337,863 L327,852 L327,850 L334,841 L338,832 L339,827 L339,803 L336,792 L333,786 L323,774 L311,767 L295,763 Z M399,763 L399,910 L402,921 L407,930 L413,936 L423,942 L433,945 L468,945 L468,916 L441,916 L436,914 L431,909 L429,905 L429,763 Z M180,794 L181,793 L293,793 L300,796 L306,802 L309,811 L309,819 L305,829 L301,833 L292,837 L181,837 L179,835 L179,801 L180,800 Z M521,818 L514,831 L512,839 L512,848 L542,848 L542,845 L545,838 L549,834 L560,830 L624,830 L637,835 L643,842 L645,851 L645,859 L643,861 L548,861 L536,864 L523,871 L515,880 L510,893 L510,913 L516,928 L524,936 L532,941 L545,945 L552,945 L553,946 L620,946 L633,943 L643,937 L645,938 L645,945 L675,945 L675,842 L672,831 L668,823 L657,811 L646,805 L631,801 L553,801 L539,805 L531,809 Z M180,868 L181,867 L294,867 L300,869 L309,877 L312,883 L312,890 L313,891 L312,899 L310,904 L304,911 L299,914 L291,916 L181,916 L179,914 L179,873 Z M540,906 L540,900 L543,894 L551,889 L556,888 L643,888 L645,890 L644,901 L641,907 L635,913 L625,917 L553,917 L547,915 L541,909 Z" fill="#FFFFFF" fill-rule="evenodd"/>
-      </svg>
+<section class="screen" data-screen="home">
+<div class="frame nb">
+  <div class="bar">
+    <a class="logo" href="#topo" aria-label="BlaXx Pontos">
+      <svg class="logo-mark" viewBox="0 0 486 548" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M45,45 L45,501 L46,502 L318,502 L319,501 L334,500 L353,495 L377,484 L393,473 L408,459 L425,435 L436,407 L439,392 L439,385 L440,384 L439,348 L436,333 L430,315 L423,301 L413,286 L397,269 L387,261 L388,258 L400,244 L410,226 L417,206 L420,192 L420,183 L421,182 L421,156 L420,155 L420,147 L416,128 L406,104 L393,85 L376,69 L359,58 L340,50 L316,45 Z M114,112 L306,112 L307,113 L317,114 L328,119 L334,123 L343,133 L349,144 L353,160 L353,179 L351,189 L344,205 L337,214 L328,222 L317,228 L302,232 L292,232 L291,233 L140,233 L139,234 L211,306 L320,306 L321,307 L326,307 L342,313 L350,319 L360,329 L369,346 L372,359 L372,381 L370,391 L363,406 L356,415 L347,423 L334,430 L318,434 L114,434 L112,432 L112,310 L114,306 L171,306 L113,247 L112,243 L112,116 Z" fill="#59FD27" fill-rule="evenodd"/></svg>
+      <span class="logo-word">Bla<b>Xx</b></span>
     </a>
-    <nav class="nav-links">
-      <a href="#globo">Mapa</a>
-      <a href="#como">Como funciona</a>
-      <a href="#resgates">Resgates</a>
-      <a href="#faq">Dúvidas</a>
-    </nav>
-    <a href="/login" class="btn btn-primary btn-sm">Entrar</a>
+    <a class="pill" href="/login">ENTRAR →</a>
   </div>
-</header>
 
-<section class="hero" id="topo">
-  <div class="wrap">
-    <span class="eyebrow">● BlaXx Rewards — pontos que viram o mundo</span>
-    <h1 class="font-display">COMPRE. GANHE.<br><span class="fx">TROQUE.</span> ENVIE.</h1>
-    <p class="lede">Acumule pontos no dia a dia e troque por Pix na hora, milhas, diárias de hotel ou salas VIP pelo planeta. Sem taxas escondidas.</p>
-    <div class="cta-row">
-      <a href="/cadastro" class="btn btn-primary">Criar conta grátis →</a>
-      <a href="#globo" class="btn btn-ghost">Ver o mapa</a>
+  <div class="wrap" id="topo">
+    <div class="stick">✳ payout via PIX<br>direto na conta</div>
+    <h1>Seus pontos.<br><span class="tag">Suas regras.</span></h1>
+    <p class="sub">Compre pontos, envie para amigos e resgate em dinheiro de verdade. A plataforma de pontos mais direta do Brasil.</p>
+    <a class="btn" href="/cadastro">Começar agora</a>&nbsp;&nbsp;<a class="btn ghost" href="#pacotes">Ver pacotes</a>
+    <div class="cards" id="pacotes">
+      <div class="card" data-pkg="start"><h3>Start</h3><div class="pts"><span data-pts>2.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 180,00</span> · PIX ou cartão</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
+      <div class="card" data-pkg="plus"><h3>Plus ★</h3><div class="pts"><span data-pts>5.500</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 470,00</span> · ~5% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
+      <div class="card" data-pkg="prime"><h3>Prime</h3><div class="pts"><span data-pts>12.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 972,00</span> · ~10% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
     </div>
-    <div class="m-social"><span class="stars">★★★★★</span> 4,9 · +50 mil contas ativas</div>
-    <div class="m-trust">
-      <span class="tchip"><b>⚡</b> Pix em 12s</span>
-      <span class="tchip"><b>✓</b> Sem taxas escondidas</span>
-      <span class="tchip"><b>⇄</b> Envio P2P grátis</span>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="num"><span data-count="350">0</span>+</div><div class="lbl">salas VIP no mundo</div></div>
-      <div class="stat"><div class="num"><span data-count="60">0</span></div><div class="lbl">países atendidos</div></div>
-      <div class="stat"><div class="num"><span data-count="12">0</span>s</div><div class="lbl">tempo médio do Pix</div></div>
-      <div class="stat badge"><div class="num">Sem taxas</div><div class="lbl">escondidas, sempre</div></div>
-    </div>
-  </div>
-</section>
 
-<div class="marq-wrap" aria-hidden="true"><div class="marq" id="marq"></div></div>
-
-<section class="blk" id="globo">
-  <div class="wrap globe-grid">
-    <div id="globeWrap">
-      <canvas id="globe"></canvas>
-      <div id="globeTip"></div>
-    </div>
-    <div class="reveal">
-      <div class="kicker">// rede global</div>
-      <h2 class="font-display" style="font-size:clamp(2rem,5vw,3.2rem);margin-top:12px;letter-spacing:-.02em">Seus pontos<br>no mapa.</h2>
-      <p style="color:var(--muted);margin-top:14px;max-width:44ch;font-size:16px;line-height:1.6">Hotéis, companhias e salas VIP de cada parceiro, plotados sobre o globo. Passe o mouse para ver a cidade; <b style="color:var(--text)">clique numa legenda para realçar</b> o parceiro.</p>
-      <div class="legend" id="legend"></div>
-      <div class="globe-meta">
-        <div><b id="totalActive">0</b><span>destinos no mapa</span></div>
-        <div><b id="supCount">0</b><span>parceiros online</span></div>
+    <div class="globe-block">
+      <div class="globe-head">
+        <span class="ann">MAPA DA REDE</span>
+        <h2>Seus pontos, o mundo inteiro.</h2>
       </div>
-      <div class="hint">Arraste para girar · toque para explorar</div>
+      <p class="globe-hint">✳ arraste pra girar · passe o mouse num alfinete pra ver a cidade · clique pra ver todos os parceiros</p>
+      <div class="cinema-frame">
+        <canvas id="gvCanvas"></canvas>
+        <div id="cinemaGlobeTip" class="globe-tip"></div>
+        <div class="cinema-card"><small>REDE ATIVA</small><b id="netCount">42</b><span>destinos no mapa</span></div>
+        <div class="cinema-marq"><span>SÃO PAULO ✓ · MIAMI ✓ · DUBAI ✓ · LONDRES ✓ · TÓQUIO ✓ · CANCÚN ✓ · SINGAPURA ✓ · SÃO PAULO ✓ · MIAMI ✓ · DUBAI ✓ · LONDRES ✓ · TÓQUIO ✓ · CANCÚN ✓ · SINGAPURA ✓ ·&nbsp;</span></div>
+      </div>
     </div>
+
+    <div class="footnote">BlaXx Pontos © 2026 · <a href="/documentos-termos">Termos</a> · <a href="/documentos-termos">Privacidade</a> · <a href="/documentos-termos">LGPD</a></div>
   </div>
+</div>
 </section>
 
-<section class="blk" id="como">
-  <div class="wrap">
-    <div class="sec-head"><div class="kicker">// como funciona</div><h2>Como funciona</h2><p>Da compra do dia a dia até uma sala VIP do outro lado do mundo — todo o ciclo vive em um app só.</p></div>
-    <div class="cards">
-      <div class="card"><span class="ic">$</span><span class="n">01</span><h4>Compre</h4><p>Acumule pontos automaticamente nas compras do dia a dia com cartões e parceiros conectados.</p></div>
-      <div class="card"><span class="ic">×</span><span class="n">02</span><h4>Ganhe</h4><p>Multiplique com bônus de transferência de até 120% e missões por tempo limitado.</p></div>
-      <div class="card"><span class="ic">⇄</span><span class="n">03</span><h4>Troque</h4><p>Vire Pix na hora, milhas aéreas, diárias de hotel ou acesso a salas VIP.</p></div>
-      <div class="card"><span class="ic">↗</span><span class="n">04</span><h4>Envie</h4><p>Transfira pontos ou Pix para qualquer pessoa, em qualquer lugar, em segundos — sem taxa.</p></div>
+<section class="screen" data-screen="parceiros" hidden>
+<div class="frame nb">
+  <div class="bar">
+    <a class="logo" href="#topo" aria-label="BlaXx Pontos" onclick="window.blaxxShow&&window.blaxxShow('home');return false;">
+      <svg class="logo-mark" viewBox="0 0 486 548" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M45,45 L45,501 L46,502 L318,502 L319,501 L334,500 L353,495 L377,484 L393,473 L408,459 L425,435 L436,407 L439,392 L439,385 L440,384 L439,348 L436,333 L430,315 L423,301 L413,286 L397,269 L387,261 L388,258 L400,244 L410,226 L417,206 L420,192 L420,183 L421,182 L421,156 L420,155 L420,147 L416,128 L406,104 L393,85 L376,69 L359,58 L340,50 L316,45 Z M114,112 L306,112 L307,113 L317,114 L328,119 L334,123 L343,133 L349,144 L353,160 L353,179 L351,189 L344,205 L337,214 L328,222 L317,228 L302,232 L292,232 L291,233 L140,233 L139,234 L211,306 L320,306 L321,307 L326,307 L342,313 L350,319 L360,329 L369,346 L372,359 L372,381 L370,391 L363,406 L356,415 L347,423 L334,430 L318,434 L114,434 L112,432 L112,310 L114,306 L171,306 L113,247 L112,243 L112,116 Z" fill="#59FD27" fill-rule="evenodd"/></svg>
+      <span class="logo-word">Bla<b>Xx</b></span>
+    </a>
+    <a class="pill" href="#topo" onclick="window.blaxxShow&&window.blaxxShow('home');return false;">← HOME</a>
+  </div>
+
+  <div class="wrap" style="padding-bottom:0">
+    <h1 style="font-size:clamp(32px,6vw,64px)">6 parceiros.<br><span class="tag">Uma rede só.</span></h1>
+    <p class="sub">Toda vez que você resgata, seus pontos BlaXx viram milhas, diária de hotel ou sala VIP numa dessas redes. Clicou num alfinete aceso do globo? Você chegou no lugar certo.</p>
+    <div class="p-filters">
+      <button class="p-chip on" data-cat="todos">Todos</button>
+      <button class="p-chip" data-cat="Milhas">Milhas</button>
+      <button class="p-chip" data-cat="Hotéis">Hotéis</button>
+      <button class="p-chip" data-cat="Salas VIP">Salas VIP</button>
     </div>
   </div>
+
+  <div class="partners-grid">
+    <div class="p-card" data-cat="Milhas" style="--dot:rgb(231,178,74)">
+      <span class="p-cat">Milhas</span><h3>Smiles</h3>
+      <p>São Paulo · Rio de Janeiro · Brasília · Recife · Buenos Aires · Orlando · Lisboa</p>
+    </div>
+    <div class="p-card" data-cat="Milhas" style="--dot:rgb(224,96,160)">
+      <span class="p-cat">Milhas</span><h3>LATAM Pass</h3>
+      <p>Santiago · Lima · São Paulo · Bogotá · Madri · Miami · Sydney</p>
+    </div>
+    <div class="p-card" data-cat="Milhas" style="--dot:rgb(79,143,240)">
+      <span class="p-cat">Milhas</span><h3>Azul Fidelidade</h3>
+      <p>Campinas · Recife · Belo Horizonte · Manaus · Fort Lauderdale · Lisboa</p>
+    </div>
+    <div class="p-card" data-cat="Hotéis" style="--dot:rgb(79,201,106)">
+      <span class="p-cat">Hotéis</span><h3>Accor ALL</h3>
+      <p>Paris · Londres · Bangkok · Dubai · São Paulo · Singapura · Sydney</p>
+    </div>
+    <div class="p-card" data-cat="Hotéis" style="--dot:rgb(155,108,240)">
+      <span class="p-cat">Hotéis</span><h3>Marriott Bonvoy</h3>
+      <p>Nova York · Londres · Tóquio · Dubai · Los Angeles · Xangai · Cancún</p>
+    </div>
+    <div class="p-card" data-cat="Salas VIP" style="--dot:rgb(63,198,216)">
+      <span class="p-cat">Salas VIP</span><h3>Priority Pass</h3>
+      <p>Dubai · Londres · Singapura · Frankfurt · Hong Kong · Istambul · Guarulhos · Doha</p>
+    </div>
+  </div>
+  <div class="wrap" style="padding-top:22px">
+    <div class="footnote">BlaXx Pontos © 2026 · <a href="/documentos-termos">Termos</a> · <a href="/documentos-termos">Privacidade</a> · <a href="/documentos-termos">LGPD</a></div>
+  </div>
+</div>
 </section>
-
-<section class="blk" id="resgates">
-  <div class="wrap">
-    <div class="sec-head"><div class="kicker">// catálogo de resgates</div><h2>Um saldo, vários destinos.</h2><p>Seus pontos são líquidos. Saque, voe ou faça check-in — com taxas que continuam honestas.</p></div>
-    <div class="redeem">
-      <div class="rcard"><div class="ic">⚡</div><div class="tag">a partir de 1.000 pts</div><h4>Pix na hora</h4><p>Converta pontos em dinheiro na sua conta em ~12 segundos, 24/7.</p></div>
-      <div class="rcard"><div class="ic">✈</div><div class="tag">20+ programas</div><h4>Milhas aéreas</h4><p>Transfira para mais de 20 programas de milhagem com bônus de até 120%.</p></div>
-      <div class="rcard"><div class="ic">⌂</div><div class="tag">60 países</div><h4>Diárias de hotel</h4><p>Troque por noites nas maiores redes — Accor, Marriott, Hilton e mais.</p></div>
-      <div class="rcard"><div class="ic">★</div><div class="tag">350+ lounges</div><h4>Salas VIP</h4><p>Acesso a salas VIP em aeroportos do mundo todo usando seus pontos.</p></div>
-      <div class="rcard"><div class="ic">⇄</div><div class="tag">P2P instantâneo</div><h4>Enviar pontos</h4><p>Transfira pontos para amigos e família em segundos, sem burocracia.</p></div>
-      <div class="rcard"><div class="ic">%</div><div class="tag">parceiros</div><h4>Descontos</h4><p>Use pontos como desconto direto em marcas e lojas parceiras.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="blk"><div class="wrap">
-  <div class="band">
-    <div>
-      <div class="big">+120%</div>
-      <h3 class="font-display">extra a cada<br>transferência.</h3>
-      <p style="color:var(--muted);margin-top:14px;max-width:46ch;line-height:1.6">Nas janelas certas, dobre seus pontos ao transferir entre programas parceiros. A gente avisa quando o bônus abre.</p>
-    </div>
-    <div class="band-side">
-      <div class="chip"><b>+120%</b><span>bônus máximo</span></div>
-      <div class="chip"><b>Missões</b><span>pontos extras</span></div>
-      <div class="chip"><b>Zero</b><span>taxa escondida</span></div>
-    </div>
-  </div>
-</div></section>
-
-<section class="blk" style="padding-top:0"><div class="wrap">
-  <div class="kicker" style="text-align:center;margin-bottom:18px">// parceiros conectados</div>
-  <div class="partners"><span>Smiles</span><span>LATAM Pass</span><span>Azul</span><span>Accor ALL</span><span>Marriott</span><span>Priority Pass</span><span>Livelo</span><span>Esfera</span><span>Itaú</span><span>Nubank</span></div>
-</div></section>
-
-<section class="blk" id="faq"><div class="wrap">
-  <div class="sec-head"><div class="kicker">// dúvidas</div><h2>Tudo o que você queria perguntar.</h2></div>
-  <div class="faq">
-    <details class="qa" open><summary>Como funciona o resgate via Pix?</summary><p>Você escolhe quantos pontos quer sacar, confirma com a chave Pix e o valor cai na sua conta em ~12 segundos, 24 horas por dia.</p></details>
-    <details class="qa"><summary>Quais são as taxas?</summary><p>Zero taxa escondida. O que você vê é o que recebe — a conversão de pontos é transparente em cada resgate.</p></details>
-    <details class="qa"><summary>Posso enviar pontos para outra pessoa?</summary><p>Sim. Transfira pontos ou Pix para qualquer pessoa, em qualquer lugar, em segundos e sem burocracia.</p></details>
-    <details class="qa"><summary>Como ganho o bônus de até 120%?</summary><p>Em janelas promocionais de transferência entre programas parceiros. Ativamos um aviso quando o bônus abre para você aproveitar.</p></details>
-  </div>
-</div></section>
-
-<section class="blk m-testi" style="padding-top:0"><div class="wrap">
-  <div class="tcard">
-    <div class="stars">★★★★★</div>
-    <p>"Resgatei pra Pix e caiu na hora. Usei os pontos numa sala VIP em Lisboa."</p>
-    <div class="who">— Marina R., há 2 dias</div>
-  </div>
-</div></section>
-
-<section class="cta-band" id="cta">
-  <span class="pill">Beta aberto</span>
-  <h3 class="font-display">PRONTO PARA<br>GIRAR O MUNDO?</h3>
-  <p>Crie sua conta grátis e comece a transformar pontos em experiências reais.</p>
-  <a href="/cadastro" class="btn btn-primary" style="font-size:17px;padding:16px 30px">Criar conta grátis →</a>
-</section>
-
-<footer><div class="wrap foot-in">
-  <span>© BlaXx Rewards · Pontos que viram o mundo</span>
-  <span class="mono" style="color:var(--neon)">Made in São Paulo</span>
-</div></footer>
-
-<div class="mobile-cta"><a href="/cadastro">Começar grátis →</a></div>
 
 <script>
+// ============ roteador de telas (home ↔ parceiros público) + filtro ============
 (function(){
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){
-    if(!e.isIntersecting)return; io.unobserve(e.target);
-    var el=e.target,target=+el.dataset.count,t0=performance.now(),dur=1300;
-    function tick(t){var p=Math.min(1,(t-t0)/dur);el.textContent=Math.round(target*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick);}
-    requestAnimationFrame(tick);
-  });},{threshold:.5});
-  document.querySelectorAll('[data-count]').forEach(function(el){io.observe(el);});
-  var ro=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.18});
-  document.querySelectorAll('.reveal').forEach(function(el){ro.observe(el);});
-})();
-
-(function(){
-  var p=['Smiles','LATAM Pass','Azul','Accor ALL','Marriott','Priority Pass','Livelo','Esfera','Itaú','Nubank'];
-  document.getElementById('marq').innerHTML=p.concat(p).map(function(x){return '<span>'+x+'</span>';}).join('');
-})();
-
-(function(){
-  var NODES=[
-    {p:'Smiles',c:'São Paulo',lat:-23.55,lng:-46.63},
-    {p:'LATAM Pass',c:'Santiago',lat:-33.45,lng:-70.66},
-    {p:'Azul',c:'Campinas',lat:-22.90,lng:-47.06},
-    {p:'Livelo',c:'Brasília',lat:-15.79,lng:-47.88},
-    {p:'Esfera',c:'Rio de Janeiro',lat:-22.91,lng:-43.17},
-    {p:'Itaú',c:'Belo Horizonte',lat:-19.92,lng:-43.94},
-    {p:'Nubank',c:'Buenos Aires',lat:-34.60,lng:-58.38},
-    {p:'Marriott',c:'Nova York',lat:40.71,lng:-74.00},
-    {p:'Priority Pass',c:'Miami',lat:25.76,lng:-80.19},
-    {p:'Accor ALL',c:'Paris',lat:48.85,lng:2.35},
-    {p:'Priority Pass',c:'Londres',lat:51.50,lng:-0.12},
-    {p:'Accor ALL',c:'Lisboa',lat:38.72,lng:-9.13},
-    {p:'Marriott',c:'Dubai',lat:25.20,lng:55.27},
-    {p:'Priority Pass',c:'Tóquio',lat:35.68,lng:139.69},
-    {p:'Accor ALL',c:'Cidade do Cabo',lat:-33.92,lng:18.42},
-    {p:'Marriott',c:'Cingapura',lat:1.35,lng:103.82}
-  ];
-  var PARTNERS=[]; NODES.forEach(function(n){if(PARTNERS.indexOf(n.p)<0)PARTNERS.push(n.p);});
-  // paleta multicolor dos blooms (mesmo modelo de blaxxpontos.com.br)
-  var PAL=['89,253,39','39,224,253','155,108,255','253,201,39','253,89,160','39,142,253','39,253,168'];
-  var PCOL={}; PARTNERS.forEach(function(p,i){PCOL[p]=PAL[i%PAL.length];});
-  var canvas=document.getElementById('globe'),ctx=canvas.getContext('2d');
-  var wrap=document.getElementById('globeWrap'),tip=document.getElementById('globeTip');
-  var DPR=Math.min(window.devicePixelRatio||1,2),W=0,H=0,R=0,cx=0,cy=0;
-  var rot=0,autoSpeed=0.0016,dragging=false,lastX=0,vel=0.0016,tilt=-0.32,active=null;
-
-  function resize(){var r=wrap.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*DPR;canvas.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);R=Math.min(W,H)*0.42;cx=W/2;cy=H/2;}
-  // --- modelo de globo blaxxpontos.com.br: projeção d3 ortográfica + países topojson ---
-  var WORLD=null,LAND=null,COAST=null,BORD=null,GRAT=null,proj=null,gpath=null;
-  function buildProj(){return d3.geoOrthographic().translate([cx,cy]).scale(R).rotate([rot*180/Math.PI,tilt*180/Math.PI]).clipAngle(90);}
-  function project(lat,lng){var xy=proj?proj([lng,lat]):null;if(!xy)return {x:0,y:0,z:-1};var c=proj.rotate();var dist=d3.geoDistance([lng,lat],[-c[0],-c[1]]);return {x:xy[0],y:xy[1],z:Math.cos(dist)};}
-  function drawSphere(){
-    var atm=ctx.createRadialGradient(cx,cy,R*0.9,cx,cy,R*1.32);atm.addColorStop(0,'rgba(89,253,39,.16)');atm.addColorStop(1,'rgba(89,253,39,0)');
-    ctx.fillStyle=atm;ctx.beginPath();ctx.arc(cx,cy,R*1.32,0,Math.PI*2);ctx.fill();
-    var g=ctx.createRadialGradient(cx-R*0.35,cy-R*0.4,R*0.2,cx,cy,R);
-    g.addColorStop(0,'#0e1a2b');g.addColorStop(.65,'#080d16');g.addColorStop(1,'#04060a');
-    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-    if(!LAND)return;
-    ctx.beginPath();gpath(GRAT);ctx.strokeStyle='rgba(120,200,140,.07)';ctx.lineWidth=.5;ctx.stroke();
-    ctx.beginPath();gpath(LAND);ctx.fillStyle='rgba(42,54,76,.92)';ctx.fill();
-    ctx.save();ctx.shadowColor='rgba(89,253,39,.9)';ctx.shadowBlur=9;
-    ctx.beginPath();gpath(COAST);ctx.strokeStyle='rgba(89,253,39,.9)';ctx.lineWidth=1.1;ctx.stroke();
-    ctx.shadowBlur=5;
-    ctx.beginPath();gpath(BORD);ctx.strokeStyle='rgba(89,253,39,.4)';ctx.lineWidth=.6;ctx.stroke();
-    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(89,253,39,.55)';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.restore();
+  function show(k){
+    document.querySelectorAll('.screen').forEach(function(s){ s.hidden = (s.dataset.screen !== k); });
+    window.scrollTo(0, 0);
   }
-  function drawNodes(){
-    NODES.forEach(function(n){
-      var pt=project(n.lat,n.lng);n._x=pt.x;n._y=pt.y;n._z=pt.z;
-      if(pt.z<=0.02){n._vis=false;return;}n._vis=true;
-      var depth=(pt.z+1)/2,dim=(active&&n.p!==active)?0.18:1,hr=(13+10*depth),col=PCOL[n.p]||'89,253,39';
-      var rg=ctx.createRadialGradient(pt.x,pt.y,0,pt.x,pt.y,hr);
-      rg.addColorStop(0,'rgba('+col+','+(0.42*dim*depth)+')');rg.addColorStop(1,'rgba('+col+',0)');
-      ctx.fillStyle=rg;ctx.beginPath();ctx.arc(pt.x,pt.y,hr,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.arc(pt.x,pt.y,2.0+depth*1.4,0,Math.PI*2);ctx.fillStyle='rgba('+col+','+(0.9*dim)+')';ctx.fill();
-      if(active&&n.p===active){ctx.beginPath();ctx.arc(pt.x,pt.y,hr*0.5,0,Math.PI*2);ctx.strokeStyle='rgba('+col+',.7)';ctx.lineWidth=1;ctx.stroke();}
+  window.blaxxShow = show;
+  document.querySelectorAll('.p-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.p-chip').forEach(function(c){ c.classList.toggle('on', c === chip); });
+      var cat = chip.dataset.cat;
+      document.querySelectorAll('.p-card').forEach(function(card){
+        card.classList.toggle('p-hidden', cat !== 'todos' && card.dataset.cat !== cat);
+      });
     });
-  }
-  function frame(){ctx.clearRect(0,0,W,H);if(!dragging){rot+=vel;vel+=(autoSpeed-vel)*0.03;}proj=buildProj();gpath=d3.geoPath(proj,ctx);drawSphere();drawNodes();requestAnimationFrame(frame);}
-  fetch('vendor/countries-110m.json').then(function(r){return r.json();}).then(function(w){
-    WORLD=w;LAND=topojson.feature(w,w.objects.countries);
-    BORD=topojson.mesh(w,w.objects.countries,function(a,b){return a!==b;});
-    COAST=topojson.mesh(w,w.objects.countries,function(a,b){return a===b;});
-    GRAT=d3.geoGraticule10();
-  }).catch(function(e){console.error('globo paises:',e);});
-
-  var legend=document.getElementById('legend');
-  PARTNERS.forEach(function(p){
-    var b=document.createElement('button');var pc=PCOL[p]||'89,253,39';b.innerHTML='<span class="dot" style="background:rgb('+pc+');box-shadow:0 0 8px rgb('+pc+')"></span>'+p;
-    b.addEventListener('click',function(){
-      if(active===p){active=null;legend.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});}
-      else{active=p;legend.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
-    });
-    legend.appendChild(b);
   });
+})();
+</script>
 
-  function countTo(el,target){var t0=performance.now();function t(now){var p=Math.min(1,(now-t0)/1100);el.textContent=Math.round(target*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(t);}requestAnimationFrame(t);}
-  var seen=false;
-  new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;countTo(document.getElementById('totalActive'),NODES.length);countTo(document.getElementById('supCount'),PARTNERS.length);}});},{threshold:.4}).observe(wrap);
-
-  function pos(ev){var r=canvas.getBoundingClientRect();var t=ev.touches?ev.touches[0]:ev;return {x:t.clientX-r.left,y:t.clientY-r.top};}
-  function onMove(ev){
-    if(dragging){var t=ev.touches?ev.touches[0]:ev;var dx=t.clientX-lastX;lastX=t.clientX;rot+=dx*0.006;vel=dx*0.006;return;}
-    var p=pos(ev),best=null,bd=16;
-    NODES.forEach(function(n){if(!n._vis)return;var d=Math.hypot(n._x-p.x,n._y-p.y);if(d<bd){bd=d;best=n;}});
-    if(best){tip.style.left=best._x+'px';tip.style.top=best._y+'px';tip.innerHTML='<b>● '+best.c+'</b> · '+best.p;tip.style.opacity='1';}
-    else{tip.style.opacity='0';}
+<script>
+// ============ preços de pacotes dinâmicos (GET {API}/pix/packages) ============
+// A landing é standalone (não carrega blaxx-config.js). Resolve a base da API
+// do mesmo jeito: localhost/127.0.0.1/IP → dev :5050 ; senão → Render (prod).
+// Os valores no HTML são o FALLBACK: se o fetch falhar, a página não muda.
+(function(){
+  function resolveApi(){
+    var host = location.hostname;
+    var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
+    if (isLocal) return location.protocol + '//' + host + ':5050';
+    return 'https://blaxx-pontos-exe.onrender.com';
   }
-  function onDown(ev){dragging=true;canvas.classList.add('drag');var t=ev.touches?ev.touches[0]:ev;lastX=t.clientX;tip.style.opacity='0';}
-  function onUp(){dragging=false;canvas.classList.remove('drag');}
-  canvas.addEventListener('mousemove',onMove);
-  canvas.addEventListener('mousedown',onDown);
-  window.addEventListener('mouseup',onUp);
-  canvas.addEventListener('mouseleave',function(){if(!dragging)tip.style.opacity='0';});
-  canvas.addEventListener('touchstart',onDown,{passive:true});
-  canvas.addEventListener('touchmove',function(e){onMove(e);},{passive:true});
-  window.addEventListener('touchend',onUp);
-  window.addEventListener('resize',resize);
-  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){autoSpeed=0;vel=0;}
-  resize();requestAnimationFrame(frame);
+  var API = resolveApi();
+
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){
+    return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function fillCard(pkgKey, pkg){
+    if (!pkg) return;
+    var card = document.querySelector('.card[data-pkg="' + pkgKey + '"]');
+    if (!card) return;
+    var ptsEl = card.querySelector('[data-pts]');
+    var priceEl = card.querySelector('[data-price]');
+    if (ptsEl && pkg.points != null) ptsEl.textContent = fmtPts(pkg.points);
+    if (priceEl && pkg.price_brl != null) priceEl.textContent = fmtBrl(pkg.price_brl);
+  }
+
+  fetch(API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(res){ if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(data){
+      // map: start→card 1, plus→card 2, prime→card 3
+      fillCard('start', data.start);
+      fillCard('plus',  data.plus);
+      fillCard('prime', data.prime);
+    })
+    .catch(function(e){
+      // Offline / CORS / backend down → mantém os valores hardcoded (fallback).
+      if (window.console) console.warn('[Blaxx] pix/packages indisponível, usando valores locais:', e.message);
+    });
+})();
+</script>
+
+<script>
+// ============ dados reais: 6 fornecedores · 42 cidades · 3 categorias ============
+const BLAXX_SUPPLIERS = {"smiles": {"name": "Smiles", "cat": "Milhas", "rgb": "231,178,74"}, "latam": {"name": "LATAM Pass", "cat": "Milhas", "rgb": "224,96,160"}, "azul": {"name": "Azul Fidelidade", "cat": "Milhas", "rgb": "79,143,240"}, "accor": {"name": "Accor ALL", "cat": "Hotéis", "rgb": "79,201,106"}, "marriott": {"name": "Marriott Bonvoy", "cat": "Hotéis", "rgb": "155,108,240"}, "priority": {"name": "Priority Pass", "cat": "Salas VIP", "rgb": "63,198,216"}};
+const BLAXX_POINTS = [{"s": "smiles", "c": "São Paulo", "lat": -23.5, "lon": -46.6, "i": 1}, {"s": "smiles", "c": "Rio de Janeiro", "lat": -22.9, "lon": -43.2, "i": 0.8}, {"s": "smiles", "c": "Brasília", "lat": -15.8, "lon": -47.9, "i": 0.6}, {"s": "smiles", "c": "Recife", "lat": -8, "lon": -34.9, "i": 0.5}, {"s": "smiles", "c": "Buenos Aires", "lat": -34.6, "lon": -58.4, "i": 0.6}, {"s": "smiles", "c": "Orlando", "lat": 28.5, "lon": -81.3, "i": 0.7}, {"s": "smiles", "c": "Lisboa", "lat": 38.7, "lon": -9.1, "i": 0.6}, {"s": "latam", "c": "Santiago", "lat": -33.4, "lon": -70.6, "i": 0.9}, {"s": "latam", "c": "Lima", "lat": -12, "lon": -77, "i": 0.7}, {"s": "latam", "c": "São Paulo", "lat": -23.55, "lon": -46.63, "i": 0.9}, {"s": "latam", "c": "Bogotá", "lat": 4.7, "lon": -74, "i": 0.6}, {"s": "latam", "c": "Madri", "lat": 40.4, "lon": -3.7, "i": 0.7}, {"s": "latam", "c": "Miami", "lat": 25.7, "lon": -80.2, "i": 0.7}, {"s": "latam", "c": "Sydney", "lat": -33.8, "lon": 151.2, "i": 0.6}, {"s": "azul", "c": "Campinas", "lat": -23, "lon": -47.1, "i": 0.9}, {"s": "azul", "c": "Recife", "lat": -8.05, "lon": -34.88, "i": 0.6}, {"s": "azul", "c": "Belo Horizonte", "lat": -19.9, "lon": -43.9, "i": 0.6}, {"s": "azul", "c": "Manaus", "lat": -3.1, "lon": -60, "i": 0.5}, {"s": "azul", "c": "Fort Lauderdale", "lat": 26.1, "lon": -80.1, "i": 0.6}, {"s": "azul", "c": "Lisboa", "lat": 38.72, "lon": -9.13, "i": 0.5}, {"s": "accor", "c": "Paris", "lat": 48.8, "lon": 2.3, "i": 1}, {"s": "accor", "c": "Londres", "lat": 51.5, "lon": -0.1, "i": 0.8}, {"s": "accor", "c": "Bangkok", "lat": 13.7, "lon": 100.5, "i": 0.7}, {"s": "accor", "c": "Dubai", "lat": 25.2, "lon": 55.3, "i": 0.8}, {"s": "accor", "c": "São Paulo", "lat": -23.52, "lon": -46.6, "i": 0.7}, {"s": "accor", "c": "Singapura", "lat": 1.3, "lon": 103.8, "i": 0.7}, {"s": "accor", "c": "Sydney", "lat": -33.86, "lon": 151.2, "i": 0.6}, {"s": "marriott", "c": "Nova York", "lat": 40.7, "lon": -74, "i": 1}, {"s": "marriott", "c": "Londres", "lat": 51.51, "lon": -0.12, "i": 0.8}, {"s": "marriott", "c": "Tóquio", "lat": 35.6, "lon": 139.7, "i": 0.8}, {"s": "marriott", "c": "Dubai", "lat": 25.21, "lon": 55.27, "i": 0.7}, {"s": "marriott", "c": "Los Angeles", "lat": 34, "lon": -118.2, "i": 0.7}, {"s": "marriott", "c": "Xangai", "lat": 31.2, "lon": 121.5, "i": 0.7}, {"s": "marriott", "c": "Cancún", "lat": 21.1, "lon": -86.8, "i": 0.6}, {"s": "priority", "c": "Dubai (DXB)", "lat": 25.25, "lon": 55.36, "i": 1}, {"s": "priority", "c": "Londres (LHR)", "lat": 51.47, "lon": -0.45, "i": 0.8}, {"s": "priority", "c": "Singapura (SIN)", "lat": 1.36, "lon": 103.99, "i": 0.8}, {"s": "priority", "c": "Frankfurt (FRA)", "lat": 50.04, "lon": 8.56, "i": 0.7}, {"s": "priority", "c": "Hong Kong (HKG)", "lat": 22.3, "lon": 114.2, "i": 0.7}, {"s": "priority", "c": "Istambul (IST)", "lat": 41, "lon": 28.9, "i": 0.7}, {"s": "priority", "c": "Guarulhos (GRU)", "lat": -23.43, "lon": -46.47, "i": 0.8}, {"s": "priority", "c": "Doha (DOH)", "lat": 25.3, "lon": 51.5, "i": 0.6}];
+
+// ============ Motor do globo (canvas 2D + d3-geo + topojson) — direção Cinema ============
+// Portado de design/blaxx-home-prototipo.html. Alfinetes-monograma (SM/LA/AZ/AC/MB/PP)
+// são MONOGRAMAS PRÓPRIOS, não os logotipos reais das marcas (decisão de PI).
+function blaxxCreateGlobe(canvas, opts){
+  opts = opts || {};
+  var geoOrthographic = d3.geoOrthographic, geoPath = d3.geoPath,
+      geoGraticule10 = d3.geoGraticule10, geoDistance = d3.geoDistance;
+  var feature = topojson.feature, mesh = topojson.mesh;
+  var world = opts.world, points = opts.points || [], suppliers = opts.suppliers || {};
+  var accent = opts.accent || '89,253,39';
+  var autoRotate = opts.autoRotate !== false;
+  var rotateSpeed = opts.rotateSpeed || 0.16;
+  var initialRotation = opts.initialRotation || [60, -14];
+  var zoom = opts.zoom || 0.44;
+  var sphHi = opts.sphHi || '#E3F1FC', sphMid = opts.sphMid || '#8EC3EA', sphLo = opts.sphLo || '#4A93D1';
+  var landColor = opts.landColor || 'rgba(15,50,90,0.85)';
+  var coastColor = opts.coastColor || 'rgba(8,32,60,0.55)';
+  var borderColor = opts.borderColor || 'rgba(8,32,60,0.28)';
+  var gratColor = opts.gratColor || 'rgba(8,32,60,0.10)';
+  var ringAlpha = (opts.ringAlpha != null) ? opts.ringAlpha : 0.5;
+  var atmAlpha = (opts.atmAlpha != null) ? opts.atmAlpha : 0;
+
+  var ctx = canvas.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var SUP = suppliers, POINTS = points;
+  var act = Object.fromEntries(Object.keys(SUP).map(function(k){return [k, true];}));
+
+  var rotL = initialRotation[0], rotP = initialRotation[1];
+  var dragging = false, autoR = autoRotate, hovering = false, lastX = 0, lastY = 0, paused = false, destroyed = false, raf = 0;
+  var listeners = [];
+  var on = function(el, ev, fn, o){ el.addEventListener(ev, fn, o); listeners.push([el, ev, fn, o]); };
+
+  var land = feature(world, world.objects.countries);
+  var borders = mesh(world, world.objects.countries, function(a,b){ return a !== b; });
+  var coast = mesh(world, world.objects.countries, function(a,b){ return a === b; });
+
+  // monograma de 2 letras por parceiro — NÃO são os logos reais das marcas
+  var MONO = { smiles:'SM', latam:'LA', azul:'AZ', accor:'AC', marriott:'MB', priority:'PP' };
+
+  // agrupa pontos quase colados (mesma cidade, vários parceiros) e abre um leque
+  (function fanOut(){
+    var FAN_RAD = 0.18 * Math.PI / 180; // ~20km
+    var used = new Array(POINTS.length).fill(false);
+    for (var i = 0; i < POINTS.length; i++) {
+      if (used[i]) continue;
+      var group = [i]; used[i] = true;
+      for (var j = i + 1; j < POINTS.length; j++) {
+        if (used[j]) continue;
+        if (geoDistance([POINTS[i].lon,POINTS[i].lat],[POINTS[j].lon,POINTS[j].lat]) <= FAN_RAD) { group.push(j); used[j] = true; }
+      }
+      group.forEach(function(idx, k){ POINTS[idx]._fanIdx = k; POINTS[idx]._fanN = group.length; });
+    }
+  })();
+
+  // alfinete de mapa: corpo (cor da marca) + emblema branco com monograma,
+  // borda preta grossa + sombra dura (assinatura neo-brutal).
+  function blipPin(tipX, tipY, col, intensity, z, label){
+    var scale = (0.6 + 0.55 * z) * (0.85 + 0.3 * intensity);
+    var r = 8.5 * scale;
+    var cy = tipY - r * 1.7;
+    function tracePin(){
+      ctx.beginPath();
+      ctx.moveTo(tipX, tipY);
+      ctx.quadraticCurveTo(tipX - r * 1.3, cy + r * 0.9, tipX - r, cy);
+      ctx.arc(tipX, cy, r, Math.PI, 0, false);
+      ctx.quadraticCurveTo(tipX + r * 1.3, cy + r * 0.9, tipX, tipY);
+      ctx.closePath();
+    }
+    ctx.save(); ctx.translate(1.6 * scale, 1.6 * scale);
+    tracePin(); ctx.fillStyle = 'rgba(10,11,14,0.35)'; ctx.fill(); ctx.restore();
+    tracePin(); ctx.fillStyle = 'rgb(' + col + ')'; ctx.fill();
+    ctx.lineWidth = Math.max(1.3, 1.6 * scale); ctx.strokeStyle = '#0A0B0E'; ctx.stroke();
+    ctx.beginPath(); ctx.arc(tipX, cy, r * 0.64, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF'; ctx.fill();
+    ctx.lineWidth = Math.max(1, scale); ctx.strokeStyle = '#0A0B0E'; ctx.stroke();
+    ctx.fillStyle = '#0A0B0E';
+    ctx.font = '800 ' + Math.max(6, Math.round(r * 0.72)) + 'px Arial, Helvetica, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label || '', tipX, cy + 0.5);
+    return [tipX, cy];
+  }
+
+  function draw(){
+    var rect = canvas.getBoundingClientRect();
+    if (rect.width > 0){
+      var nW = Math.max(1, Math.round(rect.width * dpr)), nH = Math.max(1, Math.round(rect.height * dpr));
+      if (canvas.width !== nW || canvas.height !== nH){ canvas.width = nW; canvas.height = nH; }
+    }
+    var Wc = canvas.width / dpr, Hc = canvas.height / dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, Wc, Hc);
+    var cx = Wc / 2, cy = Hc / 2, R = Math.min(Wc, Hc) * zoom;
+
+    if (atmAlpha > 0){
+      var atm = ctx.createRadialGradient(cx, cy, R * 0.88, cx, cy, R * 1.28);
+      atm.addColorStop(0, 'rgba(' + accent + ',' + atmAlpha + ')'); atm.addColorStop(1, 'rgba(' + accent + ',0)');
+      ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx, cy, R * 1.28, 0, 7); ctx.fill();
+    }
+    var sph = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.35, R * 0.1, cx, cy, R);
+    sph.addColorStop(0, sphHi); sph.addColorStop(0.65, sphMid); sph.addColorStop(1, sphLo);
+    ctx.fillStyle = sph; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
+
+    var proj = geoOrthographic().translate([cx, cy]).scale(R).rotate([rotL, rotP]).clipAngle(90);
+    var path = geoPath(proj, ctx);
+    ctx.beginPath(); path(geoGraticule10()); ctx.strokeStyle = gratColor; ctx.lineWidth = 0.5; ctx.stroke();
+    ctx.beginPath(); path(land); ctx.fillStyle = landColor; ctx.fill();
+    ctx.beginPath(); path(coast); ctx.strokeStyle = coastColor; ctx.lineWidth = 0.8; ctx.stroke();
+    ctx.beginPath(); path(borders); ctx.strokeStyle = borderColor; ctx.lineWidth = 0.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.strokeStyle = 'rgba(' + accent + ',' + ringAlpha + ')'; ctx.lineWidth = 1.4; ctx.stroke();
+
+    for (var idx = 0; idx < POINTS.length; idx++){
+      var m = POINTS[idx]; m._vis = false;
+      if (!act[m.s]) continue;
+      var dist = geoDistance([m.lon, m.lat], [-rotL, -rotP]);
+      if (dist >= Math.PI / 2) continue;
+      var p = proj([m.lon, m.lat]); if (!p) continue;
+      var z = Math.cos(dist);
+      var col = (SUP[m.s] && SUP[m.s].rgb) || accent;
+      var px = p[0], py = p[1];
+      if (m._fanN > 1){ var spread = 13 * (0.6 + 0.6 * z); px += (m._fanIdx - (m._fanN - 1) / 2) * spread; }
+      var label = MONO[m.s] || (SUP[m.s] && SUP[m.s].name || '?').slice(0,2).toUpperCase();
+      var hit = blipPin(px, py, col, m.i, z, label);
+      m._sx = hit[0]; m._sy = hit[1]; m._vis = true;
+    }
+    if (autoR && !dragging) rotL += rotateSpeed;
+  }
+  function loop(){ draw(); if (!paused && !destroyed) raf = requestAnimationFrame(loop); }
+
+  var tooltip = opts.tooltip || null;
+  var onPointClick = opts.onPointClick || null;
+  var downX = 0, downY = 0, movedDist = 0, lastTipKey = '';
+  var HOVER_PX = 22;
+  var CLUSTER_RAD = 0.6 * Math.PI / 180; // ~65km — funde só a MESMA cidade
+
+  function clusterAt(best){
+    var seen = {}, list = [];
+    for (var j = 0; j < POINTS.length; j++){
+      var q = POINTS[j]; if (!q._vis) continue;
+      if (geoDistance([q.lon, q.lat], [best.lon, best.lat]) > CLUSTER_RAD) continue;
+      var supName = (SUP[q.s] && SUP[q.s].name) || q.s;
+      if (seen[supName]) continue;
+      seen[supName] = true;
+      list.push({ name: supName, rgb: (SUP[q.s] && SUP[q.s].rgb) || accent });
+    }
+    return list;
+  }
+  function findNear(mx, my, thresh){
+    var best = null, bestD = thresh;
+    for (var i = 0; i < POINTS.length; i++){
+      var m = POINTS[i]; if (!m._vis) continue;
+      var d = Math.hypot(m._sx - mx, m._sy - my);
+      if (d < bestD){ bestD = d; best = m; }
+    }
+    return best;
+  }
+
+  on(canvas, 'mousedown', function(e){ dragging = true; autoR = false; lastX = e.clientX; lastY = e.clientY; downX = e.clientX; downY = e.clientY; movedDist = 0; canvas.style.cursor = 'grabbing'; });
+  canvas.style.touchAction = 'none';
+  on(canvas, 'touchstart', function(e){ if (e.touches.length !== 1) return; dragging = true; autoR = false; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }, { passive: true });
+  on(canvas, 'touchmove', function(e){
+    if (!dragging || e.touches.length !== 1) return; e.preventDefault();
+    var t = e.touches[0];
+    rotL += (t.clientX - lastX) * 0.28;
+    rotP = Math.max(-88, Math.min(88, rotP - (t.clientY - lastY) * 0.28));
+    lastX = t.clientX; lastY = t.clientY;
+  }, { passive: false });
+  on(window, 'touchend', function(){ if (dragging){ dragging = false; setTimeout(function(){ if (!dragging && !hovering) autoR = autoRotate; }, 2500); } });
+  on(window, 'mouseup', function(e){
+    if (!dragging) return;
+    dragging = false; canvas.style.cursor = 'grab';
+    setTimeout(function(){ if (!dragging && !hovering) autoR = autoRotate; }, 2500);
+    if (movedDist < 6 && onPointClick){
+      var rect = canvas.getBoundingClientRect();
+      var best = findNear(e.clientX - rect.left, e.clientY - rect.top, HOVER_PX);
+      if (best) onPointClick(best, clusterAt(best));
+    }
+  });
+  on(canvas, 'mousemove', function(e){
+    if (dragging){
+      movedDist += Math.abs(e.clientX - lastX) + Math.abs(e.clientY - lastY);
+      rotL += (e.clientX - lastX) * 0.28;
+      rotP = Math.max(-88, Math.min(88, rotP - (e.clientY - lastY) * 0.28));
+      lastX = e.clientX; lastY = e.clientY;
+      if (tooltip) tooltip.style.display = 'none';
+      return;
+    }
+    if (!tooltip) return;
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var best = findNear(mx, my, HOVER_PX);
+    if (best){
+      var group = clusterAt(best);
+      var cityLabel = best.c.replace(/\s*\([^)]*\)\s*$/, '');
+      var key = cityLabel + '|' + group.map(function(o){ return o.name; }).join(',');
+      if (key !== lastTipKey){
+        lastTipKey = key;
+        var chips = group.map(function(o){
+          return '<span style="display:inline-flex;align-items:center;gap:5px;margin:3px 8px 0 0">' +
+            '<i style="width:7px;height:7px;border-radius:50%;background:rgb(' + o.rgb + ');display:inline-block;flex:none"></i>' + o.name + '</span>';
+        }).join('');
+        tooltip.innerHTML = '<b style="display:block;color:#fff;margin-bottom:3px">' + cityLabel + '</b>' +
+          '<div style="display:flex;flex-wrap:wrap;max-width:210px">' + chips + '</div>';
+      }
+      tooltip.style.left = best._sx + 'px'; tooltip.style.top = best._sy + 'px';
+      tooltip.style.transform = 'translate(-50%,-128%)';
+      tooltip.style.display = 'block';
+      canvas.style.cursor = onPointClick ? 'pointer' : 'grab';
+    } else if (tooltip.style.display !== 'none'){
+      tooltip.style.display = 'none'; lastTipKey = '';
+      canvas.style.cursor = 'grab';
+    }
+  });
+  on(canvas, 'mouseenter', function(){ hovering = true; if (!dragging) autoR = false; });
+  on(canvas, 'mouseleave', function(){ hovering = false; autoR = autoRotate; if (tooltip){ tooltip.style.display = 'none'; lastTipKey = ''; } });
+
+  loop();
+  return {
+    pause: function(){ paused = true; cancelAnimationFrame(raf); },
+    resume: function(){ if (paused){ paused = false; loop(); } },
+    destroy: function(){ destroyed = true; cancelAnimationFrame(raf); listeners.forEach(function(l){ l[0].removeEventListener(l[1], l[2], l[3]); }); }
+  };
+}
+
+// ============ init: carrega o mundo vendorizado e sobe o globo Cinema ============
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json').then(function(r){ return r.json(); }).then(function(world){
+    blaxxCreateGlobe(document.getElementById('gvCanvas'), {
+      world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
+      accent: '89,253,39', initialRotation: [60, -14], zoom: 0.44,
+      autoRotate: !reduce,
+      tooltip: document.getElementById('cinemaGlobeTip'),
+      onPointClick: function(){ if (window.blaxxShow) window.blaxxShow('parceiros'); },
+      // tom Safira — definitivo
+      sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+      landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)', borderColor:'rgba(8,32,60,0.28)',
+      gratColor:'rgba(8,32,60,0.10)', ringAlpha:0.5, atmAlpha:0
+    });
+  }).catch(function(e){ console.error('globo:', e); });
 })();
 </script>
 </body>

@@ -9,7 +9,7 @@
   --ink: #0E0F0B;          /* near-black, warm */
   --ink-soft: #1B1D14;     /* dark card base */
   --carbon: #16180F;       /* dark elevated */
-  --lime: #7CFF00;         /* primary signal — marca oficial */
+  --lime: #59FD27;         /* primary signal — marca oficial */
   --lime-bright: #D7FF5C;  /* highlight / reward */
   --lime-deep: #5AB800;    /* pressed */
   --paper: #ECEFE3;        /* page ground */
@@ -462,17 +462,69 @@ main {
 }
 
 
-/* ===== NEON DARK THEME (override global) — preto + verde fluorescente ===== */
-/* Telas logadas (app): miolo levemente mais claro (elevado) + blocos mais escuros. */
+/* ==========================================================================
+   NEO-BRUTAL CLARO — theme override global (área logada)
+   Miolo claro (papel #E8E6DD), superfícies brancas com borda preta grossa +
+   sombra dura (sem blur), cantos retos. Chrome (topbar/sidebar/footer)
+   permanece PRETO (#0A0B0E) — sidebar preta do protótipo. Space/Hanken
+   Grotesk (display) + JetBrains Mono (dados). Neon #59FD27 como acento.
+   Preserva #5AB800 (--lime-deep) — regra do wordmark.
+   ========================================================================== */
 :root{
-  --paper:#14181b; --paper-2:#1a201c; --white:#0d100e; --cream:#171c18;
-  --ink:#0d100e; --ink-soft:#0b0e0c; --carbon:#0f140e;   /* superfícies/blocos ESCUROS */
-  --fg:#f1fff4; --fg-muted:#9fbfa7; --fg-subtle:#7a9a82; --fg-on-dark:#f1fff4; --fg-on-dark-muted:#9da68a;
-  --line:rgba(57,255,20,.12); --line-strong:rgba(57,255,20,.22); --line-dark:rgba(244,246,238,.10);
-  --chrome:#0e1210; --chrome-2:#11160f; --chrome-surface:rgba(244,246,238,.045);
-  --lime:#39ff14; --lime-bright:#7cff4d; --lime-deep:#26c10e;
-  --lime-06:rgba(57,255,20,.06); --lime-12:rgba(57,255,20,.12); --lime-20:rgba(57,255,20,.20); --lime-40:rgba(57,255,20,.40);
-  --pos:#39ff14; --neg:#ff6a4d; --warn:#ffcf4d; --info:#4db8ff;
+  --paper:#E8E6DD; --paper-2:#EFEEE6; --white:#F4F4F0; --cream:#F4F4F0;
+  --ink:#0A0B0E; --ink-soft:#13161C; --carbon:#13161C;
+  --fg:#0A0B0E; --fg-muted:#5b6058; --fg-subtle:#6d7178;
+  --fg-on-dark:#F4F4F0; --fg-on-dark-muted:#c8cdb8;
+  --line:#0A0B0E; --line-strong:#0A0B0E; --line-dark:rgba(244,246,238,.14);
+  --chrome:#0A0B0E; --chrome-2:#0f1216; --chrome-line:#22252b; --chrome-line-strong:#2b2f36;
+  --chrome-fg:#F4F4F0; --chrome-fg-muted:#cfd2cb; --chrome-surface:rgba(244,246,238,.05);
+  --lime:#59FD27; --lime-bright:#7CFF00; --lime-deep:#5AB800;
+  --lime-06:rgba(89,253,39,.06); --lime-12:rgba(89,253,39,.14); --lime-20:rgba(89,253,39,.20); --lime-40:rgba(89,253,39,.45);
+  --pos:#1f7a12; --neg:#a83417; --warn:#8a6500; --info:#1c4f87;
+  --r-xs:0; --r-sm:0; --r-md:0; --r-lg:0; --r-xl:0; --r-pill:0;
+  --sh-1:4px 4px 0 #0A0B0E; --sh-2:6px 6px 0 #0A0B0E; --sh-3:8px 8px 0 #0A0B0E;
+  --glow-lime:6px 6px 0 #0A0B0E;
 }
 body{ background:var(--paper) !important; color:var(--fg); }
-input,textarea,select{ background:var(--ink-soft); color:var(--fg); border:1px solid var(--line); }
+::selection{ background:var(--lime); color:var(--ink); }
+
+/* ---- Content cards (miolo claro) ---- */
+.card{ background:var(--white); border:3px solid var(--ink); border-radius:0; box-shadow:var(--sh-1); }
+.card--dark{ background:var(--ink); color:var(--fg-on-dark); border-color:var(--ink); }
+.card--lime{ background:var(--lime); border-color:var(--ink); color:var(--ink); }
+
+/* ---- Buttons ---- */
+.btn{ border:3px solid var(--ink); border-radius:0; font-weight:700; text-transform:uppercase; letter-spacing:.02em; box-shadow:var(--sh-1); transition:transform .08s var(--ease), box-shadow .08s var(--ease); }
+.btn:hover{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
+.btn--primary{ background:var(--lime); color:var(--ink); }
+.btn--primary:hover{ background:var(--lime); }
+.btn--primary:active{ background:var(--lime-deep); }
+.btn--dark{ background:var(--ink); color:var(--lime); }
+.btn--white,.btn--outline{ background:var(--white); color:var(--ink); border-color:var(--ink); }
+.btn--ghost-dark{ background:transparent; color:var(--fg-on-dark); border-color:var(--fg-on-dark); box-shadow:none; }
+.btn--ghost-dark:hover{ background:rgba(244,246,238,.12); transform:none; box-shadow:none; }
+
+/* ---- Chips / eyebrow / tiles ---- */
+.chip{ border-radius:0; border:2px solid var(--ink); }
+.chip--ink{ background:var(--ink); color:var(--lime); }
+.chip--ghost{ background:rgba(244,246,238,.10); color:var(--fg-on-dark); border-color:rgba(244,246,238,.30); }
+.eyebrow{ border-radius:0; border:2px solid var(--ink); color:var(--ink); }
+.tile{ border-radius:0; border:2px solid var(--ink); }
+.tile--ink{ background:var(--ink); color:var(--lime); }
+
+/* ---- Progress bar ---- */
+.bar{ border-radius:0; border:2px solid var(--ink); background:var(--white); height:16px; }
+.bar__fill{ border-radius:0; background:var(--lime); }
+.bar--dark{ background:rgba(244,246,238,.12); }
+
+/* ---- Chrome: sidebar/topbar PRETOS, cantos retos ---- */
+.icon-btn,.user-pill{ border-radius:0; }
+.profile-card{ border-radius:0; border:2px solid var(--chrome-line-strong); }
+.profile-card .av,.user-pill .av{ border-radius:0; }
+.nav-item{ border-radius:0; }
+.nav-item.is-active{ background:var(--lime); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 #000; }
+.nav-item.is-active .ico{ background:transparent; color:var(--ink); }
+
+/* ---- Forms ---- */
+input,textarea,select{ background:var(--white); color:var(--fg); border:3px solid var(--ink); border-radius:0; font-weight:600; }
+input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--ink); box-shadow:4px 4px 0 var(--lime); }

@@ -18,7 +18,7 @@
   .admin-tbl td { padding: 12px 14px; border-top: 1px solid #f0f3eb; font-size: 14px; }
   .admin-tbl tr:hover td { background: #fafcf3; }
   .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-  .badge.admin { background: #080907; color: #7CFF00; }
+  .badge.admin { background: #080907; color: #59FD27; }
   .badge.vip { background: #fff7df; color: #8a6500; }
   .badge.verified { background: #efffe6; color: #2d651b; }
   .badge.unverified { background: #ffede8; color: #a83417; }
@@ -27,12 +27,12 @@
   .toolbar select { padding: 10px 14px; border: 1px solid #e6eadf; border-radius: 10px; font-size: 14px; background: #0c110c; }
   .tab-row { display: flex; gap: 8px; border-bottom: 1px solid #e6eadf; margin-bottom: 18px; }
   .tab-row button { background: none; border: none; padding: 12px 16px; cursor: pointer; font-size: 14px; font-weight: 600; color: #5f665e; border-bottom: 2px solid transparent; }
-  .tab-row button.active { color: #080907; border-bottom-color: #7CFF00; }
+  .tab-row button.active { color: #080907; border-bottom-color: #59FD27; }
   .vip-toggle { position: relative; display: inline-block; width: 44px; height: 22px; cursor: pointer; }
   .vip-toggle input { opacity: 0; width: 0; height: 0; }
   .vip-toggle .slider { position: absolute; inset: 0; background: #d4d4d8; border-radius: 22px; transition: .2s; }
   .vip-toggle .slider::before { content: ""; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: .2s; }
-  .vip-toggle input:checked + .slider { background: #7CFF00; }
+  .vip-toggle input:checked + .slider { background: #59FD27; }
   .vip-toggle input:checked + .slider::before { transform: translateX(22px); }
   .empty-state { padding: 40px; text-align: center; color: #8a918a; }
   .pager { display: flex; justify-content: space-between; margin-top: 16px; align-items: center; font-size: 13px; color: #5f665e; }
@@ -78,6 +78,7 @@
     <button data-tab="payouts" onclick="switchTab('payouts')">
       Resgates PIX <span id="payouts-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
+    <button data-tab="packages" onclick="switchTab('packages')">Pacotes</button>
   </div>
 
   <!-- Tab: Users -->
@@ -191,6 +192,34 @@
         <button id="tx-next" onclick="changeTxPage(1)">Próxima ›</button>
       </div>
     </div>
+  </div>
+
+  <!-- Tab: Packages (preços de pacotes editáveis) -->
+  <div id="tab-packages" style="display:none;">
+    <p style="color:#5f665e;font-size:13px;margin-bottom:8px;">
+      Preços dos pacotes de pontos exibidos na landing e cobrados na compra.
+    </p>
+    <p style="background:#fff7df;border:1px solid #f0d98a;color:#8a6500;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;">
+      ⚠️ Alterar o preço muda o valor cobrado do cliente no PIX. Editar salva como <b>rascunho</b>; só vai ao ar ao <b>Publicar</b>.
+    </p>
+    <div id="packages-toolbar" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <button id="pkg-publish-btn" class="button" onclick="publishPackages(this)" disabled style="font-size:13px;padding:8px 16px;">Publicar alterações</button>
+      <button id="pkg-discard-btn" class="button" onclick="discardDrafts(this)" disabled style="font-size:13px;padding:8px 16px;background:#2a2a2a;">Descartar rascunhos</button>
+      <span id="pkg-pending" style="font-size:12px;color:#8a6500;font-weight:600;"></span>
+    </div>
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Chave</th>
+          <th>Label</th>
+          <th style="text-align:right;">Pontos</th>
+          <th style="text-align:right;">Preço (R$)</th>
+          <th style="text-align:center;">Ativo</th>
+          <th style="text-align:center;">Ação</th>
+        </tr>
+      </thead>
+      <tbody id="packages-tbody"></tbody>
+    </table>
   </div>
 </div>
 

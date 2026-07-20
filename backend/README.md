@@ -2,8 +2,9 @@
 
 > ⚠️ **Este NÃO é o backend de produção.** É a referência da Fase 1 (auth).
 > O backend que roda em produção (carteira, PIX, resgates, parceiros, cartão)
-> está no repo **`RVELES/blaxx-pontos-exe`**, servido em
-> `https://blaxx-pontos-exe.onrender.com`. Ver `../ARCHITECTURE.md`.
+> está no repo **`rveles-blaxx/blaxx-pontos`** (público, branch `main`), servido
+> em `https://blaxx-pontos-exe.onrender.com` (**Render**, não Fly.io). Ver
+> `../ARCHITECTURE.md`.
 
 Backend Flask que serve a API de autenticação e perfil de usuário do Blaxx Pontos.
 
@@ -163,13 +164,16 @@ recomenda-se Alembic (TODO Fase 2).
 
 ---
 
-## Deploy (Fly.io)
+## Deploy
 
-> ⚠️ Antes de deployar, decidir migração da produção atual. O domínio
-> `blaxx-pontos-backend.fly.dev` tem código diferente do deste repositório
-> (versão antiga com auth incompleta). Cutover precisa ser planejado.
+> ⚠️ **Histórico/legado.** Este módulo (Fase 1) nunca foi para produção. A
+> produção real roda em **Render** (`blaxx-pontos-exe.onrender.com`, repo
+> `rveles-blaxx/blaxx-pontos`) com **Postgres no Neon** + Alembic — **não** em
+> Fly.io/SQLite. Os passos `fly …` abaixo são apenas registro histórico; não
+> usar. Para o deploy de produção real, ver `../DEPLOY.md` e
+> `LAUNCH_PENDING_CREDENTIALS.md` (raiz) §2.1.
 
-### Passos resumidos
+### Passos resumidos (LEGADO — Fly.io, não usar)
 
 ```bash
 # 1. Editar APP_NAME em backend/fly.toml (criar arquivo)
@@ -180,9 +184,6 @@ recomenda-se Alembic (TODO Fase 2).
 # 6. fly secrets set APP_URL="https://blaxx-pontos.netlify.app"
 # 7. fly deploy
 ```
-
-`fly.toml` e `Dockerfile` ainda não foram criados — virão na Fase 2 junto com
-o JWT/refresh proper.
 
 ---
 

@@ -332,6 +332,112 @@
       .catch(function (e) { alert('Erro: ' + e.message); });
   };
 
+  // ── Packages tab (preços editáveis: rascunho → Publicar) ───────────────
+  var _pkgInput = 'width:110px;padding:8px 10px;border:1px solid #e6eadf;border-radius:8px;background:#0c110c;font-size:14px;text-align:right;';
+
+  function loadPackages() {
+    var tbody = document.getElementById('packages-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Carregando...</td></tr>';
+    api('/admin/packages').then(function (r) {
+      var items = r.items || [];
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum pacote cadastrado.</td></tr>';
+        updatePkgToolbar(0);
+        return;
+      }
+      tbody.innerHTML = items.map(renderPackageRow).join('');
+      var pending = items.filter(function (p) { return p.has_draft; }).length;
+      updatePkgToolbar(pending);
+    }).catch(function (e) {
+      console.error('loadPackages:', e);
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Erro ao carregar: ' + escapeHtml(e.message) + '</td></tr>';
+    });
+  }
+
+  function updatePkgToolbar(pending) {
+    var pub = document.getElementById('pkg-publish-btn');
+    var disc = document.getElementById('pkg-discard-btn');
+    var info = document.getElementById('pkg-pending');
+    if (pub) { pub.disabled = pending === 0; pub.textContent = pending ? 'Publicar alterações (' + pending + ')' : 'Publicar alterações'; }
+    if (disc) disc.disabled = pending === 0;
+    if (info) info.textContent = pending ? '● ' + pending + ' alteração(ões) não publicada(s) — o site ainda mostra o preço publicado' : 'Tudo publicado.';
+  }
+
+  function renderPackageRow(p) {
+    var key = escapeHtml(p.key);
+    // valor a EDITAR = rascunho pendente (se houver), senão o publicado
+    var eff = (p.has_draft && p.draft) ? p.draft : p;
+    var label = eff.label != null ? eff.label : p.label;
+    var points = Number(eff.points != null ? eff.points : p.points);
+    var priceBrl = Number(eff.price_brl != null ? eff.price_brl : (eff.price_cents || 0) / 100);
+    var active = eff.active != null ? eff.active : p.active;
+    var draftTag = p.has_draft
+      ? '<div style="font-size:11px;color:#c89a2a;font-weight:600;margin-top:4px;">● rascunho · publicado: R$ ' +
+          Number(p.price_brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+          ' / ' + Number(p.points).toLocaleString('pt-BR') + ' pts</div>'
+      : '';
+    return '<tr data-key="' + key + '"' + (p.has_draft ? ' style="background:#14100633;"' : '') + '>' +
+      '<td><code>' + key + '</code>' + draftTag + '</td>' +
+      '<td><input type="text" class="pkg-label" value="' + escapeHtml(label || '') +
+        '" style="width:100%;padding:8px 10px;border:1px solid #e6eadf;border-radius:8px;background:#0c110c;font-size:14px;"></td>' +
+      '<td style="text-align:right;"><input type="number" class="pkg-points" min="1" step="1" value="' + points + '" style="' + _pkgInput + '"></td>' +
+      '<td style="text-align:right;"><input type="number" class="pkg-price" min="1" step="0.01" value="' + priceBrl.toFixed(2) + '" style="' + _pkgInput + '"></td>' +
+      '<td style="text-align:center;">' +
+        '<label class="vip-toggle"><input type="checkbox" class="pkg-active" ' + (active ? 'checked' : '') + '><span class="slider"></span></label>' +
+      '</td>' +
+      '<td style="text-align:center;">' +
+        '<button class="button" onclick="savePackage(\'' + key + '\', this)" style="font-size:12px;padding:6px 12px;">Salvar rascunho</button>' +
+        '<div class="pkg-status" style="font-size:11px;margin-top:4px;min-height:14px;"></div>' +
+      '</td>' +
+      '</tr>';
+  }
+
+  window.savePackage = function (key, btn) {
+    var row = btn.closest('tr');
+    var status = row.querySelector('.pkg-status');
+    var label = row.querySelector('.pkg-label').value.trim();
+    var points = parseInt(row.querySelector('.pkg-points').value, 10);
+    var priceBrl = parseFloat(row.querySelector('.pkg-price').value);
+    var active = row.querySelector('.pkg-active').checked;
+
+    if (isNaN(priceBrl) || priceBrl <= 0) { status.textContent = 'Preço inválido'; status.style.color = '#a83417'; return; }
+    if (isNaN(points) || points < 1) { status.textContent = 'Pontos inválidos'; status.style.color = '#a83417'; return; }
+
+    btn.disabled = true;
+    status.textContent = 'Salvando rascunho...'; status.style.color = '#8a918a';
+    api('/admin/packages/' + encodeURIComponent(key), {
+      method: 'PUT',
+      body: JSON.stringify({ price_brl: priceBrl, points: points, label: label, active: active }),
+    }).then(function () {
+      loadPackages();  // recarrega → mostra selo de rascunho + habilita Publicar
+    }).catch(function (e) {
+      status.textContent = '✗ ' + e.message; status.style.color = '#a83417';
+      alert('Falha ao salvar rascunho: ' + e.message);
+      btn.disabled = false;
+    });
+  };
+
+  window.publishPackages = function (btn) {
+    if (!confirm('Publicar as alterações de preço? A partir de agora o site e a cobrança PIX passam a usar os novos valores.')) return;
+    btn.disabled = true;
+    api('/admin/packages/publish', { method: 'POST', body: '{}' }).then(function (r) {
+      alert('Publicado: ' + (r.count || 0) + ' pacote(s). O site já reflete no próximo carregamento.');
+      loadPackages();
+    }).catch(function (e) {
+      alert('Falha ao publicar: ' + e.message); btn.disabled = false;
+    });
+  };
+
+  window.discardDrafts = function (btn) {
+    if (!confirm('Descartar todos os rascunhos não publicados? Os preços voltam ao que está publicado.')) return;
+    btn.disabled = true;
+    api('/admin/packages/discard', { method: 'POST', body: '{}' }).then(function () {
+      loadPackages();
+    }).catch(function (e) {
+      alert('Falha ao descartar: ' + e.message); btn.disabled = false;
+    });
+  };
+
   // ── Tabs ───────────────────────────────────────────────────────────────
   window.switchTab = function (tab) {
     document.querySelectorAll('.tab-row button').forEach(function (b) {
@@ -341,9 +447,11 @@
     document.getElementById('tab-transactions').style.display = tab === 'transactions' ? '' : 'none';
     document.getElementById('tab-payments').style.display = tab === 'payments' ? '' : 'none';
     document.getElementById('tab-payouts').style.display = tab === 'payouts' ? '' : 'none';
+    document.getElementById('tab-packages').style.display = tab === 'packages' ? '' : 'none';
     if (tab === 'transactions' && TX_TOTAL === 0) loadTransactions();
     if (tab === 'payments') loadPendingPayments();
     if (tab === 'payouts') loadProcessingPayouts();
+    if (tab === 'packages') loadPackages();
   };
 
   window.adminLogout = function () {

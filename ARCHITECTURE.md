@@ -4,22 +4,25 @@
 > parte vive**, qual backend é o canônico e como o frontend resolve a URL da
 > API — eliminando a confusão histórica entre os múltiplos backends.
 >
-> Última verificação: 2026-06-24 (endpoints sondados ao vivo).
+> Última verificação: 2026-06-27 (domínio inspecionado ao vivo no navegador;
+> endpoints sondados em 2026-06-24).
 
 ---
 
 ## 1. Visão geral
 
 O Blaxx Pontos hoje é um **programa de fidelidade** (compra de pontos via PIX,
-carteira, resgates, parceiros, cartão/tiers). O frontend é estático e conversa
-com um backend Flask hospedado no Render.
+carteira, resgates, parceiros, cartão/tiers). O frontend que serve o domínio é
+**estático** (landing neon `blaxx-neon.html`, verde de marca `#59FD27`) e
+conversa com um backend Flask hospedado no Render.
 
 ```
 ┌─────────────────────────────┐        HTTPS         ┌──────────────────────────────┐
 │ Frontend (este repo)        │ ───────────────────▶ │ Backend de produção           │
 │ HTML/CSS/Vanilla JS         │   window.BLAXX_API   │ blaxx-pontos-exe.onrender.com │
-│ Netlify · blaxxpontos.com.br│ ◀─────────────────── │ (repo RVELES/blaxx-pontos-exe)│
-└─────────────────────────────┘        JSON          └──────────────────────────────┘
+│ home = blaxx-neon.html      │ ◀─────────────────── │ (repo rveles-blaxx/blaxx-pontos)│
+│ Netlify · blaxxpontos.com.br│        JSON          └──────────────────────────────┘
+└─────────────────────────────┘
 ```
 
 ---
@@ -28,15 +31,18 @@ com um backend Flask hospedado no Render.
 
 | Repo | Conteúdo | Papel |
 |---|---|---|
-| **`RVELES/blaxx-rewards`** (este) | Frontend estático + `backend/` (auth Fase-1, **referência**) | Site público |
-| **`RVELES/blaxx-pontos-exe`** | Backend Flask (Python) | **Backend de produção (canônico)** |
+| **`RVELES/blaxx-rewards`** (este) | Frontend estático + `backend/` (auth Fase-1, **referência**) | Site público — **serve o domínio** (home = `blaxx-neon.html`) |
+| **`rveles-blaxx/blaxx-pontos`** | Backend Flask (Python) — público, branch `main` | **Backend de produção (canônico)** |
 | `RVELES/blaxx-pontos-backend` | Backend Flask (privado) | Deploy **antigo/desligado** (host `-backend`) |
-| `RVELES/blaxx-pontos-app` | App (TypeScript) | Mobile |
+| `RVELES/blaxx-pontos-app` | SPA React/Vite (TypeScript) | Frontend web — pronto, **não** serve o domínio |
 | `RVELES/blaxx_app` | App (Swift) | Mobile (iOS) |
 
 > ⚠️ **O `backend/` deste repositório é apenas a Fase 1 (autenticação) e NÃO é o
 > código que roda em produção.** O backend ativo (carteira, PIX, resgates,
-> parceiros, cartão) está em `RVELES/blaxx-pontos-exe`. Ver `backend/README.md`.
+> parceiros, cartão) está em `rveles-blaxx/blaxx-pontos`. Ver `backend/README.md`.
+>
+> As contas `RVELES/*` citadas para o backend em docs antigos são legadas; o
+> repo canônico do backend é `rveles-blaxx/blaxx-pontos`.
 
 ---
 
@@ -44,8 +50,8 @@ com um backend Flask hospedado no Render.
 
 | Camada | Onde | Observação |
 |---|---|---|
-| Frontend | Netlify — projeto `blaxxpontos-old` | Domínio canônico: **`https://blaxxpontos.com.br`** |
-| Backend prod | Render — `https://blaxx-pontos-exe.onrender.com` | `/healthz` → 200 |
+| Frontend | Netlify — projeto `blaxxpontos-old` | Domínio canônico: **`https://blaxxpontos.com.br`**; home = `blaxx-neon.html` (neon `#59FD27`) |
+| Backend prod | Render — `https://blaxx-pontos-exe.onrender.com` | `/healthz` → 200; repo `rveles-blaxx/blaxx-pontos` |
 | Backend antigo | `https://blaxx-pontos-backend.onrender.com` | **Desligado** (timeout; fora da CSP) |
 
 O deploy preview de PRs sai em `deploy-preview-N--blaxxpontos-old.netlify.app`.
@@ -119,8 +125,9 @@ A CSP (`netlify.toml` / `_headers`) só libera `connect-src` para
 
 ## 6. Pendência conhecida
 
-- **Sync do backend de produção:** o código de `blaxx-pontos-exe` ainda não está
-  acessível a partir deste repositório/sessão. Decisão em aberto: manter os
-  repos separados (com deploy independente) ou integrar (submodule/monorepo).
+- **Sync do backend de produção:** o código canônico vive em
+  `rveles-blaxx/blaxx-pontos` (público, branch `main`), separado deste repo.
+  Decisão em aberto: manter os repos separados (deploy independente) ou integrar
+  (submodule/monorepo).
 - **`backend/` local desatualizado:** cobre só auth Fase-1; não reflete os
   endpoints de carteira/PIX/resgate de produção.
