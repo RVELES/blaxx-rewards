@@ -455,8 +455,22 @@
   };
 
   window.adminLogout = function () {
-    sessionStorage.clear();
-    location.href = '/login';
+    // Limpa os DOIS formatos em localStorage (o guard lê de localStorage
+    // primeiro); só sessionStorage.clear() deixava a sessão viva e o
+    // "Sair" não deslogava de fato. Revoga o token no servidor também.
+    var _done = function () {
+      ['blaxx_token', 'blaxx_user', 'blaxx_session'].forEach(function (k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      try { sessionStorage.clear(); } catch (e) {}
+      location.href = '/login';
+    };
+    try {
+      fetch(API + '/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + TOKEN }
+      }).catch(function () {}).then(_done, _done);
+    } catch (e) { _done(); }
   };
 
   // ── Boot ───────────────────────────────────────────────────────────────

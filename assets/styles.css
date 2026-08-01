@@ -2591,3 +2591,197 @@ details.faq{ background:var(--card); border:3px solid var(--black); border-radiu
 
 /* ---- Footer (mantém preto, alinha à moldura brutal) ---- */
 .footer{ border-top:4px solid var(--black); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MOBILE — sidebar vira barra horizontal de atalhos (correção 2026-08-01)
+
+   Bug corrigido: as regras existentes miravam `.sidebar nav`, mas o menu é
+   `ul.side-nav`. O seletor nunca casava, então no celular a sidebar abria
+   inteira (495px de menu + 210px de rodapé) e empurrava o conteúdo do painel
+   para ~1019px — o usuário entrava e via só o menu, não o saldo.
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 880px) {
+  .app-shell { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+  .sidebar {
+    position: static !important;
+    width: 100% !important;
+    /* min-width:0 é obrigatório: item de grid tem min-width:auto por padrão,
+       então o conteúdo (menu com 10 itens em linha) esticava a sidebar para
+       ~1413px e os itens além da borda ficavam INALCANÇÁVEIS, porque o
+       overflow-x do nav nunca chegava a rolar. */
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 10px 0 !important;
+    margin-bottom: 4px;
+    overflow: hidden;
+  }
+
+  /* O cartão de usuário já aparece na topbar — redundante aqui. */
+  .sidebar .side-user { display: none !important; }
+
+  /* Menu principal: rolagem horizontal, sem quebrar linha. */
+  .sidebar .side-nav {
+    min-width: 0;
+    max-width: 100%;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 2px 14px;
+    margin: 0;
+    list-style: none;
+  }
+  .sidebar .side-nav::-webkit-scrollbar { display: none; }
+  .sidebar .side-nav > li { flex: 0 0 auto; }
+  .sidebar .side-nav a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    min-height: 44px;           /* alvo de toque acessível */
+    border: 2px solid var(--ink, #0A0B0E);
+    box-shadow: 3px 3px 0 var(--ink, #0A0B0E);
+  }
+
+  /* Rodapé do menu (sair, ajuda) desce para o fim da página. */
+  .sidebar .side-foot {
+    display: flex !important;
+    gap: 8px;
+    padding: 0 14px;
+    margin-top: 8px;
+  }
+  .sidebar .side-foot a { min-height: 44px; display: flex; align-items: center; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CORREÇÃO DE OVERFLOW EM TELAS ESTREITAS (2026-08-01)
+
+   Itens de grid/flex têm `min-width: auto` por padrão, o que os impede de
+   encolher abaixo da largura intrínseca do conteúdo. Resultado: em telas
+   estreitas o `main` ficava mais largo que a viewport e a página vazava
+   horizontalmente — medido em perfil, carteira, seguranca, ajuda,
+   como-funciona, abrir-chamado e recuperar-senha (+21px a +126px a 320px).
+
+   `min-width: 0` é a correção canônica. Aplicada nos containers de layout,
+   não em tudo, para não afetar componentes que dependem de largura mínima.
+   ───────────────────────────────────────────────────────────────────────── */
+.app-shell > main,
+.app-shell > .sidebar,
+.shell > main {
+  min-width: 0;
+}
+
+/* Conteúdo que não pode estourar a caixa: texto longo, URLs, código. */
+@media (max-width: 520px) {
+  main .card,
+  main .grid,
+  main .page-head,
+  main table {
+    min-width: 0;
+    max-width: 100%;
+  }
+  /* Tabelas de extrato/histórico rolam dentro da própria caixa. */
+  main table { display: block; overflow-x: auto; }
+  /* Quebra palavras longas (e-mails, chaves PIX, IDs) em vez de esticar. */
+  main .card, main p, main h1, main h2, main h3 { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 520px) {
+  /* Linhas flex dentro de cards (título + valor, label + badge) quebram em
+     vez de esticar o card. Sem isto, um rótulo longo empurra a caixa para
+     além da viewport — medido em seguranca.html (+34px). */
+  main .card > div,
+  .card > div {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  /* Links e texto monoespaçado longos (chaves, IDs, e-mails) quebram. */
+  main a, main .mono, .mono, a.link {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   REGRA DO PROJETO: NO MOBILE NUNCA HÁ ROLAGEM HORIZONTAL. (2026-08-01)
+
+   Esta é uma garantia, não uma sugestão. Três camadas:
+
+   1. `overflow-x: clip` no html/body — a rede de segurança. Usamos `clip` em
+      vez de `hidden` porque `hidden` cria contexto de rolagem e quebra
+      `position: sticky` de cabeçalhos. Fallback para `hidden` onde `clip`
+      não existe.
+   2. `min-width: 0` nos containers de layout — a CORREÇÃO de verdade. Sem
+      ela o conteúdo só ficaria escondido pela camada 1, e o usuário perderia
+      informação sem perceber.
+   3. Quebra de palavra e reflow de linhas flex — evita que uma string longa
+      (chave PIX, e-mail, ID) estique a caixa.
+
+   Regressão: docs/operacao/scripts/audit_mobile.py falha o build se
+   qualquer página voltar a rolar horizontalmente.
+   ═════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  html, body {
+    overflow-x: hidden;
+    overflow-x: clip;          /* sobrescreve onde houver suporte */
+    max-width: 100%;
+  }
+
+  /* Nada pode ser mais largo que a tela. */
+  img, svg, video, canvas, iframe, table, pre, code {
+    max-width: 100%;
+    height: auto;
+  }
+  pre, code { overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+
+  /* Containers de layout encolhem (min-width:auto é o vilão silencioso). */
+  main, aside, section, article, header, footer,
+  .shell, .app-shell, .card, .grid, .row, .stack {
+    min-width: 0;
+  }
+
+  /* Strings longas quebram em vez de esticar a caixa. */
+  a, p, h1, h2, h3, h4, li, td, th, .mono, .lead {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ALVOS DE TOQUE — mínimo 44px (WCAG 2.5.5 / guideline Apple e Google)
+
+   Aplicado a controles de BLOCO. Links inline dentro de parágrafo ficam de
+   fora de propósito: forçar 44px de altura neles quebraria o texto corrido.
+   Vale também para conteúdo renderizado por JS (ex.: a lista de parceiros,
+   que gera ~300 links dinamicamente e por isso não dá para corrigir no HTML).
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  button,
+  [role="button"],
+  .btn, .button, .pill, .chip,
+  input[type="submit"], input[type="button"],
+  select,
+  .card a, li > a, nav a, .side-nav a, .list a, .row > a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Campos de formulário: 44px + 16px de fonte evita o zoom automático do
+     iOS ao focar (o Safari amplia quando a fonte é menor que 16px). */
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="password"], input[type="number"], input[type="search"],
+  textarea, select {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  /* Ícone-botão isolado (fechar, menu, notificação). */
+  .icon-btn, .notif, .menu-btn, .bx-hamburger {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

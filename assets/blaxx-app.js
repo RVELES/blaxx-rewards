@@ -98,16 +98,26 @@
 
   var STORE = {
     token: function () {
-      try { return localStorage.getItem('blaxx_token'); }
-      catch (e) { return sessionStorage.getItem('blaxx_token'); }
+      try {
+        var t = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
+        if (t) return t;
+        // Fallback pro formato legado blaxx_session (login antigo).
+        return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).token || null;
+      } catch (e) {
+        try { return sessionStorage.getItem('blaxx_token'); } catch (e2) { return null; }
+      }
     },
     setToken: function (t) {
       try { localStorage.setItem('blaxx_token', t); }
       catch (e) { sessionStorage.setItem('blaxx_token', t); }
     },
     user: function () {
-      try { return JSON.parse(localStorage.getItem('blaxx_user') || 'null'); }
-      catch (e) {
+      try {
+        var u = localStorage.getItem('blaxx_user') || sessionStorage.getItem('blaxx_user');
+        if (u) return JSON.parse(u);
+        // Fallback pro formato legado blaxx_session (login antigo).
+        return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).user || null;
+      } catch (e) {
         try { return JSON.parse(sessionStorage.getItem('blaxx_user') || 'null'); }
         catch (e2) { return null; }
       }

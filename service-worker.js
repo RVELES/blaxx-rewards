@@ -12,7 +12,13 @@
 // v2 = release Google Login.
 // v3 = PIX MP automático no Web + dashboard via IDs reais (não regex Mariana).
 // v4 = PWA scope corrigido — antes apontava pra /site/ inexistente (404), agora /.
-const CACHE = 'blaxx-v4-root-scope';
+// IMPORTANTE: bump obrigatório a cada deploy que muda JS/CSS.
+// O `activate` abaixo apaga os caches de nomes antigos, então trocar esta
+// string é o que faz o usuário existente receber o código novo. Sem o bump,
+// quem já visitou o site continua rodando a versão em cache — foi o que
+// aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
+// sem o checkout do Elements).
+const CACHE = 'blaxx-v5-stripe-elements';
 const PRECACHE = [
   '/',
   '/login.html',

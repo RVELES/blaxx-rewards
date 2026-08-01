@@ -90,8 +90,12 @@
     var cat = (document.getElementById('cat')||{}).value || '';
     var assunto = (document.getElementById('assunto')||{}).value || '';
     var desc = (document.getElementById('desc')||{}).value || '';
-    var sess = {}; try { sess = JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}; } catch(e){}
-    var who = (sess.user && (sess.user.name || sess.user.email)) ? ('\nCliente: ' + (sess.user.name||sess.user.email)) : '';
+    // Lê o usuário nos DOIS formatos: novo blaxx_user com fallback pro legado
+    // blaxx_session — senão contas Google (só blaxx_token) saíam sem nome.
+    var u = null;
+    try { u = JSON.parse(localStorage.getItem('blaxx_user')||'null'); } catch(e){}
+    if (!u) { try { u = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user; } catch(e){} }
+    var who = (u && (u.name || u.email)) ? ('\nCliente: ' + (u.name||u.email)) : '';
     var txt = 'Olá! Abertura de chamado BlaXx.'
       + '\nCategoria: ' + cat
       + (assunto ? ('\nAssunto: ' + assunto) : '')

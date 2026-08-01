@@ -17,6 +17,8 @@
     function $(sel) { return document.querySelector(sel); }
     function api(path, opts) {
         var token = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
+        // Fallback pro formato legado blaxx_session (login antigo).
+        if (!token) { try { token = (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).token || null; } catch (_) {} }
         opts = opts || {};
         var headers = Object.assign(
             { 'Content-Type': 'application/json' },
@@ -44,7 +46,12 @@
     }
 
     function getUser() {
-        try { return JSON.parse(localStorage.getItem('blaxx_user') || sessionStorage.getItem('blaxx_user') || 'null'); }
+        try {
+            var u = localStorage.getItem('blaxx_user') || sessionStorage.getItem('blaxx_user');
+            if (u) return JSON.parse(u);
+            // Fallback pro formato legado blaxx_session (login antigo).
+            return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).user || null;
+        }
         catch (_) { return null; }
     }
 

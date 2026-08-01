@@ -62,8 +62,8 @@
     <!-- Seletor de método — só aparece quando o backend confirma que o
          cartão está habilitado (GET /payments/card/config). -->
     <div class="method-row" id="method-row" role="radiogroup" aria-label="Forma de pagamento">
-      <button type="button" class="method-btn sel" id="method-pix" role="radio" aria-checked="true" onclick="setMethod('pix')">⚡ PIX</button>
-      <button type="button" class="method-btn" id="method-card" role="radio" aria-checked="false" onclick="setMethod('card')">▣ Cartão de crédito</button>
+      <button type="button" class="method-btn sel" id="method-pix" role="radio" aria-checked="true" tabindex="0" onclick="setMethod('pix')">⚡ PIX</button>
+      <button type="button" class="method-btn" id="method-card" role="radio" aria-checked="false" tabindex="-1" onclick="setMethod('card')">▣ Cartão de crédito</button>
     </div>
     <button class="button full lg" onclick="createCharge()" id="btn-create" disabled>
       Gerar QR Code de pagamento
@@ -73,9 +73,9 @@
   <!-- Etapa 2 (cartão): formulário do Brick MercadoPago -->
   <div class="step-card" id="step-2-card" style="display:none;">
     <h3 style="margin-bottom:12px;"><span class="step-num">2</span> Dados do cartão</h3>
-    <div style="font-size:13px;color:#5f665e;margin-bottom:10px;">
-      Pagamento processado pelo Mercado Pago. Os dados do cartão são
-      criptografados no seu navegador e não passam pelos servidores BlaXx.
+    <div style="font-size:13px;color:#5f665e;margin-bottom:10px;" id="bx-card-psp-note">
+      Os dados do cartão são criptografados no seu navegador e não passam
+      pelos servidores BlaXx.
     </div>
     <div id="cardPaymentBrick_container"></div>
   </div>
@@ -102,6 +102,17 @@
   <!-- Etapa 3: Pago -->
   <div class="step-card" id="step-3" style="display:none;">
     <!-- Conteúdo injetado pelo JS quando charge.status = 'paid' -->
+  </div>
+
+  <!-- Aviso legal — mesmo disclaimer de comprar-pontos.html / vender-pontos.html.
+       NÃO remover: posiciona os pontos como créditos promocionais (não moeda /
+       não valor mobiliário) justamente na tela transacional primária. -->
+  <div class="alert info" style="margin-top:8px;">
+    <div class="alert-icon">i</div>
+    <div>
+      <h4>Aviso importante</h4>
+      <p>Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</p>
+    </div>
   </div>
 </div>
 

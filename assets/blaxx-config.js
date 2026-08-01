@@ -16,11 +16,16 @@
     //    location.origin ja eh o backend → sem CORS.
     //  - Se o front esta em outra porta (ex: python -m http.server 8000),
     //    aponta explicitamente para o Flask em :5000.
+    // Porta do backend em dev = 5050 (mesma do .claude/launch.json e do
+    // runbook: `cd blaxx_exe/backend && FLASK_ENV=development python3 run.py`).
+    // Antes apontava para 5000, que não bate com nada que rodamos.
+    // Override manual: window.BLAXX_API_PORT antes deste script.
     var port = location.port;
-    if (!port || port === '5000') {
+    var devApiPort = window.BLAXX_API_PORT || '5050';
+    if (!port || port === devApiPort) {
       window.BLAXX_API = location.origin;
     } else {
-      window.BLAXX_API = location.protocol + '//' + location.hostname + ':5000';
+      window.BLAXX_API = location.protocol + '//' + location.hostname + ':' + devApiPort;
     }
   } else {
     // Modo produção — migrado do Fly.io pra Render.com em 2026-05-27.

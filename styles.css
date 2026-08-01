@@ -528,3 +528,126 @@ body{ background:var(--paper) !important; color:var(--fg); }
 /* ---- Forms ---- */
 input,textarea,select{ background:var(--white); color:var(--fg); border:3px solid var(--ink); border-radius:0; font-weight:600; }
 input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--ink); box-shadow:4px 4px 0 var(--lime); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CORREÇÃO DE OVERFLOW EM TELAS ESTREITAS (2026-08-01)
+
+   Itens de grid/flex têm `min-width: auto` por padrão e não encolhem abaixo
+   da largura intrínseca do conteúdo. Em telas estreitas o `main` ficava mais
+   largo que a viewport e a página vazava horizontalmente — medido em perfil,
+   carteira, seguranca, ajuda, como-funciona, abrir-chamado e recuperar-senha
+   (+21px a +126px em 320px de largura).
+   ───────────────────────────────────────────────────────────────────────── */
+.shell > main,
+.shell > .sidebar,
+.app-shell > main,
+.app-shell > .sidebar,
+main {
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  main .card, main .grid, main .page-head, main table,
+  .card, .grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+  main table { display: block; overflow-x: auto; }
+  /* Quebra strings longas (e-mails, chaves PIX, IDs) em vez de esticar a caixa. */
+  main .card, main p, main h1, main h2, main h3,
+  .card, .lead { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 520px) {
+  /* Linhas flex dentro de cards (título + valor, label + badge) quebram em
+     vez de esticar o card. Sem isto, um rótulo longo empurra a caixa para
+     além da viewport — medido em seguranca.html (+34px). */
+  main .card > div,
+  .card > div {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  /* Links e texto monoespaçado longos (chaves, IDs, e-mails) quebram. */
+  main a, main .mono, .mono, a.link {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   REGRA DO PROJETO: NO MOBILE NUNCA HÁ ROLAGEM HORIZONTAL. (2026-08-01)
+
+   Esta é uma garantia, não uma sugestão. Três camadas:
+
+   1. `overflow-x: clip` no html/body — a rede de segurança. Usamos `clip` em
+      vez de `hidden` porque `hidden` cria contexto de rolagem e quebra
+      `position: sticky` de cabeçalhos. Fallback para `hidden` onde `clip`
+      não existe.
+   2. `min-width: 0` nos containers de layout — a CORREÇÃO de verdade. Sem
+      ela o conteúdo só ficaria escondido pela camada 1, e o usuário perderia
+      informação sem perceber.
+   3. Quebra de palavra e reflow de linhas flex — evita que uma string longa
+      (chave PIX, e-mail, ID) estique a caixa.
+
+   Regressão: docs/operacao/scripts/audit_mobile.py falha o build se
+   qualquer página voltar a rolar horizontalmente.
+   ═════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  html, body {
+    overflow-x: hidden;
+    overflow-x: clip;          /* sobrescreve onde houver suporte */
+    max-width: 100%;
+  }
+
+  /* Nada pode ser mais largo que a tela. */
+  img, svg, video, canvas, iframe, table, pre, code {
+    max-width: 100%;
+    height: auto;
+  }
+  pre, code { overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+
+  /* Containers de layout encolhem (min-width:auto é o vilão silencioso). */
+  main, aside, section, article, header, footer,
+  .shell, .app-shell, .card, .grid, .row, .stack {
+    min-width: 0;
+  }
+
+  /* Strings longas quebram em vez de esticar a caixa. */
+  a, p, h1, h2, h3, h4, li, td, th, .mono, .lead {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ALVOS DE TOQUE — mínimo 44px (WCAG 2.5.5 / guideline Apple e Google)
+
+   Aplicado a controles de BLOCO. Links inline dentro de parágrafo ficam de
+   fora de propósito: forçar 44px de altura neles quebraria o texto corrido.
+   Vale também para conteúdo renderizado por JS (ex.: a lista de parceiros,
+   que gera ~300 links dinamicamente e por isso não dá para corrigir no HTML).
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  button,
+  [role="button"],
+  .btn, .button, .pill, .chip,
+  input[type="submit"], input[type="button"],
+  select,
+  .card a, li > a, nav a, .side-nav a, .list a, .row > a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Campos de formulário: 44px + 16px de fonte evita o zoom automático do
+     iOS ao focar (o Safari amplia quando a fonte é menor que 16px). */
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="password"], input[type="number"], input[type="search"],
+  textarea, select {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  /* Ícone-botão isolado (fechar, menu, notificação). */
+  .icon-btn, .notif, .menu-btn, .bx-hamburger {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

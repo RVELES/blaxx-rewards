@@ -225,12 +225,38 @@
 const API = location.origin; // mesma origem (servido pelo Flask em /site/)
 document.getElementById('api-base').textContent = API.replace(/^https?:\/\//, '');
 
-let token = sessionStorage.getItem('blaxx_token');
-let me = JSON.parse(sessionStorage.getItem('blaxx_me') || 'null');
+// Lê a sessão nos DOIS formatos: novo (blaxx_token/blaxx_user do STORE do
+// blaxx-app.js, em localStorage) com fallback pro legado blaxx_session e pro
+// blaxx_me antigo desta própria página. Sem isso, quem já estava logado no
+// PWA (inclusive contas Google) via a tela de login de novo aqui.
+let token = (function () {
+  try {
+    var t = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
+    if (t) return t;
+    return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).token || null;
+  } catch (e) { return null; }
+})();
+let me = (function () {
+  try {
+    var u = localStorage.getItem('blaxx_user') || sessionStorage.getItem('blaxx_me');
+    if (u) return JSON.parse(u);
+    return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).user || null;
+  } catch (e) { return null; }
+})();
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString('pt-BR');
 const brl = (n) => 'R$ ' + Number(n).toFixed(2).replace('.', ',');
+
+// Escape HTML — usar em TODO dado dinâmico (backend, provedor PIX, mensagens de
+// erro) antes de interpolar em alertBox/innerHTML. failure_reason/end_to_end_id/
+// status/error podem carregar texto influenciado pelo usuário (ex.: chave PIX
+// ecoada pelo provedor) → sem escape vira XSS.
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
 
 function alertBox(target, kind, msg) {
   $(target).innerHTML = `<div class="alert alert-${kind}">${msg}</div>`;
@@ -254,15 +280,26 @@ $('li-go').addEventListener('click', async () => {
       body: JSON.stringify({ email: $('li-email').value.trim(), password: $('li-pass').value })
     });
     token = res.token; me = res.user;
+    // Grava no formato novo (localStorage, compartilhado com o PWA) e mantém
+    // blaxx_me por compatibilidade com esta página.
+    try {
+      localStorage.setItem('blaxx_token', token);
+      localStorage.setItem('blaxx_user', JSON.stringify(me));
+    } catch (e) {}
     sessionStorage.setItem('blaxx_token', token);
     sessionStorage.setItem('blaxx_me', JSON.stringify(me));
     showApp();
   } catch (e) {
-    alertBox('li-msg', 'err', '✗ ' + e.message);
+    alertBox('li-msg', 'err', '✗ ' + esc(e.message));
   }
 });
 
 $('logout').addEventListener('click', () => {
+  // Limpa os DOIS formatos, senão o token sobrevivia em localStorage e o
+  // "Sair" não deslogava de fato.
+  ['blaxx_token', 'blaxx_user', 'blaxx_session', 'blaxx_me'].forEach((k) => {
+    try { localStorage.removeItem(k); } catch (e) {}
+  });
   sessionStorage.clear();
   token = null; me = null;
   $('app').style.display = 'none';
@@ -338,7 +375,7 @@ document.querySelectorAll('.pkg-btn').forEach(btn => {
       $('charge-status').textContent = charge.status;
       $('charge-status').style.background = 'var(--warn)';
       $('charge-status').style.color = 'var(--warn-text)';
-    } catch (e) { alertBox('charge-msg', 'err', '✗ ' + e.message); }
+    } catch (e) { alertBox('charge-msg', 'err', '✗ ' + esc(e.message)); }
   });
 });
 
@@ -354,7 +391,7 @@ $('charge-pay').addEventListener('click', async () => {
     alertBox('charge-msg', 'ok', '✓ Pagamento confirmado · +' + fmt(activeCharge.points_to_credit) + ' pts creditados');
     activeCharge = null;
     await refresh();
-  } catch (e) { alertBox('charge-msg', 'err', '✗ ' + e.message); }
+  } catch (e) { alertBox('charge-msg', 'err', '✗ ' + esc(e.message)); }
 });
 
 // ---------- FLUXO 2 ----------
@@ -371,9 +408,9 @@ $('t-send').addEventListener('click', async () => {
       })
     });
     alertBox('t-msg-out', 'ok',
-      `✓ ${fmt(r.amount_pts)} pts enviados · comprovante <strong>${r.receipt_code}</strong>`);
+      `✓ ${fmt(r.amount_pts)} pts enviados · comprovante <strong>${esc(r.receipt_code)}</strong>`);
     await refresh();
-  } catch (e) { alertBox('t-msg-out', 'err', '✗ ' + e.message); }
+  } catch (e) { alertBox('t-msg-out', 'err', '✗ ' + esc(e.message)); }
 });
 
 // ---------- FLUXO 3 ----------
@@ -398,15 +435,15 @@ $('r-go').addEventListener('click', async () => {
     });
     if (r.status === 'paid') {
       alertBox('r-msg', 'ok',
-        `✓ ${brl(r.amount_brl)} enviados via PIX · E2E <code>${r.end_to_end_id}</code>`);
+        `✓ ${brl(r.amount_brl)} enviados via PIX · E2E <code>${esc(r.end_to_end_id)}</code>`);
     } else if (r.status === 'failed') {
       alertBox('r-msg', 'warn',
-        `⚠ Payout falhou: ${r.failure_reason} · ${fmt(r.points_debited)} pts <strong>estornados automaticamente</strong>`);
+        `⚠ Payout falhou: ${esc(r.failure_reason)} · ${fmt(r.points_debited)} pts <strong>estornados automaticamente</strong>`);
     } else {
-      alertBox('r-msg', 'ok', `Status: ${r.status}`);
+      alertBox('r-msg', 'ok', `Status: ${esc(r.status)}`);
     }
     await refresh();
-  } catch (e) { alertBox('r-msg', 'err', '✗ ' + e.message); }
+  } catch (e) { alertBox('r-msg', 'err', '✗ ' + esc(e.message)); }
 });
 
 // ---------- QR Code visual (CRC já vem certo do backend) ----------

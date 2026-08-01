@@ -82,7 +82,7 @@
   // ---- Cartão de crédito (MercadoPago Brick) ----
   // Config vem de GET /payments/card/config (público). Se enabled=false o
   // seletor de método nem aparece e o fluxo segue 100% PIX como antes.
-  var cardCfg = { enabled: false, public_key: '', max_installments: 1 };
+  var cardCfg = { enabled: false, public_key: '', max_installments: 1, provider: 'mercadopago' };
   var currentMethod = 'pix';
   var brickController = null;
   var cardIdemKey = null;
@@ -206,8 +206,10 @@
     currentMethod = (m === 'card' && cardCfg.enabled) ? 'card' : 'pix';
     var bp = document.getElementById('method-pix');
     var bc = document.getElementById('method-card');
-    if (bp) { bp.classList.toggle('sel', currentMethod === 'pix'); bp.setAttribute('aria-checked', String(currentMethod === 'pix')); }
-    if (bc) { bc.classList.toggle('sel', currentMethod === 'card'); bc.setAttribute('aria-checked', String(currentMethod === 'card')); }
+    // Roving tabindex: só o radio selecionado fica no fluxo de tab (0); o outro
+    // sai (-1). Navegação entre eles é via seta (setupMethodKeys).
+    if (bp) { bp.classList.toggle('sel', currentMethod === 'pix'); bp.setAttribute('aria-checked', String(currentMethod === 'pix')); bp.tabIndex = currentMethod === 'pix' ? 0 : -1; }
+    if (bc) { bc.classList.toggle('sel', currentMethod === 'card'); bc.setAttribute('aria-checked', String(currentMethod === 'card')); bc.tabIndex = currentMethod === 'card' ? 0 : -1; }
     var btn = document.getElementById('btn-create');
     if (btn) btn.textContent = currentMethod === 'card'
       ? 'Pagar com cartão' : 'Gerar QR Code de pagamento';
@@ -221,6 +223,27 @@
     return m ? m[1].toLowerCase() : null;
   }
 
+  // A11y: navegação por seta no radiogroup de método (WAI-ARIA radio pattern).
+  // Setas ←/→/↑/↓ alternam PIX↔Cartão; Home/End vão pros extremos. Attach único.
+  var methodKeysWired = false;
+  function setupMethodKeys() {
+    if (methodKeysWired) return;
+    var row = document.getElementById('method-row');
+    if (!row) return;
+    methodKeysWired = true;
+    row.addEventListener('keydown', function (e) {
+      var k = e.key;
+      var next = null;
+      if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'End') next = 'card';
+      else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'Home') next = 'pix';
+      else return;
+      e.preventDefault();
+      window.setMethod(next);
+      var el = document.getElementById(next === 'card' ? 'method-card' : 'method-pix');
+      if (el) el.focus();
+    });
+  }
+
   function loadCardConfig() {
     // Público — sem Authorization (não passa pelo api() de propósito:
     // 401 aqui não pode derrubar a sessão).
@@ -232,6 +255,7 @@
           cardCfg = cfg;
           var row = document.getElementById('method-row');
           if (row) row.classList.add('on');
+          setupMethodKeys();
           if (getQueryMethod() === 'card') window.setMethod('card');
         } else if (getQueryMethod() === 'card') {
           // Veio de comprar-pontos.html?method=card mas o cartão está
@@ -356,7 +380,13 @@
     mountCardBrick(amount, { amount_brl: amount });
   }
 
+  // Roteador de checkout de cartão. Arquitetura 2026-08-01: cartão é STRIPE
+  // (Elements tokeniza no browser → o PAN nunca chega ao nosso backend).
+  // MercadoPago fica como legado enquanto não for removido.
   function mountCardBrick(amountBRL, chargeBody) {
+    if ((cardCfg.provider || 'mercadopago') === 'stripe') {
+      return mountStripeCard(amountBRL, chargeBody);
+    }
     if (typeof MercadoPago !== 'function') {
       showInlineError('SDK de pagamento não carregou — recarregue a página.', 'err');
       return;
@@ -425,6 +455,141 @@
     });
   }
 
+  // ---------------- Stripe Elements ---------------- #
+  var stripeObj = null, stripeElements = null, stripeCardEl = null;
+
+  function loadStripeJs() {
+    if (window.Stripe) return Promise.resolve();
+    if (window.__bxStripeLoading) return window.__bxStripeLoading;
+    window.__bxStripeLoading = new Promise(function (resolve, reject) {
+      var sc = document.createElement('script');
+      sc.src = 'https://js.stripe.com/v3/';
+      sc.async = true;
+      sc.onload = resolve;
+      sc.onerror = function () { reject(new Error('stripe_js_load_failed')); };
+      document.head.appendChild(sc);
+    });
+    return window.__bxStripeLoading;
+  }
+
+  function mountStripeCard(amountBRL, chargeBody) {
+    var step1 = document.getElementById('step-1');
+    var stepCard = document.getElementById('step-2-card');
+    if (step1) step1.style.display = 'none';
+    if (stepCard) stepCard.style.display = 'block';
+    newIdemKey();
+
+    var box = document.getElementById('cardPaymentBrick_container');
+    if (!box) return;
+    box.innerHTML = '';
+
+    // Botão voltar (mesmo comportamento do fluxo antigo)
+    var back = document.getElementById('bx-card-back');
+    if (!back && stepCard) {
+      back = document.createElement('button');
+      back.id = 'bx-card-back';
+      back.type = 'button';
+      back.className = 'button ghost';
+      back.style.cssText = 'margin-top:14px;width:100%;';
+      back.textContent = '\u2190 Voltar';
+      back.addEventListener('click', function () {
+        try { if (stripeCardEl) stripeCardEl.unmount(); } catch (e) {}
+        stripeCardEl = null;
+        stepCard.style.display = 'none';
+        if (step1) step1.style.display = 'block';
+        clearInlineError();
+      });
+      stepCard.appendChild(back);
+    }
+
+    loadStripeJs().then(function () {
+      if (!cardCfg.public_key) throw new Error('sem chave publicavel');
+      stripeObj = window.Stripe(cardCfg.public_key, { locale: 'pt-BR' });
+      stripeElements = stripeObj.elements();
+
+      var holder = document.createElement('div');
+      holder.id = 'bx-stripe-card';
+      // Neo-Brutal: borda preta grossa, sem raio, fundo claro.
+      holder.style.cssText = 'border:3px solid #0A0B0E;background:#F4F4F0;' +
+        'padding:14px;margin-bottom:14px;';
+      box.appendChild(holder);
+
+      stripeCardEl = stripeElements.create('card', {
+        hidePostalCode: true,
+        style: {
+          base: {
+            color: '#0A0B0E', fontFamily: '"Space Grotesk", Arial, sans-serif',
+            fontSize: '16px', '::placeholder': { color: '#8A929E' },
+          },
+          invalid: { color: '#D64545' },
+        },
+      });
+      stripeCardEl.mount('#bx-stripe-card');
+
+      // Nomeia o processador correto na tela (o texto do HTML é neutro).
+      var note = document.getElementById('bx-card-psp-note');
+      if (note) {
+        note.textContent = 'Pagamento processado pela Stripe. Os dados do ' +
+          'cartão são criptografados no seu navegador e não passam pelos ' +
+          'servidores BlaXx.';
+      }
+
+      var msg = document.createElement('div');
+      msg.id = 'bx-stripe-msg';
+      msg.style.cssText = 'font-size:13px;color:#D64545;min-height:18px;margin-bottom:10px;';
+      box.appendChild(msg);
+      stripeCardEl.on('change', function (ev) {
+        msg.textContent = (ev.error && ev.error.message) ? ev.error.message : '';
+      });
+
+      var pay = document.createElement('button');
+      pay.type = 'button';
+      pay.className = 'button';
+      pay.style.cssText = 'width:100%;';
+      pay.textContent = 'PAGAR R$ ' + Number(amountBRL).toFixed(2).replace('.', ',');
+      box.appendChild(pay);
+
+      pay.addEventListener('click', function () {
+        pay.disabled = true;
+        var original = pay.textContent;
+        pay.textContent = 'PROCESSANDO…';
+        clearInlineError();
+
+        // Tokenização NO BROWSER: devolve pm_… e o número do cartão nunca
+        // passa pelo nosso servidor (escopo PCI SAQ-A).
+        stripeObj.createPaymentMethod({
+          type: 'card',
+          card: stripeCardEl,
+          billing_details: { name: (chargeBody && chargeBody.payer_name) || undefined },
+        }).then(function (res) {
+          if (res.error) {
+            msg.textContent = res.error.message || 'Cartão inválido.';
+            var e = new Error('stripe_pm_error'); e.bxHandled = true; throw e;
+          }
+          return submitCardPayment({
+            token: res.paymentMethod.id,   // pm_… no lugar do token do MP
+            payment_method_id: (res.paymentMethod.card || {}).brand || 'card',
+            installments: 1,               // Stripe BR não parcela
+            issuer_id: '',
+          }, chargeBody);
+        }).catch(function (e) {
+          if (!e || !e.bxHandled) {
+            showInlineError((e && e.message) || 'Falha no pagamento.', 'err');
+          }
+        }).then(function () {
+          pay.disabled = false;
+          pay.textContent = original;
+        });
+      });
+
+      clearInlineError();
+    }).catch(function (err) {
+      try { console.warn('[card] stripe mount fail', err); } catch (e) {}
+      showInlineError('Não foi possível carregar o formulário do cartão. ' +
+        'Recarregue a página ou pague via PIX.', 'err');
+    });
+  }
+
   function submitCardPayment(formData, chargeBody) {
     var body = Object.assign({}, chargeBody, {
       card_token: formData.token,
@@ -448,7 +613,20 @@
         showCardProcessing(charge);
         return;
       }
+      // Status terminal negativo devolvido como HTTP 2xx (ex.: rejected/cancelled).
+      // Precisa REJEITAR a promise do onSubmit — se resolvesse, o Brick do MP
+      // mostraria a própria tela de sucesso contradizendo o aviso.
+      if (charge.status === 'rejected' || charge.status === 'cancelled') {
+        showInlineError('O pagamento não foi aprovado pelo emissor. ' +
+          'Tente outro cartão ou PIX.', 'err');
+        var errNeg = new Error('card_' + charge.status);
+        errNeg.bxHandled = true; // aviso já exibido — catch não deve sobrescrever
+        throw errNeg;
+      }
       showInlineError('Pagamento em estado ' + String(charge.status || '') + ' — acompanhe na carteira.', 'warn');
+      var errUnk = new Error('card_status_' + String(charge.status || 'unknown'));
+      errUnk.bxHandled = true;
+      throw errUnk;
     }).catch(function (e) {
       if (e.status === 401) throw e; // já redirecionou pro login
       // CRÍTICO: só rotaciona a Idempotency-Key quando o servidor deu uma
@@ -456,7 +634,11 @@
       // falha de REDE/timeout (sem e.status) mantém a MESMA key: o retry
       // dedupe no backend e no MP, evitando dupla cobrança do cartão.
       if (e.status) newIdemKey();
-      showInlineError(e.message || 'Pagamento recusado. Tente outro cartão ou PIX.', 'err');
+      // bxHandled = status terminal negativo já tratado no .then acima (mensagem
+      // amigável com o kind certo). Não reexibir com e.message técnico.
+      if (!e.bxHandled) {
+        showInlineError(e.message || 'Pagamento recusado. Tente outro cartão ou PIX.', 'err');
+      }
       throw e; // rejeita a promise → Brick reabilita o botão de pagar
     });
   }
@@ -616,7 +798,7 @@
         if (c.status === 'paid') {
           clearInterval(pollHandle); pollHandle = null;
           showStep3Success(c);
-        } else if (c.status === 'expired' || c.status === 'rejected') {
+        } else if (c.status === 'expired' || c.status === 'rejected' || c.status === 'cancelled') {
           clearInterval(pollHandle); pollHandle = null;
           setStatusPill(c.status === 'expired' ? '⏱ Expirado' : '✗ Rejeitado', 'rejected');
           showInlineError(
