@@ -101,7 +101,7 @@ def _wrap(title: str, body: str, cta_text: str | None, cta_url: str | None) -> s
     cfg = current_app.config["_CONFIG"]
     cta = (
         f'<p style="text-align:center;margin:24px 0;">'
-        f'<a href="{cta_url}" style="background:#0B1820;color:#7CFF00;padding:12px 24px;'
+        f'<a href="{cta_url}" style="background:#0B1820;color:#59FD27;padding:12px 24px;'
         f'border-radius:24px;text-decoration:none;font-weight:600;">{cta_text}</a></p>'
         if cta_text and cta_url
         else ""

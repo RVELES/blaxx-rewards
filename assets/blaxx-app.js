@@ -349,7 +349,7 @@
       '</span>' +
       '<button id="bx-setpwd-cta" style="background:#59FD27;color:#0B1820;border:0;padding:7px 14px;' +
         'border-radius:18px;font-weight:700;cursor:pointer;font-size:12px;">Definir senha →</button>' +
-      '<button id="bx-setpwd-later" style="background:transparent;color:#59FD27;border:1px solid rgba(124,255,0,.3);' +
+      '<button id="bx-setpwd-later" style="background:transparent;color:#59FD27;border:1px solid rgba(89,253,39,.3);' +
         'padding:6px 10px;border-radius:18px;cursor:pointer;font-size:12px;">Mais tarde</button>';
     document.body.insertBefore(bar, document.body.firstChild);
 
@@ -2045,7 +2045,7 @@
       if (!items.length) { container.innerHTML = '<p>Sem notificações.</p>'; return; }
       container.innerHTML = items.map(function (n) {
         return '<div class="bx-notif" data-id="' + n.id + '" style="padding:12px;border-bottom:1px solid #eee;'
-          + (n.is_read ? '' : 'background:rgba(124,255,0,0.06);')
+          + (n.is_read ? '' : 'background:rgba(89,253,39,0.06);')
           + 'cursor:pointer;">'
           + '<div style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#0A0A0A;color:#59FD27;text-align:center;line-height:32px;">' + (n.icon || '!') + '</div> '
           + '<strong>' + n.title + (n.is_read ? '' : ' •') + '</strong>'
