@@ -2665,19 +2665,42 @@ details.faq{ background:var(--card); border:3px solid var(--black); border-radiu
      itens fora da borda — quem não descobria o gesto de arrastar simplesmente
      não alcançava metade do menu. Agora o menu EMPILHA em coluna, dentro da
      gaveta, e cada item ocupa a largura toda. */
+  /* Empilhar em coluna resolveu a rolagem horizontal, mas criou outro
+     problema: 14 itens x 50px = 700px de menu ANTES do conteúdo. Medido em
+     390px: a sidebar ocupava 837px e o painel só começava em 1016px — mais
+     de uma tela inteira de menu antes do saldo. Quem logava via só o menu.
+
+     Correção sem reintroduzir rolagem lateral: a lista vira uma GRADE que
+     quebra linha. Duas colunas, item compacto — o menu inteiro cabe em
+     ~200px e continua com todos os 14 itens alcançáveis, sem arrastar nada. */
   .sidebar .side-nav {
     min-width: 0;
     max-width: 100%;
-    display: flex !important;
-    flex-direction: column !important;   /* empilha — nada de tira lateral */
-    flex-wrap: nowrap !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 8px;
-    overflow-x: hidden;                  /* trava definitiva */
+    overflow-x: hidden;                  /* trava da regra do projeto */
     padding: 2px 14px;
     margin: 0;
     list-style: none;
   }
-  .sidebar .side-nav > li { flex: 0 0 auto; width: 100%; }
+  .sidebar .side-nav > li { min-width: 0; }
+  .sidebar .side-nav > li > a {
+    padding: 11px 12px !important;
+    min-height: 44px;                    /* alvo de toque */
+    display: flex; align-items: center; gap: 9px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* O conteúdo vem ANTES do menu. É a correção que resolve a queixa de fato:
+     ao entrar, o usuário vê o painel, não a lista de navegação. */
+  .app-shell > .sidebar, .shell > .sidebar { order: 2; }
+  .app-shell > .main, .app-shell > main,
+  .shell > .main, .shell > main { order: 1; }
+
+  /* Rodapé da sidebar é redundante no mobile — o rodapé do site já vem logo
+     abaixo com os mesmos links. */
+  .sidebar .side-foot { display: none !important; }
   .sidebar .side-nav a {
     display: flex;
     align-items: center;
