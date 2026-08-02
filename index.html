@@ -416,12 +416,17 @@
         </div>
       </article>
 
-      <!-- OPORTUNIDADE (showcase) -->
-      <article class="cc-panel cc-oppo">
-        <div class="cc-eyebrow" style="color:var(--lime)">Oportunidade detectada <span class="cc-pill">🔥 EXCLUSIVO</span></div>
-        <h2>LATAM PASS<br><span class="cc-lime">Bônus 85%</span></h2>
-        <p>Potencial ganho: <b class="cc-lime" style="font-size:20px">+ 122.000 pontos</b></p>
-        <a href="parceiros.html" class="btn btn--primary" style="margin-top:14px">Explorar parceiros</a>
+      <!-- OPORTUNIDADE — campanha REAL de /campaigns/.
+           Era "LATAM PASS · Bônus 85% · +122.000 pontos" fixo no HTML, sem
+           nenhuma fonte de dados e (desde a remoção dos selos) sem nada que o
+           distinguisse do saldo real. Agora mostra a campanha ativa de maior
+           recompensa; sem campanha ativa, o bloco não é exibido. -->
+      <article class="cc-panel cc-oppo" id="cc-oppo" hidden>
+        <div class="cc-eyebrow" style="color:var(--lime)">Campanha em destaque</div>
+        <h2 id="cc-oppo-nome">—</h2>
+        <p id="cc-oppo-desc" class="muted"></p>
+        <p id="cc-oppo-premio" hidden>Recompensa: <b class="cc-lime" style="font-size:20px"></b></p>
+        <a href="campanhas.html" class="btn btn--primary" style="margin-top:14px">Ver campanha</a>
       </article>
 
       <!-- MARKETPLACE (parceiros REAIS) -->
@@ -469,16 +474,9 @@
       <div class="cc-tiles" id="cc-activity"><p class="muted">Carregando…</p></div>
     </article>
 
-    <!-- INTELLIGENCE (showcase) -->
-    <article class="cc-light" style="position:relative">
-      <h3 style="margin:0 0 6px">Intelligence Center™</h3>
-      <div class="cc-mini"><span class="cc-icon">S</span><div><small>Melhor transferência hoje</small><b>SMILES +80%</b><small>Prazo: 48 horas</small></div></div>
-      <div class="cc-mini"><span class="cc-icon">✈</span><div><small>Melhor resgate</small><b>Business Class</b><small>São Paulo → Londres</small></div></div>
-      <p class="muted" style="font-size:12px;margin-top:10px">Recomendações ilustrativas — em breve com dados reais.</p>
-    </article>
   </div>
 
-  <p class="cc-disclaimer">Pontos são créditos promocionais — não são moeda, depósito ou investimento. Seções marcadas “demo” são ilustrativas e ainda não refletem dados reais.</p>
+  <p class="cc-disclaimer">Pontos são créditos promocionais — não são moeda, depósito ou investimento.</p>
 </main>
 <script src="assets/blaxx-config.js"></script>
 <script src="chrome.js"></script>
@@ -554,6 +552,23 @@
     }).join('');
   }
 
+  // Oportunidade = campanha ativa de maior recompensa. Sem campanha, some.
+  function renderOportunidade(items){
+    const box = document.getElementById('cc-oppo');
+    if (!box) return;
+    const lista = (items||[]).filter(c => c && c.name);
+    if (!lista.length) { box.hidden = true; return; }
+    const top = lista.slice().sort((a,b) => Number(b.reward_pts||0) - Number(a.reward_pts||0))[0];
+    setText('cc-oppo-nome', top.name);
+    setText('cc-oppo-desc', top.description || top.mechanic || '');
+    const premio = document.getElementById('cc-oppo-premio');
+    if (Number(top.reward_pts) > 0) {
+      premio.querySelector('b').textContent = '+' + fmt(top.reward_pts) + ' pts';
+      premio.hidden = false;
+    } else premio.hidden = true;
+    box.hidden = false;
+  }
+
   function renderCampaigns(items){
     const wrap = document.getElementById('cc-campaigns');
     const list = (items||[]).slice(0,3);
@@ -586,9 +601,10 @@
       {id:'nexus',name:'Nexus Airlines',logo_emoji:'✈️',accrual_rule:'Até 6 pts/R$',category:'Viagens'},
       {id:'mercadovivo',name:'Mercado Vivo',logo_emoji:'🛒',accrual_rule:'Até 4 pts/R$',category:'Supermercado'},
       {id:'pulse',name:'Pulse Eletro',logo_emoji:'📱',accrual_rule:'Até 4 pts/R$',category:'Tecnologia'}]);
-    renderCampaigns([
+    const _demo = [
       {id:'1',name:'Dobro de pontos em viagens',description:'Até 30/06 · parceiros selecionados',reward_pts:2000},
-      {id:'2',name:'Cashback turbo no varejo',description:'Resgate via PIX em 6 meses',reward_pts:5000}]);
+      {id:'2',name:'Cashback turbo no varejo',description:'Resgate via PIX em 6 meses',reward_pts:5000}];
+    renderCampaigns(_demo); renderOportunidade(_demo);
     renderActivity([
       {amount_pts:1240,description:'Compra · Mercado Vivo',type:'compra'},
       {amount_pts:-5000,description:'Resgate · Voucher iFood',type:'resgate'},
@@ -607,7 +623,9 @@
     renderWallet(w, txItems);
     renderCard(c);
     renderPartners(p && (p.items||p) || []);
-    renderCampaigns(cm && (cm.items||cm) || []);
+    const _camp = cm && (cm.items||cm) || [];
+    renderCampaigns(_camp);
+    renderOportunidade(_camp);
     renderActivity(txItems);
   })();
 })();
