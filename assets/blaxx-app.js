@@ -99,7 +99,7 @@
   // Marcador de build: este projeto já perdeu horas com o navegador servindo
   // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
   // hora se o que está rodando é o arquivo do disco.
-  window.BLAXX_APP_BUILD = 'sessao-refresh-2026-08-02';
+  window.BLAXX_APP_BUILD = 'login-google-2026-08-02';
 
   var STORE = {
     token: function () {
@@ -1268,6 +1268,15 @@
   // /auth/google que valida, cria User+Wallet se for novo, e devolve nosso
   // JWT Blaxx. Salvamos token + user e redirecionamos pro dashboard.
   function initGoogleSignIn() {
+    // As páginas de autenticação (login.html, cadastro.html) NÃO carregam este
+    // arquivo — têm camada de fetch própria. Por isso o fluxo real vive em
+    // `assets/blaxx-google.js`, carregado por elas. Quando esse módulo está
+    // presente, delegue: duas implementações do mesmo login divergiriam, e
+    // renderizar o botão duas vezes duplicaria o callback do GSI.
+    if (window.BlaxxGoogle && typeof window.BlaxxGoogle.iniciar === 'function') {
+      return window.BlaxxGoogle.iniciar();
+    }
+
     var container = document.getElementById('g-signin-btn');
     if (!container) return;
 

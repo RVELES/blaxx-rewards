@@ -18,10 +18,11 @@
 // quem já visitou o site continua rodando a versão em cache — foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v20-sem-dado-inventado';
+const CACHE = 'blaxx-v21-google-e-nav-usuario';
 const PRECACHE = [
   '/',
   '/login.html',
+  '/cadastro.html',
   '/dashboard.html',
   '/carteira.html',
   '/extrato.html',
@@ -35,6 +36,8 @@ const PRECACHE = [
   '/app.html',
   '/assets/styles.css',
   '/assets/blaxx-app.js',
+  '/assets/blaxx-google.js',
+  '/assets/blaxx-nav-user.js',
   '/assets/icons/icon.svg',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',

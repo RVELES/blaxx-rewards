@@ -41,8 +41,10 @@ conversa com um backend Flask hospedado no Render.
 > código que roda em produção.** O backend ativo (carteira, PIX, resgates,
 > parceiros, cartão) está em `rveles-blaxx/blaxx-pontos`. Ver `backend/README.md`.
 >
-> As contas `RVELES/*` citadas para o backend em docs antigos são legadas; o
-> repo canônico do backend é `rveles-blaxx/blaxx-pontos`.
+> ⚠️ **Correção (01/08/2026):** este bloco dizia que "as contas `RVELES/*` são
+> legadas". **Não são.** `rveles-blaxx/blaxx-pontos` é o repo **canônico**, mas
+> quem alimenta o serviço Render é o **fork `RVELES/blaxx-pontos`**
+> (`git push fork main`). Push só no canônico não chega em produção.
 
 ---
 
@@ -51,7 +53,7 @@ conversa com um backend Flask hospedado no Render.
 | Camada | Onde | Observação |
 |---|---|---|
 | Frontend | Netlify — projeto `blaxxpontos-old` | Domínio canônico: **`https://blaxxpontos.com.br`**; home = `blaxx-neon.html` (neon `#59FD27`) |
-| Backend prod | Render — `https://blaxx-pontos-exe.onrender.com` | `/healthz` → 200; repo `rveles-blaxx/blaxx-pontos` |
+| Backend prod | Render — `https://blaxx-pontos-exe.onrender.com` | `/healthz` → 200; canônico `rveles-blaxx/blaxx-pontos`, mas **deploya do fork `RVELES/blaxx-pontos`** |
 | Backend antigo | `https://blaxx-pontos-backend.onrender.com` | **Desligado** (timeout; fora da CSP) |
 
 O deploy preview de PRs sai em `deploy-preview-N--blaxxpontos-old.netlify.app`.
@@ -126,8 +128,9 @@ A CSP (`netlify.toml` / `_headers`) só libera `connect-src` para
 ## 6. Pendência conhecida
 
 - **Sync do backend de produção:** o código canônico vive em
-  `rveles-blaxx/blaxx-pontos` (público, branch `main`), separado deste repo.
-  Decisão em aberto: manter os repos separados (deploy independente) ou integrar
-  (submodule/monorepo).
+  `rveles-blaxx/blaxx-pontos` (público, branch `main`), separado deste repo — e
+  o Render deploya de um **fork** dele (`RVELES/blaxx-pontos`), então há **dois**
+  remotes a manter em sincronia, não um. Decisão em aberto: manter os repos
+  separados (deploy independente) ou integrar (submodule/monorepo).
 - **`backend/` local desatualizado:** cobre só auth Fase-1; não reflete os
   endpoints de carteira/PIX/resgate de produção.

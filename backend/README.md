@@ -2,9 +2,9 @@
 
 > ⚠️ **Este NÃO é o backend de produção.** É a referência da Fase 1 (auth).
 > O backend que roda em produção (carteira, PIX, resgates, parceiros, cartão)
-> está no repo **`rveles-blaxx/blaxx-pontos`** (público, branch `main`), servido
-> em `https://blaxx-pontos-exe.onrender.com` (**Render**, não Fly.io). Ver
-> `../ARCHITECTURE.md`.
+> tem como canônico **`rveles-blaxx/blaxx-pontos`** (público, branch `main`),
+> mas o serviço `https://blaxx-pontos-exe.onrender.com` (**Render**, não Fly.io)
+> deploya do **fork `RVELES/blaxx-pontos`**. Ver `../ARCHITECTURE.md`.
 
 Backend Flask que serve a API de autenticação e perfil de usuário do Blaxx Pontos.
 
@@ -167,11 +167,13 @@ recomenda-se Alembic (TODO Fase 2).
 ## Deploy
 
 > ⚠️ **Histórico/legado.** Este módulo (Fase 1) nunca foi para produção. A
-> produção real roda em **Render** (`blaxx-pontos-exe.onrender.com`, repo
-> `rveles-blaxx/blaxx-pontos`) com **Postgres no Neon** + Alembic — **não** em
+> produção real roda em **Render** (`blaxx-pontos-exe.onrender.com`, deploya do
+> **fork** `RVELES/blaxx-pontos` — o canônico `rveles-blaxx/blaxx-pontos` não
+> alimenta o serviço) com **Postgres no Neon** + Alembic — **não** em
 > Fly.io/SQLite. Os passos `fly …` abaixo são apenas registro histórico; não
 > usar. Para o deploy de produção real, ver `../DEPLOY.md` e
-> `LAUNCH_PENDING_CREDENTIALS.md` (raiz) §2.1.
+> `LAUNCH_PENDING_CREDENTIALS.md` §2.1, em `_interno/documentacao/` do workspace
+> privado (**fora deste repo**).
 
 ### Passos resumidos (LEGADO — Fly.io, não usar)
 

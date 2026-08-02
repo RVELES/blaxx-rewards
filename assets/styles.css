@@ -223,6 +223,26 @@ a[aria-current="page"] {
 .links a.active { background: var(--black); color: var(--lime); font-weight: 600; }
 .cta-row { display: flex; gap: 8px; align-items: center; }
 
+/* ---- Lado direito da navegação: sino + inicial do usuário ----------------
+   Montado por assets/blaxx-nav-user.js, que é o único lugar que decide o que
+   aparece aqui — antes o nome vinha hardcoded ("Olá, Mariana") em 30 páginas.
+   As mesmas regras existem em ../styles.css para o outro sistema de nav
+   (chrome.js); as duas folhas precisam andar juntas. */
+.nav-bell { display: inline-flex; align-items: center; justify-content: center; }
+.nav-bell svg { width: 20px; height: 20px; display: block; }
+/* Mesmos valores de `.user-pill .av` em ../styles.css — os dois sistemas de
+   nav mostram o MESMO avatar. Lime de preenchimento com texto tinta dá 17,8:1
+   e é a combinação preferida da marca; neon como cor de texto só valeria sobre
+   fundo escuro, e esta topbar é clara. */
+.nav-av {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; flex: 0 0 30px;
+    border-radius: 50%;
+    background: var(--lime, #59FD27); color: var(--ink, #0A0B0E);
+    font-weight: 800; font-size: 13px; line-height: 1; text-transform: uppercase;
+}
+.nav-user { display: inline-flex; align-items: center; gap: 8px; }
+
 /* Mobile nav */
 .mobile-only { display: none; }
 @media (max-width: 880px) {
@@ -239,6 +259,32 @@ a[aria-current="page"] {
     .nav > .links { display: none; }
     .nav > .cta-row { grid-column: 2; }
     .cta-row .button.ghost { display: none; }
+    /* ...MENOS o sino: no mobile ele fica visível à direita, como ícone puro.
+       A regra acima é ampla (esconde qualquer .button.ghost) e engolia a
+       notificação junto — que é justamente o que precisa estar sempre à mão. */
+    .cta-row .button.ghost.nav-bell {
+        display: inline-flex;
+        width: 40px; height: 40px; padding: 0;
+        border-radius: var(--r-pill, 999px);
+    }
+    /* O nome sai; sobra a inicial. Evita que "Olá, Fulano" empurre a barra
+       (regra do projeto: zero rolagem horizontal no mobile).
+       O seletor precisa de `.cta-row .button` para vencer `.button.secondary`
+       — com `.nav-user` sozinho a especificidade perde e o botão mantinha
+       padding, raio de 10px e fundo papel, deixando um retângulo atrás do
+       círculo. Borda de 3px e sombra dura ficam: é a assinatura Neo-Brutal, e
+       assim o avatar vira par visual do sino ao lado. */
+    .nav-user__nome { display: none; }
+    .cta-row .button.nav-user {
+        width: 44px; height: 44px; padding: 0;
+        border-radius: var(--r-pill, 999px);
+        justify-content: center;
+        background: var(--lime, #59FD27);
+    }
+    .cta-row .button.nav-user .nav-av {
+        width: 100%; height: 100%; flex-basis: auto;
+        background: none; font-size: 15px;
+    }
     /* Logo reduzido pra caber em telas pequenas — mas ainda 1.5x do tamanho
        legado pra manter destaque. */
     .mark {

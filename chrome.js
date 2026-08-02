@@ -124,9 +124,13 @@
       ${TOPNAV.map(([l, h, k]) => `<a href="${h}" class="${k === screen ? 'is-active' : ''}">${l}</a>`).join('')}
     </nav>
     <div class="topbar__right">
-      <button class="icon-btn" aria-label="Notificações">${I.bell}<span class="dot"></span></button>
-      <a class="user-pill" href="#"><span class="av">R</span><span class="t">Olá, Ricardo</span></a>
+      <a class="icon-btn" href="central-notificacoes.html" aria-label="Notificações">${I.bell}<span class="dot"></span></a>
+      <a class="user-pill" href="perfil.html"><span class="av"></span><span class="t"></span></a>
     </div>`;
+  // Avatar e nome ficam VAZIOS de propósito: quem preenche é o
+  // assets/blaxx-nav-user.js, a partir da sessão real. Antes vinha
+  // "R"/"Olá, Ricardo" fixo no HTML — nome de outra pessoa aparecendo para
+  // todo usuário logado, e um piscar de dado inventado antes do JS corrigir.
 
   // ---- shell ----
   const main = document.querySelector('main');
@@ -136,6 +140,9 @@
   aside.className = 'sidebar';
   aside.innerHTML = `<div class="sidebar__sticky">${sidebarInner}</div>`;
   document.body.insertBefore(topbar, document.body.firstChild);
+  // A topbar nasce aqui, depois do DOMContentLoaded do módulo — por isso a
+  // chamada explícita em vez de esperar o auto-init dele.
+  if (window.BlaxxNavUser) window.BlaxxNavUser.aplicar();
   main.parentNode.insertBefore(shell, main);
   shell.appendChild(aside);
   shell.appendChild(main);

@@ -8,12 +8,17 @@
 > | Camada | Onde | Detalhe |
 > |---|---|---|
 > | Frontend (domínio) | **Netlify** · `blaxxpontos.com.br` | landing estática `blaxx-neon.html`, verde neon `#59FD27` |
-> | Backend (prod) | **Render** · `blaxx-pontos-exe.onrender.com` | Flask + Gunicorn (Dockerfile + `render.yaml`); repo `rveles-blaxx/blaxx-pontos` |
+> | Backend (prod) | **Render** · `blaxx-pontos-exe.onrender.com` | Flask + Gunicorn (Dockerfile + `render.yaml`); deploya do **fork** `RVELES/blaxx-pontos` |
 > | Banco | **Neon PostgreSQL** (região `gru`) | + migrações Alembic; `DATABASE_URL` secret |
 > | Healthcheck | `/healthz` → 200 · `/readyz` (DB + rotas + JWT) | `render.yaml` aponta `healthCheckPath: /readyz` |
 >
-> Variáveis de ambiente de produção: ver `LAUNCH_PENDING_CREDENTIALS.md` (raiz)
-> §2.1. Pipeline de deploy/CI e fail-fast de env: mesma referência, §7.
+> ⚠️ O canônico é `rveles-blaxx/blaxx-pontos`, mas **quem alimenta o Render é o
+> fork** `RVELES/blaxx-pontos`. Push no canônico não chega em produção — foi
+> assim que o commit do pricing ficou 18 dias fora do ar.
+>
+> Variáveis de ambiente de produção: ver `LAUNCH_PENDING_CREDENTIALS.md` §2.1,
+> em `_interno/documentacao/` do workspace privado (**fora deste repo**).
+> Pipeline de deploy/CI e fail-fast de env: mesma referência, §7.
 > A CSP (`netlify.toml`/`_headers`) libera `connect-src` só para
 > `blaxx-pontos-exe.onrender.com`.
 

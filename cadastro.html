@@ -42,6 +42,12 @@
   .nav-row { display: flex; gap: 10px; margin-top: 4px; }
   .nav-row .btn { flex: 1; }
   .nav-row .btn.half { flex: 0 0 38%; }
+
+  /* Divisor "ou" entre cadastro por formulário e cadastro social. */
+  .auth-divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; color: var(--fg-muted); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line, rgba(10,11,14,.15)); }
+  /* O GSI injeta um iframe de largura fixa; centralizar evita o botão colado à esquerda. */
+  #g-signin-btn { display: flex; justify-content: center; min-height: 44px; }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Criar conta","item":"https://blaxxpontos.com.br/cadastro.html"}]}
@@ -83,6 +89,12 @@
         <div class="nav-row">
           <button type="button" class="btn btn--dark btn--block" data-next>Continuar →</button>
         </div>
+
+        <!-- Cadastro social: o /auth/google cria User+Wallet no primeiro login,
+             então quem entra por aqui pula os 3 passos. O e-mail vem verificado
+             pelo Google (email_verified), validado no backend. -->
+        <div class="auth-divider">ou</div>
+        <div id="g-signin-btn" data-erro-id="regErr" data-texto="signup_with"></div>
       </section>
 
       <!-- Passo 2 — Contato -->
@@ -128,6 +140,10 @@
   <div class="auth-foot">© 2026 BlaXx · <a href="termos.html">TERMOS</a> · <a href="privacidade.html">PRIVACIDADE</a> · <a href="ajuda.html">AJUDA</a></div>
 
   <script src="assets/blaxx-config.js"></script>
+  <!-- Google Identity Services. async+defer: o botão renderiza quando o SDK
+       chega; o blaxx-google.js espera por ele com teto de ~8s. -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="assets/blaxx-google.js"></script>
   <script>
   (function(){
     var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');

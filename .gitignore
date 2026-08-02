@@ -43,3 +43,8 @@ node_modules/
 *.bak-*
 *.pre-*.bak
 .bak_*/
+
+# Credenciais OAuth baixadas do Google Cloud Console. O fluxo do BlaXx
+# (Google Identity Services + validação de ID token) NÃO usa client secret —
+# se um destes aparecer aqui, é engano, e não pode ser versionado.
+client_secret_*.json
