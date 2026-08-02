@@ -36,9 +36,7 @@ a{color:inherit}
    (Bla branco). Só o símbolo vetorial; sem sombra/contorno na marca — a
    sombra dura do neo-brutal fica nos cards/CTAs, nunca no logo. */
 .logo{display:inline-flex;align-items:center;gap:11px;color:var(--white);text-decoration:none}
-.logo-mark{height:60px;width:auto;flex:none;display:block}
-.logo-word{font-family:var(--grotesk);font-weight:700;font-size:26px;letter-spacing:-.02em;line-height:1}
-.logo-word b{font-weight:700;color:var(--neon)}
+.logo-mark{height:44px;width:auto;flex:none;display:block}
 
 /* ============ NEO-BRUTAL ============ */
 .frame{min-height:100vh;overflow-x:hidden}
@@ -114,10 +112,103 @@ a{color:inherit}
 @media(max-width:760px){
   .nb .cinema-card{display:none} /* mobile: tira o card "REDE ATIVA" da frente do globo */
   .nb .stick{display:none}
-  .logo-word{font-size:22px}
+  .logo-mark{height:32px}
 }
 @media(prefers-reduced-motion:reduce){
   .nb .cinema-marq span{animation:none}
+}
+
+/* ═════════ NAV (hamburger + gaveta) · REGRA: mobile nunca rola na horizontal ═════════ */
+.nb .bar{position:relative}
+.nb .nav-desk{display:flex;align-items:center;gap:26px;margin-left:auto;margin-right:18px}
+.nb .nav-desk a{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--black);text-decoration:none;padding:6px 0;border-bottom:3px solid transparent}
+.nb .nav-desk a:hover{border-bottom-color:var(--neon)}
+.nb .burger{display:none;width:48px;height:48px;border:3px solid var(--black);background:var(--neon);
+  box-shadow:4px 4px 0 var(--black);cursor:pointer;padding:0;margin-left:auto;
+  align-items:center;justify-content:center;flex-direction:column;gap:5px}
+.nb .burger span{display:block;width:22px;height:3px;background:var(--black)}
+.drawer{position:fixed;inset:0 0 0 auto;width:min(86vw,340px);background:var(--black);
+  transform:translateX(100%);transition:transform .18s ease;z-index:200;
+  display:flex;flex-direction:column;padding:18px;overflow-y:auto;overflow-x:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer a{display:block;width:100%;font-family:var(--grotesk);font-weight:700;font-size:17px;
+  text-transform:uppercase;color:#F4F4F0;text-decoration:none;padding:15px 12px;min-height:48px;
+  border-bottom:2px solid #23262c;overflow-wrap:anywhere}
+.drawer a:active{background:#16181d}
+.drawer a.cta{background:var(--neon);color:var(--black);border:3px solid var(--neon);
+  margin-top:16px;text-align:center}
+.drawer-close{align-self:flex-end;width:44px;height:44px;background:transparent;border:2px solid #444;
+  color:#F4F4F0;font-size:22px;cursor:pointer;margin-bottom:8px}
+.scrim{position:fixed;inset:0;background:rgba(10,11,14,.6);z-index:199;display:none}
+.scrim.on{display:block}
+@media(max-width:900px){
+  .nb .nav-desk{display:none}
+  .nb .burger{display:flex}
+}
+
+/* ═════════ RODAPÉ ═════════ */
+.nb-foot{background:var(--black);color:#F4F4F0;border-top:5px solid var(--neon);margin-top:60px}
+.nb-foot .fwrap{max-width:1180px;margin:0 auto;padding:46px 22px 26px;
+  display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:34px}
+.nb-foot h4{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--neon);margin-bottom:14px}
+.nb-foot a{display:flex;align-items:center;color:#C9CDD4;text-decoration:none;font-size:14px;
+  padding:11px 0;min-height:44px;overflow-wrap:anywhere}
+.nb-foot a:hover{color:var(--neon)}
+.nb-foot .fbrand p{font-family:var(--mono);font-size:12px;color:#8A929E;line-height:1.7;margin-top:12px}
+.nb-foot .fbot{border-top:1px solid #23262c;padding:18px 22px 30px;max-width:1180px;margin:0 auto;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:12px;color:#8A929E}
+@media(max-width:900px){
+  .nb-foot .fwrap{grid-template-columns:1fr;gap:26px;padding:34px 18px 20px}
+  .nb-foot .fbot{flex-direction:column}
+}
+
+/* ═════════ ACESSIBILIDADE MOBILE (auditoria 2026-08-01) ═════════
+   Dois achados corrigidos aqui:
+   1. Alvos de toque abaixo de 44px — os links legais tinham 14px de altura,
+      praticamente impossíveis de acertar com o polegar. WCAG 2.5.5 e o HIG da
+      Apple pedem 44px; abaixo disso o erro de toque dispara.
+   2. Texto em 11px — abaixo do mínimo confortável de leitura em tela pequena.
+      Subimos para 12px, que é o piso que ainda mantém o ar do design.        */
+@media (max-width: 900px) {
+  .nb .pill,
+  .nb .mini {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Rodapé mini (Termos · Privacidade · LGPD): eram 14px de alvo. */
+  .nb .footnote { font-size: 12px; line-height: 1.9; }
+  .nb .footnote a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 6px;
+  }
+  /* Piso de 12px para os textos auxiliares em mono. */
+  .nb .globe-head .ann,
+  .nb .globe-hint,
+  .nb .cinema-card span { font-size: 12px; }
+}
+
+/* ═════════ CTAs do hero ═════════
+   O "Entrar" saiu da barra do topo: com o menu hamburger já ocupando a
+   direita, dois botões competiam pelo mesmo canto. No hero ele vira o
+   terceiro nível da hierarquia — abaixo de "Começar agora" (primária) e
+   "Ver pacotes" (secundária), para quem já é cliente e só quer logar. */
+.nb .hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:6px}
+.nb .btn-entrar{display:inline-flex;align-items:center;min-height:48px;padding:10px 4px;
+  font-family:var(--mono);font-size:13px;color:#333;text-decoration:none;
+  border-bottom:3px solid transparent}
+.nb .btn-entrar b{font-family:var(--grotesk);font-weight:700;color:var(--black);margin-left:4px}
+.nb .btn-entrar:hover{border-bottom-color:var(--black)}
+@media(max-width:600px){
+  .nb .hero-cta{flex-direction:column;align-items:stretch;gap:12px}
+  .nb .hero-cta .btn{text-align:center}
+  .nb .btn-entrar{justify-content:center;padding:12px 4px}
 }
 </style>
 </head>
@@ -127,17 +218,27 @@ a{color:inherit}
 <div class="frame nb">
   <div class="bar">
     <a class="logo" href="#topo" aria-label="BlaXx Pontos">
-      <svg class="logo-mark" viewBox="0 0 486 548" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M45,45 L45,501 L46,502 L318,502 L319,501 L334,500 L353,495 L377,484 L393,473 L408,459 L425,435 L436,407 L439,392 L439,385 L440,384 L439,348 L436,333 L430,315 L423,301 L413,286 L397,269 L387,261 L388,258 L400,244 L410,226 L417,206 L420,192 L420,183 L421,182 L421,156 L420,155 L420,147 L416,128 L406,104 L393,85 L376,69 L359,58 L340,50 L316,45 Z M114,112 L306,112 L307,113 L317,114 L328,119 L334,123 L343,133 L349,144 L353,160 L353,179 L351,189 L344,205 L337,214 L328,222 L317,228 L302,232 L292,232 L291,233 L140,233 L139,234 L211,306 L320,306 L321,307 L326,307 L342,313 L350,319 L360,329 L369,346 L372,359 L372,381 L370,391 L363,406 L356,415 L347,423 L334,430 L318,434 L114,434 L112,432 L112,310 L114,306 L171,306 L113,247 L112,243 L112,116 Z" fill="#59FD27" fill-rule="evenodd"/></svg>
-      <span class="logo-word">Bla<b>Xx</b></span>
+      <img class="logo-mark" src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
     </a>
-    <a class="pill" href="/login">ENTRAR →</a>
-  </div>
+        <nav class="nav-desk" aria-label="Principal">
+        <a href="#pacotes">Comprar pontos</a>
+        <a href="#" onclick="window.blaxxShow&&window.blaxxShow('parceiros');return false;">Parceiros</a>
+        <a href="como-funciona.html">Como funciona</a>
+        <a href="central-ajuda.html">Ajuda</a>
+      </nav>
+      <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="bxDrawer"
+              onclick="bxDrawer(true)"><span></span><span></span><span></span></button>
+</div>
 
   <div class="wrap" id="topo">
     <div class="stick">✳ payout via PIX<br>direto na conta</div>
     <h1>Seus pontos.<br><span class="tag">Suas regras.</span></h1>
     <p class="sub">Compre pontos, envie para amigos e resgate em dinheiro de verdade. A plataforma de pontos mais direta do Brasil.</p>
-    <a class="btn" href="/cadastro">Começar agora</a>&nbsp;&nbsp;<a class="btn ghost" href="#pacotes">Ver pacotes</a>
+    <div class="hero-cta">
+      <a class="btn" href="/cadastro">Começar agora</a>
+      <a class="btn ghost" href="#pacotes">Ver pacotes</a>
+      <a class="btn-entrar" href="/login">Já tenho conta · <b>Entrar →</b></a>
+    </div>
     <div class="cards" id="pacotes">
       <div class="card" data-pkg="start"><h3>Start</h3><div class="pts"><span data-pts>2.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 180,00</span> · PIX ou cartão</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
       <div class="card" data-pkg="plus"><h3>Plus ★</h3><div class="pts"><span data-pts>5.500</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 470,00</span> · ~5% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
@@ -167,8 +268,7 @@ a{color:inherit}
 <div class="frame nb">
   <div class="bar">
     <a class="logo" href="#topo" aria-label="BlaXx Pontos" onclick="window.blaxxShow&&window.blaxxShow('home');return false;">
-      <svg class="logo-mark" viewBox="0 0 486 548" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M45,45 L45,501 L46,502 L318,502 L319,501 L334,500 L353,495 L377,484 L393,473 L408,459 L425,435 L436,407 L439,392 L439,385 L440,384 L439,348 L436,333 L430,315 L423,301 L413,286 L397,269 L387,261 L388,258 L400,244 L410,226 L417,206 L420,192 L420,183 L421,182 L421,156 L420,155 L420,147 L416,128 L406,104 L393,85 L376,69 L359,58 L340,50 L316,45 Z M114,112 L306,112 L307,113 L317,114 L328,119 L334,123 L343,133 L349,144 L353,160 L353,179 L351,189 L344,205 L337,214 L328,222 L317,228 L302,232 L292,232 L291,233 L140,233 L139,234 L211,306 L320,306 L321,307 L326,307 L342,313 L350,319 L360,329 L369,346 L372,359 L372,381 L370,391 L363,406 L356,415 L347,423 L334,430 L318,434 L114,434 L112,432 L112,310 L114,306 L171,306 L113,247 L112,243 L112,116 Z" fill="#59FD27" fill-rule="evenodd"/></svg>
-      <span class="logo-word">Bla<b>Xx</b></span>
+      <img class="logo-mark" src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
     </a>
     <a class="pill" href="#topo" onclick="window.blaxxShow&&window.blaxxShow('home');return false;">← HOME</a>
   </div>
@@ -526,5 +626,79 @@ function blaxxCreateGlobe(canvas, opts){
   }).catch(function(e){ console.error('globo:', e); });
 })();
 </script>
+
+<!-- Gaveta: padrão único de navegação mobile (sem barra horizontal) -->
+<div class="scrim" id="bxScrim" onclick="bxDrawer(false)"></div>
+<aside class="drawer" id="bxDrawer" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <button class="drawer-close" type="button" aria-label="Fechar menu" onclick="bxDrawer(false)">×</button>
+  <a href="#pacotes" onclick="bxDrawer(false)">Comprar pontos</a>
+  <a href="#" onclick="bxDrawer(false);window.blaxxShow&&window.blaxxShow('parceiros');return false;">Parceiros</a>
+  <a href="como-funciona.html">Como funciona</a>
+  <a href="central-ajuda.html">Ajuda</a>
+  <a href="login.html" class="cta">Entrar</a>
+</aside>
+
+<footer class="nb-foot">
+  <div class="fwrap">
+    <div class="fbrand">
+      <h4>BlaXx Pontos</h4>
+      <p>Compre pontos, envie para quem quiser e resgate em dinheiro de verdade via PIX.
+         Sem letra miúda: o que você vê é o que você paga.</p>
+    </div>
+    <div>
+      <h4>Produto</h4>
+      <a href="#pacotes">Comprar pontos</a>
+      <a href="#" onclick="window.blaxxShow&&window.blaxxShow('parceiros');return false;">Parceiros</a>
+      <a href="enviar.html">Enviar pontos</a>
+      <a href="resgate-pix.html">Resgatar via PIX</a>
+    </div>
+    <div>
+      <h4>Ajuda</h4>
+      <a href="como-funciona.html">Como funciona</a>
+      <a href="central-ajuda.html">Central de ajuda</a>
+      <a href="abrir-chamado.html">Falar com a gente</a>
+      <a href="seguranca.html">Segurança</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="termos.html">Termos de uso</a>
+      <a href="privacidade.html">Privacidade</a>
+      <a href="regulamento.html">Regulamento do programa</a>
+    </div>
+  </div>
+  <div class="fbot">
+    <span>© 2026 BlaXx Pontos</span>
+    <span>Feito em São Paulo</span>
+  </div>
+</footer>
+
+<script>
+/* Gaveta com trava de foco e ESC — padrão único de nav mobile. */
+function bxDrawer(open){
+  var d=document.getElementById('bxDrawer'), sc=document.getElementById('bxScrim'),
+      b=document.querySelector('.burger');
+  if(!d) return;
+  if(open){ d.hidden=false; requestAnimationFrame(function(){d.classList.add('open');}); }
+  else { d.classList.remove('open'); setTimeout(function(){d.hidden=true;},180); }
+  if(sc) sc.classList.toggle('on',!!open);
+  if(b) b.setAttribute('aria-expanded',open?'true':'false');
+  document.body.style.overflow = open ? 'hidden' : '';
+  if(open){ var f=d.querySelector('a,button'); if(f) f.focus(); }
+  else if(b) b.focus();
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') bxDrawer(false);
+});
+/* Ao passar para desktop a gaveta perde o sentido (o menu horizontal
+   reaparece) — fechar evita ficar presa aberta sobre o conteúdo, e devolve
+   o scroll do body. */
+window.addEventListener('resize',function(){
+  if(window.innerWidth>900){
+    var d=document.getElementById('bxDrawer');
+    if(d && !d.hidden) bxDrawer(false);
+  }
+});
+</script>
+
 </body>
 </html>

@@ -35,3 +35,11 @@ node_modules/
 *.log
 # rebuild 1779588675
 # rebuild 1779588708
+
+# Backups de trabalho — nunca versionar nem servir pelo Netlify.
+# Pendência registrada na sessão de 20/07: *.bak e AppIcon.appiconset/.bak_orig/
+# ficaram fora dos deploys.
+*.bak
+*.bak-*
+*.pre-*.bak
+.bak_*/

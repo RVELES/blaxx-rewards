@@ -1,4 +1,4 @@
-/* Comprar pontos · valor livre · fluxo PIX automatizado via Mercado Pago.
+/* Comprar pontos · valor livre · PIX via Asaas, cartão via Stripe.
  *
  * Substitui o antigo fluxo manual (admin confirmava) por chamada direta
  * a /pix/charge com amount_brl. Backend integra com MP e devolve QR Code
@@ -79,10 +79,10 @@
   var pollHandle = null;
   var pollStartedAt = 0;
 
-  // ---- Cartão de crédito (MercadoPago Brick) ----
+  // ---- Cartão de crédito (Stripe Elements) ----
   // Config vem de GET /payments/card/config (público). Se enabled=false o
   // seletor de método nem aparece e o fluxo segue 100% PIX como antes.
-  var cardCfg = { enabled: false, public_key: '', max_installments: 1, provider: 'mercadopago' };
+  var cardCfg = { enabled: false, public_key: '', max_installments: 1, provider: 'none' };
   var currentMethod = 'pix';
   var brickController = null;
   var cardIdemKey = null;
@@ -94,7 +94,7 @@
   }
 
   // ---- fetch wrapper com tratamento de 401 mid-flow ----
-  function api(path, opts) {
+  function api(path, opts, _jaRenovou) {
     opts = opts || {};
     var headers = Object.assign({
       'Content-Type': 'application/json',
@@ -111,8 +111,20 @@
           throw pe;
         }
         if (res.status === 401) {
-          // Token invalido/expirado: limpa AMBOS os storages e volta pro
-          // login com next preservado.
+          // Antes: qualquer 401 limpava os storages e devolvia pro login. Como
+          // o access token dura 30 min, isso expulsava o usuário no meio da
+          // compra. Agora tenta renovar em silêncio (o renovador vem do
+          // blaxx-app.js, single-flight global) e repete a chamada. Só cai pro
+          // login se o refresh também tiver morrido.
+          if (!_jaRenovou && typeof window.blaxxRenovarSessao === 'function') {
+            return window.blaxxRenovarSessao().then(function (ok) {
+              if (ok) return api(path, opts, true);
+              clearStoredCreds();
+              redirectToLoginPreservingHere();
+              var e1 = new Error('Sessão expirada — redirecionando.');
+              e1.status = 401; throw e1;
+            });
+          }
           clearStoredCreds();
           redirectToLoginPreservingHere();
           var err401 = new Error('Sessão expirada — redirecionando.');
@@ -331,9 +343,9 @@
   };
 
   // =====================================================================
-  // Cartão de crédito — MercadoPago CardPayment Brick
+  // Cartão de crédito — Stripe Elements
   //
-  // PCI (SAQ-A): o Brick tokeniza o cartão NO NAVEGADOR com a public key;
+  // PCI (SAQ-A): o Elements tokeniza o cartão NO NAVEGADOR com a chave pk_;
   // o backend recebe apenas card_token single-use. Nunca enviar número de
   // cartão/CVV para a API BlaXx — o endpoint recusa (RAW_CARD_DATA).
   // =====================================================================
@@ -363,7 +375,7 @@
           recoverToStep1();
           return;
         }
-        mountCardBrick(Number(p.price_brl), { package: pkg });
+        mountStripeCard(Number(p.price_brl), { package: pkg });
       }).catch(function (e) {
         if (e.status !== 401) {
           showInlineError(e.message || 'Falha ao carregar o pacote — tente PIX.');
@@ -377,84 +389,11 @@
       showInlineError('Valor mínimo: R$ 10,00', 'warn');
       return;
     }
-    mountCardBrick(amount, { amount_brl: amount });
+    mountStripeCard(amount, { amount_brl: amount });
   }
 
   // Roteador de checkout de cartão. Arquitetura 2026-08-01: cartão é STRIPE
   // (Elements tokeniza no browser → o PAN nunca chega ao nosso backend).
-  // MercadoPago fica como legado enquanto não for removido.
-  function mountCardBrick(amountBRL, chargeBody) {
-    if ((cardCfg.provider || 'mercadopago') === 'stripe') {
-      return mountStripeCard(amountBRL, chargeBody);
-    }
-    if (typeof MercadoPago !== 'function') {
-      showInlineError('SDK de pagamento não carregou — recarregue a página.', 'err');
-      return;
-    }
-    var step1 = document.getElementById('step-1');
-    var stepCard = document.getElementById('step-2-card');
-    if (step1) step1.style.display = 'none';
-    if (stepCard) stepCard.style.display = 'block';
-    newIdemKey(); // protege retry por timeout SEM travar retry pós-recusa
-
-    // Botão voltar do passo do cartão
-    var back = document.getElementById('bx-card-back');
-    if (!back && stepCard) {
-      back = document.createElement('button');
-      back.id = 'bx-card-back';
-      back.type = 'button';
-      back.className = 'button ghost';
-      back.style.cssText = 'margin-top:14px;width:100%;';
-      back.textContent = '← Voltar';
-      back.addEventListener('click', function () {
-        if (brickController) { try { brickController.unmount(); } catch (e) {} brickController = null; }
-        stepCard.style.display = 'none';
-        if (step1) step1.style.display = 'block';
-        clearInlineError();
-      });
-      stepCard.appendChild(back);
-    }
-
-    if (brickController) { try { brickController.unmount(); } catch (e) {} brickController = null; }
-
-    // Watchdog: o SDK do MP às vezes só loga "initialization failed" no
-    // console SEM rejeitar a promise nem chamar onError (ex.: public key
-    // inválida). Se o form não montar em 6s, mostramos o erro amigável.
-    var brickWatchdog = setTimeout(function () {
-      var box = document.getElementById('cardPaymentBrick_container');
-      if (box && box.childElementCount === 0) {
-        showInlineError('Não foi possível carregar o formulário do cartão. ' +
-          'Recarregue a página ou pague via PIX.', 'err');
-      }
-    }, 6000);
-
-    var mp = new MercadoPago(cardCfg.public_key, { locale: 'pt-BR' });
-    mp.bricks().create('cardPayment', 'cardPaymentBrick_container', {
-      initialization: { amount: amountBRL },
-      customization: {
-        paymentMethods: { maxInstallments: cardCfg.max_installments || 1 },
-      },
-      callbacks: {
-        onReady: function () { clearTimeout(brickWatchdog); clearInlineError(); },
-        onError: function (err) {
-          clearTimeout(brickWatchdog);
-          try { console.warn('[card] brick error', err); } catch (e) {}
-          showInlineError('Não foi possível carregar o formulário do cartão. ' +
-            'Recarregue a página ou pague via PIX.', 'err');
-        },
-        onSubmit: function (formData) {
-          return submitCardPayment(formData, chargeBody);
-        },
-      },
-    }).then(function (controller) {
-      brickController = controller;
-    }).catch(function (err) {
-      clearTimeout(brickWatchdog);
-      try { console.warn('[card] brick create fail', err); } catch (e) {}
-      showInlineError('Falha ao iniciar o pagamento com cartão. Tente PIX.', 'err');
-    });
-  }
-
   // ---------------- Stripe Elements ---------------- #
   var stripeObj = null, stripeElements = null, stripeCardEl = null;
 

@@ -30,9 +30,8 @@
   .method-btn { flex: 1; padding: 12px 10px; border: 2px solid #e6eadf; border-radius: 12px; background: #fff; font-weight: 700; font-size: 14px; cursor: pointer; }
   .method-btn.sel { border-color: #59FD27; background: #f6ffe9; }
 </style>
-<!-- SDK MercadoPago v2 — tokenização do cartão NO NAVEGADOR (o número do
+<!-- Stripe.js é carregado sob demanda pelo JS — tokenização NO NAVEGADOR (o número do
      cartão nunca chega ao backend BlaXx, só o token single-use). -->
-<script src="https://sdk.mercadopago.com/js/v2"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Comprar livre","item":"https://blaxxpontos.com.br/comprar-livre.html"}]}
 </script>
@@ -70,7 +69,7 @@
     </button>
   </div>
 
-  <!-- Etapa 2 (cartão): formulário do Brick MercadoPago -->
+  <!-- Etapa 2 (cartão): formulário do Stripe Elements -->
   <div class="step-card" id="step-2-card" style="display:none;">
     <h3 style="margin-bottom:12px;"><span class="step-num">2</span> Dados do cartão</h3>
     <div style="font-size:13px;color:#5f665e;margin-bottom:10px;" id="bx-card-psp-note">

@@ -70,23 +70,27 @@
 
   const screen = document.body.getAttribute('data-screen') || 'inicio';
 
-  // Marca oficial BlaXx (B-mark geométrico + wordmark "BlaXx"), recriada inline
-  // para herdar a fonte da página (Inter) e o verde neon #59FD27 — paridade com
-  // o BlaxxBrand do app web. Usada sobre superfície escura (topbar/rodapé do
-  // app): "Bla" branco + "Xx" neon. Sem "Pontos".
-  const brandMarkup = (uid) => `
-    <svg class="brand__mark" width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#59FD27">
-      <mask id="${uid}" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
-        <rect width="64" height="64" fill="#000"/>
-        <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
-        <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
-        <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
-        <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
-        <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
-      </mask>
-      <rect width="64" height="64" fill="currentColor" mask="url(#${uid})"/>
-    </svg>
-    <span class="brand__txt" style="font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.03em;line-height:1;color:#fff">Bla<span style="color:#59FD27">Xx</span></span>`;
+  // Marca OFICIAL — vetor traçado a partir do PNG do pacote.
+  // Antes daqui: um B redesenhado à mão + wordmark em TEXTO com font-family
+  // Inter (que nem é a fonte da marca) — a "logo" mudava de forma conforme a
+  // fonte que o navegador conseguisse carregar.
+  //
+  // Por que não usamos o SVG de BlaXx_Vetores_Editaveis direto: os paths dele
+  // não batem com a arte do PNG (hastes mais grossas, "a" e "l" redesenhados,
+  // linha do REWARDS deslocada) — 1,58% dos pixels divergiam do original.
+  // O arquivo aqui foi vetorizado do próprio PNG com potrace sobre a cobertura
+  // anti-aliased: 0,03% de divergência, ~50x mais fiel.
+  // Reproduzir: docs/operacao/scripts/vetorizar_marca.py
+  //
+  // Dois ajustes deliberados: sem <rect> de fundo preto (compõe sobre o
+  // #0A0B0E da marca sem plantar um #000000 por cima) e verde do pacote
+  // (#9EF107) normalizado para o neon oficial #59FD27. Variante com o verde
+  // original: assets/marca/blaxx-wordmark-verde-do-pack.svg
+  // Exige fundo ESCURO: "Bla" é branco. Em superfície clara, use o menu preto.
+  const brandMarkup = () => `
+    <img class="brand__img" src="assets/marca/blaxx-wordmark.svg"
+         alt="BlaXx Rewards"
+         style="display:block;flex:0 0 auto;height:28px;width:auto">`;
 
   const navItem = (label, href, icoKey, key, badge) => `
     <a class="nav-item ${key === screen ? 'is-active' : ''}" href="${href}">
@@ -114,7 +118,7 @@
   topbar.innerHTML = `
     <button class="menu-btn" id="menuBtn" aria-label="Menu">${I.menu}</button>
     <a class="brand" href="index.html" aria-label="BlaXx">
-      ${brandMarkup('bxm-top')}
+      ${brandMarkup()}
     </a>
     <nav class="topnav">
       ${TOPNAV.map(([l, h, k]) => `<a href="${h}" class="${k === screen ? 'is-active' : ''}">${l}</a>`).join('')}
@@ -146,10 +150,17 @@
       ['Entrar', '#'], ['Cadastre-se', '#'], ['Painel', 'index.html'],
       ['Carteira', 'carteira.html'], ['Extrato', 'extrato.html'], ['Indique e ganhe', 'indique.html'],
     ]],
-    ['Suporte e Legal', [
-      ['Central de ajuda', '#'], ['Perguntas frequentes', '#'], ['Regras de pontos', '#'],
-      ['Política de reembolso', '#'], ['Termos de uso', '#'], ['Privacidade / LGPD', '#'],
-      ['Abrir chamado', '#'], ['Mapa do site', '#'],
+    // Informação e legal: tudo PÚBLICO, não manda ninguém para a área logada.
+    // Os 8 links apontavam para '#' (mortos). Agora vão para as páginas que
+    // existem e não pedem sessão — conferido uma a uma. "Abrir chamado" saiu
+    // da lista: é a única que exige login, então não cabe num bloco público
+    // (quem não tem conta cairia numa tela de sessão sem entender por quê);
+    // o caminho para ela é a própria Central de ajuda.
+    ['Informação e Legal', [
+      ['Como funciona', 'como-funciona.html'], ['Central de ajuda', 'central-ajuda.html'],
+      ['Perguntas frequentes', 'faq.html'], ['Regulamento do programa', 'regulamento.html'],
+      ['Termos de uso', 'documentos-termos.html'], ['Privacidade / LGPD', 'privacidade.html'],
+      ['Mapa do site', 'sitemap.html'],
     ]],
   ];
   const footer = document.createElement('footer');
@@ -158,7 +169,7 @@
     <div class="footer-inner">
       <div class="footer-top">
         <div class="footer-brand">
-          <div class="footer-logo" aria-label="BlaXx" style="display:flex;align-items:center;gap:10px">${brandMarkup('bxm-foot')}</div>
+          <div class="footer-logo" aria-label="BlaXx" style="display:flex;align-items:center;gap:10px">${brandMarkup()}</div>
           <p class="footer-desc">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
           <a class="footer-social" href="${INSTAGRAM_URL}" target="_blank" rel="noopener" aria-label="Siga @blaxx.pontos no Instagram" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;color:inherit;text-decoration:none;font-size:13.5px;font-weight:600">
             <span class="ico" style="width:22px;height:22px;display:inline-flex">${I.instagram}</span>

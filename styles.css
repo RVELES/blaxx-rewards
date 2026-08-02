@@ -2,7 +2,12 @@
    BlaXx · Design System
    Conteúdo claro · Cabeçalho + menu escuros · Verde Limão
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+/* Space Grotesk é a fonte de marca (Brand Book v1.0 + protótipo da área
+   logada). Esta folha ainda carregava Hanken Grotesk, enquanto assets/styles.css
+   já carregava Space Grotesk — as telas da mesma área logada renderizavam com
+   fontes DIFERENTES conforme a folha que cada uma importava. Unificado aqui.
+   Space Grotesk vai até 700; pesos 800/900 pedidos no CSS caem em 700. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root {
   /* ---- core palette ---- */
@@ -51,8 +56,8 @@
   --info: #4C8DF6;
 
   /* ---- type ---- */
-  --font-display: 'Hanken Grotesk', system-ui, sans-serif;
-  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Space Grotesk', 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* ---- radii ---- */
@@ -466,14 +471,14 @@ main {
    NEO-BRUTAL CLARO — theme override global (área logada)
    Miolo claro (papel #E8E6DD), superfícies brancas com borda preta grossa +
    sombra dura (sem blur), cantos retos. Chrome (topbar/sidebar/footer)
-   permanece PRETO (#0A0B0E) — sidebar preta do protótipo. Space/Hanken
-   Grotesk (display) + JetBrains Mono (dados). Neon #59FD27 como acento.
+   permanece PRETO (#0A0B0E) — sidebar preta do protótipo. Space Grotesk
+   (display) + JetBrains Mono (dados). Neon #59FD27 como acento.
    Preserva #5AB800 (--lime-deep) — regra do wordmark.
    ========================================================================== */
 :root{
   --paper:#E8E6DD; --paper-2:#EFEEE6; --white:#F4F4F0; --cream:#F4F4F0;
   --ink:#0A0B0E; --ink-soft:#13161C; --carbon:#13161C;
-  --fg:#0A0B0E; --fg-muted:#5b6058; --fg-subtle:#6d7178;
+  --fg:#0A0B0E; --fg-muted:#5b6058; --fg-subtle:#54585F;  /* 5.72:1 sobre papel — AA */
   --fg-on-dark:#F4F4F0; --fg-on-dark-muted:#c8cdb8;
   --line:#0A0B0E; --line-strong:#0A0B0E; --line-dark:rgba(244,246,238,.14);
   --chrome:#0A0B0E; --chrome-2:#0f1216; --chrome-line:#22252b; --chrome-line-strong:#2b2f36;
@@ -481,7 +486,10 @@ main {
   --lime:#59FD27; --lime-bright:#59FD27; --lime-deep:#5AB800;
   --lime-06:rgba(89,253,39,.06); --lime-12:rgba(89,253,39,.14); --lime-20:rgba(89,253,39,.20); --lime-40:rgba(89,253,39,.45);
   --pos:#1f7a12; --neg:#a83417; --warn:#8a6500; --info:#1c4f87;
-  --r-xs:0; --r-sm:0; --r-md:0; --r-lg:0; --r-xl:0; --r-pill:0;
+  /* Brutalismo ARREDONDADO: mantém borda tinta grossa + sombra dura sem
+     blur (a assinatura do estilo), mas suaviza os cantos. O contraste entre
+     canto macio e sombra seca é o que dá a personalidade. */
+  --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:24px; --r-pill:999px;
   --sh-1:4px 4px 0 #0A0B0E; --sh-2:6px 6px 0 #0A0B0E; --sh-3:8px 8px 0 #0A0B0E;
   --glow-lime:6px 6px 0 #0A0B0E;
 }
@@ -489,12 +497,15 @@ body{ background:var(--paper) !important; color:var(--fg); }
 ::selection{ background:var(--lime); color:var(--ink); }
 
 /* ---- Content cards (miolo claro) ---- */
-.card{ background:var(--white); border:3px solid var(--ink); border-radius:0; box-shadow:var(--sh-1); }
+/* Sombra em --sh-2 (6px) para bater com o `.card` de assets/styles.css: com
+   --sh-1 (4px) as telas serviam profundidades diferentes conforme a folha que
+   importavam — Parceiros a 4px, Carteira e Enviar a 6px, na mesma sessão. */
+.card{ background:var(--white); border:3px solid var(--ink); border-radius:var(--r-lg); box-shadow:var(--sh-2); }
 .card--dark{ background:var(--ink); color:var(--fg-on-dark); border-color:var(--ink); }
 .card--lime{ background:var(--lime); border-color:var(--ink); color:var(--ink); }
 
 /* ---- Buttons ---- */
-.btn{ border:3px solid var(--ink); border-radius:0; font-weight:700; text-transform:uppercase; letter-spacing:.02em; box-shadow:var(--sh-1); transition:transform .08s var(--ease), box-shadow .08s var(--ease); }
+.btn{ border:3px solid var(--ink); border-radius:var(--r-pill); font-weight:700; text-transform:uppercase; letter-spacing:.02em; box-shadow:var(--sh-1); transition:transform .08s var(--ease), box-shadow .08s var(--ease); }
 .btn:hover{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
 .btn--primary{ background:var(--lime); color:var(--ink); }
 .btn--primary:hover{ background:var(--lime); }
@@ -505,29 +516,61 @@ body{ background:var(--paper) !important; color:var(--fg); }
 .btn--ghost-dark:hover{ background:rgba(244,246,238,.12); transform:none; box-shadow:none; }
 
 /* ---- Chips / eyebrow / tiles ---- */
-.chip{ border-radius:0; border:2px solid var(--ink); }
+.chip{ border-radius:var(--r-pill); border:2px solid var(--ink); }
 .chip--ink{ background:var(--ink); color:var(--lime); }
 .chip--ghost{ background:rgba(244,246,238,.10); color:var(--fg-on-dark); border-color:rgba(244,246,238,.30); }
-.eyebrow{ border-radius:0; border:2px solid var(--ink); color:var(--ink); }
-.tile{ border-radius:0; border:2px solid var(--ink); }
+.eyebrow{ border-radius:var(--r-sm); border:2px solid var(--ink); color:var(--ink); }
+.tile{ border-radius:var(--r-md); border:2px solid var(--ink); }
 .tile--ink{ background:var(--ink); color:var(--lime); }
 
 /* ---- Progress bar ---- */
-.bar{ border-radius:0; border:2px solid var(--ink); background:var(--white); height:16px; }
-.bar__fill{ border-radius:0; background:var(--lime); }
+.bar{ border-radius:var(--r-pill); border:2px solid var(--ink); background:var(--white); height:16px; }
+.bar__fill{ border-radius:var(--r-pill); background:var(--lime); }
 .bar--dark{ background:rgba(244,246,238,.12); }
 
 /* ---- Chrome: sidebar/topbar PRETOS, cantos retos ---- */
-.icon-btn,.user-pill{ border-radius:0; }
-.profile-card{ border-radius:0; border:2px solid var(--chrome-line-strong); }
-.profile-card .av,.user-pill .av{ border-radius:0; }
-.nav-item{ border-radius:0; }
+.icon-btn,.user-pill{ border-radius:var(--r-pill); }
+.profile-card{ border-radius:var(--r-md); border:2px solid var(--chrome-line-strong); }
+.profile-card .av,.user-pill .av{ border-radius:var(--r-pill); }
+.nav-item{ border-radius:var(--r-sm); }
 .nav-item.is-active{ background:var(--lime); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 #000; }
 .nav-item.is-active .ico{ background:transparent; color:var(--ink); }
 
 /* ---- Forms ---- */
-input,textarea,select{ background:var(--white); color:var(--fg); border:3px solid var(--ink); border-radius:0; font-weight:600; }
+input,textarea,select{ background:var(--white); color:var(--fg); border:3px solid var(--ink); border-radius:var(--r-sm); font-weight:600; }
 input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--ink); box-shadow:4px 4px 0 var(--lime); }
+
+/* ==========================================================================
+   TRAÇOS DO PROTÓTIPO (design/blaxx-area-logada-prototipo.html)
+   O que o protótipo tem e a área logada ainda não tinha. Cantos seguem a
+   escala arredondada — o protótipo é reto, mas a decisão de 01/08 prevalece.
+   ========================================================================== */
+
+/* Foco visível em tudo: o protótipo declara isso global. Sem ele, navegar por
+   teclado na área logada não mostra onde você está. */
+:focus-visible{ outline:3px solid var(--ink); outline-offset:2px; }
+
+/* Títulos de seção em caixa alta — assinatura do protótipo, e já era assim no
+   renderer do desktop. Escopado ao cabeçalho de seção para não gritar em
+   títulos de card ("Níveis Blaxx" continua em caixa mista). */
+.cc-section-head h3, .section-title{
+  text-transform:uppercase; letter-spacing:-.01em; font-weight:700;
+}
+
+/* Atalhos: no protótipo o hover levanta o bloco e troca a sombra por NEON.
+   É o único lugar em que o neon vira sombra no miolo claro — funciona como
+   confirmação de alvo clicável, sem virar cor de texto. */
+.tile{ transition:transform .08s var(--ease), box-shadow .08s var(--ease); }
+.tile:hover{ transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--lime); }
+
+/* Chip do usuário na topbar: o protótipo dá a ele a mesma moldura dos cards
+   (borda tinta + sombra dura), em vez de uma pílula solta. */
+.user-pill{ border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); }
+
+/* Valores negativos em terracota, como no protótipo (.amt.neg). Antes eram
+   tinta preta — indistinguíveis de um valor neutro no extrato. */
+.amount-neg, .amt.neg{ color:var(--neg); font-weight:700; }
+.amount-pos, .amt.pos{ color:var(--pos); font-weight:700; }
 
 /* ─────────────────────────────────────────────────────────────────────────
    CORREÇÃO DE OVERFLOW EM TELAS ESTREITAS (2026-08-01)

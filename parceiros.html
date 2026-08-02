@@ -24,24 +24,53 @@
   .pz-metric .pz-fill { height:100%; border-radius:999px; background: linear-gradient(90deg, var(--lime-deep), var(--lime)); width:0; transition: width 1s var(--ease-out); }
   .pz-badge-tier { align-self:flex-start; font-family:var(--font-mono); font-weight:800; font-size:12px; padding:5px 12px; border-radius:999px; letter-spacing:.04em; }
 
-  /* Banner carrossel */
-  .pz-banner { position:relative; height:184px; border-radius:24px; overflow:hidden; margin-bottom:26px; background: var(--ink); }
-  .pz-slides { height:100%; }
-  .pz-slide { position:absolute; inset:0; display:grid; grid-template-columns: 1.4fr .9fr; opacity:0; transition: opacity .6s var(--ease); pointer-events:none; }
-  .pz-slide.on { opacity:1; pointer-events:auto; }
-  .pz-slide__body { padding:30px 34px; display:flex; flex-direction:column; justify-content:center; gap:8px; color: var(--fg-on-dark); }
-  .pz-slide__tag { font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color: var(--lime); }
-  .pz-slide__title { font-family: var(--font-display); font-weight:900; font-size:30px; letter-spacing:-.02em; }
-  .pz-slide__sub { color: var(--fg-on-dark-muted); font-size:14px; max-width:42ch; }
-  .pz-slide__cta { margin-top:8px; align-self:flex-start; }
-  .pz-slide__art { display:grid; place-items:center; background: radial-gradient(120% 120% at 80% 20%, var(--lime-20), transparent 62%); }
-  .pz-slide__art .emoji { font-size:78px; filter: drop-shadow(0 12px 28px rgba(0,0,0,.4)); }
-  .pz-banner__dots { position:absolute; left:34px; bottom:16px; display:flex; gap:7px; z-index:3; }
+  /* Banner carrossel — refeito.
+     O que estava errado, medido no navegador:
+       · altura FIXA de 184px com tag+título(30px)+texto+CTA dentro: o CTA era
+         cortado pela borda inferior do banner;
+       · as setas ‹ › ficavam em left/right:14px, por CIMA do corpo do texto,
+         que começa em padding 34px — a seta cobria a 1ª letra do título;
+       · os dots (bottom:16px, left:34px) disputavam o mesmo canto do CTA.
+     Agora: os slides empilham na MESMA célula de grid (sem position:absolute),
+     então a altura vem do conteúdo e nada corta. Setas e dots foram para uma
+     régua própria, fora da coluna de texto. */
+  .pz-banner { position:relative; border-radius:24px; overflow:hidden; margin-bottom:26px;
+               background: var(--ink); border:3px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+  .pz-slides { display:grid; }
+  .pz-slide { grid-area:1 / 1; display:grid; grid-template-columns: minmax(0,1.5fr) minmax(0,.8fr);
+              opacity:0; visibility:hidden; transition: opacity .45s var(--ease); pointer-events:none; }
+  .pz-slide.on { opacity:1; visibility:visible; pointer-events:auto; }
+  .pz-slide__body { padding:28px 34px 26px; display:flex; flex-direction:column;
+                    justify-content:center; gap:12px; min-width:0; color: var(--fg-on-dark); }
+  /* Selo neon preenchido com texto tinta (17,8:1) em vez de neon como texto */
+  .pz-slide__tag { align-self:flex-start; font-family:var(--font-mono); font-size:11px;
+                   font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+                   color: var(--ink); background: var(--lime); border:2px solid var(--ink);
+                   border-radius:999px; padding:4px 11px; }
+  .pz-slide__title { font-family: var(--font-display); font-weight:800; font-size:clamp(22px,2.4vw,30px);
+                     letter-spacing:-.02em; line-height:1.1; overflow-wrap:anywhere; }
+  .pz-slide__sub { color: var(--fg-on-dark-muted); font-size:14px; line-height:1.45; max-width:46ch; }
+  /* Recompensa: o número é o motivo de a campanha existir — vira o destaque */
+  .pz-slide__prize { display:inline-flex; align-items:baseline; gap:6px; align-self:flex-start;
+                     font-family:var(--font-mono); font-weight:800; font-size:22px; color: var(--lime); }
+  .pz-slide__prize small { font-size:12px; font-weight:700; color: var(--fg-on-dark-muted); }
+  .pz-slide__cta { align-self:flex-start; margin-top:2px; }
+  .pz-slide__art { display:grid; place-items:center; padding:18px;
+                   background: radial-gradient(120% 120% at 80% 20%, var(--lime-20), transparent 62%); }
+  .pz-slide__art .emoji { font-size:72px; line-height:1; }
+  .pz-banner__dots { display:flex; gap:7px; }
   .pz-banner__dots button { width:8px; height:8px; border-radius:999px; border:none; background: rgba(255,255,255,.32); cursor:pointer; transition: all .2s var(--ease); padding:0; }
   .pz-banner__dots button.on { background: var(--lime); width:22px; }
-  .pz-banner__arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:3; width:38px; height:38px; border-radius:999px; border:none; background: rgba(255,255,255,.10); color:#fff; cursor:pointer; backdrop-filter: blur(6px); display:grid; place-items:center; font-size:18px; transition: background .2s var(--ease); }
-  .pz-banner__arrow:hover { background: rgba(255,255,255,.06); }
-  .pz-banner__arrow.prev { left:14px; } .pz-banner__arrow.next { right:14px; }
+  /* Controles agrupados no canto inferior direito: saem de cima do texto e
+     deixam de brigar com o CTA. 38px de alvo — acima do mínimo de toque. */
+  .pz-banner__ctrl { position:absolute; right:16px; bottom:14px; z-index:3;
+                     display:flex; align-items:center; gap:10px; }
+  .pz-banner__arrow { width:38px; height:38px; border-radius:999px; border:2px solid rgba(244,244,240,.5);
+                      background: rgba(10,11,14,.55); color:#F4F4F0; cursor:pointer;
+                      display:grid; place-items:center; font-size:18px; line-height:1; padding:0;
+                      transition: background .2s var(--ease), border-color .2s var(--ease); }
+  .pz-banner__arrow:hover { background: var(--lime); color: var(--ink); border-color: var(--ink); }
+  .pz-banner__arrow:focus-visible { outline:3px solid var(--lime); outline-offset:2px; }
 
   /* Busca + favoritos */
   .pz-searchrow { display:flex; gap:12px; margin-bottom:18px; }
@@ -91,7 +120,16 @@
   @keyframes pzshim { to { background-position: -200% 0; } }
 
   @media (max-width: 1100px){ .pz-metrics{grid-template-columns:repeat(3,1fr);} .pz-grid{grid-template-columns:repeat(3,1fr);} .pz-benefits{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width: 760px){ .pz-metrics{grid-template-columns:repeat(2,1fr);} .pz-grid{grid-template-columns:1fr 1fr;} .pz-slide{grid-template-columns:1fr;} .pz-slide__art{display:none;} .pz-banner{height:200px;} }
+  @media (max-width: 760px){
+    .pz-metrics{grid-template-columns:repeat(2,1fr);}
+    .pz-grid{grid-template-columns:1fr 1fr;}
+    .pz-slide{grid-template-columns:1fr;}
+    .pz-slide__art{display:none;}
+    /* Sem altura fixa: os 200px daqui reintroduziam exatamente o corte do CTA
+       que o desktop tinha. O padding inferior reserva a faixa dos controles,
+       que no mobile ficam sobre o corpo do slide (a arte sai de cena). */
+    .pz-slide__body{ padding:22px 20px 62px; }
+  }
   @media (max-width: 480px){ .pz-grid{grid-template-columns:1fr;} .pz-searchrow{flex-direction:column;} }
 </style>
 <script type="application/ld+json">
@@ -118,9 +156,11 @@
   <!-- Banner carrossel -->
   <section class="pz-banner" id="banner">
     <div class="pz-slides" id="slides"></div>
-    <button class="pz-banner__arrow prev" id="bprev" aria-label="Anterior">‹</button>
-    <button class="pz-banner__arrow next" id="bnext" aria-label="Próximo">›</button>
-    <div class="pz-banner__dots" id="bdots"></div>
+    <div class="pz-banner__ctrl">
+      <div class="pz-banner__dots" id="bdots"></div>
+      <button class="pz-banner__arrow prev" id="bprev" aria-label="Slide anterior">‹</button>
+      <button class="pz-banner__arrow next" id="bnext" aria-label="Próximo slide">›</button>
+    </div>
   </section>
 
   <!-- Busca -->
@@ -165,7 +205,7 @@
   }
 
   // ---- estado ----
-  let PARTNERS = [], CATS = [], query = '', activeCat = '', favOnly = false, showAll = false, slide = 0, timer = null;
+  let PARTNERS = [], CAMPAIGNS = [], CATS = [], query = '', activeCat = '', favOnly = false, showAll = false, slide = 0, timer = null;
   let favs = new Set();
   try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]')); } catch {}
   function saveFavs(){ try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch {} }
@@ -204,27 +244,63 @@
 
   // ---- banner ----
   function ptsLabel(p){ return (p && p.accrual_rule) ? p.accrual_rule : 'Pontos por compra'; }
+  const esc = v => String(v==null?'':v).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmtPts = n => Number(n||0).toLocaleString('pt-BR');
+
+  // O banner dizia "CAMPANHA EM DESTAQUE" mas os slides vinham de
+  // PARTNERS.slice(0,4) — eram PARCEIROS. O rótulo não correspondia ao dado.
+  // Agora usa /campaigns/ de verdade quando há campanha ativa; sem campanha,
+  // mostra parceiros com o rótulo correto, em vez de chamar parceiro de campanha.
+  function slidesDoBanner(){
+    if (CAMPAIGNS.length) return CAMPAIGNS.slice(0,4).map(c => ({
+      tag: 'Campanha ativa',
+      titulo: c.name,
+      sub: c.description || c.mechanic || 'Participe e ganhe pontos extras.',
+      premio: c.reward_pts ? fmtPts(c.reward_pts) : '',
+      arte: '🎯',
+      cta: 'Ver campanha →',
+      href: 'campanhas.html',
+    }));
+    return PARTNERS.slice(0,4).map(p => ({
+      tag: 'Parceiro em destaque',
+      titulo: p.name,
+      sub: p.description || ptsLabel(p),
+      premio: '',
+      nota: p.accrual_rule || '',
+      arte: p.logo_emoji || '🏷️',
+      cta: 'Ver parceiro →',
+      href: 'detalhe-parceiro.html?id=' + encodeURIComponent(p.id),
+    }));
+  }
+
   function renderBanner(){
-    const slides = PARTNERS.slice(0,4);
+    const slides = slidesDoBanner();
     const wrap = document.getElementById('slides');
     if (!slides.length){ document.getElementById('banner').style.display='none'; return; }
-    wrap.innerHTML = slides.map((p,i)=>`
-      <div class="pz-slide ${i===0?'on':''}" data-i="${i}">
+    wrap.innerHTML = slides.map((sl,i)=>`
+      <div class="pz-slide ${i===0?'on':''}" data-i="${i}" ${i===0?'':'aria-hidden="true"'}>
         <div class="pz-slide__body">
-          <span class="pz-slide__tag">CAMPANHA EM DESTAQUE</span>
-          <span class="pz-slide__title">${p.name}</span>
-          <span class="pz-slide__sub">${p.description || ptsLabel(p)}</span>
-          <a class="btn btn--primary pz-slide__cta" href="detalhe-parceiro.html?id=${encodeURIComponent(p.id)}">Ir para ${p.name} →</a>
+          <span class="pz-slide__tag">${esc(sl.tag)}</span>
+          <span class="pz-slide__title">${esc(sl.titulo)}</span>
+          <span class="pz-slide__sub">${esc(sl.sub)}</span>
+          ${sl.premio ? `<span class="pz-slide__prize">+${esc(sl.premio)} <small>pts ao concluir</small></span>` : ''}
+          ${sl.nota   ? `<span class="pz-slide__prize">${esc(sl.nota)}</span>` : ''}
+          <a class="btn btn--primary pz-slide__cta" href="${sl.href}">${esc(sl.cta)}</a>
         </div>
-        <div class="pz-slide__art"><span class="emoji">${p.logo_emoji || '🏷️'}</span></div>
+        <div class="pz-slide__art"><span class="emoji" aria-hidden="true">${esc(sl.arte)}</span></div>
       </div>`).join('');
-    document.getElementById('bdots').innerHTML = slides.map((_,i)=>`<button data-i="${i}" class="${i===0?'on':''}"></button>`).join('');
+    document.getElementById('bdots').innerHTML = slides.map((_,i)=>
+      `<button data-i="${i}" class="${i===0?'on':''}" aria-label="Slide ${i+1} de ${slides.length}"></button>`).join('');
     bindBanner(slides.length);
     restartTimer(slides.length);
   }
   function goSlide(n, total){
     slide = (n+total)%total;
-    document.querySelectorAll('.pz-slide').forEach((el,i)=>el.classList.toggle('on', i===slide));
+    document.querySelectorAll('.pz-slide').forEach((el,i)=>{
+      el.classList.toggle('on', i===slide);
+      if (i===slide) el.removeAttribute('aria-hidden'); else el.setAttribute('aria-hidden','true');
+    });
     document.querySelectorAll('#bdots button').forEach((el,i)=>el.classList.toggle('on', i===slide));
   }
   function bindBanner(total){
@@ -313,9 +389,11 @@
   // ---- boot ----
   (async ()=>{
     skeleton();
-    const [wallet, card, pres, cres] = await Promise.all([
-      get('/wallet/'), get('/card/'), get('/partners/'), get('/partners/categories')
+    const [wallet, card, pres, cres, cam] = await Promise.all([
+      get('/wallet/'), get('/card/'), get('/partners/'), get('/partners/categories'), get('/campaigns/')
     ]);
+    CAMPAIGNS = (cam && (cam.items || cam)) || [];
+    if (!Array.isArray(CAMPAIGNS)) CAMPAIGNS = [];
     if (pres && Array.isArray(pres.items) && pres.items.length){
       PARTNERS = pres.items.map(p=>({ ...p, id:String(p.id) }));
       CATS = (cres && Array.isArray(cres.items)) ? cres.items : [...new Set(PARTNERS.map(p=>p.category).filter(Boolean))];

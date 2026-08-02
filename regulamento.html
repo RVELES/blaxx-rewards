@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlaXx · Regulamento do Programa de Pontos</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .doc { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+  /* ── Menu do documento (Neo-Brutal) ──────────────────────────────────
+     Era uma lista solta de links. Agora é um menu com hierarquia visível:
+     número em mono, item ativo marcado pelo neon, borda tinta e sombra dura.
+     No mobile vira um <details> recolhido — assim o conteúdo começa na
+     primeira dobra em vez de ficar depois de 10 links. */
+  .toc { padding: 0; position: sticky; top: 94px; overflow: hidden;
+         border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink);
+         background: var(--paper, #E8E6DD); border-radius: 0; }
+  .toc > summary { list-style: none; cursor: pointer; display: flex;
+         align-items: center; justify-content: space-between; gap: 10px;
+         background: var(--ink); color: #F4F4F0; padding: 13px 16px;
+         font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+         text-transform: uppercase; min-height: 46px; }
+  .toc > summary::-webkit-details-marker { display: none; }
+  .toc > summary .chev { transition: transform .15s ease; font-size: 13px; }
+  .toc[open] > summary .chev { transform: rotate(180deg); }
+  .toc nav { display: flex; flex-direction: column; }
+  .toc a { display: flex; align-items: center; gap: 10px; font-size: 13.5px;
+         font-weight: 600; color: var(--fg-muted); padding: 11px 15px;
+         min-height: 44px; border-bottom: 1px solid rgba(10,11,14,.10);
+         border-left: 4px solid transparent; text-decoration: none;
+         overflow-wrap: anywhere; }
+  .toc a:last-child { border-bottom: 0; }
+  .toc a .num { font-family: var(--font-mono); font-size: 12px;
+         color: #4A5568; min-width: 20px; }
+  .toc a:hover { background: rgba(10,11,14,.04); color: var(--ink); }
+  .toc a.on { background: var(--lime-06, rgba(89,253,39,.10));
+         border-left-color: var(--lime, #59FD27); color: var(--ink); font-weight: 800; }
+  .toc a.on .num { color: #2E6B00; }   /* verde escuro: AA sobre papel */
+  .body { padding: 32px 36px; }
+  .body h2 { font-family: var(--font-display); font-weight: 900; font-size: 21px; letter-spacing: -0.01em; margin: 34px 0 10px; scroll-margin-top: 94px; }
+  .body h2:first-of-type { margin-top: 0; }
+  .body h2 .n { font-family: var(--font-mono); font-size: 13px; color: #2E6B00; margin-right: 8px; }
+  .body p { font-size: 14px; color: var(--fg-muted); }
+  .body li { font-size: 14px; color: var(--fg-muted); margin: 6px 0; }
+  .body b { color: var(--ink); }
+  .note { background: var(--lime-06); border: 1px solid var(--lime-20); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13px; color: var(--fg-muted); margin: 16px 0; }
+  .warn { background: rgba(214,69,69,.06); border: 1px solid rgba(214,69,69,.28); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13px; color: var(--fg-muted); margin: 16px 0; }
+  .body table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  .body th, .body td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line, #dcdcd4); }
+  .body th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+  /* REGRA: mobile sem rolagem horizontal — a tabela vira lista empilhada. */
+  @media (max-width: 900px){
+    .doc { grid-template-columns: 1fr; } .toc { position: static; } .body { padding: 24px; }
+    .toc > summary { display: flex; }
+    .body table, .body tbody, .body tr, .body td { display: block; width: 100%; }
+    .body thead { display: none; }
+    .body tr { border: 2px solid var(--ink); margin-bottom: 12px; padding: 6px 10px; }
+    .body td { border: 0; padding: 6px 0; }
+    .body td::before { content: attr(data-label); display: block; font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+  }
+  /* Link de pular conteúdo: alvo de toque acessível quando focado. */
+  .skip-link, a[href="#conteudo"], a[href="#main"] { min-height: 44px; display: inline-flex; align-items: center; }
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Regulamento","item":"https://blaxxpontos.com.br/regulamento.html"}]}
+</script>
+</head>
+<body data-screen="regulamento">
+<main>
+  <header class="page-head" data-screen-label="Regulamento" style="margin-bottom:28px">
+    <span class="eyebrow" style="font-size:12px">DOCUMENTO · v1.0 · ATUALIZADO EM 01/08/2026</span>
+    <h1 class="h-display">Regulamento do Programa.</h1>
+    <p class="lead">As regras do BlaXx Pontos: como os pontos entram, quanto valem, quando expiram e como saem.</p>
+  </header>
+
+  <div class="doc">
+    <details class="toc" id="docMenu" open>
+      <summary>Neste documento <span class="chev">▾</span></summary>
+      <nav aria-label="Seções do regulamento">
+        <a href="#definicoes"><span class="num">01</span>Definições</a>
+        <a href="#natureza"><span class="num">02</span>Natureza dos pontos</a>
+        <a href="#acumulo"><span class="num">03</span>Acúmulo</a>
+        <a href="#validade"><span class="num">04</span>Validade e expiração</a>
+        <a href="#resgate"><span class="num">05</span>Resgate</a>
+        <a href="#transferencia"><span class="num">06</span>Transferência</a>
+        <a href="#conversao"><span class="num">07</span>Tabela de conversão</a>
+        <a href="#encerramento"><span class="num">08</span>Encerramento</a>
+        <a href="#fraude"><span class="num">09</span>Fraude e abuso</a>
+        <a href="#atendimento"><span class="num">10</span>Atendimento</a>
+      </nav>
+    </details>
+
+    <section class="card body">
+      <h2 id="definicoes"><span class="n">01</span>Definições</h2>
+      <p>Para os fins deste regulamento:</p>
+      <ul>
+        <li><b>Programa</b> — o BlaXx Pontos, programa de fidelidade operado pela BlaXx.</li>
+        <li><b>Participante</b> — pessoa física, maior de 18 anos, com CPF válido e conta ativa.</li>
+        <li><b>Pontos</b> — unidades do Programa, registradas na carteira do Participante.</li>
+        <li><b>Pontos comprados</b> — adquiridos pelo Participante mediante pagamento.</li>
+        <li><b>Pontos bonificados</b> — concedidos pela BlaXx em campanhas, sem pagamento.</li>
+        <li><b>Resgate</b> — troca de pontos por dinheiro, via PIX, ou por benefícios de parceiros.</li>
+      </ul>
+
+      <h2 id="natureza"><span class="n">02</span>Natureza dos pontos</h2>
+      <p>Os pontos representam uma <b>obrigação de prêmio</b> assumida pela BlaXx perante o
+      Participante. Eles <b>não são</b> moeda, depósito, investimento ou valor mobiliário, não
+      rendem juros nem correção, e não constituem custódia de recursos do Participante.</p>
+      <div class="note">A BlaXx não é instituição financeira e não mantém conta de pagamento em
+      nome do Participante. O saldo em pontos é um registro de direito a prêmio, e o pagamento do
+      resgate é feito com recursos próprios da BlaXx através de instituição autorizada pelo
+      Banco Central.</div>
+
+      <h2 id="acumulo"><span class="n">03</span>Acúmulo</h2>
+      <p>Os pontos entram na carteira por duas vias:</p>
+      <ul>
+        <li><b>Compra</b> — pacotes ou valor livre, pagos via PIX ou cartão. O crédito ocorre
+        após a confirmação do pagamento pela instituição processadora.</li>
+        <li><b>Campanhas</b> — bonificações concedidas pela BlaXx, sempre com regras próprias
+        divulgadas na campanha (prazo, condição e quantidade).</li>
+      </ul>
+      <p>O crédito por compra é automático. Em pagamentos sujeitos a análise antifraude, o
+      crédito ocorre somente após a liberação — o que pode levar até 72 horas no PIX.</p>
+
+      <h2 id="validade"><span class="n">04</span>Validade e expiração</h2>
+      <table>
+        <thead><tr><th>Origem</th><th>Validade</th><th>Aviso prévio</th></tr></thead>
+        <tbody>
+          <tr>
+            <td data-label="Origem"><b>Pontos comprados</b></td>
+            <td data-label="Validade">24 meses a partir do crédito</td>
+            <td data-label="Aviso prévio">30 dias antes, por e-mail</td>
+          </tr>
+          <tr>
+            <td data-label="Origem"><b>Pontos bonificados</b></td>
+            <td data-label="Validade">12 meses a partir do crédito</td>
+            <td data-label="Aviso prévio">30 dias antes, por e-mail</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Os pontos são consumidos na ordem <b>FIFO</b>: os mais antigos saem primeiro, de modo
+      que o Participante nunca perde saldo por ter deixado pontos novos na frente.</p>
+      <p>Pontos expirados não são restituídos nem reativados.</p>
+
+      <h2 id="resgate"><span class="n">05</span>Resgate</h2>
+      <ul>
+        <li><b>Em dinheiro (PIX)</b> — convertidos à taxa vigente e enviados para chave PIX de
+        titularidade do próprio Participante. Chave de terceiro não é aceita.</li>
+        <li><b>Em benefícios</b> — junto aos parceiros listados na plataforma, conforme
+        disponibilidade de cada parceiro.</li>
+      </ul>
+      <p>O resgate exige conta ativa, e-mail verificado e confirmação de senha. Pedidos são
+      processados em até 1 dia útil; o prazo de liquidação depende da instituição pagadora.</p>
+      <div class="warn">Pontos comprados com <b>cartão de crédito</b> podem ficar indisponíveis
+      para resgate em dinheiro até a liquidação da compra pela adquirente. Essa carência protege
+      Participante e Programa contra estorno e contestação.</div>
+
+      <h2 id="transferencia"><span class="n">06</span>Transferência entre Participantes</h2>
+      <p>O Participante pode enviar pontos para outra conta BlaXx ativa. A transferência é
+      gratuita, definitiva após a janela de cancelamento e sujeita a limites antifraude:</p>
+      <ul>
+        <li>Valor mínimo por operação: 100 pontos.</li>
+        <li>Limite diário: 50.000 pontos.</li>
+        <li>Carência de 48 horas após a compra, antes de transferir os pontos adquiridos.</li>
+      </ul>
+      <p>A transferência é registrada no extrato de ambas as contas e não pode ser usada para
+      revenda de pontos a terceiros.</p>
+
+      <h2 id="conversao"><span class="n">07</span>Tabela de conversão</h2>
+      <p>A relação entre pontos e reais é publicada na plataforma e pode ser alterada pela BlaXx,
+      com <b>aviso prévio de 30 dias</b> por e-mail e na própria plataforma.</p>
+      <p>Alterações não retroagem: resgates solicitados antes da vigência da nova tabela seguem
+      a tabela anterior.</p>
+
+      <h2 id="encerramento"><span class="n">08</span>Encerramento do Programa</h2>
+      <p>A BlaXx pode encerrar o Programa mediante aviso prévio de <b>90 dias</b>. Nesse período
+      o Participante mantém o direito de resgatar todo o saldo.</p>
+      <p>Encerrado o prazo, os <b>pontos comprados e não resgatados</b> são restituídos em
+      dinheiro, pelo valor pago, na chave PIX do Participante. Pontos bonificados não geram
+      direito a restituição.</p>
+
+      <h2 id="fraude"><span class="n">09</span>Fraude e abuso</h2>
+      <p>A BlaXx pode suspender conta, bloquear resgate e cancelar pontos quando identificar
+      indício de fraude, uso de dados falsos, múltiplas contas para o mesmo CPF, exploração de
+      falha do sistema ou uso do Programa para finalidade diversa da fidelização.</p>
+      <p>O Participante é notificado e pode contestar pelos canais de atendimento. Pontos
+      cancelados por fraude comprovada não são restituídos.</p>
+
+      <h2 id="atendimento"><span class="n">10</span>Atendimento</h2>
+      <p>Dúvidas, reclamações e pedidos sobre o Programa podem ser enviados pela
+      <a href="central-ajuda.html">Central de ajuda</a> ou pelo formulário de
+      <a href="abrir-chamado.html">atendimento</a>. O prazo de primeira resposta é de
+      24 horas úteis.</p>
+      <p>Para exercício de direitos sobre dados pessoais, consulte a
+      <a href="privacidade.html">Política de Privacidade</a>. As condições gerais de uso da
+      plataforma estão nos <a href="termos.html">Termos de uso</a>.</p>
+
+      <div class="note">Este regulamento integra os Termos de uso da plataforma. Em caso de
+      divergência entre os dois documentos quanto ao Programa de Pontos, prevalece este
+      regulamento.</div>
+    </section>
+  </div>
+</main>
+<script>
+/* Menu do documento: marca a seção visível e recolhe no mobile.
+   O <details> começa aberto no desktop (menu lateral fixo) e fechado abaixo
+   de 900px, para o conteúdo não nascer empurrado por 10 links. */
+(function(){
+  var menu = document.getElementById('docMenu');
+  if (!menu) return;
+  var links = [].slice.call(menu.querySelectorAll('a'));
+  var alvos = links.map(function(a){ return document.querySelector(a.getAttribute('href')); })
+                   .filter(Boolean);
+
+  function ajustaAbertura(){ menu.open = window.innerWidth > 900; }
+  ajustaAbertura();
+  window.addEventListener('resize', ajustaAbertura);
+
+  /* No mobile, escolher um item recolhe o menu — senão ele cobre o conteúdo
+     que a pessoa acabou de pedir para ver. */
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      if (window.innerWidth <= 900) menu.open = false;
+    });
+  });
+
+  /* Marca a seção visível. Usamos scroll direto em vez de
+     IntersectionObserver: com âncoras e scroll-margin-top o observer perde
+     eventos na borda da banda, e aqui o estado precisa ser sempre coerente
+     com o que está na tela. rAF evita trabalho a cada pixel. */
+  var pendente = false;
+  function marcarAtiva(){
+    pendente = false;
+    var limite = 120;               // altura do cabeçalho fixo
+    var atual = alvos[0];
+    for (var i = 0; i < alvos.length; i++) {
+      if (alvos[i].getBoundingClientRect().top <= limite) atual = alvos[i];
+    }
+    // No fim da página, a última seção manda (ela pode nunca cruzar o limite).
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+      atual = alvos[alvos.length - 1];
+    }
+    links.forEach(function(a){
+      a.classList.toggle('on', a.getAttribute('href') === '#' + atual.id);
+    });
+  }
+  /* setTimeout em vez de requestAnimationFrame: o rAF é suspenso quando a
+     aba/painel não está pintando, e aí o menu congelava na primeira seção. */
+  function agenda(){
+    if (pendente) return;
+    pendente = true;
+    setTimeout(marcarAtiva, 60);
+  }
+  window.addEventListener('scroll', agenda, { passive: true });
+  window.addEventListener('resize', agenda);
+  marcarAtiva();
+})();
+</script>
+<script src="assets/blaxx-app.js" defer></script>
+</body>
+</html>

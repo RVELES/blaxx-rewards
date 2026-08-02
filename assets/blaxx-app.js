@@ -96,6 +96,11 @@
   }
   _migrateOldSession();
 
+  // Marcador de build: este projeto já perdeu horas com o navegador servindo
+  // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
+  // hora se o que está rodando é o arquivo do disco.
+  window.BLAXX_APP_BUILD = 'sessao-refresh-2026-08-02';
+
   var STORE = {
     token: function () {
       try {
@@ -110,6 +115,20 @@
     setToken: function (t) {
       try { localStorage.setItem('blaxx_token', t); }
       catch (e) { sessionStorage.setItem('blaxx_token', t); }
+    },
+    // O backend emite access (30 min) + refresh (30 dias) desde sempre, mas o
+    // front descartava o refresh. Sem ele, 30 minutos após o login a próxima
+    // chamada tomava 401 e o usuário era EXPULSO no meio da navegação.
+    refresh: function () {
+      try {
+        return localStorage.getItem('blaxx_refresh') || sessionStorage.getItem('blaxx_refresh')
+          || (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).refresh_token || null;
+      } catch (e) { return null; }
+    },
+    setRefresh: function (t) {
+      if (!t) return;
+      try { localStorage.setItem('blaxx_refresh', t); }
+      catch (e) { try { sessionStorage.setItem('blaxx_refresh', t); } catch (e2) {} }
     },
     user: function () {
       try {
@@ -128,6 +147,7 @@
     },
     clear: function () {
       try {
+        localStorage.removeItem('blaxx_refresh'); sessionStorage.removeItem('blaxx_refresh');
         Object.keys(localStorage).forEach(function (k) {
           if (k.indexOf('blaxx_') === 0 && k !== 'blaxx_set_password_dismissed_at') {
             localStorage.removeItem(k);
@@ -238,7 +258,57 @@
     }
   }
 
-  function api(path, opts) {
+  // ── Renovação de sessão ────────────────────────────────────────────────
+  // O access token dura 30 min; o refresh, 30 dias. Antes disto o front
+  // descartava o refresh e QUALQUER 401 limpava a sessão e mandava pro login —
+  // ou seja, meia hora depois de entrar o usuário era expulso ao navegar.
+  //
+  // ⚠️ single-flight OBRIGATÓRIO, não é otimização: /auth/refresh do backend faz
+  // ROTAÇÃO com reuse-detection. Se N chamadas paralelas tomarem 401 juntas (o
+  // dashboard dispara 5 de uma vez) e cada uma disparar seu refresh, a primeira
+  // rotaciona e as outras reapresentam um refresh já revogado → o backend mata
+  // a família inteira de tokens e o logout fica PIOR. Por isso todas esperam a
+  // mesma promessa.
+  var _bxRefreshInFlight = null;
+  function _bxRenovarSessao() {
+    if (_bxRefreshInFlight) return _bxRefreshInFlight;
+    var rt = STORE.refresh();
+    if (!rt) return Promise.resolve(false);
+    _bxRefreshInFlight = fetch(API + '/auth/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + rt }
+    }).then(function (res) {
+      if (!res.ok) return false;
+      return res.json().then(function (d) {
+        if (!d || !(d.access_token || d.token)) return false;
+        STORE.setToken(d.access_token || d.token);
+        STORE.setRefresh(d.refresh_token);   // rotação: o anterior já morreu
+        return true;
+      }).catch(function () { return false; });
+    }).catch(function () { return false; })
+      .then(function (ok) { _bxRefreshInFlight = null; return ok; });
+    return _bxRefreshInFlight;
+  }
+  // Exposto porque a área logada tem MAIS DE UMA camada de API: além deste
+  // api(), o assets/comprar-livre.js faz fetch próprio com tratamento de 401
+  // próprio. Sem compartilhar o renovador, aquela tela continuaria expulsando
+  // o usuário mesmo com a sessão renovável. Single-flight é global.
+  window.blaxxRenovarSessao = _bxRenovarSessao;
+
+  // Só chega aqui quando a renovação falhou de verdade (refresh ausente,
+  // expirado ou revogado). Fora isso, ninguém sai da área logada sem clicar
+  // em "Sair".
+  function _bxExpulsar() {
+    try { STORE.clear(); } catch (e) {}
+    var hereU = location.pathname + location.search;
+    var publicPages = ['login.html','cadastro.html','recuperar-senha.html',
+                       'redefinir-senha.html','validacao.html','index.html'];
+    if (publicPages.indexOf(PAGE) < 0) {
+      location.href = '/login.html?next=' + encodeURIComponent(hereU);
+    }
+  }
+
+  function api(path, opts, _jaRenovou) {
     opts = opts || {};
     var headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
     var tok = STORE.token();
@@ -280,15 +350,18 @@
               && path.indexOf('/auth/register') !== 0
               && path.indexOf('/auth/google') !== 0
               && path.indexOf('/auth/forgot') !== 0
-              && path.indexOf('/auth/reset') !== 0) {
-            try { STORE.clear(); } catch (e) {}
-            var hereU = location.pathname + location.search;
-            var publicPages = ['login.html','cadastro.html','recuperar-senha.html',
-                               'redefinir-senha.html','validacao.html','index.html'];
-            // só redireciona se nao estiver ja numa pagina publica
-            if (publicPages.indexOf(PAGE) < 0) {
-              location.href = '/login.html?next=' + encodeURIComponent(hereU);
+              && path.indexOf('/auth/reset') !== 0
+              && path.indexOf('/auth/refresh') !== 0) {
+            // 1ª tentativa: renovar em silêncio e repetir a chamada. O usuário
+            // não vê nada — era exatamente aqui que ele perdia a sessão.
+            if (!_jaRenovou && STORE.refresh()) {
+              return _bxRenovarSessao().then(function (ok) {
+                if (ok) return api(path, opts, true);
+                _bxExpulsar();
+                throw apiErr;
+              });
             }
+            _bxExpulsar();
           }
           throw apiErr;
         }
@@ -1307,7 +1380,7 @@
       body: JSON.stringify({ id_token: response.credential, nonce: nonce }),
     })
       .then(function (r) {
-        STORE.setToken(r.token);
+        STORE.setToken(r.token); STORE.setRefresh(r.refresh_token);
         STORE.setUser(r.user);
         notify('Bem-vindo, ' + (r.user.name || '').split(' ')[0] + '!', 'ok');
         var next = safeNext(new URLSearchParams(location.search).get('next'));
@@ -1357,7 +1430,7 @@
             btn.disabled = false; btn.textContent = orig;
             return;
           }
-          STORE.setToken(r.token); STORE.setUser(r.user);
+          STORE.setToken(r.token); STORE.setRefresh(r.refresh_token); STORE.setUser(r.user);
           var next = safeNext(new URLSearchParams(location.search).get('next'));
           location.href = next;
         })
@@ -1426,7 +1499,7 @@
       api('/auth/login/2fa', { method: 'POST', body: JSON.stringify({
         challenge_token: challengeResp.mfa_challenge_token, code: code
       }) }).then(function (r) {
-        STORE.setToken(r.token); STORE.setUser(r.user);
+        STORE.setToken(r.token); STORE.setRefresh(r.refresh_token); STORE.setUser(r.user);
         var next = safeNext(new URLSearchParams(location.search).get('next'));
         location.href = next;
       }).catch(function (e) {
@@ -1893,7 +1966,7 @@
           }
           if (data && data.token) {
             // Backend antigo: emite token na hora, sem verificacao de email
-            STORE.setToken(data.token); STORE.setUser(data.user);
+            STORE.setToken(data.token); STORE.setRefresh(data.refresh_token); STORE.setUser(data.user);
             notify('Conta criada! Bem-vindo, ' + (data.user.name || '').split(' ')[0], 'ok');
             setTimeout(function () { location.href = '/dashboard'; }, 800);
           } else {

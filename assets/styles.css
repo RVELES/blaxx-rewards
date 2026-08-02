@@ -77,13 +77,18 @@ input, select, textarea { font-family: inherit; }
     left: 8px;
     background: var(--black);
     color: var(--lime);
-    padding: 10px 18px;
+    padding: 12px 18px;
     border-radius: 8px;
     font-weight: 700;
     font-size: 14px;
     z-index: 9999;
     transition: top 0.2s ease;
     text-decoration: none;
+    /* Alvo de toque acessível (WCAG 2.5.5): quando o link ganha foco ele fica
+       visível e clicável, então precisa dos 44px como qualquer outro controle. */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
 }
 .bx-skip-link:focus, .bx-skip-link:focus-visible {
     top: 8px;
@@ -2011,9 +2016,10 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     .sidebar .me { display: none; }
     .sidebar nav {
         display: flex !important;
-        flex-direction: row !important;
+        /* REGRA: nav mobile empilha; nunca vira tira rolável. */
+        flex-direction: column !important;
         gap: 6px !important;
-        overflow-x: auto;
+        overflow-x: hidden;
         padding-bottom: 6px;
         margin: 0 -12px;
         padding-left: 12px;
@@ -2134,8 +2140,9 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
 
     /* Chips row scroll horizontally instead of wrapping */
     .chips {
-        flex-wrap: nowrap !important;
-        overflow-x: auto;
+        /* Quebram em várias linhas em vez de rolar lateralmente. */
+        flex-wrap: wrap !important;
+        overflow-x: hidden;
         margin: 0 -16px;
         padding: 4px 16px;
         scrollbar-width: none;
@@ -2464,7 +2471,12 @@ body.bx-no-scroll { overflow: hidden; }
   --lime:#59FD27; --lime-2:#59FD27; --lime-soft:#F0FAD9; --lime-bg:#eef6d6; --lime-dark:#5AB800;
   --ok:#dff5cf; --ok-text:#1f7a12; --warn:#f6edcf; --warn-text:#8a6500;
   --danger:#f4ddd2; --danger-text:#a83417; --info:#d8e6f2; --info-text:#1c4f87;
-  --radius-sm:0; --radius:0; --radius-lg:0; --radius-xl:0;
+  /* Brutalismo ARREDONDADO (decisão de 01/08): borda tinta grossa + sombra
+     dura sem blur continuam sendo a assinatura, mas os cantos são macios.
+     Esta folha ficou em 0 enquanto styles.css já usava a escala arredondada —
+     o usuário via cantos retos em "Comprar pontos"/"Enviar pontos" e cantos
+     macios no resto da área logada. Mesma escala das duas folhas agora. */
+  --radius-sm:10px; --radius:18px; --radius-lg:18px; --radius-xl:24px;
   --shadow-sm:4px 4px 0 var(--black); --shadow:6px 6px 0 var(--black); --shadow-lg:8px 8px 0 var(--black);
   --grotesk:'Space Grotesk','Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,Menlo,'Courier New',monospace;
@@ -2473,41 +2485,67 @@ body{ background:var(--paper) !important; color:var(--ink); font-family:var(--gr
 h1,h2,h3,h4,h5,h6,.brand{ color:var(--ink); font-family:var(--grotesk); }
 .brand-sub{ color:var(--muted); }
 ::selection{ background:var(--lime); color:var(--black); }
-:focus-visible{ outline:3px solid var(--black); outline-offset:2px; border-radius:0; }
+:focus-visible{ outline:3px solid var(--black); outline-offset:2px; }
 
-/* ---- Topbar / nav ---- */
-.topbar{ background:var(--paper); backdrop-filter:none; -webkit-backdrop-filter:none; border-bottom:4px solid var(--black); }
-.mark{ border-radius:0; box-shadow:var(--shadow-sm); }
-.links a{ border-radius:0; color:#343b32; }
-.links a:hover{ background:rgba(10,11,14,.08); }
-.links a.active{ background:var(--black); color:var(--lime); }
+/* ---- Topbar / nav — MENU PRETO ----------------------------------------
+   A logo oficial (pacote fundo preto) tem o "Bla" em BRANCO: ela só existe
+   sobre superfície escura. Esta topbar era clara (papel) e resolvia isso com
+   um remendo — uma caixinha preta em volta da marca, ilhada na barra clara.
+   Agora a barra inteira é preta, que é o suporte que a marca pede, e a caixa
+   deixa de ser necessária. Mesma leitura do chrome.js (topbar --chrome
+   #0A0B0E) usado pelas outras telas: uma área logada, um menu só.          */
+.topbar{ background:var(--black); backdrop-filter:none; -webkit-backdrop-filter:none;
+         border-bottom:4px solid var(--black); }
+
+/* A marca deixa de ser TEXTO dentro de um bloco e passa a ser a arte oficial.
+   O texto continua no HTML (fica no leitor de tela); só some visualmente. */
+.mark{
+  width:134px; height:44px; min-width:0; padding:0;
+  background:transparent url('marca/blaxx-wordmark.svg') left center / contain no-repeat;
+  border-radius:0; box-shadow:none;
+  font-size:0; color:transparent;
+}
+.links a{ border-radius:var(--radius-sm); color:#cfd2cb; }
+.links a:hover{ background:rgba(244,244,240,.12); color:#fff; }
+/* Item ativo. Atenção ao mexer: nestas 51 telas o item ativo NÃO usa classe
+   `.active` — cada página traz no próprio <style> um
+   `[data-link="<tela>"]{ background:var(--black)!important; color:var(--lime)!important }`,
+   com o valor do atributo diferente em cada arquivo. Não há como preenchê-lo
+   por uma regra global, porque o seletor depende do nome da tela.
+   Efeito na barra preta: o `background:black` some (preto sobre preto) e sobra
+   o texto NEON — 14,5:1 contra a barra, bem destacado dos itens inativos
+   (#cfd2cb, 12,9:1). Legível e coerente; só não vira pílula preenchida.
+   A regra abaixo cobre quem usa `.active` de verdade (shell do chrome.js). */
+.topbar .links a.active{
+  background:var(--lime) !important; color:var(--black) !important; font-weight:700;
+}
 
 /* ---- Sidebar (logado) — preta, estilo protótipo ---- */
-.sidebar{ background:var(--black); border:4px solid var(--black); border-radius:0; box-shadow:var(--shadow); }
+.sidebar{ background:var(--black); border:4px solid var(--black); border-radius:var(--radius); box-shadow:var(--shadow); }
 .side-user{ border-bottom-color:#22252b; }
 .side-user-name{ color:#F4F4F0; }
 .side-user-tier{ font-family:var(--mono); color:#cfd2cb; }
-.avatar{ border-radius:0; border:2px solid var(--lime); background:#0f1216; color:var(--lime); }
-.side-nav a{ border-radius:0; color:#cfd2cb; font-weight:600; }
+.avatar{ border-radius:999px; border:2px solid var(--lime); background:#0f1216; color:var(--lime); }
+.side-nav a{ border-radius:var(--radius-sm); color:#cfd2cb; font-weight:600; }
 .side-nav a:hover{ background:#22252b; color:#fff; }
 .side-nav a.active{ background:var(--lime); color:var(--black); border:2px solid var(--black); font-weight:700; box-shadow:4px 4px 0 #0f1216; }
 .side-nav a.active .ic{ background:transparent; color:var(--black); }
 .side-foot{ border-top-color:#22252b; }
 
 /* ---- Cards / panels ---- */
-.card,.panel{ background:var(--card); border:3px solid var(--black); border-radius:0; box-shadow:var(--shadow); }
+.card,.panel{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius); box-shadow:var(--shadow); }
 .card.compact{ box-shadow:var(--shadow-sm); }
 .card.lime{ background:var(--lime); border-color:var(--black); }
 .card.lime h1,.card.lime h2,.card.lime h3,.card.lime h4,.card.lime p{ color:var(--black); }
 .card.featured{ background:var(--black); color:#F4F4F0; border-color:var(--black); }
-.wallet{ background:var(--card); border:3px solid var(--black); border-radius:0; box-shadow:var(--shadow); }
+.wallet{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius); box-shadow:var(--shadow); }
 .wallet.dark{ background:var(--black); color:#F4F4F0; border-color:var(--black); }
-.summary-card{ background:var(--card); border:3px solid var(--black); border-radius:0; box-shadow:var(--shadow); }
+.summary-card{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius); box-shadow:var(--shadow); }
 
 /* ---- Buttons ---- */
 .button,button.button{
   background:var(--lime); color:var(--black);
-  border:3px solid var(--black); border-radius:0;
+  border:3px solid var(--black); border-radius:var(--radius-sm);
   box-shadow:var(--shadow-sm); font-weight:700; text-transform:uppercase; letter-spacing:.02em;
   transition:transform .08s, box-shadow .08s;
 }
@@ -2520,74 +2558,76 @@ h1,h2,h3,h4,h5,h6,.brand{ color:var(--ink); font-family:var(--grotesk); }
 .button.danger{ background:var(--danger); color:var(--danger-text); border:3px solid var(--black); box-shadow:var(--shadow-sm); }
 
 /* ---- Kicker / tags / status ---- */
-.kicker{ background:var(--lime-soft); color:var(--black); border:2px solid var(--black); border-radius:0; font-family:var(--mono); text-transform:uppercase; }
-.tag,.status{ border-radius:0; border:2px solid var(--black); }
-.chip{ background:var(--card); border:2px solid var(--black); border-radius:0; color:var(--ink-2); font-weight:700; }
+.kicker{ background:var(--lime-soft); color:var(--black); border:2px solid var(--black); border-radius:999px; font-family:var(--mono); text-transform:uppercase; }
+.tag,.status{ border-radius:999px; border:2px solid var(--black); }
+.chip{ background:var(--card); border:2px solid var(--black); border-radius:var(--radius-sm); color:var(--ink-2); font-weight:700; }
 .chip:hover{ border-color:var(--black); background:var(--paper); }
 .chip.active{ background:var(--lime); color:var(--black); border-color:var(--black); }
 
 /* ---- Progress ---- */
-.progress{ background:var(--card); border:2px solid var(--black); border-radius:0; height:16px; }
-.progress > span{ background:var(--lime); border-radius:0; }
+.progress{ background:var(--card); border:2px solid var(--black); border-radius:var(--radius-sm); height:16px; }
+.progress > span{ background:var(--lime); border-radius:var(--radius-sm); }
 .progress-row{ font-family:var(--mono); color:var(--muted); }
 
 /* ---- Tables ---- */
-.table{ background:var(--card); border:3px solid var(--black); border-radius:0; }
+.table{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius-sm); }
 .table th{ background:var(--card); border-bottom:3px solid var(--black); color:var(--muted); font-family:var(--mono); text-transform:uppercase; }
 .table td{ border-bottom:2px solid var(--line-soft); }
 .table tr:hover td{ background:var(--bg-warm); }
 .amount-pos{ color:var(--ok-text); font-weight:700; }
-.amount-neg{ color:var(--black); font-weight:700; }
+/* Terracota como no protótipo (.amt.neg) — em tinta preta o valor negativo
+   ficava indistinguível de um valor neutro na tabela do extrato. */
+.amount-neg{ color:var(--danger-text); font-weight:700; }
 @media (max-width:720px){
-  .table tr{ border:3px solid var(--black); border-radius:0; }
+  .table tr{ border:3px solid var(--black); border-radius:var(--radius-sm); }
 }
 
 /* ---- Forms ---- */
 label{ font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em; font-size:12px; color:var(--muted); }
 input[type="text"], input[type="email"], input[type="password"], input[type="tel"],
 input[type="number"], input[type="search"], input[type="date"], select, textarea{
-  background:var(--card); border:3px solid var(--black); border-radius:0; color:var(--ink); font-weight:600;
+  background:var(--card); border:3px solid var(--black); border-radius:var(--radius-sm); color:var(--ink); font-weight:600;
 }
 input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--black); box-shadow:4px 4px 0 var(--lime); }
 
 /* ---- Stat / mini / label ---- */
-.stat{ background:var(--card); border:3px solid var(--black); border-radius:0; box-shadow:var(--shadow-sm); }
+.stat{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); }
 .stat .lbl,.wallet .label,.mini .lbl,.crumbs,.dl .k{ font-family:var(--mono); }
-.mini{ background:var(--lime-soft); border:2px solid var(--black); border-radius:0; }
+.mini{ background:var(--lime-soft); border:2px solid var(--black); border-radius:var(--radius-sm); }
 
 /* ---- Marketplace / partner / campaign / step / cat / price / reward cards ---- */
 .market-card,.partner-card,.campaign-card,.step-card,.cat-card,.price-card,.reward-card{
-  background:var(--card); border:3px solid var(--black); border-radius:0; box-shadow:var(--shadow-sm);
+  background:var(--card); border:3px solid var(--black); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm);
 }
 .market-card:hover,.partner-card:hover,.step-card:hover,.cat-card:hover,.price-card:hover,.reward-card:hover{
   transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--lime); border-color:var(--black);
 }
 .cat-card:hover{ background:var(--lime-soft); }
-.campaign-cover{ background:var(--black); border-radius:0; }
+.campaign-cover{ background:var(--black); border-radius:var(--radius-sm); }
 .campaign-cover::after{ display:none; }
-.reward-img{ border-bottom:3px solid var(--black); border-radius:0; background:var(--lime-soft); }
-.partner-logo,.market-card .market-logo,.partner-hero-logo{ border:2px solid var(--black); border-radius:0; }
-.market-card .market-cta{ border-radius:0; background:var(--black); color:#F4F4F0; }
+.reward-img{ border-bottom:3px solid var(--black); border-radius:var(--radius-sm); background:var(--lime-soft); }
+.partner-logo,.market-card .market-logo,.partner-hero-logo{ border:2px solid var(--black); border-radius:var(--radius-sm); }
+.market-card .market-cta{ border-radius:var(--radius-sm); background:var(--black); color:#F4F4F0; }
 .market-card:hover .market-cta{ background:var(--lime); color:var(--black); }
 .price-card.featured{ background:var(--black); color:#F4F4F0; border-color:var(--black); box-shadow:var(--shadow); }
-.price-card .ribbon,.price-card .badge-top{ border-radius:0; border:2px solid var(--black); }
+.price-card .ribbon,.price-card .badge-top{ border-radius:var(--radius-sm); border:2px solid var(--black); }
 
 /* ---- Glyphs / marks ---- */
-.mark-glyph,.glyph{ border-radius:0; border:2px solid var(--black); background:var(--lime); color:var(--black); }
+.mark-glyph,.glyph{ border-radius:var(--radius-sm); border:2px solid var(--black); background:var(--lime); color:var(--black); }
 .glyph.dark{ background:var(--black); color:var(--lime); border-color:var(--black); }
 .glyph.solid{ background:var(--lime); color:var(--black); }
-.card-icon,.icon-badge{ border-radius:0; border:2px solid var(--black); }
+.card-icon,.icon-badge{ border-radius:var(--radius-sm); border:2px solid var(--black); }
 .icon-badge.dark{ background:var(--black); color:var(--lime); }
 
 /* ---- Alerts / empty / misc ---- */
-.alert{ border-radius:0; border:3px solid var(--black); }
-.empty{ background:var(--card); border:3px dashed var(--black); border-radius:0; }
-.empty .icon{ border-radius:0; border:2px solid var(--black); background:var(--lime-soft); }
-details.faq{ background:var(--card); border:3px solid var(--black); border-radius:0; }
-.copy-box{ background:var(--card); border:3px dashed var(--black); border-radius:0; }
+.alert{ border-radius:var(--radius-sm); border:3px solid var(--black); }
+.empty{ background:var(--card); border:3px dashed var(--black); border-radius:var(--radius-sm); }
+.empty .icon{ border-radius:var(--radius-sm); border:2px solid var(--black); background:var(--lime-soft); }
+details.faq{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius-sm); }
+.copy-box{ background:var(--card); border:3px dashed var(--black); border-radius:var(--radius-sm); }
 
 /* ---- Auth ---- */
-.auth-card{ background:var(--card); border:3px solid var(--black); border-radius:0; box-shadow:var(--shadow); }
+.auth-card{ background:var(--card); border:3px solid var(--black); border-radius:var(--radius-sm); box-shadow:var(--shadow); }
 
 /* ---- Footer (mantém preto, alinha à moldura brutal) ---- */
 .footer{ border-top:4px solid var(--black); }
@@ -2620,34 +2660,39 @@ details.faq{ background:var(--card); border:3px solid var(--black); border-radiu
   /* O cartão de usuário já aparece na topbar — redundante aqui. */
   .sidebar .side-user { display: none !important; }
 
-  /* Menu principal: rolagem horizontal, sem quebrar linha. */
+  /* REGRA DO PROJETO: no mobile a navegação NUNCA rola horizontalmente.
+     O padrão é hamburger + gaveta (drawer). A tira rolável anterior escondia
+     itens fora da borda — quem não descobria o gesto de arrastar simplesmente
+     não alcançava metade do menu. Agora o menu EMPILHA em coluna, dentro da
+     gaveta, e cada item ocupa a largura toda. */
   .sidebar .side-nav {
     min-width: 0;
     max-width: 100%;
     display: flex !important;
-    flex-direction: row !important;
+    flex-direction: column !important;   /* empilha — nada de tira lateral */
     flex-wrap: nowrap !important;
     gap: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    overflow-x: hidden;                  /* trava definitiva */
     padding: 2px 14px;
     margin: 0;
     list-style: none;
   }
-  .sidebar .side-nav::-webkit-scrollbar { display: none; }
-  .sidebar .side-nav > li { flex: 0 0 auto; }
+  .sidebar .side-nav > li { flex: 0 0 auto; width: 100%; }
   .sidebar .side-nav a {
     display: flex;
     align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    padding: 10px 14px !important;
-    font-size: 13px !important;
-    min-height: 44px;           /* alvo de toque acessível */
+    gap: 10px;
+    width: 100%;
+    white-space: normal;                 /* pode quebrar; não força largura */
+    overflow-wrap: anywhere;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    min-height: 48px;                    /* alvo de toque confortável */
     border: 2px solid var(--ink, #0A0B0E);
     box-shadow: 3px 3px 0 var(--ink, #0A0B0E);
   }
+  .sidebar .side-foot { flex-direction: column; }
+  .sidebar .side-foot a { width: 100%; }
 
   /* Rodapé do menu (sair, ajuda) desce para o fim da página. */
   .sidebar .side-foot {

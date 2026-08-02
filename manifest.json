@@ -10,12 +10,35 @@
   "background_color": "#080907",
   "theme_color": "#080907",
   "lang": "pt-BR",
-  "categories": ["finance", "lifestyle", "shopping"],
+  "categories": [
+    "finance",
+    "lifestyle",
+    "shopping"
+  ],
   "icons": [
-    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "/assets/icons/icon.svg",     "sizes": "any",     "type": "image/svg+xml" }
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
   ],
   "shortcuts": [
     {
@@ -23,19 +46,34 @@
       "short_name": "Saldo",
       "description": "Ver saldo e extrato",
       "url": "/dashboard.html",
-      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Comprar pontos",
       "short_name": "Comprar",
       "url": "/comprar-pontos.html",
-      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Resgatar via PIX",
       "short_name": "Resgatar",
       "url": "/resgate-pix.html",
-      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
