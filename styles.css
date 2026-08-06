@@ -694,3 +694,14 @@ main {
     min-height: 44px;
   }
 }
+
+/* Gaveta do chrome.js: nasce à esquerda, que é o certo para a área logada.
+   Nas páginas públicas servidas por este mesmo shell (termos, privacidade,
+   faq, como-funciona…) ela precisa vir da direita, seguindo a regra de que
+   visitante abre à direita. A marcação vem do assets/blaxx-nav.js. */
+.bx-gaveta-dir .drawer {
+    left: auto; right: 0;
+    border-right: 0; border-left: 1px solid var(--chrome-line);
+    transform: translateX(100%);
+}
+.bx-gaveta-dir .drawer.open { transform: translateX(0); }

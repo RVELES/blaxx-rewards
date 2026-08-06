@@ -75,6 +75,41 @@
     return null;
   }
 
+  // --------------------------------------------------------------------- //
+  // Logado não sai do app sem clicar em Sair                               //
+  // --------------------------------------------------------------------- //
+  // `index.html` é a Início da área logada no código, mas em produção o
+  // netlify.toml faz /index.html → 301 → / , e / serve a landing de marketing
+  // (blaxx-neon.html). Resultado: 5 pontos do chrome.js e 21 páginas inline
+  // levavam o usuário LOGADO para fora do app — inclusive o clique no logo.
+  //
+  // A reescrita é feita em runtime, e não trocando o href no HTML, porque o
+  // destino correto depende da sessão: para quem NÃO entrou, ir para a landing
+  // é o comportamento certo. Só quem tem sessão é preso no app.
+  var HOME_LOGADA = 'dashboard.html';
+
+  function ehSaidaDoApp(a) {
+    var href = a.getAttribute('href') || '';
+    if (!href || /^(https?:|mailto:|tel:|#)/i.test(href)) return false;
+    try {
+      var url = new URL(href, location.href);
+      if (url.origin !== location.origin) return false;
+      var caminho = url.pathname.replace(/\/+$/, '');
+      return caminho === '' || /\/index\.html$/i.test(url.pathname);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function prenderNoApp() {
+    var trocados = 0;
+    var links = document.querySelectorAll('a[href]');
+    for (var i = 0; i < links.length; i++) {
+      if (ehSaidaDoApp(links[i])) { links[i].setAttribute('href', HOME_LOGADA); trocados++; }
+    }
+    return trocados;
+  }
+
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -108,17 +143,43 @@
     location.href = 'login.html';
   }
 
+  // Lado da gaveta: ESQUERDA logado, DIREITA visitante. Antes cada sistema
+  // decidia sozinho — chrome.js abria à esquerda, blaxx-app.js e esta à
+  // direita — então a mesma área logada abria de um lado ou do outro conforme
+  // a página. A marcação vai no <html> para que valha também para a gaveta do
+  // chrome.js, que não é construída aqui.
+  function marcarLado(u) {
+    var raiz = document.documentElement;
+    raiz.classList.toggle('bx-gaveta-esq', !!u);
+    raiz.classList.toggle('bx-gaveta-dir', !u);
+  }
+
   function iniciar() {
-    var nav = document.querySelector('.topbar .nav, header.topbar');
-    if (!nav) return;
-    // `.drawer` cobre chrome.js e a landing, que têm gaveta própria e menu
-    // próprio — ali não se mexe. O `.bx-drawer` do blaxx-app.js NÃO entra
-    // nesta lista de propósito: ele cede a nós (ver installHamburgerMenu),
-    // para que as 49 páginas inline tenham UMA gaveta só, e a mesma.
-    if (document.querySelector('.drawer, #' + ID_GAVETA)) return;
-    if (nav.querySelector('.bx-hamburger')) return;   // corrida: ele chegou antes
+    // Qualquer barra serve para marcar lado e prender no app. O chrome.js monta
+    // `<div class="topbar">` SEM `.nav` dentro — exigir `.nav` aqui deixava as
+    // 23 páginas dele de fora justamente da regra de lado, que é onde a
+    // inconsistência aparecia.
+    var barra = document.querySelector('.topbar');
+    if (!barra) return;
 
     var u = usuario();
+
+    // Vale para TODA página com barra, inclusive as que já têm gaveta própria:
+    // o lado e a prisão no app não dependem de quem construiu o menu.
+    marcarLado(u);
+    if (u) prenderNoApp();
+
+    // `.drawer` cobre chrome.js e a landing, que têm gaveta própria e menu
+    // próprio — ali não se constrói outra. O `.bx-drawer` do blaxx-app.js NÃO
+    // entra nesta lista de propósito: ele cede a nós (ver installHamburgerMenu),
+    // para que as 49 páginas inline tenham UMA gaveta só, e a mesma.
+    if (document.querySelector('.drawer, #' + ID_GAVETA)) return;
+
+    // Construir a gaveta exige a topbar INLINE (`.topbar .nav`), que é a que
+    // não tem menu mobile. A do chrome.js já tem a sua.
+    var nav = document.querySelector('.topbar .nav');
+    if (!nav) return;
+    if (nav.querySelector('.bx-hamburger')) return;   // corrida: ele chegou antes
 
     var botao = document.createElement('button');
     botao.type = 'button';

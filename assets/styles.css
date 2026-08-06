@@ -2982,3 +2982,16 @@ details.faq{ background:var(--card); border:3px solid var(--black); border-radiu
         background: var(--ink, #0A0B0E); border-radius: 2px;
     }
 }
+
+/* Lado da gaveta por estado de sessão — marcação posta no <html> pelo
+   assets/blaxx-nav.js. Antes cada sistema decidia sozinho e a mesma área
+   logada abria ora à esquerda (chrome.js), ora à direita (este e o
+   blaxx-app.js), conforme a página em que o usuário estivesse.
+     logado    → ESQUERDA
+     visitante → DIREITA  (é o default desta folha)                        */
+.bx-gaveta-esq .bxnav-drawer {
+    right: auto; left: 0;
+    border-left: 0; border-right: 4px solid var(--lime, #59FD27);
+    transform: translateX(-100%);
+}
+.bx-gaveta-esq .bxnav-drawer.aberta { transform: translateX(0); }

@@ -143,6 +143,9 @@
   // A topbar nasce aqui, depois do DOMContentLoaded do módulo — por isso a
   // chamada explícita em vez de esperar o auto-init dele.
   if (window.BlaxxNavUser) window.BlaxxNavUser.aplicar();
+  // A topbar acabou de nascer; o BlaxxNav marca o lado da gaveta (esquerda
+  // logado, direita visitante) e reescreve os destinos que sairiam do app.
+  if (window.BlaxxNav) window.BlaxxNav.iniciar();
   main.parentNode.insertBefore(shell, main);
   shell.appendChild(aside);
   shell.appendChild(main);
