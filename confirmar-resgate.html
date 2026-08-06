@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>
+  (function(){ try { var t = localStorage.getItem('blaxx_token') || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; if (!t) { location.href = 'login.html'; } } catch(e){ location.href = 'login.html'; } })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080907">
 <title>Confirmar resgate | BlaXx</title>
