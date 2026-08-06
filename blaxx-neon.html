@@ -121,9 +121,13 @@ a{color:inherit}
 /* ═════════ NAV (hamburger + gaveta) · REGRA: mobile nunca rola na horizontal ═════════ */
 .nb .bar{position:relative}
 .nb .nav-desk{display:flex;align-items:center;gap:26px;margin-left:auto;margin-right:18px}
+/* A barra é var(--black); estes links ficaram com color:var(--black) quando ela
+   virou preta, dando contraste 1,0 — texto tinta sobre fundo tinta, invisível.
+   Papel sobre tinta dá 15,7:1 e é o mesmo par já usado no drawer logo abaixo. */
 .nb .nav-desk a{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;
-  color:var(--black);text-decoration:none;padding:6px 0;border-bottom:3px solid transparent}
-.nb .nav-desk a:hover{border-bottom-color:var(--neon)}
+  color:var(--white);text-decoration:none;padding:6px 0;border-bottom:3px solid transparent;
+  transition:color .12s}
+.nb .nav-desk a:hover{color:var(--neon);border-bottom-color:var(--neon)}
 .nb .burger{display:none;width:48px;height:48px;border:3px solid var(--black);background:var(--neon);
   box-shadow:4px 4px 0 var(--black);cursor:pointer;padding:0;margin-left:auto;
   align-items:center;justify-content:center;flex-direction:column;gap:5px}
