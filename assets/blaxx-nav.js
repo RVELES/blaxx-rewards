@@ -1,0 +1,229 @@
+/* blaxx-nav.js — gaveta de navegação no mobile.
+ *
+ * O BURACO QUE ISTO FECHA
+ * -----------------------
+ * As 49 páginas com `<header class="topbar">` inline escondem os links abaixo
+ * de 880px (`.links { display: none }` em assets/styles.css) e **não colocam
+ * nada no lugar**. No celular o usuário fica sem navegação alguma: só logo e
+ * as ações da direita. O `chrome.js` e a landing têm gaveta; estas 49, não.
+ *
+ * Este módulo injeta o hamburger e a gaveta apenas onde falta — se a página já
+ * tem uma (`.drawer`, `.bx-drawer`), sai sem tocar em nada.
+ *
+ * AGRUPAMENTO
+ * -----------
+ * Por intenção do usuário, não por tela: Conta · Pontos · Descobrir · Ajuda.
+ * O menu de visitante é outro — oferecer "Carteira" a quem não entrou leva a
+ * uma tela de sessão sem explicação.
+ *
+ * COMPORTAMENTO
+ * -------------
+ * Espelha a gaveta da landing, que é a boa: ESC fecha, clique no scrim fecha,
+ * foco vai para o primeiro item ao abrir e volta ao hamburger ao fechar, body
+ * trava o scroll, e a gaveta fecha sozinha ao passar para desktop (senão fica
+ * presa aberta sobre o conteúdo, com o scroll do body travado).
+ */
+(function () {
+  'use strict';
+
+  var LARGURA_DESKTOP = 880;   // igual ao breakpoint que esconde .links
+  var ID_GAVETA = 'bxNavDrawer';
+
+  var MENU_LOGADO = [
+    ['Conta', [
+      ['Início', 'dashboard.html'],
+      ['Carteira', 'carteira.html'],
+      ['Extrato', 'extrato.html'],
+      ['Cartão BlaXx', 'cartao.html'],
+      ['Perfil', 'perfil.html'],
+    ]],
+    ['Pontos', [
+      ['Comprar pontos', 'comprar.html'],
+      ['Enviar pontos', 'enviar.html'],
+      ['Resgatar em dinheiro', 'resgates.html'],
+      ['Indique e ganhe', 'indique.html'],
+    ]],
+    ['Descobrir', [
+      ['Parceiros', 'parceiros.html'],
+      ['Campanhas', 'campanhas.html'],
+    ]],
+    ['Ajuda', [
+      ['Central de ajuda', 'central-ajuda.html'],
+      ['Perguntas frequentes', 'faq.html'],
+      ['Abrir chamado', 'abrir-chamado.html'],
+    ]],
+  ];
+
+  var MENU_VISITANTE = [
+    ['Conheça', [
+      ['Como funciona', 'como-funciona.html'],
+      ['Parceiros', 'parceiros.html'],
+      ['Regulamento', 'regulamento.html'],
+    ]],
+    ['Ajuda', [
+      ['Central de ajuda', 'central-ajuda.html'],
+      ['Perguntas frequentes', 'faq.html'],
+      ['Fale conosco', 'contato.html'],
+    ]],
+  ];
+
+  function usuario() {
+    // Fonte única: o blaxx-nav-user.js já lê os dois formatos de sessão.
+    if (window.BlaxxNavUser && window.BlaxxNavUser.usuario) {
+      return window.BlaxxNavUser.usuario();
+    }
+    return null;
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function montarMenu(u) {
+    var grupos = u ? MENU_LOGADO : MENU_VISITANTE;
+    var atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var html = '';
+    grupos.forEach(function (g) {
+      html += '<p class="bxnav-grupo">' + esc(g[0]) + '</p>';
+      g[1].forEach(function (item) {
+        var ativo = item[1].toLowerCase() === atual ? ' aria-current="page"' : '';
+        html += '<a href="' + esc(item[1]) + '"' + ativo + '>' + esc(item[0]) + '</a>';
+      });
+    });
+    html += u
+      ? '<a class="bxnav-cta" href="#" data-bxnav-sair>Sair</a>'
+      : '<a class="bxnav-cta" href="login.html">Entrar</a>' +
+        '<a class="bxnav-cta bxnav-cta--vazado" href="cadastro.html">Criar conta</a>';
+    return html;
+  }
+
+  function sair() {
+    try {
+      ['blaxx_session', 'blaxx_token', 'blaxx_user', 'blaxx_refresh'].forEach(function (k) {
+        localStorage.removeItem(k);
+      });
+    } catch (e) {}
+    location.href = 'login.html';
+  }
+
+  function iniciar() {
+    var nav = document.querySelector('.topbar .nav, header.topbar');
+    if (!nav) return;
+    // `.drawer` cobre chrome.js e a landing, que têm gaveta própria e menu
+    // próprio — ali não se mexe. O `.bx-drawer` do blaxx-app.js NÃO entra
+    // nesta lista de propósito: ele cede a nós (ver installHamburgerMenu),
+    // para que as 49 páginas inline tenham UMA gaveta só, e a mesma.
+    if (document.querySelector('.drawer, #' + ID_GAVETA)) return;
+    if (nav.querySelector('.bx-hamburger')) return;   // corrida: ele chegou antes
+
+    var u = usuario();
+
+    var botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'bxnav-burger';
+    botao.setAttribute('aria-label', 'Abrir menu');
+    botao.setAttribute('aria-expanded', 'false');
+    botao.setAttribute('aria-controls', ID_GAVETA);
+    botao.innerHTML = '<span></span><span></span><span></span>';
+
+    // DENTRO do .cta-row, não como irmão: no mobile o .nav vira grid
+    // (`1fr auto`) e um filho direto sem coluna atribuída é auto-posicionado e
+    // esticado — o botão saía com 143px de largura em vez de 44. Como item
+    // flex do .cta-row ele respeita o próprio tamanho e fica junto das demais
+    // ações, que é onde o usuário procura.
+    var cta = nav.querySelector('.cta-row');
+    if (cta) cta.insertBefore(botao, cta.firstChild);
+    else nav.appendChild(botao);
+
+    var scrim = document.createElement('div');
+    scrim.className = 'bxnav-scrim';
+
+    var gaveta = document.createElement('aside');
+    gaveta.id = ID_GAVETA;
+    gaveta.className = 'bxnav-drawer';
+    gaveta.setAttribute('role', 'dialog');
+    gaveta.setAttribute('aria-modal', 'true');
+    gaveta.setAttribute('aria-label', 'Menu de navegação');
+    gaveta.hidden = true;
+    gaveta.innerHTML =
+      '<button type="button" class="bxnav-fechar" aria-label="Fechar menu">&times;</button>' +
+      montarMenu(u);
+
+    document.body.appendChild(scrim);
+    document.body.appendChild(gaveta);
+
+    function alternar(abrir) {
+      if (abrir) {
+        gaveta.hidden = false;
+        // Reflow forçado em vez de requestAnimationFrame: rAF é suspenso em
+        // aba oculta, e ali a classe nunca era aplicada — a gaveta ficava
+        // `hidden=false` porém fora da tela, sem foco e sem como fechar pelo
+        // scrim. Ler offsetWidth obriga o layout a assentar, o que faz a
+        // transição rodar, e é síncrono.
+        void gaveta.offsetWidth;
+        gaveta.classList.add('aberta');
+      } else {
+        gaveta.classList.remove('aberta');
+        setTimeout(function () { gaveta.hidden = true; }, 200);
+      }
+      scrim.classList.toggle('on', !!abrir);
+      botao.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+      // Sem isto o conteúdo atrás rola junto com a gaveta aberta.
+      document.body.style.overflow = abrir ? 'hidden' : '';
+      if (abrir) {
+        // setTimeout(0), não rAF: o clique devolve o foco ao próprio botão
+        // depois do handler, então focar de forma síncrona aqui é desfeito e o
+        // teclado fica preso fora de um diálogo aria-modal. A macrotarefa roda
+        // depois disso — e, ao contrário do rAF, roda também em aba oculta.
+        setTimeout(function () {
+          var primeiro = gaveta.querySelector('a, button');
+          if (primeiro) primeiro.focus();
+        }, 0);
+      } else {
+        botao.focus();
+      }
+    }
+
+    botao.addEventListener('click', function () { alternar(gaveta.hidden); });
+    scrim.addEventListener('click', function () { alternar(false); });
+    gaveta.querySelector('.bxnav-fechar').addEventListener('click', function () { alternar(false); });
+
+    gaveta.addEventListener('click', function (ev) {
+      var alvo = ev.target.closest('[data-bxnav-sair]');
+      if (alvo) { ev.preventDefault(); sair(); }
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && !gaveta.hidden) alternar(false);
+      if (ev.key !== 'Tab' || gaveta.hidden) return;
+      // Trava de foco: sem ela o Tab sai da gaveta e navega o conteúdo de trás,
+      // que está visualmente coberto pelo scrim.
+      var focaveis = gaveta.querySelectorAll('a[href], button:not([disabled])');
+      if (!focaveis.length) return;
+      var primeiro = focaveis[0], ultimo = focaveis[focaveis.length - 1];
+      if (ev.shiftKey && document.activeElement === primeiro) {
+        ev.preventDefault(); ultimo.focus();
+      } else if (!ev.shiftKey && document.activeElement === ultimo) {
+        ev.preventDefault(); primeiro.focus();
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      // No desktop os links horizontais reaparecem e a gaveta perde o sentido —
+      // deixá-la aberta prenderia o scroll do body sobre o conteúdo.
+      if (window.innerWidth > LARGURA_DESKTOP && !gaveta.hidden) alternar(false);
+    });
+  }
+
+  // Definido no parse, ANTES de qualquer DOMContentLoaded: é assim que o
+  // blaxx-app.js sabe que deve ceder, independente da ordem das tags <script>.
+  window.BlaxxNav = { iniciar: iniciar };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciar);
+  } else {
+    iniciar();
+  }
+})();

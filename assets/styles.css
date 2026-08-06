@@ -2899,3 +2899,86 @@ details.faq{ background:var(--card); border:3px solid var(--black); border-radiu
     min-height: 44px;
   }
 }
+
+/* ==========================================================================
+   Gaveta de navegação no mobile — assets/blaxx-nav.js
+   --------------------------------------------------------------------------
+   As páginas com topbar inline escondiam .links abaixo de 880px e não punham
+   nada no lugar: no celular o usuário ficava sem navegação. O hamburger e a
+   gaveta abaixo cobrem esse vão. O breakpoint é o MESMO que esconde .links —
+   qualquer diferença criaria uma faixa de larguras sem menu nenhum.
+   ========================================================================== */
+.bxnav-burger { display: none; }
+
+.bxnav-scrim {
+    position: fixed; inset: 0; z-index: 199;
+    background: rgba(10, 11, 14, .6);
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.bxnav-scrim.on { opacity: 1; pointer-events: auto; }
+
+.bxnav-drawer {
+    position: fixed; top: 0; right: 0; z-index: 200;
+    width: min(86vw, 340px); height: 100%;
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 16px 14px 28px;
+    background: var(--black, #0A0B0E);
+    border-left: 4px solid var(--lime, #59FD27);
+    overflow-y: auto; overflow-x: hidden;
+    transform: translateX(100%); transition: transform .2s ease-out;
+}
+.bxnav-drawer.aberta { transform: translateX(0); }
+.bxnav-drawer[hidden] { display: none; }
+
+/* Superfície escura: texto papel (17,8:1). Neon aqui só como preenchimento —
+   como cor de texto sobre claro ele reprova, e foi assim que o menu da landing
+   ficou invisível. */
+.bxnav-drawer a {
+    display: block; padding: 13px 12px; min-height: 48px;
+    font-family: var(--font-grotesk, inherit); font-weight: 700; font-size: 16px;
+    color: #F4F4F0; text-decoration: none;
+    border-bottom: 2px solid #23262c; overflow-wrap: anywhere;
+}
+.bxnav-drawer a:hover, .bxnav-drawer a:focus-visible { background: #16181d; }
+.bxnav-drawer a[aria-current="page"] {
+    background: var(--lime, #59FD27); color: var(--ink, #0A0B0E);
+}
+
+.bxnav-grupo {
+    margin: 18px 12px 6px;
+    font-family: var(--font-mono, monospace); font-size: 11px;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: #8A929E;
+}
+.bxnav-grupo:first-of-type { margin-top: 8px; }
+
+.bxnav-cta {
+    margin-top: 14px; text-align: center;
+    background: var(--lime, #59FD27); color: var(--ink, #0A0B0E) !important;
+    border: 3px solid var(--lime, #59FD27); border-radius: var(--r-pill, 999px);
+}
+.bxnav-cta--vazado {
+    margin-top: 10px;
+    background: transparent; color: #F4F4F0 !important;
+    border-color: #F4F4F0;
+}
+
+.bxnav-fechar {
+    align-self: flex-end; width: 44px; height: 44px; flex: 0 0 44px;
+    background: transparent; border: 2px solid #444; color: #F4F4F0;
+    font-size: 24px; line-height: 1; cursor: pointer;
+    border-radius: var(--r-pill, 999px);
+}
+
+@media (max-width: 880px) {
+    .bxnav-burger {
+        display: inline-flex; flex-direction: column; justify-content: center;
+        gap: 4px; width: 44px; height: 44px; flex: 0 0 44px; padding: 0 11px;
+        background: var(--lime, #59FD27); border: 3px solid var(--ink, #0A0B0E);
+        border-radius: var(--r-pill, 999px); cursor: pointer;
+    }
+    .bxnav-burger span {
+        display: block; width: 100%; height: 3px;
+        background: var(--ink, #0A0B0E); border-radius: 2px;
+    }
+}

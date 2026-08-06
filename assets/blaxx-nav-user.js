@@ -161,7 +161,15 @@
   }
 
   // O chrome.js injeta a topbar depois; ele chama aplicar() ao terminar.
-  window.BlaxxNavUser = { aplicar: aplicar };
+  // `usuario`/`primeiroNome` saem daqui para o blaxx-nav.js (gaveta mobile)
+  // reusar a MESMA leitura de sessão. Duplicar esse trecho é exatamente como
+  // as duas camadas de API do projeto divergiram no tratamento de 401.
+  window.BlaxxNavUser = {
+    aplicar: aplicar,
+    usuario: usuario,
+    primeiroNome: primeiroNome,
+    inicial: inicial,
+  };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', aplicar);

@@ -3448,6 +3448,14 @@
   // mobile fica sem navegar. Agora injeta botao hamburger no .nav e drawer
   // com aria + ESC + scroll lock + focus trap.
   function installHamburgerMenu() {
+    // Cede ao assets/blaxx-nav.js, que é o dono da gaveta desde 03/08 e roda
+    // nas 49 páginas com topbar inline — não só nas 20 que carregam este
+    // arquivo. Manter as duas daria dois hamburgers na mesma barra, com menus
+    // diferentes: esta gaveta espelha os 5 links do .links, a de lá traz o
+    // menu agrupado (Conta · Pontos · Descobrir · Ajuda).
+    // Mesmo padrão de delegação usado em initGoogleSignIn → BlaxxGoogle.
+    if (window.BlaxxNav) return;
+
     var nav = document.querySelector('.nav');
     if (!nav || nav.querySelector('.bx-hamburger')) return;  // ja instalado
 
