@@ -18,11 +18,12 @@
 // quem já visitou o site continua rodando a versão em cache — foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v25-gaveta-lado';
+const CACHE = 'blaxx-v26-rodape-4-colunas';
 const PRECACHE = [
   '/',
   '/login.html',
   '/cadastro.html',
+  '/em-breve.html',
   '/dashboard.html',
   '/carteira.html',
   '/extrato.html',

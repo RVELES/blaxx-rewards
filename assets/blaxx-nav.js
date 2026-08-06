@@ -134,6 +134,74 @@
     return html;
   }
 
+  // --------------------------------------------------------------------- //
+  // Rodapé de 4 colunas                                                    //
+  // --------------------------------------------------------------------- //
+  // Estrutura e itens espelham o rodapé da Dotz, item a item, por decisão do
+  // produto (03/08). Onde a BlaXx já faz o que o item descreve, o link vai
+  // para a página real; onde não faz, vai para `em-breve.html?r=<slug>`, que
+  // explica o que é e diz com todas as letras que não existe hoje.
+  //
+  // Consequência registrada: a taxonomia da Dotz não tem "comprar pontos",
+  // "enviar pontos" nem "resgatar em dinheiro" — que são o núcleo da BlaXx.
+  // Eles continuam alcançáveis pela gaveta e pelo menu, não pelo rodapé.
+  var EB = 'em-breve.html?r=';
+  var RODAPE = [
+    ['Conheça a BlaXx', [
+      ['Conta BlaXx', 'perfil.html'],
+      ['Como funciona', 'como-funciona.html'],
+      ['Como resgatar pontos', 'regras-pontos.html'],
+      ['Plataforma', EB + 'plataforma'],
+      ['Cadastre-se', 'cadastro.html'],
+      ['Fale conosco', 'contato.html'],
+    ]],
+    ['Ganhe mais pontos', [
+      ['Ganhe em lojas online', EB + 'lojas-online'],
+      ['Ganhe com nossos parceiros', 'parceiros.html'],
+      ['Ganhe com cartões de crédito', EB + 'cartoes'],
+      ['Ganhe com bancos parceiros', EB + 'bancos'],
+      ['Ganhe em lojas físicas', EB + 'lojas-fisicas'],
+      ['Cashback BlaXx', EB + 'cashback'],
+      ['Lembrete de cupons', EB + 'cupons'],
+      ['Programa BlaXx+', EB + 'programa'],
+    ]],
+    ['Use seus pontos', [
+      ['Com produtos', EB + 'produtos'],
+      ['Com viagens', EB + 'viagens'],
+      ['Com pagamento de contas', EB + 'contas'],
+    ]],
+    ['Institucional', [
+      ['Relação com investidores', EB + 'investidores'],
+      ['Trabalhe conosco', EB + 'trabalhe'],
+      ['Seja um parceiro', 'contato.html'],
+      ['Empréstimo pessoal', EB + 'emprestimo'],
+    ]],
+  ];
+
+  function montarRodape() {
+    var pe = document.querySelector('footer.footer');
+    if (!pe || pe.getAttribute('data-bxnav')) return false;
+
+    var html =
+      '<div class="footer-inner">' +
+        '<div>' +
+          '<div class="brand"><span class="mark">BlaXx</span></div>' +
+          '<p class="about">Compre pontos, envie para quem quiser e resgate em ' +
+          'dinheiro de verdade, direto na sua conta via PIX.</p>' +
+        '</div>';
+    RODAPE.forEach(function (col) {
+      html += '<div><h4>' + esc(col[0]) + '</h4><ul>';
+      col[1].forEach(function (it) {
+        html += '<li><a href="' + esc(it[1]) + '">' + esc(it[0]) + '</a></li>';
+      });
+      html += '</ul></div>';
+    });
+    html += '</div>';
+    pe.innerHTML = html;
+    pe.setAttribute('data-bxnav', '1');
+    return true;
+  }
+
   function sair() {
     try {
       ['blaxx_session', 'blaxx_token', 'blaxx_user', 'blaxx_refresh'].forEach(function (k) {
@@ -167,6 +235,9 @@
     // Vale para TODA página com barra, inclusive as que já têm gaveta própria:
     // o lado e a prisão no app não dependem de quem construiu o menu.
     marcarLado(u);
+    montarRodape();
+    // DEPOIS do rodapé: ele acabou de inserir links, e alguns (Conta BlaXx,
+    // Cadastre-se) sairiam do app para quem já está logado.
     if (u) prenderNoApp();
 
     // `.drawer` cobre chrome.js e a landing, que têm gaveta própria e menu

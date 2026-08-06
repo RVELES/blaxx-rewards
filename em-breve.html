@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080907">
+<title>Em estudo | BlaXx</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BlaXx">
+<style>
+  .eb-wrap { max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+  .eb-tag { display: inline-block; font-family: var(--font-mono, monospace); font-size: 11px;
+            letter-spacing: .1em; text-transform: uppercase; padding: 7px 14px;
+            border: 3px solid var(--ink, #0A0B0E); border-radius: 999px;
+            background: var(--lime, #59FD27); color: var(--ink, #0A0B0E); }
+  .eb-wrap h1 { font-size: 34px; line-height: 1.1; margin: 18px 0 10px; }
+  .eb-wrap .sub { color: var(--fg-muted, #5f665e); font-size: 17px; line-height: 1.55; }
+  .eb-box { margin-top: 28px; padding: 22px; background: var(--card, #F4F4F0);
+            border: 3px solid var(--ink, #0A0B0E); border-radius: 18px;
+            box-shadow: 6px 6px 0 var(--ink, #0A0B0E); }
+  .eb-box h2 { font-size: 17px; margin: 0 0 8px; }
+  .eb-box p { margin: 0; color: var(--fg-muted, #5f665e); line-height: 1.55; }
+  .eb-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+    <nav class="nav">
+        <a href="index.html" class="brand"><span class="mark">BlaXx</span></a>
+        <div class="links">
+            <a href="index.html">Início</a>
+            <a href="como-funciona.html">Como funciona</a>
+            <a href="parceiros.html">Parceiros</a>
+            <a href="central-ajuda.html">Ajuda</a>
+        </div>
+        <div class="cta-row">
+            <a href="login.html" class="button ghost">Entrar</a>
+            <a href="cadastro.html" class="button">Cadastre-se</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+  <div class="eb-wrap">
+    <span class="eb-tag" id="eb-tag">Em estudo</span>
+    <h1 id="eb-titulo">Ainda não está disponível</h1>
+    <p class="sub" id="eb-texto">
+      Este recurso não faz parte da BlaXx hoje. Ele aparece aqui porque está no
+      nosso mapa de produto — e preferimos dizer isso a deixar um link mudo.
+    </p>
+
+    <div class="eb-box">
+      <h2 id="eb-box-titulo">Por que a página existe assim</h2>
+      <p id="eb-box-texto">
+        Não temos data para anunciar e não vamos inventar uma. Quando existir,
+        esta página vira o recurso de verdade e o endereço continua o mesmo.
+      </p>
+    </div>
+
+    <div class="eb-acoes">
+      <a class="button" href="comprar.html">Comprar pontos</a>
+      <a class="button ghost" href="como-funciona.html">Como a BlaXx funciona hoje</a>
+    </div>
+  </div>
+</main>
+
+<script src="assets/blaxx-config.js"></script>
+<script>
+/* Uma página só para todos os itens ainda não construídos.
+ *
+ * Por que parametrizada e não 12 arquivos: cada item vira uma página real
+ * quando existir, e até lá 12 arquivos quase idênticos divergiriam entre si —
+ * é a mesma doença das duas folhas de CSS e das duas camadas de API deste
+ * projeto. O endereço de cada item já é o definitivo (?r=<slug>), então trocar
+ * o destino depois não quebra link que já circulou.
+ *
+ * O texto de cada item é DESCRITIVO, nunca promessa: sem data, sem "em breve"
+ * com prazo, e sem sugerir que a BlaXx já opera o que não opera. */
+(function () {
+  var ITENS = {
+    'plataforma':      ['Plataforma BlaXx',
+      'Oferecer a infraestrutura de pontos como serviço para outras empresas — o chamado white label. Está no roteiro de produto, sem contrato assinado até aqui.'],
+    'lojas-online':    ['Ganhar pontos em lojas online',
+      'A ideia é creditar pontos em compras feitas em lojas parceiras na internet. Hoje os pontos da BlaXx entram por compra direta, com PIX ou cartão.'],
+    'cartoes':         ['Ganhar pontos com cartões de crédito',
+      'Um cartão parceiro que credita pontos a cada gasto. Não confunda com o Cartão BlaXx, que já existe e é o seu cartão de fidelidade dentro do programa.'],
+    'bancos':          ['Ganhar pontos com bancos parceiros',
+      'Parcerias com instituições financeiras para creditar pontos por movimentação. Ainda não há acordo firmado.'],
+    'lojas-fisicas':   ['Ganhar pontos em lojas físicas',
+      'Acúmulo no caixa de lojas credenciadas, com CPF ou app. Depende da rede de parceiros presenciais, que está em formação.'],
+    'cashback':        ['Cashback BlaXx',
+      'Devolver parte do valor de uma compra em pontos. Hoje o caminho inverso é que existe: você resgata pontos em dinheiro via PIX.'],
+    'cupons':          ['Lembrete de cupons',
+      'Uma extensão de navegador que avisa quando há oferta em loja parceira. Depende da rede de lojas online.'],
+    'programa':        ['Programa BlaXx+',
+      'Níveis com benefícios crescentes. Os planos Plus e Prime já existem na sua carteira; o programa ampliado ainda está sendo desenhado.'],
+    'produtos':        ['Trocar pontos por produtos',
+      'Um catálogo de produtos físicos. Hoje os pontos são resgatados em dinheiro via PIX ou usados em benefícios de parceiros.'],
+    'viagens':         ['Trocar pontos por viagens',
+      'Passagens e hospedagem pagas com pontos. Exige integração com um consolidador de viagens.'],
+    'contas':          ['Pagar contas com pontos',
+      'Usar o saldo para quitar boletos e contas de consumo. Envolve exigências regulatórias que ainda estão sendo avaliadas.'],
+    'investidores':    ['Relação com investidores',
+      'Informações societárias e financeiras para investidores. A estrutura societária da BlaXx está em constituição.'],
+    'trabalhe':        ['Trabalhe conosco',
+      'Vagas e processo seletivo. Não há vagas abertas no momento — para se apresentar, use a página de contato.'],
+    'emprestimo':      ['Empréstimo pessoal',
+      'Crédito é atividade regulada e a BlaXx não oferece, não intermedia e não tem previsão de oferecer. O item aparece no menu por paridade com o mercado, e esta página existe justamente para não deixar dúvida.'],
+  };
+
+  var slug = new URLSearchParams(location.search).get('r') || '';
+  var item = ITENS[slug];
+  if (!item) return;
+  document.getElementById('eb-titulo').textContent = item[0];
+  document.getElementById('eb-texto').textContent = item[1];
+  document.title = item[0] + ' | BlaXx';
+  if (slug === 'emprestimo' || slug === 'trabalhe') {
+    document.getElementById('eb-tag').textContent = slug === 'trabalhe' ? 'Sem vagas' : 'Não oferecemos';
+  }
+  // O quadro padrão diz "quando existir, esta página vira o recurso" — o que
+  // contradiz frontalmente o item de empréstimo, cujo texto afirma que não há
+  // previsão. Num produto financeiro, deixar as duas frases na mesma tela é
+  // insinuar um produto de crédito por descuido de copy.
+  if (slug === 'emprestimo') {
+    document.getElementById('eb-box-titulo').textContent = 'Por que o item aparece no menu';
+    document.getElementById('eb-box-texto').textContent =
+      'Por paridade com o que outros programas de pontos listam. Manter o item ' +
+      'sem esta página deixaria a impressão de que a BlaXx opera crédito — e ela ' +
+      'não opera.';
+  }
+  if (slug === 'trabalhe') {
+    document.getElementById('eb-box-titulo').textContent = 'Quer se apresentar mesmo assim?';
+    document.getElementById('eb-box-texto').textContent =
+      'Use a página de contato. Currículos enviados ficam guardados para quando ' +
+      'abrirmos posição.';
+  }
+})();
+</script>
+<script src="assets/blaxx-nav-user.js"></script>
+<script src="assets/blaxx-nav.js"></script>
+</body>
+</html>
