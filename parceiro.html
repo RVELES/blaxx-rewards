@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel do Parceiro · BlaXx</title>
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* Paleta Neo-Brutal: papel, tinta, neon. Contraste medido, não estimado:
+     tinta #0A0B0E sobre papel #E8E6DD = 15,8:1; neon é PREENCHIMENTO, nunca
+     cor de texto sobre claro (1,23:1 seria invisível). */
+  :root { --p-ink:#0A0B0E; --p-paper:#E8E6DD; --p-card:#F4F4F0; --p-neon:#59FD27;
+          --p-muted:#5F665E; --p-line:#0A0B0E; --p-amber:#9A6B00; }
+  body { background: var(--p-paper); color: var(--p-ink); }
+  .shell { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+  .brutal { background: var(--p-card); border: 2.5px solid var(--p-line);
+            border-radius: 4px; box-shadow: 5px 5px 0 var(--p-ink); }
+  .grid { display: grid; gap: 14px; }
+  .grid.kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .kpi { padding: 16px 18px; }
+  .kpi .label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+                color: var(--p-muted); font-weight: 700; }
+  .kpi .value { font-size: 30px; font-weight: 800; margin-top: 6px; color: var(--p-ink); }
+  .kpi .sub { font-size: 12px; color: var(--p-muted); margin-top: 4px; }
+  .kpi.dark { background: var(--p-ink); border-color: var(--p-ink);
+              box-shadow: 5px 5px 0 rgba(10,11,14,.35); }
+  .kpi.dark .label, .kpi.dark .sub { color: #9DA39A; }
+  .kpi.dark .value { color: var(--p-neon); }
+  table.tbl { width: 100%; border-collapse: collapse; }
+  .tbl th { text-align: left; font-size: 11px; letter-spacing: .06em;
+            text-transform: uppercase; color: var(--p-muted); padding: 10px 14px;
+            border-bottom: 2px solid var(--p-line); }
+  .tbl td { padding: 11px 14px; font-size: 14px; color: var(--p-ink);
+            border-bottom: 1px solid #DDDCD3; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl td.num, .tbl th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .bar { display: flex; align-items: flex-end; gap: 3px; height: 90px; padding: 0 2px; }
+  .bar i { flex: 1; background: var(--p-neon); border: 1px solid var(--p-ink);
+           min-height: 2px; display: block; }
+  .bar i.zero { background: #DDDCD3; }
+  .sec { margin-top: 26px; }
+  .sec h2 { font-size: 17px; margin: 0 0 12px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .pill { display: inline-flex; padding: 3px 10px; border-radius: 999px;
+          font-size: 11px; font-weight: 700; border: 1.5px solid var(--p-ink); }
+  .pill.on { background: var(--p-neon); color: var(--p-ink); }
+  .pill.off { background: #DDDCD3; color: var(--p-muted); }
+  .btn { border: 2.5px solid var(--p-ink); border-radius: 4px; background: var(--p-card);
+         color: var(--p-ink); font-weight: 700; font-size: 14px; padding: 10px 16px;
+         cursor: pointer; box-shadow: 3px 3px 0 var(--p-ink); }
+  .btn.primary { background: var(--p-ink); color: var(--p-neon); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+  .field { width: 100%; padding: 12px 14px; border: 2px solid var(--p-ink);
+           border-radius: 4px; background: #fff; font-size: 15px; color: var(--p-ink); }
+  .login-wrap { max-width: 400px; margin: 8vh auto; }
+  .warn { background: #FFF4DE; border: 2px solid var(--p-amber); color: var(--p-amber);
+          padding: 12px 14px; border-radius: 4px; font-size: 13px; font-weight: 600; }
+  .keybox { font-family: var(--font-mono, monospace); font-size: 13px;
+            word-break: break-all; background: var(--p-ink); color: var(--p-neon);
+            padding: 14px; border-radius: 4px; }
+  .muted { color: var(--p-muted); font-size: 13px; }
+  @media (max-width: 640px) {
+    .shell { padding: 18px 14px 48px; }
+    .kpi .value { font-size: 24px; }
+    .tbl th:nth-child(2), .tbl td:nth-child(2) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login" class="login-wrap">
+  <div class="brutal" style="padding:26px;">
+    <h1 style="font-size:22px;margin:0 0 4px;">Painel do Parceiro</h1>
+    <p class="muted" style="margin:0 0 20px;">Acompanhe os pontos emitidos pela sua rede.</p>
+    <label class="muted" for="email">E-mail</label>
+    <input id="email" class="field" type="email" autocomplete="username" style="margin:6px 0 14px;">
+    <label class="muted" for="senha">Senha</label>
+    <input id="senha" class="field" type="password" autocomplete="current-password" style="margin:6px 0 18px;">
+    <div id="login-erro" class="warn" style="display:none;margin-bottom:14px;"></div>
+    <button id="btn-entrar" class="btn primary" style="width:100%;">Entrar</button>
+  </div>
+</div>
+
+<!-- Painel -->
+<div id="painel" class="shell" style="display:none;">
+  <div class="row" style="justify-content:space-between;margin-bottom:6px;">
+    <div>
+      <h1 id="rede-nome" style="font-size:28px;margin:0;">—</h1>
+      <p id="rede-contrato" class="muted" style="margin:4px 0 0;">—</p>
+    </div>
+    <button class="btn" onclick="sair()">Sair</button>
+  </div>
+
+  <div id="aviso-insolvente" class="warn" style="display:none;margin:14px 0;"></div>
+
+  <div class="grid kpis sec">
+    <div class="brutal kpi dark"><div class="label">A pagar (total)</div>
+      <div class="value" id="kpi-devido">—</div>
+      <div class="sub">por pontos já emitidos</div></div>
+    <div class="brutal kpi"><div class="label">Pontos hoje</div>
+      <div class="value" id="kpi-hoje">—</div>
+      <div class="sub" id="kpi-hoje-tx">—</div></div>
+    <div class="brutal kpi"><div class="label">Vendas 30 dias</div>
+      <div class="value" id="kpi-gmv">—</div>
+      <div class="sub" id="kpi-gmv-tx">—</div></div>
+    <div class="brutal kpi"><div class="label">Clientes 30 dias</div>
+      <div class="value" id="kpi-clientes">—</div>
+      <div class="sub">distintos, pontuados na rede</div></div>
+  </div>
+
+  <div class="sec">
+    <h2>Pontos por dia · 30 dias</h2>
+    <div class="brutal" style="padding:16px;">
+      <div class="bar" id="grafico"></div>
+      <div class="row muted" style="justify-content:space-between;margin-top:8px;font-size:11px;">
+        <span id="serie-de">—</span><span id="serie-ate">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Últimos lançamentos</h2>
+    <div class="brutal" style="overflow-x:auto;">
+      <table class="tbl">
+        <thead><tr>
+          <th>Quando</th><th>Loja</th><th class="num">Compra</th>
+          <th class="num">Pontos</th><th class="num">Custo</th>
+        </tr></thead>
+        <tbody id="lancamentos"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Faturas</h2>
+    <div class="row" style="gap:14px;margin-bottom:12px;">
+      <div class="brutal kpi" style="flex:1;min-width:180px;">
+        <div class="label">Em aberto (não faturado)</div>
+        <div class="value" id="fat-aberto">—</div>
+        <div class="sub" id="fat-aberto-sub">—</div>
+      </div>
+      <div class="brutal kpi" style="flex:1;min-width:180px;">
+        <div class="label">Faturas a pagar</div>
+        <div class="value" id="fat-devendo">—</div>
+        <div class="sub">já fechadas e não quitadas</div>
+      </div>
+    </div>
+    <div class="brutal" style="overflow-x:auto;">
+      <table class="tbl">
+        <thead><tr><th>Fatura</th><th>Período</th><th class="num">Pontos</th>
+          <th class="num">Valor</th><th class="num">Estado</th></tr></thead>
+        <tbody id="faturas"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec" id="sec-chaves">
+    <h2>Chaves do PDV</h2>
+    <p class="muted" style="margin:-6px 0 12px;">
+      A chave é o que autoriza o caixa a pontuar. Some do sistema se for revogada.
+    </p>
+    <div id="chave-nova" style="display:none;margin-bottom:14px;">
+      <div class="warn" style="margin-bottom:8px;">
+        Copie agora — esta é a única vez que a chave aparece.
+      </div>
+      <div class="keybox" id="chave-valor"></div>
+    </div>
+    <div class="brutal" style="overflow-x:auto;">
+      <table class="tbl">
+        <thead><tr><th>Prefixo</th><th>Apelido</th><th>Último uso</th>
+          <th class="num">Estado</th></tr></thead>
+        <tbody id="chaves"></tbody>
+      </table>
+    </div>
+    <button class="btn" style="margin-top:12px;" onclick="novaChave()">Gerar nova chave</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
+  function tok(){ try { return localStorage.getItem('blaxx_parceiro_token'); } catch(e){ return null; } }
+  function setTok(t){ try { t ? localStorage.setItem('blaxx_parceiro_token', t)
+                             : localStorage.removeItem('blaxx_parceiro_token'); } catch(e){} }
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function brl(v){ return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+  function num(v){ return (Number(v)||0).toLocaleString('pt-BR'); }
+
+  function api(path, opts) {
+    opts = opts || {};
+    var h = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+    var t = tok(); if (t) h.Authorization = 'Bearer ' + t;
+    return fetch(apiBase() + path, Object.assign({}, opts, {headers:h})).then(function(r){
+      if (r.status === 401 || r.status === 403) { setTok(null); mostrarLogin(); throw new Error('sessao'); }
+      return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||'falhou'); return j; });
+    });
+  }
+
+  function mostrarLogin(){ $('login').style.display=''; $('painel').style.display='none'; }
+  function mostrarPainel(){ $('login').style.display='none'; $('painel').style.display=''; }
+
+  window.sair = function(){ setTok(null); mostrarLogin(); };
+
+  $('btn-entrar').addEventListener('click', entrar);
+  $('senha').addEventListener('keydown', function(e){ if(e.key==='Enter') entrar(); });
+
+  function entrar() {
+    var b = $('btn-entrar'); b.disabled = true; b.textContent = 'Entrando…';
+    $('login-erro').style.display = 'none';
+    fetch(apiBase() + '/b2b/panel/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: $('email').value.trim(), password: $('senha').value })
+    }).then(function(r){ return r.json().then(function(j){
+        if(!r.ok) throw new Error(j.error || 'não foi possível entrar'); return j; }); })
+      .then(function(j){ setTok(j.token); carregar(); })
+      .catch(function(e){ $('login-erro').textContent = e.message;
+                          $('login-erro').style.display = ''; })
+      .then(function(){ b.disabled = false; b.textContent = 'Entrar'; });
+  }
+
+  function carregar() {
+    api('/b2b/panel/summary').then(function(d){
+      mostrarPainel();
+      var m = d.merchant;
+      $('rede-nome').textContent = m.name;
+      $('rede-contrato').textContent = m.accrual_label + ' · teto de '
+        + num(m.max_points_per_tx) + ' pts por venda';
+
+      $('kpi-devido').textContent = brl(d.all_time.amount_due_brl);
+      $('kpi-hoje').textContent = num(d.today.points_issued) + ' pts';
+      $('kpi-hoje-tx').textContent = num(d.today.transactions) + ' vendas · ' + brl(d.today.gmv_brl);
+      $('kpi-gmv').textContent = brl(d.last_30d.gmv_brl);
+      $('kpi-gmv-tx').textContent = num(d.last_30d.transactions) + ' vendas pontuadas';
+      $('kpi-clientes').textContent = num(d.customers_30d);
+
+      // Rede sem chave válida não pontua: o painel precisa dizer isso, senão
+      // o parceiro só descobre pelo silêncio no caixa.
+      if (!m.is_active) {
+        $('aviso-insolvente').textContent = 'Esta rede está inativa. O caixa não consegue pontuar.';
+        $('aviso-insolvente').style.display = '';
+      }
+
+      var serie = d.series || [], teto = 0;
+      serie.forEach(function(p){ if (p.points > teto) teto = p.points; });
+      $('grafico').innerHTML = serie.map(function(p){
+        var h = teto > 0 ? Math.max(2, Math.round(p.points / teto * 88)) : 2;
+        return '<i class="' + (p.points ? '' : 'zero') + '" style="height:' + h + 'px" '
+             + 'title="' + esc(p.date) + ': ' + num(p.points) + ' pts"></i>';
+      }).join('');
+      if (serie.length) {
+        $('serie-de').textContent = serie[0].date.split('-').reverse().slice(0,2).join('/');
+        $('serie-ate').textContent = serie[serie.length-1].date.split('-').reverse().slice(0,2).join('/');
+      }
+      return api('/b2b/panel/accruals?limit=50');
+    }).then(function(d){
+      var itens = d.items || [];
+      $('lancamentos').innerHTML = itens.length ? itens.map(function(x){
+        var dt = (x.created_at || '').replace('T',' ').slice(0,16);
+        return '<tr><td>' + esc(dt) + '</td><td>' + esc(x.store_code || '—') + '</td>'
+          + '<td class="num">' + brl(x.amount_brl) + '</td>'
+          + '<td class="num">' + num(x.points_awarded) + '</td>'
+          + '<td class="num">' + brl(x.bill_brl) + '</td></tr>';
+      }).join('') : '<tr><td colspan="5" style="padding:28px;text-align:center;color:#5F665E;">'
+                  + 'Nenhuma venda pontuada ainda.</td></tr>';
+      return api('/b2b/panel/invoices');
+    }).then(function(d){
+      var ab = d.open_balance || {};
+      // Saldo em aberto pode ser NEGATIVO: estorno que chegou depois do
+      // fechamento vira crédito na próxima fatura. Mostrar como "a pagar"
+      // faria a rede achar que deve o que na verdade tem a receber.
+      $('fat-aberto').textContent = brl(ab.amount_brl);
+      $('fat-aberto-sub').textContent = (Number(ab.amount_brl) < 0)
+        ? 'crédito a abater na próxima fatura'
+        : num(ab.transactions) + ' vendas desde o último fechamento';
+      $('fat-devendo').textContent = brl(d.unpaid_brl);
+
+      var rotulo = { open: 'a pagar', paid: 'paga', void: 'anulada' };
+      $('faturas').innerHTML = (d.items||[]).length ? d.items.map(function(f){
+        var per = (f.period_start||'').slice(0,10).split('-').reverse().join('/')
+                + ' – ' + (f.period_end||'').slice(0,10).split('-').reverse().join('/');
+        return '<tr><td><code>' + esc(f.number) + '</code></td>'
+          + '<td>' + esc(per) + '</td>'
+          + '<td class="num">' + num(f.points_issued)
+            + (f.points_reversed ? ' <span style="color:#9A6B00;">-' + num(f.points_reversed) + '</span>' : '')
+          + '</td>'
+          + '<td class="num">' + brl(f.amount_brl) + '</td>'
+          + '<td class="num"><span class="pill ' + (f.status==='open'?'off':'on') + '">'
+            + esc(rotulo[f.status] || f.status) + '</span></td></tr>';
+      }).join('') : '<tr><td colspan="5" style="padding:24px;text-align:center;color:#5F665E;">'
+                  + 'Nenhuma fatura fechada ainda.</td></tr>';
+      return api('/b2b/panel/keys').catch(function(){ return null; });
+    }).then(function(d){
+      if (!d) { $('sec-chaves').style.display = 'none'; return; }   // staff
+      $('chaves').innerHTML = (d.items||[]).map(function(k){
+        return '<tr><td><code>' + esc(k.prefix) + '</code></td><td>' + esc(k.label||'—') + '</td>'
+          + '<td>' + esc(k.last_used_at ? k.last_used_at.replace('T',' ').slice(0,16) : 'nunca') + '</td>'
+          + '<td class="num"><span class="pill ' + (k.is_active?'on':'off') + '">'
+          + (k.is_active ? 'ativa' : 'revogada') + '</span>'
+          + (k.is_active ? ' <button class="btn" style="padding:4px 10px;font-size:12px;box-shadow:none;" '
+              + 'onclick="revogar(\'' + esc(k.id) + '\')">revogar</button>' : '')
+          + '</td></tr>';
+      }).join('');
+    }).catch(function(e){ if (e.message !== 'sessao') console.error(e); });
+  }
+
+  window.novaChave = function(){
+    api('/b2b/panel/keys', {method:'POST', body: JSON.stringify({label:'PDV'})})
+      .then(function(j){
+        $('chave-valor').textContent = j.key;
+        $('chave-nova').style.display = '';
+        carregar();
+      }).catch(function(e){ alert(e.message); });
+  };
+
+  window.revogar = function(id){
+    if (!confirm('Revogar esta chave? O caixa que a usa para de pontuar na hora.')) return;
+    api('/b2b/panel/keys/' + encodeURIComponent(id), {method:'DELETE'})
+      .then(carregar).catch(function(e){ alert(e.message); });
+  };
+
+  if (tok()) carregar(); else mostrarLogin();
+})();
+</script>
+</body>
+</html>

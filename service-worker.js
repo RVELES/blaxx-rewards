@@ -18,7 +18,7 @@
 // quem já visitou o site continua rodando a versão em cache — foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v27-guard-login-parceiros';
+const CACHE = 'blaxx-v29-b2b-estorno-fatura';
 const PRECACHE = [
   '/',
   '/login.html',
