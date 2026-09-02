@@ -439,6 +439,171 @@
   };
 
   // ── Tabs ───────────────────────────────────────────────────────────────
+  // ── Redes B2B ──────────────────────────────────────────────────────────
+  //
+  // O número que importa aqui é "A receber": pontos já emitidos que a rede deve
+  // pagar. E o selo "insolvente" marca contrato que paga por ponto menos do que
+  // custa resgatá-lo — essas redes param de emitir sozinhas (o backend recusa),
+  // e sem o aviso o operador só veria o caixa em silêncio, sem saber por quê.
+  var CUSTO_RESGATE = null;
+
+  function brlFmt(v) {
+    return (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  function loadMerchants() {
+    api('/admin/merchants').then(function (d) {
+      CUSTO_RESGATE = d.redemption_cost_cents;
+      var t = d.totals || {};
+      document.getElementById('b2b-stats').innerHTML =
+        kpi('Redes cadastradas', fmt(t.merchants), 'com contrato ativo') +
+        kpi('Pontos emitidos', fmt(t.points_issued), 'desde o início') +
+        kpi('GMV pontuado', brlFmt(t.gmv_brl), 'vendas que geraram ponto') +
+        kpi('A receber', brlFmt(t.receivable_brl), 'total devido pelas redes');
+
+      var alerta = document.getElementById('b2b-alerta');
+      if (t.insolvent > 0) {
+        alerta.textContent = t.insolvent + ' rede(s) com contrato abaixo do custo de resgate ('
+          + CUSTO_RESGATE + ' centavos por ponto). Estão bloqueadas para emissão até renegociar: '
+          + 'cada ponto emitido nasceria com prejuízo.';
+        alerta.style.display = '';
+      } else {
+        alerta.style.display = 'none';
+      }
+
+      var tb = document.getElementById('merchants-tbody');
+      tb.innerHTML = (d.items || []).length ? d.items.map(renderMerchantRow).join('')
+        : '<tr><td colspan="7" class="empty-state">Nenhuma rede cadastrada.</td></tr>';
+    }).catch(function (e) { console.error('merchants:', e); });
+  }
+
+  function renderMerchantRow(m) {
+    var contrato = m.accrual_label + ' \u00b7 rede paga R$ '
+      + (m.bill_cents_per_point / 100).toFixed(2).replace('.', ',') + '/pt';
+    var selo = m.solvent ? '' : '<span class="badge unverified" style="margin-left:6px;">insolvente</span>';
+    var inativa = m.is_active ? '' : '<span class="badge unverified" style="margin-left:6px;">inativa</span>';
+    return '<tr>'
+      + '<td><b>' + escapeHtml(m.name) + '</b>' + selo + inativa
+        + '<div style="font-size:11px;color:#5f665e;">' + escapeHtml(m.cnpj) + ' \u00b7 '
+        + m.active_keys + ' chave(s) \u00b7 ' + m.panel_users + ' acesso(s)</div></td>'
+      + '<td>' + escapeHtml(m.vertical) + '</td>'
+      + '<td style="font-size:12px;">' + escapeHtml(contrato) + '</td>'
+      + '<td style="text-align:right;">' + fmt(m.points_issued) + '</td>'
+      + '<td style="text-align:right;">' + brlFmt(m.gmv_brl) + '</td>'
+      + '<td style="text-align:right;"><b>' + brlFmt(m.amount_due_brl) + '</b></td>'
+      + '<td style="text-align:center;white-space:nowrap;">'
+        + '<button class="button ghost" style="font-size:12px;padding:4px 10px;" onclick="emitirChave(&quot;'
+        + m.id + '&quot;)">chave</button> '
+        + '<button class="button ghost" style="font-size:12px;padding:4px 10px;" onclick="criarAcesso(&quot;'
+        + m.id + '&quot;)">acesso</button> '
+        + '<button class="button ghost" style="font-size:12px;padding:4px 10px;" onclick="fecharFatura(&quot;'
+        + m.id + '&quot;)">faturar</button>'
+      + '</td></tr>';
+  }
+
+  window.toggleNovaRede = function () {
+    var el = document.getElementById('nova-rede');
+    el.style.display = el.style.display === 'none' ? '' : 'none';
+  };
+
+  window.criarRede = function (btn) {
+    var corpo = {
+      name: document.getElementById('nr-nome').value.trim(),
+      cnpj: document.getElementById('nr-cnpj').value.trim(),
+      vertical: document.getElementById('nr-vertical').value,
+      accrual_cents_per_point: parseInt(document.getElementById('nr-acumulo').value, 10),
+      bill_cents_per_point: parseInt(document.getElementById('nr-cobranca').value, 10)
+    };
+    btn.disabled = true;
+    api('/admin/merchants', { method: 'POST', body: JSON.stringify(corpo) })
+      .then(function (r) {
+        document.getElementById('nr-aviso').textContent = r.insolvent
+          ? 'Cadastrada, mas o contrato está abaixo do custo de resgate \u2014 não vai emitir.'
+          : '';
+        document.getElementById('nr-nome').value = '';
+        document.getElementById('nr-cnpj').value = '';
+        loadMerchants();
+      })
+      .catch(function (e) { document.getElementById('nr-aviso').textContent = e.message; })
+      .then(function () { btn.disabled = false; });
+  };
+
+  window.emitirChave = function (id) {
+    api('/admin/merchants/' + id + '/keys', { method: 'POST', body: '{}' })
+      .then(function (r) {
+        document.getElementById('credencial-valor').textContent = r.key;
+        document.getElementById('credencial-nova').style.display = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        loadMerchants();
+      }).catch(function (e) { alert(e.message); });
+  };
+
+  window.criarAcesso = function (id) {
+    var email = prompt('E-mail de acesso ao painel desta rede:');
+    if (!email) return;
+    var senha = prompt('Senha inicial (mínimo 8 caracteres):');
+    if (!senha || senha.length < 8) { alert('Senha muito curta.'); return; }
+    api('/admin/merchants/' + id + '/users', {
+      method: 'POST', body: JSON.stringify({ email: email.trim(), password: senha })
+    }).then(function () {
+      alert('Acesso criado. A rede entra em /parceiro.html com este e-mail.');
+      loadMerchants();
+    }).catch(function (e) { alert(e.message); });
+  };
+
+  function loadInvoices() {
+    api('/admin/invoices').then(function (d) {
+      document.getElementById('inv-total').textContent =
+        brlFmt((d.totals || {}).unpaid_brl) + ' a receber';
+      var rotulo = { open: 'a pagar', paid: 'paga', void: 'anulada' };
+      document.getElementById('invoices-tbody').innerHTML = (d.items || []).length
+        ? d.items.map(function (f) {
+            var per = (f.period_start || '').slice(0, 10).split('-').reverse().join('/')
+                    + ' \u2013 ' + (f.period_end || '').slice(0, 10).split('-').reverse().join('/');
+            var acoes = f.status === 'open'
+              ? '<button class="button ghost" style="font-size:12px;padding:4px 10px;" onclick="pagarFatura(&quot;'
+                + f.id + '&quot;)">baixar</button> '
+                + '<button class="button ghost" style="font-size:12px;padding:4px 10px;" onclick="anularFatura(&quot;'
+                + f.id + '&quot;)">anular</button>'
+              : '';
+            return '<tr><td><code>' + escapeHtml(f.number) + '</code></td>'
+              + '<td>' + escapeHtml(f.merchant_name || '') + '</td>'
+              + '<td>' + escapeHtml(per) + '</td>'
+              + '<td style="text-align:right;">' + fmt(f.points_issued) + '</td>'
+              + '<td style="text-align:right;">' + brlFmt(f.credit_brl) + '</td>'
+              + '<td style="text-align:right;"><b>' + brlFmt(f.amount_brl) + '</b></td>'
+              + '<td style="text-align:center;"><span class="badge '
+                + (f.status === 'paid' ? 'verified' : (f.status === 'void' ? 'vip' : 'unverified'))
+                + '">' + escapeHtml(rotulo[f.status] || f.status) + '</span></td>'
+              + '<td style="text-align:center;white-space:nowrap;">' + acoes + '</td></tr>';
+          }).join('')
+        : '<tr><td colspan="8" class="empty-state">Nenhuma fatura fechada.</td></tr>';
+    }).catch(function (e) { console.error('invoices:', e); });
+  }
+
+  window.fecharFatura = function (id) {
+    // Sem datas o backend fecha o mês anterior inteiro, que é o caso normal.
+    if (!confirm('Fechar o período desta rede? Os totais ficam congelados na fatura.')) return;
+    api('/admin/merchants/' + id + '/invoices/close', { method: 'POST', body: '{}' })
+      .then(function (f) {
+        alert('Fatura ' + f.number + ' fechada: ' + brlFmt(f.amount_brl));
+        loadMerchants(); loadInvoices();
+      }).catch(function (e) { alert(e.message); });
+  };
+
+  window.pagarFatura = function (id) {
+    var nota = prompt('Referência do pagamento (opcional):') || '';
+    api('/admin/invoices/' + id + '/pay', { method: 'POST', body: JSON.stringify({ note: nota }) })
+      .then(function () { loadInvoices(); }).catch(function (e) { alert(e.message); });
+  };
+
+  window.anularFatura = function (id) {
+    if (!confirm('Anular esta fatura? As vendas voltam para o estado em aberto e '
+               + 'entram no próximo fechamento.')) return;
+    api('/admin/invoices/' + id + '/void', { method: 'POST', body: '{}' })
+      .then(function () { loadMerchants(); loadInvoices(); }).catch(function (e) { alert(e.message); });
+  };
+
   window.switchTab = function (tab) {
     document.querySelectorAll('.tab-row button').forEach(function (b) {
       b.classList.toggle('active', b.dataset.tab === tab);
@@ -448,10 +613,12 @@
     document.getElementById('tab-payments').style.display = tab === 'payments' ? '' : 'none';
     document.getElementById('tab-payouts').style.display = tab === 'payouts' ? '' : 'none';
     document.getElementById('tab-packages').style.display = tab === 'packages' ? '' : 'none';
+    document.getElementById('tab-merchants').style.display = tab === 'merchants' ? '' : 'none';
     if (tab === 'transactions' && TX_TOTAL === 0) loadTransactions();
     if (tab === 'payments') loadPendingPayments();
     if (tab === 'payouts') loadProcessingPayouts();
     if (tab === 'packages') loadPackages();
+    if (tab === 'merchants') { loadMerchants(); loadInvoices(); }
   };
 
   window.adminLogout = function () {

@@ -79,6 +79,7 @@
       Resgates PIX <span id="payouts-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
     <button data-tab="packages" onclick="switchTab('packages')">Pacotes</button>
+    <button data-tab="merchants" onclick="switchTab('merchants')">Redes B2B</button>
   </div>
 
   <!-- Tab: Users -->
@@ -219,6 +220,88 @@
         </tr>
       </thead>
       <tbody id="packages-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Tab: Redes B2B -->
+  <div id="tab-merchants" style="display:none;">
+    <p style="color:#5f665e;font-size:13px;margin-bottom:8px;">
+      Redes que EMITEM pontos na compra do cliente e devem à BlaXx por isso.
+      Diferente de "parceiros", que são só vitrine.
+    </p>
+    <div id="b2b-alerta" style="display:none;background:#ffede8;border:1px solid #f0b3a0;color:#a83417;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;"></div>
+
+    <div class="stats-grid" id="b2b-stats"></div>
+
+    <div class="toolbar">
+      <button class="button" onclick="toggleNovaRede()" style="font-size:13px;padding:8px 16px;">+ Cadastrar rede</button>
+    </div>
+
+    <div id="nova-rede" style="display:none;background:#F4F4F0;border:1px solid #e6eadf;border-radius:14px;padding:18px;margin-bottom:18px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+        <label style="font-size:12px;color:#5f665e;font-weight:600;">Nome
+          <input id="nr-nome" class="field" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:#5f665e;font-weight:600;">CNPJ
+          <input id="nr-cnpj" class="field" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:#5f665e;font-weight:600;">Vertical
+          <select id="nr-vertical" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;">
+            <option value="posto">Posto</option>
+            <option value="supermercado">Supermercado</option>
+            <option value="farmacia">Farmácia</option>
+          </select></label>
+        <label style="font-size:12px;color:#5f665e;font-weight:600;">Cliente gasta p/ 1 pt (centavos)
+          <input id="nr-acumulo" type="number" value="500" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:#5f665e;font-weight:600;">Rede paga p/ ponto (centavos)
+          <input id="nr-cobranca" type="number" value="10" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
+      </div>
+      <p id="nr-aviso" style="font-size:12px;color:#8a6500;font-weight:600;margin:10px 0 0;"></p>
+      <button class="button" style="margin-top:12px;font-size:13px;padding:8px 16px;" onclick="criarRede(this)">Cadastrar</button>
+    </div>
+
+    <div id="credencial-nova" style="display:none;margin-bottom:16px;">
+      <p style="background:#fff7df;border:1px solid #f0d98a;color:#8a6500;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:8px;">
+        Copie agora — a chave não é recuperável depois.
+      </p>
+      <div id="credencial-valor" style="font-family:monospace;font-size:13px;word-break:break-all;background:#0A0B0E;color:#59FD27;padding:14px;border-radius:10px;"></div>
+    </div>
+
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Rede</th>
+          <th>Vertical</th>
+          <th>Contrato</th>
+          <th style="text-align:right;">Pontos emitidos</th>
+          <th style="text-align:right;">GMV</th>
+          <th style="text-align:right;">A receber</th>
+          <th style="text-align:center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="merchants-tbody"></tbody>
+    </table>
+
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 12px;">
+      <h2 style="font-size:17px;margin:0;">Faturas</h2>
+      <span id="inv-total" style="font-size:13px;font-weight:700;color:#5f665e;">—</span>
+    </div>
+    <p style="color:#5f665e;font-size:13px;margin:0 0 12px;">
+      Fechar congela os totais e carimba as vendas do período. Estorno que chegar
+      depois vira crédito na fatura seguinte — a fechada não muda.
+    </p>
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Rede</th>
+          <th>Período</th>
+          <th style="text-align:right;">Pontos</th>
+          <th style="text-align:right;">Crédito</th>
+          <th style="text-align:right;">Valor</th>
+          <th style="text-align:center;">Estado</th>
+          <th style="text-align:center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="invoices-tbody"></tbody>
     </table>
   </div>
 </div>
