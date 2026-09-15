@@ -37,7 +37,7 @@
   var brl = function (v) { return 'R$ ' + Number(v).toFixed(2).replace('.', ','); };
   // Escapa texto pra interpolação segura em innerHTML. Use SEMPRE que um
   // valor vindo do backend ou do usuário (pix_key, failure_reason, etc.)
-  // entrar numa string HTML — senão é vetor de XSS.
+  // entrar numa string HTML, senão é vetor de XSS.
   var esc = function (s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -74,7 +74,7 @@
 
   // ---- Storage ----
   // Mudança 2026-05-27: token e user agora em localStorage (persiste entre
-  // tabs e fechamento do browser). Antes era sessionStorage — perdia sessão
+  // tabs e fechamento do browser). Antes era sessionStorage, perdia sessão
   // ao abrir nova aba, voltar do Google OAuth, etc, forçando re-login.
   //
   // Dados de fluxo curto (charge em andamento, carteira snapshot) continuam
@@ -260,7 +260,7 @@
 
   // ── Renovação de sessão ────────────────────────────────────────────────
   // O access token dura 30 min; o refresh, 30 dias. Antes disto o front
-  // descartava o refresh e QUALQUER 401 limpava a sessão e mandava pro login —
+  // descartava o refresh e QUALQUER 401 limpava a sessão e mandava pro login,
   // ou seja, meia hora depois de entrar o usuário era expulso ao navegar.
   //
   // ⚠️ single-flight OBRIGATÓRIO, não é otimização: /auth/refresh do backend faz
@@ -327,7 +327,7 @@
         try {
           data = raw ? JSON.parse(raw) : {};
         } catch (parseErr) {
-          // Não era JSON — provavelmente HTML de erro do proxy/CDN
+          // Não era JSON, provavelmente HTML de erro do proxy/CDN
           var snippet = (raw || '').slice(0, 120).replace(/\s+/g, ' ').trim();
           var err = new Error(
             'Servidor respondeu HTTP ' + res.status + ' com conteúdo não-JSON' +
@@ -344,7 +344,7 @@
           // 401 global: token invalido/expirado em qualquer endpoint
           // autenticado → limpa storage e manda pro login preservando destino.
           // Não dispara em paginas publicas (login, cadastro, recuperar, etc).
-          // Não dispara em /auth/login porque ai é "credenciais invalidas" — UX
+          // Não dispara em /auth/login porque ai é "credenciais invalidas", UX
           // específica é feita pelo initLogin.
           if (res.status === 401 && path.indexOf('/auth/login') !== 0
               && path.indexOf('/auth/register') !== 0
@@ -353,7 +353,7 @@
               && path.indexOf('/auth/reset') !== 0
               && path.indexOf('/auth/refresh') !== 0) {
             // 1ª tentativa: renovar em silêncio e repetir a chamada. O usuário
-            // não vê nada — era exatamente aqui que ele perdia a sessão.
+            // não vê nada, era exatamente aqui que ele perdia a sessão.
             if (!_jaRenovou && STORE.refresh()) {
               return _bxRenovarSessao().then(function (ok) {
                 if (ok) return api(path, opts, true);
@@ -368,7 +368,7 @@
         return data;
       });
     }, function (networkErr) {
-      // fetch rejeitou (offline real, DNS, CORS etc) — falha de infra
+      // fetch rejeitou (offline real, DNS, CORS etc), falha de infra
       _bxNetFailureTick();
       throw networkErr;
     });
@@ -437,7 +437,7 @@
     document.body.insertBefore(bar, document.body.firstChild);
 
     $('#bx-setpwd-cta').addEventListener('click', function () {
-      // Manda pra /seguranca.html — lá já tem o botão "Receber link"
+      // Manda pra /seguranca.html, lá já tem o botão "Receber link"
       location.href = '/seguranca.html';
     });
     $('#bx-setpwd-later').addEventListener('click', function () {
@@ -502,7 +502,7 @@
   }
 
   function showEmailVerificationModal(user, onSuccess) {
-    // Idempotente — se já houver modal aberto, só atualiza callback
+    // Idempotente, se já houver modal aberto, só atualiza callback
     var existing = document.getElementById('bx-verify-modal');
     if (existing) existing.remove();
 
@@ -592,7 +592,7 @@
           // Auto-preenche o campo pra desbloquear teste sem email real.
           if (resp && resp._dev_code) {
             sentMsg.innerHTML =
-              '<strong>[DEV] MAILER=console</strong> — código foi capturado direto do response. ' +
+              '<strong>[DEV] MAILER=console</strong>, código foi capturado direto do response. ' +
               'Pra produção, configure Resend.';
             stepSend.style.display = 'none';
             stepInput.style.display = 'block';
@@ -601,7 +601,7 @@
             return;
           }
           var deliverNote = resp && resp.delivered === false
-            ? ' (⚠ provedor reportou falha no envio — confira Render Logs)'
+            ? ' (⚠ provedor reportou falha no envio, confira Render Logs)'
             : '';
           sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '.' + deliverNote +
             ' Confira sua caixa de entrada (e spam).';
@@ -676,7 +676,7 @@
   // Resolve 2 bugs reportados:
   //  1. Em paginas tipo parceiros/comprar-pontos/index, o BRAND e o link
   //     "Inicio" apontam pra index.html (marketing). Usuario logado clica
-  //     e cai na landing publica — parece "deslogou".
+  //     e cai na landing publica, parece "deslogou".
   //  2. Topbar tem CONJUNTOS DIFERENTES de links entre paginas (dashboard
   //     tem 5, parceiros tem 6 outros). Navegar = "links somem".
   //
@@ -731,13 +731,13 @@
   // realidade possivel"
   //
   // HISTORICO: Tentamos Clearbit Logo API primeiro (Jan 2024), mas a HubSpot
-  // adquiriu a Clearbit e descontinuou a Logo API gratuita — todos os
+  // adquiriu a Clearbit e descontinuou a Logo API gratuita, todos os
   // requests ficavam pendentes / 000.
   //
-  // SOLUCAO ATUAL — pipeline com 3 niveis:
-  // 1. Google Favicon API (sz=128) — confiavel, retorna logo otimizado da
+  // SOLUCAO ATUAL, pipeline com 3 niveis:
+  // 1. Google Favicon API (sz=128), confiavel, retorna logo otimizado da
   //    marca a partir do dominio. ~99% das marcas conhecidas.
-  // 2. DuckDuckGo Icons (.ico) — fallback secundario, similar mas menor.
+  // 2. DuckDuckGo Icons (.ico), fallback secundario, similar mas menor.
   // 3. Emoji do partner (logo_emoji do banco) ou iniciais do nome.
   //
   // Extrai slug do partner description ("Parceiro Livelo · xyz" → xyz) ou
@@ -839,7 +839,7 @@
       img.src = bxDdgIconUrl(domain);
       return;
     }
-    // Todas as 4 fontes falharam — card fica oculto.
+    // Todas as 4 fontes falharam, card fica oculto.
     bxLogoFailHide(img);
   };
 
@@ -919,7 +919,7 @@
       var ic = a.querySelector('.ic');
       if (ic) ic.textContent = newIcon;
     });
-    // Cobre links de "Sair" hardcoded — alguns templates tem so
+    // Cobre links de "Sair" hardcoded, alguns templates tem so
     // <a href="login.html">Sair</a> sem data attribute. Detecta por
     // href (login.html) + texto (Sair/Logout).
     sidebar.querySelectorAll('a').forEach(function (a) {
@@ -965,7 +965,7 @@
       var li = a.closest('li');
       var auth = a.closest('.auth-foot');
       if (auth) {
-        // Linhas "Já tem conta? Entrar" / "Não tem conta? Cadastre-se" — esconde a frase inteira
+        // Linhas "Já tem conta? Entrar" / "Não tem conta? Cadastre-se", esconde a frase inteira
         auth.style.display = 'none';
       } else if (li) {
         li.style.display = 'none';
@@ -1023,7 +1023,7 @@
   // ---- Helper: injeta sidebar nas páginas de OPERAÇÃO logadas sem ela ----
   // Garante "navegabilidade pelo menu lateral" mesmo nas páginas que
   // historicamente eram "marketing/landing" (comprar-pontos, vender-pontos,
-  // resgates, parceiros) — quando o usuário está logado.
+  // resgates, parceiros), quando o usuário está logado.
   //
   // Estratégia: detecta páginas sem .sidebar mas com <main>, envolve em
   // .app-shell e prepende o aside com o menu padrão (mesmos itens do
@@ -1117,16 +1117,16 @@
 
   // ---- Substitui textos hardcoded da Mariana pelos do user logado ----
   // Em duas etapas:
-  //   1. Imediato — usa apenas STORE.user(), troca nome/avatar/botao "Olá".
+  //   1. Imediato, usa apenas STORE.user(), troca nome/avatar/botao "Olá".
   //      Funciona mesmo se /wallet/ falhar ou demorar.
-  //   2. Async — busca saldo via /wallet/ e troca valores numericos.
+  //   2. Async, busca saldo via /wallet/ e troca valores numericos.
   function applyUserToShell() {
     var u = STORE.user();
     if (!u) return;
     var firstName = (u.name || '').split(' ')[0] || 'Convidado';
     var avatarLetter = ((u.name || '?')[0] || '?').toUpperCase();
 
-    // === 1. IMEDIATO — depende só do STORE.user ===
+    // === 1. IMEDIATO, depende só do STORE.user ===
     // Avatar (1a letra do nome)
     $$('.avatar').forEach(function (a) { a.textContent = avatarLetter; });
     // Nome na sidebar
@@ -1169,15 +1169,15 @@
     // Bug anterior: passava skip_numeric:true, deixando o "84.750 pts"
     // (saldo da Mariana de demo) visivel ate /wallet/ resolver. Quando o
     // endpoint falhava (cold start, 401, offline), o usuario via valores
-    // antigos que NAO sao dele — pessimo UX e gera duvida.
+    // antigos que NAO sao dele, pessimo UX e gera duvida.
     //
     // Agora: zera os placeholders na primeira passada. Se /wallet/ resolve,
-    // valores reais aparecem em <1s. Se falha, mostra 0 — informativo
+    // valores reais aparecem em <1s. Se falha, mostra 0, informativo
     // honesto em vez de mentira (84.750).
     replaceHardcoded({ balance_pts: 0, pending_pts: 0, balance_brl_equiv: 0 });
 
     // Prefill de inputs marcados com data-bx-prefill="name|email|phone"
-    // (so preenche se vazio — nao sobrescreve digitação do usuario)
+    // (so preenche se vazio, nao sobrescreve digitação do usuario)
     $$('input[data-bx-prefill]').forEach(function (inp) {
       if (inp.value) return;
       var field = inp.getAttribute('data-bx-prefill');
@@ -1189,7 +1189,7 @@
     // Banner pro-active "defina senha" pra Google-only users
     maybeShowSetPasswordBanner();
 
-    // === 2. ASYNC — depende de /wallet/ ===
+    // === 2. ASYNC, depende de /wallet/ ===
     api('/wallet/').then(function (w) {
       $$('.side-user-tier').forEach(function (n) {
         n.textContent = 'Plano Plus · ' + fmt(w.balance_pts) + ' pts';
@@ -1269,7 +1269,7 @@
   // JWT Blaxx. Salvamos token + user e redirecionamos pro dashboard.
   function initGoogleSignIn() {
     // As páginas de autenticação (login.html, cadastro.html) NÃO carregam este
-    // arquivo — têm camada de fetch própria. Por isso o fluxo real vive em
+    // arquivo, têm camada de fetch própria. Por isso o fluxo real vive em
     // `assets/blaxx-google.js`, carregado por elas. Quando esse módulo está
     // presente, delegue: duas implementações do mesmo login divergiriam, e
     // renderizar o botão duas vezes duplicaria o callback do GSI.
@@ -1312,7 +1312,7 @@
             return ('0' + b.toString(16)).slice(-2);
           }).join('');
         } catch (e) {
-          // Fallback fraco — só pra browsers MUITO antigos. Não usa em prod sério.
+          // Fallback fraco, só pra browsers MUITO antigos. Não usa em prod sério.
           nonce = String(Date.now()) + '-' + Math.random().toString(36).slice(2);
         }
         sessionStorage.setItem('blaxx_google_nonce', nonce);
@@ -1393,7 +1393,7 @@
         STORE.setUser(r.user);
         notify('Bem-vindo, ' + (r.user.name || '').split(' ')[0] + '!', 'ok');
         var next = safeNext(new URLSearchParams(location.search).get('next'));
-        // Reduzido de 350ms pra 150ms — window menor pra duplo-callback.
+        // Reduzido de 350ms pra 150ms, window menor pra duplo-callback.
         // Container ja esta pointer-events:none, entao usuario nao consegue
         // disparar callback adicional nesse intervalo.
         setTimeout(function () { location.href = next; }, 150);
@@ -1608,7 +1608,7 @@
       img.style.display = 'block';
       if (placeholder) placeholder.style.display = 'none';
     } else if (placeholder) {
-      placeholder.textContent = 'QR não disponível — use o código copia-e-cola';
+      placeholder.textContent = 'QR não disponível, use o código copia-e-cola';
     }
 
     // BR Code copia-e-cola
@@ -1793,7 +1793,7 @@
     function quote() {
       var p = parseInt(ptsInput.value || '0');
       $('#bx-r-quote').textContent = p > 0
-        ? '≈ ' + brl(p * BX_CENTS_PER_POINT / 100) + ' (1 pt = R$ 0,09)'
+        ? '≈ ' + brl(p * BX_CENTS_PER_POINT / 100)
         : '';
     }
     ptsInput.addEventListener('input', quote); quote();
@@ -1954,7 +1954,7 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Criando conta...'; }
 
       // Payload reflete o que o usuario REALMENTE marcou (sem mais
-      // "manda sempre true" — fraude documental de consentimento)
+      // "manda sempre true", fraude documental de consentimento)
       var body = {
         name: nome.trim(),
         email: email.trim().toLowerCase(),
@@ -2114,7 +2114,7 @@
         });
       });
     }).catch(function (e) {
-      // Em vez de toast efêmero, mostra erro inline com retry — usuario tem
+      // Em vez de toast efêmero, mostra erro inline com retry, usuario tem
       // contexto e botao pra acionar de novo sem precisar recarregar a pagina.
       var cls = bxClassifyError(e, 'Endpoint /campaigns/ nao respondeu.');
       bxRenderError({
@@ -2210,7 +2210,7 @@
   // =========================================================================
   // Dashboard (KPIs + últimas movimentações reais)
   // =========================================================================
-  // Overload do initDashboard original — preserva substituir_textos_hardcoded
+  // Overload do initDashboard original, preserva substituir_textos_hardcoded
   // mas adiciona binding por ID dos elementos do dashboard.html.
   var __originalInitDashboard = window.__originalInitDashboard || initDashboard;
   function initDashboardEnhanced() {
@@ -2274,7 +2274,7 @@
 
     // Helper: handler unico de click pros cards de pacote
     // - Pre-check apenas de AUTH (sem login → manda pra login com next)
-    // - NAO bloqueia por email_verified aqui — deixa o backend decidir.
+    // - NAO bloqueia por email_verified aqui, deixa o backend decidir.
     //   Se /pix/charge retornar 403 email_not_verified, comprar-livre.js
     //   abre o modal de verificacao e re-tenta automaticamente.
     function attachPkgClickHandlers() {
@@ -2295,7 +2295,7 @@
         });
       });
     }
-    // Botao "Valor livre" do topo — mesmo comportamento
+    // Botao "Valor livre" do topo, mesmo comportamento
     var freeBtn = document.querySelector('a[href="comprar-livre.html"]');
     if (freeBtn) {
       freeBtn.addEventListener('click', function (ev) {
@@ -2381,7 +2381,7 @@
         return;
       }
       // Cards iniciam VISIVEIS pra paint rapido (antes era display:none
-      // ate logo carregar — 258 imgs simultaneos saturavam pool e site
+      // ate logo carregar, 258 imgs simultaneos saturavam pool e site
       // ficava extremamente lento). Agora:
       // - loading="lazy" nativo do browser → so requisita img quando
       //   card entra no viewport. Brower controla concorrencia.
@@ -2444,7 +2444,7 @@
   // =========================================================================
   // Padrao unificado em todas as paginas que dependem de fetch do backend:
   //   1. Skeleton com pulse animation enquanto carrega.
-  //   2. AbortController + timeout duro (20s — Render free cold start ~10s).
+  //   2. AbortController + timeout duro (20s, Render free cold start ~10s).
   //   3. Mensagem de erro com contexto (cold start vs offline vs 5xx).
   //   4. Botao "Tentar novamente" que chama de novo a funcao de load.
   // ---------------------------------------------------------------------------
@@ -2585,7 +2585,7 @@
     bxFetchJson(API + '/partners/' + id, { timeoutMs: 20000 })
       .then(function (p) {
         if (!p) return;
-        // Nome — todos os placeholders
+        // Nome, todos os placeholders
         document.querySelectorAll('[data-bx-partner-name]').forEach(function (el) {
           el.textContent = p.name || 'Parceiro';
         });
@@ -2817,7 +2817,7 @@
       var r = passwordStrength(pwd);
       var colors = ['#a83417','#a83417','#8a6500','#2d651b','#2d651b'];
       target.style.color = colors[Math.max(0, r.score - 1)] || '#888';
-      target.textContent = 'Senha ' + r.label + (r.hints.length ? ' — falta: ' + r.hints.join(', ') : ' ✓');
+      target.textContent = 'Senha ' + r.label + (r.hints.length ? ', falta: ' + r.hints.join(', ') : ' ✓');
     });
   }
 
@@ -3092,7 +3092,7 @@
       if (!statusEl || !u) return;
       if (u.mfa_enabled && u.mfa_method === 'sms') {
         statusEl.className = 'status confirmado mt-2';
-        statusEl.textContent = '● 2FA por SMS ativada — número ' + (u._phone_masked || '***');
+        statusEl.textContent = '● 2FA por SMS ativada, número ' + (u._phone_masked || '***');
       } else if (u.phone_verified) {
         statusEl.className = 'status pendente mt-2';
         statusEl.textContent = '○ Telefone verificado, mas 2FA inativa';
@@ -3320,10 +3320,10 @@
   // ---- Handler global de cliques em "Sair" e "Entrar" hardcoded no HTML ----
   // Muitas páginas têm <a href="login.html">Sair</a> direto no HTML, sem JS
   // anexado. Sem este handler, o link só navega pra login.html sem limpar
-  // o STORE — usuário acha que "deslogou" mas o token continua, causando
+  // o STORE, usuário acha que "deslogou" mas o token continua, causando
   // bounce de volta pro dashboard via redirectIfLoggedIn.
   //
-  // Solução: event delegation no document — intercepta TODO <a> que aponta
+  // Solução: event delegation no document, intercepta TODO <a> que aponta
   // pra login.html e analisa o texto pra decidir:
   //   - "Sair", "Logout", "↩ Sair" → executa logout completo
   //   - "Entrar" → se logado, vai pro dashboard (não faz nada confuso)
@@ -3402,7 +3402,7 @@
   // A11y global: injeta skip link + marca aria-current nos nav items.
   // Roda em TODAS as paginas (publicas e logadas), antes do init especifico.
   function applyA11yGlobals() {
-    // 1. Skip link — primeiro elemento focavel da pagina, oculto ate Tab.
+    // 1. Skip link, primeiro elemento focavel da pagina, oculto ate Tab.
     //    Pula direto pro <main>. Se main nao tem id, atribui um.
     if (!document.querySelector('.bx-skip-link')) {
       var mainEl = document.querySelector('main');
@@ -3444,12 +3444,12 @@
   // =========================================================================
   // Sprint 3 (S3-2) · Hamburger menu mobile
   // =========================================================================
-  // Antes deste fix, a nav some abaixo de 880px sem replacement — usuario
+  // Antes deste fix, a nav some abaixo de 880px sem replacement, usuario
   // mobile fica sem navegar. Agora injeta botao hamburger no .nav e drawer
   // com aria + ESC + scroll lock + focus trap.
   function installHamburgerMenu() {
     // Cede ao assets/blaxx-nav.js, que é o dono da gaveta desde 03/08 e roda
-    // nas 49 páginas com topbar inline — não só nas 20 que carregam este
+    // nas 49 páginas com topbar inline, não só nas 20 que carregam este
     // arquivo. Manter as duas daria dois hamburgers na mesma barra, com menus
     // diferentes: esta gaveta espelha os 5 links do .links, a de lá traz o
     // menu agrupado (Conta · Pontos · Descobrir · Ajuda).
@@ -3465,13 +3465,13 @@
       ? Array.prototype.slice.call(linksSrc.querySelectorAll('a'))
       : [];
 
-    // CTAs (Entrar / Cadastre-se) — replicados do .cta-row se existir
+    // CTAs (Entrar / Cadastre-se), replicados do .cta-row se existir
     var ctaSrc = nav.querySelector('.cta-row');
     var ctaItems = ctaSrc
       ? Array.prototype.slice.call(ctaSrc.querySelectorAll('a.button'))
       : [];
 
-    // Botao hamburger — aparece via CSS so < 880px
+    // Botao hamburger, aparece via CSS so < 880px
     var btn = document.createElement('button');
     btn.className = 'bx-hamburger';
     btn.type = 'button';
@@ -3559,7 +3559,7 @@
       if (e.key === 'Escape' && drawer.hasAttribute('data-open')) closeDrawer();
     });
 
-    // Focus trap basico — Tab cicla dentro do drawer
+    // Focus trap basico, Tab cicla dentro do drawer
     drawer.addEventListener('keydown', function (e) {
       if (e.key !== 'Tab') return;
       var focusable = drawer.querySelectorAll(
@@ -3577,7 +3577,7 @@
   }
 
   // Sprint 3 (S3-7): carrega cookie banner LGPD em todas as paginas.
-  // Idempotente — se ja tiver consent salvo, banner nao aparece.
+  // Idempotente, se ja tiver consent salvo, banner nao aparece.
   function installCookieBanner() {
     if (document.querySelector('script[data-bx-cookie]')) return;
     var s = document.createElement('script');

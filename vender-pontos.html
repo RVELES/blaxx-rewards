@@ -2,6 +2,28 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Vender pontos</title>
 <link rel="stylesheet" href="styles.css">
@@ -36,7 +58,7 @@
   <header class="page-head" data-screen-label="Vender pontos" style="margin-bottom:32px">
     <span class="eyebrow">CASHBACK · DIRETO NO PIX</span>
     <h1 class="h-display">Transforme pontos em Pix.</h1>
-    <p class="lead">Resgate em dinheiro a <b>R$ 0,09 por ponto</b>, direto na chave cadastrada no seu perfil. Mínimo de 1.000 pontos.</p>
+    <p class="lead">Resgate seus pontos em dinheiro, direto na chave cadastrada no seu perfil. Mínimo de 1.000 pontos.</p>
   </header>
 
   <div class="grid">
@@ -47,8 +69,6 @@
       </div>
       <div class="calc">
         <div class="l"><span>Saldo disponível</span><b id="bal">—</b></div>
-        <div class="l"><span>Cotação</span><b>R$ 0,09 / pt</b></div>
-        <div class="l"><span>Taxa</span><b>R$ 0,00</b></div>
         <div class="l tot"><span>Você recebe</span><b id="out">R$ 0,00</b></div>
       </div>
       <div class="f">
@@ -114,7 +134,7 @@
   var balance = 0, pixKey = '';
   function calc(){ var v=Math.max(0, parseInt($('pts').value||0)); $('out').textContent = brl(v*0.09); }
   $('pts').addEventListener('input', calc);
-  // show() usa textContent (à prova de XSS) — mensagens de erro vêm do
+  // show() usa textContent (à prova de XSS), mensagens de erro vêm do
   // backend e nunca devem ser interpretadas como HTML. showHtml() é só pra
   // a mensagem de sucesso ESTÁTICA (com <b>/<a>), sem dado do servidor.
   function show(type, text){ var b=$('msgBox'); b.className='msgbox show '+type; b.textContent=text; }
@@ -141,7 +161,7 @@
         btn.disabled=false; btn.textContent=o;
         if (res.s===401){ on401(); return; }
         if (res.s===201 || (res.j && res.j.id)){
-          // brl(points*...) é numérico/controlado — seguro em innerHTML.
+          // brl(points*...) é numérico/controlado, seguro em innerHTML.
           showHtml('ok','<b>Resgate solicitado!</b> O Pix de '+brl(points*0.09)+' cai na sua conta em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.');
           $('pw').value='';
         } else { show('err', (res.j && res.j.error) || 'Não foi possível solicitar o resgate.'); }

@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0B0E">
-<title>BlaXx Pontos — Seus pontos. Novos destinos.</title>
-<meta name="description" content="Compre pontos, envie para amigos e resgate em dinheiro de verdade via PIX. A plataforma de pontos mais direta do Brasil.">
+<title>BlaXx Pontos, Seus pontos. Novos destinos.</title>
+<meta name="description" content="Compre pontos, envie para amigos e troque por benefícios de verdade. A plataforma de pontos mais direta do Brasil.">
 <link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,7 @@
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <style>
-/* ============ TOKENS — Neo-Brutal (Brand Book v1.0) ============
+/* ============ TOKENS, Neo-Brutal (Brand Book v1.0) ============
    Sistema portado do protótipo design/blaxx-home-prototipo.html.
    neon #59FD27 pontual · preto oficial #0A0B0E · fundo papel #E8E6DD.
    Globo direção Cinema, esfera Safira #8EC3EA. */
@@ -33,7 +33,7 @@ a{color:inherit}
 
 /* ============ LOGO (Brand Book §03) ============
    Assinatura "Bla" + "Xx" (Xx neon). Sobre o header preto → versão positiva
-   (Bla branco). Só o símbolo vetorial; sem sombra/contorno na marca — a
+   (Bla branco). Só o símbolo vetorial; sem sombra/contorno na marca, a
    sombra dura do neo-brutal fica nos cards/CTAs, nunca no logo. */
 .logo{display:inline-flex;align-items:center;gap:11px;color:var(--white);text-decoration:none}
 .logo-mark{height:44px;width:auto;flex:none;display:block}
@@ -122,7 +122,7 @@ a{color:inherit}
 .nb .bar{position:relative}
 .nb .nav-desk{display:flex;align-items:center;gap:26px;margin-left:auto;margin-right:18px}
 /* A barra é var(--black); estes links ficaram com color:var(--black) quando ela
-   virou preta, dando contraste 1,0 — texto tinta sobre fundo tinta, invisível.
+   virou preta, dando contraste 1,0, texto tinta sobre fundo tinta, invisível.
    Papel sobre tinta dá 15,7:1 e é o mesmo par já usado no drawer logo abaixo. */
 .nb .nav-desk a{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;
   color:var(--white);text-decoration:none;padding:6px 0;border-bottom:3px solid transparent;
@@ -171,10 +171,10 @@ a{color:inherit}
 
 /* ═════════ ACESSIBILIDADE MOBILE (auditoria 2026-08-01) ═════════
    Dois achados corrigidos aqui:
-   1. Alvos de toque abaixo de 44px — os links legais tinham 14px de altura,
+   1. Alvos de toque abaixo de 44px, os links legais tinham 14px de altura,
       praticamente impossíveis de acertar com o polegar. WCAG 2.5.5 e o HIG da
       Apple pedem 44px; abaixo disso o erro de toque dispara.
-   2. Texto em 11px — abaixo do mínimo confortável de leitura em tela pequena.
+   2. Texto em 11px, abaixo do mínimo confortável de leitura em tela pequena.
       Subimos para 12px, que é o piso que ainda mantém o ar do design.        */
 @media (max-width: 900px) {
   .nb .pill,
@@ -201,7 +201,7 @@ a{color:inherit}
 /* ═════════ CTAs do hero ═════════
    O "Entrar" saiu da barra do topo: com o menu hamburger já ocupando a
    direita, dois botões competiam pelo mesmo canto. No hero ele vira o
-   terceiro nível da hierarquia — abaixo de "Começar agora" (primária) e
+   terceiro nível da hierarquia, abaixo de "Começar agora" (primária) e
    "Ver pacotes" (secundária), para quem já é cliente e só quer logar. */
 .nb .hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:6px}
 .nb .btn-entrar{display:inline-flex;align-items:center;min-height:48px;padding:10px 4px;
@@ -235,9 +235,9 @@ a{color:inherit}
 </div>
 
   <div class="wrap" id="topo">
-    <div class="stick">✳ payout via PIX<br>direto na conta</div>
+    <div class="stick">✳ benefícios reais<br>sem letra miúda</div>
     <h1>Seus pontos.<br><span class="tag">Novos destinos.</span></h1>
-    <p class="sub">Compre pontos, mande para quem você quiser e resgate em reais na sua conta, via PIX. Um ponto vale R$ 0,09 no resgate — e esse número não muda.</p>
+    <p class="sub">Compre pontos, mande para quem você quiser e troque por vouchers e benefícios reais quando quiser.</p>
     <div class="hero-cta">
       <a class="btn" href="/cadastro">Começar agora</a>
       <a class="btn ghost" href="#pacotes">Ver pacotes</a>
@@ -252,18 +252,18 @@ a{color:inherit}
     <div class="globe-block">
       <div class="globe-head">
         <span class="ann">MAPA DA REDE</span>
-        <h2>Seus pontos, o mundo inteiro.</h2>
+        <h2>Ganhe pontos por todo o Brasil.</h2>
       </div>
-      <p class="globe-hint">✳ arraste pra girar · passe o mouse num alfinete pra ver a cidade · clique pra ver todos os parceiros</p>
+      <p class="globe-hint">✳ arraste pra girar · passe o mouse num alfinete pra ver a cidade · clique pra ver as 3 redes parceiras</p>
       <div class="cinema-frame">
         <canvas id="gvCanvas"></canvas>
         <div id="cinemaGlobeTip" class="globe-tip"></div>
-        <div class="cinema-card"><small>REDE ATIVA</small><b id="netCount">42</b><span>destinos no mapa</span></div>
-        <div class="cinema-marq"><span>SÃO PAULO ✓ · MIAMI ✓ · DUBAI ✓ · LONDRES ✓ · TÓQUIO ✓ · CANCÚN ✓ · SINGAPURA ✓ · SÃO PAULO ✓ · MIAMI ✓ · DUBAI ✓ · LONDRES ✓ · TÓQUIO ✓ · CANCÚN ✓ · SINGAPURA ✓ ·&nbsp;</span></div>
+        <div class="cinema-card"><small>REDE EM EXPANSÃO</small><b id="netCount">12</b><span>cidades no mapa</span></div>
+        <div class="cinema-marq"><span>SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;</span></div>
       </div>
     </div>
 
-    <div class="footnote">BlaXx Pontos © 2026 · <a href="/documentos-termos">Termos</a> · <a href="/documentos-termos">Privacidade</a> · <a href="/documentos-termos">LGPD</a></div>
+    <div class="footnote">BlaXx Pontos © 2026 · <a href="/termos.html">Termos</a> · <a href="/privacidade.html">Privacidade</a> · <a href="/privacidade.html#direitos">LGPD</a></div>
   </div>
 </div>
 </section>
@@ -278,44 +278,32 @@ a{color:inherit}
   </div>
 
   <div class="wrap" style="padding-bottom:0">
-    <h1 style="font-size:clamp(32px,6vw,64px)">6 parceiros.<br><span class="tag">Uma rede só.</span></h1>
-    <p class="sub">Toda vez que você resgata, seus pontos BlaXx viram milhas, diária de hotel ou sala VIP numa dessas redes. Clicou num alfinete aceso do globo? Você chegou no lugar certo.</p>
+    <h1 style="font-size:clamp(32px,6vw,64px)">Ganhe em 3 redes.<br><span class="tag">Troque por benefícios reais.</span></h1>
+    <p class="sub">Você acumula pontos comprando nas redes parceiras da BlaXx e troca por vouchers, descontos e vantagens no marketplace de resgates, sempre que quiser.</p>
     <div class="p-filters">
       <button class="p-chip on" data-cat="todos">Todos</button>
-      <button class="p-chip" data-cat="Milhas">Milhas</button>
-      <button class="p-chip" data-cat="Hotéis">Hotéis</button>
-      <button class="p-chip" data-cat="Salas VIP">Salas VIP</button>
+      <button class="p-chip" data-cat="Postos">Postos</button>
+      <button class="p-chip" data-cat="Supermercados">Supermercados</button>
+      <button class="p-chip" data-cat="Farmácias">Farmácias</button>
     </div>
   </div>
 
   <div class="partners-grid">
-    <div class="p-card" data-cat="Milhas" style="--dot:rgb(231,178,74)">
-      <span class="p-cat">Milhas</span><h3>Smiles</h3>
-      <p>São Paulo · Rio de Janeiro · Brasília · Recife · Buenos Aires · Orlando · Lisboa</p>
+    <div class="p-card" data-cat="Postos" style="--dot:rgb(231,178,74)">
+      <span class="p-cat">Postos</span><h3>Postos parceiros</h3>
+      <p>Abasteça e ganhe pontos a cada visita. Rede em expansão: São Paulo · Curitiba · Porto Alegre · Belo Horizonte</p>
     </div>
-    <div class="p-card" data-cat="Milhas" style="--dot:rgb(224,96,160)">
-      <span class="p-cat">Milhas</span><h3>LATAM Pass</h3>
-      <p>Santiago · Lima · São Paulo · Bogotá · Madri · Miami · Sydney</p>
+    <div class="p-card" data-cat="Supermercados" style="--dot:rgb(79,201,106)">
+      <span class="p-cat">Supermercados</span><h3>Supermercados parceiros</h3>
+      <p>Pontos em cada compra do mês. Rede em expansão: Rio de Janeiro · Recife · Fortaleza · Salvador</p>
     </div>
-    <div class="p-card" data-cat="Milhas" style="--dot:rgb(79,143,240)">
-      <span class="p-cat">Milhas</span><h3>Azul Fidelidade</h3>
-      <p>Campinas · Recife · Belo Horizonte · Manaus · Fort Lauderdale · Lisboa</p>
-    </div>
-    <div class="p-card" data-cat="Hotéis" style="--dot:rgb(79,201,106)">
-      <span class="p-cat">Hotéis</span><h3>Accor ALL</h3>
-      <p>Paris · Londres · Bangkok · Dubai · São Paulo · Singapura · Sydney</p>
-    </div>
-    <div class="p-card" data-cat="Hotéis" style="--dot:rgb(155,108,240)">
-      <span class="p-cat">Hotéis</span><h3>Marriott Bonvoy</h3>
-      <p>Nova York · Londres · Tóquio · Dubai · Los Angeles · Xangai · Cancún</p>
-    </div>
-    <div class="p-card" data-cat="Salas VIP" style="--dot:rgb(63,198,216)">
-      <span class="p-cat">Salas VIP</span><h3>Priority Pass</h3>
-      <p>Dubai · Londres · Singapura · Frankfurt · Hong Kong · Istambul · Guarulhos · Doha</p>
+    <div class="p-card" data-cat="Farmácias" style="--dot:rgb(63,198,216)">
+      <span class="p-cat">Farmácias</span><h3>Farmácias parceiras</h3>
+      <p>Cuide da saúde e acumule pontos. Rede em expansão: Brasília · Campinas · Goiânia · Manaus</p>
     </div>
   </div>
   <div class="wrap" style="padding-top:22px">
-    <div class="footnote">BlaXx Pontos © 2026 · <a href="/documentos-termos">Termos</a> · <a href="/documentos-termos">Privacidade</a> · <a href="/documentos-termos">LGPD</a></div>
+    <div class="footnote">BlaXx Pontos © 2026 · <a href="/termos.html">Termos</a> · <a href="/privacidade.html">Privacidade</a> · <a href="/privacidade.html#direitos">LGPD</a></div>
   </div>
 </div>
 </section>
@@ -385,13 +373,16 @@ a{color:inherit}
 </script>
 
 <script>
-// ============ dados reais: 6 fornecedores · 42 cidades · 3 categorias ============
-const BLAXX_SUPPLIERS = {"smiles": {"name": "Smiles", "cat": "Milhas", "rgb": "231,178,74"}, "latam": {"name": "LATAM Pass", "cat": "Milhas", "rgb": "224,96,160"}, "azul": {"name": "Azul Fidelidade", "cat": "Milhas", "rgb": "79,143,240"}, "accor": {"name": "Accor ALL", "cat": "Hotéis", "rgb": "79,201,106"}, "marriott": {"name": "Marriott Bonvoy", "cat": "Hotéis", "rgb": "155,108,240"}, "priority": {"name": "Priority Pass", "cat": "Salas VIP", "rgb": "63,198,216"}};
-const BLAXX_POINTS = [{"s": "smiles", "c": "São Paulo", "lat": -23.5, "lon": -46.6, "i": 1}, {"s": "smiles", "c": "Rio de Janeiro", "lat": -22.9, "lon": -43.2, "i": 0.8}, {"s": "smiles", "c": "Brasília", "lat": -15.8, "lon": -47.9, "i": 0.6}, {"s": "smiles", "c": "Recife", "lat": -8, "lon": -34.9, "i": 0.5}, {"s": "smiles", "c": "Buenos Aires", "lat": -34.6, "lon": -58.4, "i": 0.6}, {"s": "smiles", "c": "Orlando", "lat": 28.5, "lon": -81.3, "i": 0.7}, {"s": "smiles", "c": "Lisboa", "lat": 38.7, "lon": -9.1, "i": 0.6}, {"s": "latam", "c": "Santiago", "lat": -33.4, "lon": -70.6, "i": 0.9}, {"s": "latam", "c": "Lima", "lat": -12, "lon": -77, "i": 0.7}, {"s": "latam", "c": "São Paulo", "lat": -23.55, "lon": -46.63, "i": 0.9}, {"s": "latam", "c": "Bogotá", "lat": 4.7, "lon": -74, "i": 0.6}, {"s": "latam", "c": "Madri", "lat": 40.4, "lon": -3.7, "i": 0.7}, {"s": "latam", "c": "Miami", "lat": 25.7, "lon": -80.2, "i": 0.7}, {"s": "latam", "c": "Sydney", "lat": -33.8, "lon": 151.2, "i": 0.6}, {"s": "azul", "c": "Campinas", "lat": -23, "lon": -47.1, "i": 0.9}, {"s": "azul", "c": "Recife", "lat": -8.05, "lon": -34.88, "i": 0.6}, {"s": "azul", "c": "Belo Horizonte", "lat": -19.9, "lon": -43.9, "i": 0.6}, {"s": "azul", "c": "Manaus", "lat": -3.1, "lon": -60, "i": 0.5}, {"s": "azul", "c": "Fort Lauderdale", "lat": 26.1, "lon": -80.1, "i": 0.6}, {"s": "azul", "c": "Lisboa", "lat": 38.72, "lon": -9.13, "i": 0.5}, {"s": "accor", "c": "Paris", "lat": 48.8, "lon": 2.3, "i": 1}, {"s": "accor", "c": "Londres", "lat": 51.5, "lon": -0.1, "i": 0.8}, {"s": "accor", "c": "Bangkok", "lat": 13.7, "lon": 100.5, "i": 0.7}, {"s": "accor", "c": "Dubai", "lat": 25.2, "lon": 55.3, "i": 0.8}, {"s": "accor", "c": "São Paulo", "lat": -23.52, "lon": -46.6, "i": 0.7}, {"s": "accor", "c": "Singapura", "lat": 1.3, "lon": 103.8, "i": 0.7}, {"s": "accor", "c": "Sydney", "lat": -33.86, "lon": 151.2, "i": 0.6}, {"s": "marriott", "c": "Nova York", "lat": 40.7, "lon": -74, "i": 1}, {"s": "marriott", "c": "Londres", "lat": 51.51, "lon": -0.12, "i": 0.8}, {"s": "marriott", "c": "Tóquio", "lat": 35.6, "lon": 139.7, "i": 0.8}, {"s": "marriott", "c": "Dubai", "lat": 25.21, "lon": 55.27, "i": 0.7}, {"s": "marriott", "c": "Los Angeles", "lat": 34, "lon": -118.2, "i": 0.7}, {"s": "marriott", "c": "Xangai", "lat": 31.2, "lon": 121.5, "i": 0.7}, {"s": "marriott", "c": "Cancún", "lat": 21.1, "lon": -86.8, "i": 0.6}, {"s": "priority", "c": "Dubai (DXB)", "lat": 25.25, "lon": 55.36, "i": 1}, {"s": "priority", "c": "Londres (LHR)", "lat": 51.47, "lon": -0.45, "i": 0.8}, {"s": "priority", "c": "Singapura (SIN)", "lat": 1.36, "lon": 103.99, "i": 0.8}, {"s": "priority", "c": "Frankfurt (FRA)", "lat": 50.04, "lon": 8.56, "i": 0.7}, {"s": "priority", "c": "Hong Kong (HKG)", "lat": 22.3, "lon": 114.2, "i": 0.7}, {"s": "priority", "c": "Istambul (IST)", "lat": 41, "lon": 28.9, "i": 0.7}, {"s": "priority", "c": "Guarulhos (GRU)", "lat": -23.43, "lon": -46.47, "i": 0.8}, {"s": "priority", "c": "Doha (DOH)", "lat": 25.3, "lon": 51.5, "i": 0.6}];
+// ============ 3 verticais parceiras · 12 cidades ilustrativas · rede em expansão ============
+// Categorias reais do modelo B2B (postos, supermercados, farmácias). Sem nomes de
+// marcas de terceiros: os rótulos abaixo são a vertical em si, não uma parceria
+// específica anunciada.
+const BLAXX_SUPPLIERS = {"postos": {"name": "Postos", "cat": "Postos", "rgb": "231,178,74"}, "mercado": {"name": "Supermercados", "cat": "Supermercados", "rgb": "79,201,106"}, "farmacia": {"name": "Farmácias", "cat": "Farmácias", "rgb": "63,198,216"}};
+const BLAXX_POINTS = [{"s": "postos", "c": "São Paulo", "lat": -23.55, "lon": -46.63, "i": 1}, {"s": "postos", "c": "Curitiba", "lat": -25.43, "lon": -49.27, "i": 0.7}, {"s": "postos", "c": "Porto Alegre", "lat": -30.03, "lon": -51.23, "i": 0.6}, {"s": "postos", "c": "Belo Horizonte", "lat": -19.92, "lon": -43.94, "i": 0.7}, {"s": "mercado", "c": "Rio de Janeiro", "lat": -22.91, "lon": -43.2, "i": 1}, {"s": "mercado", "c": "Recife", "lat": -8.05, "lon": -34.9, "i": 0.6}, {"s": "mercado", "c": "Fortaleza", "lat": -3.73, "lon": -38.52, "i": 0.6}, {"s": "mercado", "c": "Salvador", "lat": -12.97, "lon": -38.51, "i": 0.7}, {"s": "farmacia", "c": "Brasília", "lat": -15.79, "lon": -47.88, "i": 0.8}, {"s": "farmacia", "c": "Campinas", "lat": -22.9, "lon": -47.06, "i": 0.6}, {"s": "farmacia", "c": "Goiânia", "lat": -16.68, "lon": -49.25, "i": 0.6}, {"s": "farmacia", "c": "Manaus", "lat": -3.1, "lon": -60.02, "i": 0.5}];
 
-// ============ Motor do globo (canvas 2D + d3-geo + topojson) — direção Cinema ============
-// Portado de design/blaxx-home-prototipo.html. Alfinetes-monograma (SM/LA/AZ/AC/MB/PP)
-// são MONOGRAMAS PRÓPRIOS, não os logotipos reais das marcas (decisão de PI).
+// ============ Motor do globo (canvas 2D + d3-geo + topojson), direção Cinema ============
+// Portado de design/blaxx-home-prototipo.html. Alfinetes-monograma (PO/ME/FA)
+// identificam a vertical (postos/supermercados/farmácias), não uma marca específica.
 function blaxxCreateGlobe(canvas, opts){
   opts = opts || {};
   var geoOrthographic = d3.geoOrthographic, geoPath = d3.geoPath,
@@ -425,8 +416,8 @@ function blaxxCreateGlobe(canvas, opts){
   var borders = mesh(world, world.objects.countries, function(a,b){ return a !== b; });
   var coast = mesh(world, world.objects.countries, function(a,b){ return a === b; });
 
-  // monograma de 2 letras por parceiro — NÃO são os logos reais das marcas
-  var MONO = { smiles:'SM', latam:'LA', azul:'AZ', accor:'AC', marriott:'MB', priority:'PP' };
+  // monograma de 2 letras por vertical
+  var MONO = { postos:'PO', mercado:'ME', farmacia:'FA' };
 
   // agrupa pontos quase colados (mesma cidade, vários parceiros) e abre um leque
   (function fanOut(){
@@ -521,7 +512,7 @@ function blaxxCreateGlobe(canvas, opts){
   var onPointClick = opts.onPointClick || null;
   var downX = 0, downY = 0, movedDist = 0, lastTipKey = '';
   var HOVER_PX = 22;
-  var CLUSTER_RAD = 0.6 * Math.PI / 180; // ~65km — funde só a MESMA cidade
+  var CLUSTER_RAD = 0.6 * Math.PI / 180; // ~65km, funde só a MESMA cidade
 
   function clusterAt(best){
     var seen = {}, list = [];
@@ -618,11 +609,11 @@ function blaxxCreateGlobe(canvas, opts){
   fetch('vendor/countries-110m.json').then(function(r){ return r.json(); }).then(function(world){
     blaxxCreateGlobe(document.getElementById('gvCanvas'), {
       world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
-      accent: '89,253,39', initialRotation: [60, -14], zoom: 0.44,
+      accent: '89,253,39', initialRotation: [47, -12], zoom: 0.44,
       autoRotate: !reduce,
       tooltip: document.getElementById('cinemaGlobeTip'),
       onPointClick: function(){ if (window.blaxxShow) window.blaxxShow('parceiros'); },
-      // tom Safira — definitivo
+      // tom Safira, definitivo
       sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
       landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)', borderColor:'rgba(8,32,60,0.28)',
       gratColor:'rgba(8,32,60,0.10)', ringAlpha:0.5, atmAlpha:0
@@ -646,7 +637,7 @@ function blaxxCreateGlobe(canvas, opts){
   <div class="fwrap">
     <div class="fbrand">
       <h4>BlaXx Pontos</h4>
-      <p>Compre pontos, envie para quem quiser e resgate em dinheiro de verdade via PIX.
+      <p>Compre pontos, envie para quem quiser e troque por benefícios de verdade.
          Sem letra miúda: o que você vê é o que você paga.</p>
     </div>
     <div>
@@ -654,7 +645,7 @@ function blaxxCreateGlobe(canvas, opts){
       <a href="#pacotes">Comprar pontos</a>
       <a href="parceiros.html">Parceiros</a>
       <a href="enviar.html">Enviar pontos</a>
-      <a href="resgate-pix.html">Resgatar via PIX</a>
+      <a href="resgate-pix.html">Resgatar pontos</a>
     </div>
     <div>
       <h4>Ajuda</h4>
@@ -677,7 +668,7 @@ function blaxxCreateGlobe(canvas, opts){
 </footer>
 
 <script>
-/* Gaveta com trava de foco e ESC — padrão único de nav mobile. */
+/* Gaveta com trava de foco e ESC, padrão único de nav mobile. */
 function bxDrawer(open){
   var d=document.getElementById('bxDrawer'), sc=document.getElementById('bxScrim'),
       b=document.querySelector('.burger');
@@ -694,7 +685,7 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape') bxDrawer(false);
 });
 /* Ao passar para desktop a gaveta perde o sentido (o menu horizontal
-   reaparece) — fechar evita ficar presa aberta sobre o conteúdo, e devolve
+   reaparece), fechar evita ficar presa aberta sobre o conteúdo, e devolve
    o scroll do body. */
 window.addEventListener('resize',function(){
   if(window.innerWidth>900){

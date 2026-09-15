@@ -2,6 +2,28 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Carteira</title>
 <link rel="stylesheet" href="styles.css">
@@ -51,7 +73,7 @@
   <header class="page-head" data-screen-label="Carteira">
     <span class="eyebrow">CARTEIRA BLAXX</span>
     <h1 class="h-display">Sua carteira.</h1>
-    <p class="lead">Tudo que entra e sai, em um lugar só. Seus pontos valem <b>R$ 0,09</b> cada em resgates.</p>
+    <p class="lead">Tudo que entra e sai, em um lugar só.</p>
   </header>
 
   <div class="card card--dark balance">

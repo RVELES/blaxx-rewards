@@ -2,6 +2,28 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Comprar pontos</title>
 <link rel="stylesheet" href="styles.css">
@@ -75,7 +97,7 @@
   <header class="page-head" data-screen-label="Comprar pontos">
     <span class="eyebrow">COMPRAR PONTOS</span>
     <h1 class="h-display">Acelere sua jornada.</h1>
-    <p class="lead">Quanto maior o pacote, maior o bônus. Cada ponto vale <b>R$ 0,09</b>; pacotes maiores creditam pontos extras.</p>
+    <p class="lead">Quanto maior o pacote, maior o bônus. Pacotes maiores creditam pontos extras.</p>
   </header>
 
   <div class="buy-grid">
@@ -86,7 +108,7 @@
 
       <div class="card custom">
         <h3>Valor personalizado</h3>
-        <p>Arraste para escolher quanto quer investir. Pontos creditados a R$ 0,09 cada (sem bônus).</p>
+        <p>Arraste para escolher quanto quer investir (sem bônus).</p>
         <input type="range" class="slider" min="10" max="5000" step="10" value="180" id="slider">
         <div class="slider-meta"><span>R$ 10</span><span id="sliderVal">R$ 180 · 2.000 pts</span><span>R$ 5.000</span></div>
       </div>
@@ -155,7 +177,7 @@
   var selected = null;    // {key, points, price} | {custom:true, amount_brl, points}
   var POPULAR = 'prime';
 
-  // pontos base equivalentes ao preço (sem bônus) — usado p/ calcular bônus do pacote
+  // pontos base equivalentes ao preço (sem bônus), usado p/ calcular bônus do pacote
   function basePts(priceBrl){ return Math.floor((Number(priceBrl)||0) * 100 / CENTS_PER_POINT); }
 
   // ---- pacotes do backend ----
@@ -166,7 +188,7 @@
       renderPacks();
     })
     .catch(function(){
-      $('packs').innerHTML = '<div class="card pack"><div class="pack__price">Pacotes indisponíveis — use o valor personalizado.</div></div>';
+      $('packs').innerHTML = '<div class="card pack"><div class="pack__price">Pacotes indisponíveis, use o valor personalizado.</div></div>';
       updateCustomFromSlider();
     });
 
@@ -225,11 +247,11 @@
     .then(function(p){ isMock = !!(p && p.is_mock); }).catch(function(){});
 
   function openOverlay(charge){
-    $('pixBr').textContent = charge.br_code || '—';
+    $('pixBr').textContent = charge.br_code || ', ';
     $('pixPts').textContent = fmt(charge.points_to_credit) + ' pts';
     $('pixAmt').textContent = brl(charge.amount_brl);
     if (charge.qr_code_image){ $('pixQr').src = charge.qr_code_image; $('pixQr').style.display='block'; $('pixQrPh').style.display='none'; }
-    else { $('pixQr').style.display='none'; $('pixQrPh').style.display='grid'; $('pixQrPh').textContent='QR indisponível — use o copia-e-cola'; }
+    else { $('pixQr').style.display='none'; $('pixQrPh').style.display='grid'; $('pixQrPh').textContent='QR indisponível, use o copia-e-cola'; }
     $('pixStatus').textContent = '⏱ Aguardando pagamento';
     $('pixSim').style.display = isMock ? 'block' : 'none';
     $('pixSim').onclick = function(){ simulate(charge); };

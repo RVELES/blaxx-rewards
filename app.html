@@ -2,12 +2,32 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado. location.replace() pra nao deixar a pagina
+// protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080907">
 <title>App ao vivo | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   /* Tweaks para esta tela integrada */
@@ -75,8 +95,8 @@
 
   <div class="page-head">
     <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> App ao vivo</div>
-    <h1>App <span style="color:#2E6B00;">funcional</span></h1>
-    <p class="lead" style="max-width:60ch;margin-top:14px;">Esta tela usa o backend Python real. Login, saldo, compra de pontos via PIX, envio entre clientes e resgate via PIX — tudo passando pelos endpoints Flask.</p>
+    <h1>App <span style="color:var(--lime-dark);">funcional</span></h1>
+    <p class="lead" style="max-width:60ch;margin-top:14px;">Esta tela usa o backend Python real. Login, saldo, compra de pontos via PIX, envio entre clientes e resgate via PIX, tudo passando pelos endpoints Flask.</p>
   </div>
 
   <!-- ====================== LOGIN ====================== -->
@@ -182,7 +202,7 @@
           </div>
           <span class="endpoint-tag">POST /redeem/</span>
         </div>
-        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Conversão 1 pt = R$ 0,09. Sem mínimo e sem múltiplo. Se a chave começar com <code>fail-</code> o gateway falha e o backend estorna automaticamente.</p>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">Sem mínimo e sem múltiplo. Se a chave começar com <code>fail-</code> o gateway falha e o backend estorna automaticamente.</p>
 
         <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr auto;gap:8px;margin-top:12px;align-items:end;">
           <div class="row-input"><label>Pontos</label><input id="r-pts" type="number" value="1000" min="1" step="1"></div>
@@ -248,7 +268,7 @@ const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString('pt-BR');
 const brl = (n) => 'R$ ' + Number(n).toFixed(2).replace('.', ',');
 
-// Escape HTML — usar em TODO dado dinâmico (backend, provedor PIX, mensagens de
+// Escape HTML, usar em TODO dado dinâmico (backend, provedor PIX, mensagens de
 // erro) antes de interpolar em alertBox/innerHTML. failure_reason/end_to_end_id/
 // status/error podem carregar texto influenciado pelo usuário (ex.: chave PIX
 // ecoada pelo provedor) → sem escape vira XSS.
@@ -418,7 +438,7 @@ $('t-send').addEventListener('click', async () => {
 const CENTS_PER_POINT = 9;
 $('r-pts').addEventListener('input', () => {
   const pts = parseInt($('r-pts').value || 0);
-  if (pts > 0) $('r-quote').textContent = `≈ ${brl(pts * CENTS_PER_POINT / 100)} (1 pt = R$ 0,09)`;
+  if (pts > 0) $('r-quote').textContent = `≈ ${brl(pts * CENTS_PER_POINT / 100)}`;
 });
 $('r-pts').dispatchEvent(new Event('input'));
 
