@@ -1,5 +1,5 @@
 /* ==========================================================================
- * BlaXx — Service Worker (PWA)
+ * BlaXx, Service Worker (PWA)
  *
  * Estrategia:
  *   - HTML/CSS/JS estaticos: cache-first com revalidacao em background.
@@ -7,18 +7,18 @@
  *     (nunca cacheia dados de saldo).
  *   - Sem internet + recurso nao cacheado: pagina offline elegante.
  * ========================================================================== */
-// Bumpa esta versão sempre que mexer em HTML/CSS/JS — força browsers a
+// Bumpa esta versão sempre que mexer em HTML/CSS/JS, força browsers a
 // descartar o cache antigo no próximo carregamento.
 // v2 = release Google Login.
 // v3 = PIX MP automático no Web + dashboard via IDs reais (não regex Mariana).
-// v4 = PWA scope corrigido — antes apontava pra /site/ inexistente (404), agora /.
+// v4 = PWA scope corrigido, antes apontava pra /site/ inexistente (404), agora /.
 // IMPORTANTE: bump obrigatório a cada deploy que muda JS/CSS.
 // O `activate` abaixo apaga os caches de nomes antigos, então trocar esta
 // string é o que faz o usuário existente receber o código novo. Sem o bump,
-// quem já visitou o site continua rodando a versão em cache — foi o que
+// quem já visitou o site continua rodando a versão em cache, foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v32-novos-destinos';
+const CACHE = 'blaxx-v33-home-editorial';
 const PRECACHE = [
   '/',
   '/login.html',

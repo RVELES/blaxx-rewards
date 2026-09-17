@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0B0E">
-<title>BlaXx Pontos, Seus pontos. Novos destinos.</title>
+<title>Pontos que viram coisas | BlaXx Pontos</title>
 <meta name="description" content="Compre pontos, envie para amigos e troque por benefícios de verdade. A plataforma de pontos mais direta do Brasil.">
 <link rel="canonical" href="https://blaxxpontos.com.br/blaxx-neon.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,7 @@ a{color:inherit}
    Assinatura "Bla" + "Xx" (Xx neon). Sobre o header preto → versão positiva
    (Bla branco). Só o símbolo vetorial; sem sombra/contorno na marca, a
    sombra dura do neo-brutal fica nos cards/CTAs, nunca no logo. */
-.logo{display:inline-flex;align-items:center;gap:11px;color:var(--white);text-decoration:none}
+.logo{display:inline-flex;align-items:center;gap:11px;min-height:44px;color:var(--white);text-decoration:none}
 .logo-mark{height:44px;width:auto;flex:none;display:block}
 
 /* ============ NEO-BRUTAL ============ */
@@ -96,6 +96,10 @@ a{color:inherit}
 
 /* telas (home ↔ parceiros público) */
 .screen[hidden]{display:none}
+/* gaveta fechada: o [hidden] precisa vencer o display:flex de .drawer, senão
+   os 6 links fora da tela continuam focáveis pelo Tab (bxDrawer() só põe
+   .open no frame seguinte a hidden=false, a transição continua rodando). */
+.drawer[hidden]{display:none}
 /* PARCEIROS (tela pública, portada do protótipo) */
 .nb .p-filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .nb .p-chip{border:3px solid var(--black);background:var(--white);box-shadow:4px 4px 0 var(--black);
@@ -189,19 +193,22 @@ a{color:inherit}
   .nb .footnote a {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     min-height: 44px;
+    min-width: 44px; /* "LGPD" media 41px só com o padding */
     padding: 0 6px;
   }
   /* Piso de 12px para os textos auxiliares em mono. */
   .nb .globe-head .ann,
   .nb .globe-hint,
+  .nb .cinema-card small,
   .nb .cinema-card span { font-size: 12px; }
 }
 
 /* ═════════ CTAs do hero ═════════
    O "Entrar" saiu da barra do topo: com o menu hamburger já ocupando a
    direita, dois botões competiam pelo mesmo canto. No hero ele vira o
-   terceiro nível da hierarquia, abaixo de "Começar agora" (primária) e
+   terceiro nível da hierarquia, abaixo de "Criar conta" (primária) e
    "Ver pacotes" (secundária), para quem já é cliente e só quer logar. */
 .nb .hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:6px}
 .nb .btn-entrar{display:inline-flex;align-items:center;min-height:48px;padding:10px 4px;
@@ -213,6 +220,83 @@ a{color:inherit}
   .nb .hero-cta{flex-direction:column;align-items:stretch;gap:12px}
   .nb .hero-cta .btn{text-align:center}
   .nb .btn-entrar{justify-content:center;padding:12px 4px}
+}
+
+/* ═════════ HOME EDITORIAL ═════════
+   Tipografia gigante em caixa baixa, grade 8/4 assimétrica, filetes de 3px
+   no lugar de sombra em todo bloco. A sombra dura fica só onde há ação
+   (CTAs, o destaque neon do título e o bloco único de pacotes). */
+.nb .ed{padding-top:44px}
+.nb .ed-eyebrow{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#3a3f47;text-wrap:balance}
+.nb .ed-hero{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:32px;align-items:end}
+.nb .ed-h1{font-family:var(--grotesk);font-weight:700;text-transform:none;letter-spacing:-.045em;line-height:.92;
+  font-size:clamp(56px,10.5vw,124px);margin-top:14px;text-wrap:balance}
+.nb .ed-hl{display:inline-block;background:var(--neon);border:4px solid var(--black);box-shadow:8px 8px 0 var(--black);
+  padding:0 .12em;line-height:1.02;margin-right:12px} /* > sombra de 8px: o ponto final não encosta nela */
+.nb .ed-lead{font-size:18px;line-height:1.5;font-weight:500;max-width:36ch;margin:0 0 22px}
+.nb .ed-cta{margin-top:0}
+.nb .ed-btn{font-size:16px;padding:14px 22px;box-shadow:6px 6px 0 var(--black)}
+.nb .ed-btn:hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--black)}
+.nb .ed-steps{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:48px;border-top:3px solid var(--black)}
+.nb .ed-steps li{padding:28px 28px 34px 24px;border-left:3px solid var(--black)}
+.nb .ed-steps li:first-child{border-left:0;padding-left:0}
+.nb .ed-num{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:#3a3f47}
+.nb .ed-steps h2{font-family:var(--grotesk);font-weight:700;font-size:clamp(30px,3.6vw,44px);letter-spacing:-.03em;line-height:1;margin-top:18px}
+.nb .ed-steps p{margin-top:10px;font-size:15px;line-height:1.55;max-width:32ch;color:#2c3036}
+.nb .ed-packs{border-top:3px solid var(--black);padding-top:34px;scroll-margin-top:16px}
+.nb .ed-sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.nb .ed-sec-head > div{flex:1 1 260px;min-width:0}
+.nb .ed-h2{font-family:var(--grotesk);font-weight:700;font-size:clamp(28px,4vw,44px);letter-spacing:-.03em;line-height:1;margin-top:8px;overflow-wrap:anywhere}
+.nb .ed-sec-head a{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--black);
+  text-decoration:none;border-bottom:3px solid var(--neon);padding:12px 0 4px;min-height:44px;display:inline-flex;align-items:flex-end}
+.nb .ed-sec-head a:hover{background:var(--neon)}
+.nb .ed-cards{margin-top:28px;gap:0;grid-template-columns:repeat(3,minmax(0,1fr));
+  border:4px solid var(--black);background:var(--white);box-shadow:10px 10px 0 var(--black)}
+.nb .ed-cards .card{border:0;border-left:4px solid var(--black);box-shadow:none;transform:none;background:var(--white);padding:26px 24px 28px}
+.nb .ed-cards .card:first-child{border-left:0}
+.nb .ed-cards .card:nth-child(2){background:var(--neon);transform:none}
+.nb .ed-cards .card:nth-child(3){transform:none}
+.nb .ed-cards .card h3{font-size:14px;letter-spacing:.06em}
+.nb .ed-cards .card .pts{font-size:clamp(36px,4vw,48px);letter-spacing:-.03em;margin:14px 0 4px}
+.nb .ed-cards .card .prc{font-size:13px}
+/* Globo dentro do editorial: entra na mesma grade (sem o padding duplo de
+   .globe-block, moldura de margem a margem) e no mesmo sistema tipográfico do
+   hero. Markup e motor do globo intactos: draw() relê o canvas a cada frame. */
+.nb .ed .globe-block{margin-top:56px;border-top:3px solid var(--black);padding:34px 0 0}
+.nb .ed .globe-head .ann{font-size:12px;letter-spacing:.14em;color:#3a3f47}
+.nb .ed .globe-head h2{text-transform:none;font-size:clamp(28px,4vw,44px);letter-spacing:-.03em;line-height:1;margin-top:8px}
+.nb .ed .globe-hint{font-size:12px;color:#3a3f47}
+/* A faixa de cidades (35px, absoluta no pé) sai de cima do canvas: vira
+   padding do quadro, então o globo nunca passa por baixo dela. */
+.nb .ed .cinema-frame{max-width:none;padding-bottom:35px;aspect-ratio:3/2} /* 3:2 (era 16:9): o raio do globo segue a altura da moldura */
+.nb .ed .cinema-marq{line-height:16px} /* 16 + 8 + 8 + 3 = 35px, igual ao padding acima */
+.nb .ed .cinema-card{transform:none}
+@media(max-width:900px){
+  .nb .ed-hero{grid-template-columns:1fr;gap:26px;align-items:start}
+  .nb .ed-steps{grid-template-columns:1fr;margin-top:40px}
+  .nb .ed-steps li{border-left:0;border-top:3px solid var(--black);padding:22px 0 26px}
+  .nb .ed-steps li:first-child{border-top:0}
+  .nb .ed-cards{grid-template-columns:1fr;box-shadow:8px 8px 0 var(--black)}
+  .nb .ed-cards .card{border-left:0;border-top:4px solid var(--black)}
+  .nb .ed-cards .card:first-child{border-top:0}
+}
+@media(max-width:600px){
+  .nb .ed{padding-top:30px}
+  .nb .ed-h1{font-size:clamp(46px,14vw,72px)}
+  .nb .ed-hl{border-width:3px;box-shadow:5px 5px 0 var(--black);margin-right:8px}
+  .nb .ed-lead{font-size:16px}
+  .nb .ed-sec-head{display:block} /* em flex o link "Valor livre" vazava pela direita em 390 */
+  .nb .ed-sec-head a{margin-top:4px}
+  .nb .ed .cinema-frame{aspect-ratio:1/1} /* quadrada: o globo ocupa quase toda a largura do celular */
+}
+@media(max-width:380px){
+  .nb .ed-eyebrow{letter-spacing:.1em} /* "…São Paulo, 2026" cabe numa linha em 360 */
+}
+/* Entre 901 e ~1060px a coluna 4/12 fica mais estreita que os dois CTAs lado
+   a lado (151 + 14 + 152 > 311 em 1024) e eles empilhavam. */
+@media(min-width:901px) and (max-width:1060px){
+  .nb .ed-btn{padding:14px 12px}
+  .nb .ed-cta{gap:10px}
 }
 </style>
 </head>
@@ -234,20 +318,42 @@ a{color:inherit}
               onclick="bxDrawer(true)"><span></span><span></span><span></span></button>
 </div>
 
-  <div class="wrap" id="topo">
-    <div class="stick">✳ benefícios reais<br>sem letra miúda</div>
-    <h1>Seus pontos.<br><span class="tag">Novos destinos.</span></h1>
-    <p class="sub">Compre pontos, mande para quem você quiser e troque por vouchers e benefícios reais quando quiser.</p>
-    <div class="hero-cta">
-      <a class="btn" href="/cadastro">Começar agora</a>
-      <a class="btn ghost" href="#pacotes">Ver pacotes</a>
-      <a class="btn-entrar" href="/login">Já tenho conta · <b>Entrar →</b></a>
+  <div class="wrap ed" id="topo">
+    <div class="ed-hero">
+      <div class="ed-hero-main">
+        <span class="ed-eyebrow">Programa de pontos · São Paulo, 2026</span>
+        <h1 class="ed-h1">Pontos<br>que viram<br><span class="ed-hl">coisas</span>.</h1>
+      </div>
+      <div class="ed-hero-side">
+        <p class="ed-lead">Sem regra escondida. Você compra, envia e troca quando quiser.</p>
+        <div class="hero-cta ed-cta">
+          <a class="btn ed-btn" href="/cadastro">Criar conta</a>
+          <a class="btn ghost ed-btn" href="#pacotes">Ver pacotes</a>
+          <a class="btn-entrar" href="/login">Já tenho conta · <b>Entrar&nbsp;<span aria-hidden="true">→</span></b></a>
+        </div>
+      </div>
     </div>
-    <div class="cards" id="pacotes">
-      <div class="card" data-pkg="start"><h3>Start</h3><div class="pts"><span data-pts>2.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 180,00</span> · PIX ou cartão</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
-      <div class="card" data-pkg="plus"><h3>Plus ★</h3><div class="pts"><span data-pts>5.500</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 470,00</span> · ~5% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
-      <div class="card" data-pkg="prime"><h3>Prime</h3><div class="pts"><span data-pts>12.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 972,00</span> · ~10% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR →</a></div>
-    </div>
+
+    <ol class="ed-steps">
+      <li><span class="ed-num">01</span><h2>Compre</h2><p>Pacotes ou valor livre. Pagamento por PIX ou cartão.</p></li>
+      <li><span class="ed-num">02</span><h2>Envie</h2><p>Mande pontos para quem você quiser, na hora.</p></li>
+      <li><span class="ed-num">03</span><h2>Troque</h2><p>Vouchers e benefícios de parceiros, em várias categorias.</p></li>
+    </ol>
+
+    <section class="ed-packs" id="pacotes" aria-labelledby="pacotesTitulo">
+      <div class="ed-sec-head">
+        <div>
+          <span class="ed-eyebrow">Pacotes</span>
+          <h2 class="ed-h2" id="pacotesTitulo">Escolha o seu ponto de partida.</h2>
+        </div>
+        <a href="/comprar-livre.html">Valor livre&nbsp;<span aria-hidden="true">→</span></a>
+      </div>
+      <div class="cards ed-cards">
+        <div class="card" data-pkg="start"><h3>Start</h3><div class="pts"><span data-pts>2.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 180,00</span> · PIX ou cartão</div><a class="mini" href="/comprar-pontos">COMPRAR&nbsp;<span aria-hidden="true">→</span></a></div>
+        <div class="card" data-pkg="plus"><h3>Plus ★</h3><div class="pts"><span data-pts>5.500</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 470,00</span> · ~5% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR&nbsp;<span aria-hidden="true">→</span></a></div>
+        <div class="card" data-pkg="prime"><h3>Prime</h3><div class="pts"><span data-pts>12.000</span><span style="font-size:16px"> pts</span></div><div class="prc"><span data-price>R$ 972,00</span> · ~10% bônus</div><a class="mini" href="/comprar-pontos">COMPRAR&nbsp;<span aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
 
     <div class="globe-block">
       <div class="globe-head">
@@ -609,7 +715,7 @@ function blaxxCreateGlobe(canvas, opts){
   fetch('vendor/countries-110m.json').then(function(r){ return r.json(); }).then(function(world){
     blaxxCreateGlobe(document.getElementById('gvCanvas'), {
       world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
-      accent: '89,253,39', initialRotation: [47, -12], zoom: 0.44,
+      accent: '89,253,39', initialRotation: [47, -12], zoom: 0.46,
       autoRotate: !reduce,
       tooltip: document.getElementById('cinemaGlobeTip'),
       onPointClick: function(){ if (window.blaxxShow) window.blaxxShow('parceiros'); },
