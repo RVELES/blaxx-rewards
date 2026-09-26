@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Pontos que viram coisas | BlaXx Pontos</title>
+<meta name="description" content="Compre pontos, envie para quem você quiser e troque por benefícios de verdade. Sem regra escondida, sem letra miúda.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Globo da rede: d3 + topojson vendorizados (sem CDN) e o motor compartilhado -->
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="assets/blaxx-globo.js"></script>
+<style>
+/* =========================================================================
+   HOME "BRUTAL GRID" - proposta de home no estilo da referência Lovable,
+   traduzida para os tokens do Brand Book BlaXx v1.0.
+
+   O que veio da referência (a gramática visual):
+     radius 0 nos blocos, borda preta 4px, sombra dura deslocada,
+     display uppercase pesado com leading 0.9, rótulo em mono dentro de
+     pílula, CTA em pílula com sombra dura, grade tracejada de fundo,
+     marquee preto entre seções, cards separados por divisor preto com
+     losango no cruzamento, bloco final full-bleed, wordmark gigante no rodapé.
+
+   O que é BlaXx (a marca):
+     neon #59FD27 pontual, preto #0A0B0E, papel #E8E6DD, Space Grotesk
+     display + JetBrains Mono rótulo. Apoio: safira #8EC3EA e ouro #E7B24A,
+     os mesmos tons já usados no globo e nos cards de parceiro.
+
+   Conteúdo: apenas fatos que já constam em regras-pontos.html e faq.html.
+   Sem marca de terceiro, sem depoimento inventado, sem valor de ponto.
+   ========================================================================= */
+:root{
+  --neon:#59FD27; --black:#0A0B0E; --ink:#13161C; --grey:#6E7680;
+  --paper:#E8E6DD; --white:#F4F4F0; --cinza:#DEDCD3;
+  --azul:#8EC3EA; --ouro:#E7B24A;
+  --bw:4px; --sh:6px 8px 0 var(--black);
+  --grotesk:'Space Grotesk','Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,'Courier New',monospace;
+  --pad:clamp(18px,5vw,40px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--white);color:var(--black);font-family:var(--grotesk);
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+img,svg,canvas{max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--neon);color:var(--black)}
+:focus-visible{outline:3px solid var(--black);outline-offset:3px}
+
+.wrap{max-width:1200px;margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+
+/* ---------- tipografia display ---------- */
+.d1,.d2{font-weight:700;text-transform:uppercase;line-height:.88;letter-spacing:-.035em}
+.d1{font-size:clamp(44px,8.2vw,100px)}
+.d2{font-size:clamp(32px,5.6vw,60px)}
+.hl{background:var(--neon);box-shadow:0 0 0 var(--bw) var(--black);padding:0 .1em;
+  display:inline-block;margin:.06em .06em}
+.lead{font-size:clamp(16px,1.6vw,19px);line-height:1.55;max-width:46ch}
+.mut{color:var(--grey)}
+
+/* ---------- rótulo mono em pílula ---------- */
+.tagline{display:inline-flex;align-items:center;gap:9px;border:3px solid var(--black);
+  background:var(--white);font-family:var(--mono);font-size:12px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;padding:7px 15px}
+.tagline i{font-style:normal;color:var(--neon);-webkit-text-stroke:.6px var(--black)}
+
+/* ---------- botões pílula com sombra dura ---------- */
+.pillbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:56px;padding:0 30px;border:3px solid var(--black);border-radius:999px;
+  background:var(--neon);color:var(--black);font-weight:700;font-size:17px;
+  box-shadow:var(--sh);transition:transform .08s,box-shadow .08s;cursor:pointer}
+.pillbtn:hover{transform:translate(3px,4px);box-shadow:3px 4px 0 var(--black)}
+.pillbtn.dark{background:var(--black);color:var(--white)}
+.pillbtn.ghost{background:var(--white)}
+.pillbtn.sm{min-height:44px;padding:0 20px;font-size:14px;box-shadow:4px 5px 0 var(--black)}
+.pillbtn.sm:hover{box-shadow:2px 3px 0 var(--black)}
+
+/* ---------- barra de navegação ---------- */
+.bar{position:sticky;top:0;z-index:60;background:var(--white);
+  border-bottom:var(--bw) solid var(--black)}
+.bar .in{display:flex;align-items:center;gap:20px;min-height:74px}
+.bar .mark{height:30px;width:auto;display:block}
+.navd{display:none;gap:30px;margin:0 auto;font-size:15px;font-weight:500}
+.navd a{padding:6px 0;border-bottom:3px solid transparent}
+.navd a:hover{border-bottom-color:var(--neon)}
+.baract{display:flex;align-items:center;gap:10px;margin-left:auto}
+.burger{display:inline-flex;flex-direction:column;justify-content:center;gap:5px;width:46px;height:46px;
+  border:3px solid var(--black);background:var(--white);cursor:pointer;padding:0 9px}
+.burger span{display:block;height:3px;background:var(--black)}
+.drawer{position:fixed;inset:74px 0 auto 0;z-index:55;background:var(--white);
+  border-bottom:var(--bw) solid var(--black);padding:10px var(--pad) 22px;display:none}
+.drawer.on{display:block}
+.drawer a{display:block;padding:14px 0;border-bottom:2px solid var(--cinza);font-weight:600;font-size:17px}
+@media(min-width:1000px){
+  .navd{display:flex}
+  .burger{display:none}
+  .drawer{display:none!important}
+}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;border-bottom:var(--bw) solid var(--black);overflow:hidden;
+  background:var(--white)}
+/* grade tracejada de fundo, igual à referência */
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:
+    repeating-linear-gradient(to right,rgba(10,11,14,.16) 0 1px,transparent 1px 84px),
+    repeating-linear-gradient(to bottom,rgba(10,11,14,.16) 0 1px,transparent 1px 84px);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 82%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 82%,transparent 100%)}
+.hero .in{position:relative;display:grid;grid-template-columns:1fr;gap:34px;
+  padding-top:clamp(34px,6vw,64px);padding-bottom:clamp(40px,6vw,74px)}
+@media(min-width:1000px){
+  .hero .in{grid-template-columns:minmax(0,1.16fr) minmax(0,.84fr);
+    align-items:center;gap:44px}
+}
+.hero h1{margin:20px 0 0}
+.hero .lead{margin-top:22px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+.proof{display:flex;align-items:center;gap:12px;margin-top:34px;font-size:14px;font-weight:500}
+.dots{display:flex}
+.dots span{width:34px;height:34px;border:3px solid var(--black);border-radius:50%;
+  margin-right:-11px;display:grid;place-items:center;font-size:14px;background:var(--white)}
+
+/* quadradinhos soltos da referência */
+.sq{position:absolute;border:3px solid var(--black);pointer-events:none;z-index:1}
+.sq.a{width:46px;height:46px;top:16%;right:7%;background:#F3D3E6}
+.sq.b{width:34px;height:34px;bottom:16%;left:4%;background:var(--white)}
+.sq.c{width:26px;height:26px;top:8%;left:46%;background:var(--neon)}
+@media(max-width:999px){.sq{display:none}}
+
+/* selo circular giratório */
+.seal{position:absolute;right:calc(var(--pad) - 6px);top:26px;width:104px;height:104px;z-index:3}
+.seal svg{width:100%;height:100%;animation:spin 18s linear infinite}
+.seal .cen{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.seal svg{animation:none}}
+@media(max-width:999px){.seal{display:none}}
+
+/* painel ilustrativo em pílula (o "produto" do hero) */
+.panel{position:relative;border:var(--bw) solid var(--black);border-radius:999px;
+  background:var(--azul);box-shadow:10px 12px 0 var(--black);
+  padding:clamp(22px,3vw,34px) clamp(20px,3vw,40px);min-height:300px;
+  display:flex;align-items:center;justify-content:center}
+.screenish{width:100%;max-width:400px;border:3px solid var(--black);background:var(--black);
+  color:var(--white);padding:20px;border-radius:22px}
+.screenish .rot{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:#9AA3AE}
+.screenish .big{font-size:clamp(34px,4.6vw,46px);font-weight:700;letter-spacing:-.03em;
+  line-height:1;margin:8px 0 2px}
+.screenish .big b{color:var(--neon)}
+.screenish .un{font-family:var(--mono);font-size:12px;color:#9AA3AE}
+.rows{margin-top:18px;border-top:2px solid #262A31}
+.rows div{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:11px 0;border-bottom:2px solid #262A31;font-size:14px}
+.rows b{font-family:var(--mono);font-weight:500;font-size:13px}
+.rows .up{color:var(--neon)}
+.rows .dw{color:var(--azul)}
+
+/* ---------- marquee ---------- */
+.marq{background:var(--black);color:var(--white);border-top:var(--bw) solid var(--black);
+  border-bottom:var(--bw) solid var(--black);overflow:hidden;padding:14px 0}
+.marq div{display:flex;width:max-content;animation:slide 26s linear infinite;
+  font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+  font-size:clamp(18px,2.4vw,28px);white-space:nowrap}
+.marq span{padding-right:28px}
+.marq i{font-style:normal;color:var(--neon);padding-right:28px}
+@keyframes slide{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.marq div{animation:none}}
+
+/* ---------- seções ---------- */
+.sec{padding:clamp(52px,8vw,110px) 0}
+.sec.paper{background:var(--paper)}
+.sechead{margin-bottom:clamp(28px,4vw,52px)}
+.sechead .tagline{margin-bottom:18px}
+
+/* grade 2x2 de recursos com divisor preto e losango no cruzamento */
+.grid4{position:relative;border:var(--bw) solid var(--black);background:var(--white);
+  display:grid;grid-template-columns:1fr}
+@media(min-width:840px){.grid4{grid-template-columns:1fr 1fr}}
+.cel{padding:clamp(24px,3.4vw,40px);border-bottom:var(--bw) solid var(--black)}
+@media(min-width:840px){
+  .cel:nth-child(odd){border-right:var(--bw) solid var(--black)}
+  .cel:nth-child(3),.cel:nth-child(4){border-bottom:0}
+}
+@media(max-width:839px){.cel:last-child{border-bottom:0}}
+.cel .ico{width:54px;height:54px;border:3px solid var(--black);border-radius:50%;
+  display:grid;place-items:center;font-size:24px;margin-bottom:18px}
+.cel h3{font-size:clamp(21px,2.4vw,27px);font-weight:700;letter-spacing:-.02em;margin-bottom:10px}
+.cel p{font-size:15.5px;line-height:1.6;max-width:44ch}
+.lozenge{position:absolute;left:50%;top:50%;width:18px;height:18px;background:var(--black);
+  transform:translate(-50%,-50%) rotate(45deg);z-index:2}
+@media(max-width:839px){.lozenge{display:none}}
+
+/* ---------- lista de situações (título à esquerda, cards à direita) ---------- */
+.split{display:grid;grid-template-columns:1fr;gap:30px}
+@media(min-width:960px){.split{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:start}}
+.stack{display:grid;gap:22px}
+.scard{position:relative;border:var(--bw) solid var(--black);background:var(--white);
+  padding:clamp(20px,2.6vw,30px);box-shadow:var(--sh)}
+.scard.on{background:var(--neon)}
+.scard .ico{width:44px;height:44px;border:3px solid var(--black);border-radius:50%;
+  display:grid;place-items:center;font-size:20px;background:var(--white);margin-bottom:14px}
+.scard h3{font-size:clamp(19px,2.1vw,24px);font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.scard p{font-size:15.5px;line-height:1.6}
+/* bico triangular da referência */
+.scard.on::before{content:"";position:absolute;left:-19px;top:34px;width:0;height:0;
+  border:16px solid transparent;border-right-color:var(--black)}
+.scard.on::after{content:"";position:absolute;left:-12px;top:39px;width:0;height:0;
+  border:11px solid transparent;border-right-color:var(--neon)}
+@media(max-width:959px){.scard.on::before,.scard.on::after{display:none}}
+
+/* ---------- faixa de números ---------- */
+.stats{background:var(--black);color:var(--white);border-top:var(--bw) solid var(--black);
+  border-bottom:var(--bw) solid var(--black)}
+.stats .in{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(min-width:900px){.stats .in{grid-template-columns:repeat(4,1fr)}}
+.stat{padding:clamp(22px,3vw,34px) clamp(16px,2vw,26px);border-right:2px solid #262A31;
+  border-bottom:2px solid #262A31}
+@media(min-width:900px){.stat{border-bottom:0}.stat:last-child{border-right:0}}
+@media(max-width:899px){
+  .stat:nth-child(2n){border-right:0}
+  .stat:nth-child(3),.stat:nth-child(4){border-bottom:0}
+}
+.stat b{display:block;font-size:clamp(32px,4.4vw,46px);font-weight:700;letter-spacing:-.03em;line-height:1}
+.stat b em{font-style:normal;color:var(--neon)}
+.stat span{display:block;margin-top:8px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;color:#9AA3AE;line-height:1.5}
+
+/* ---------- mapa da rede (o globo, vindo da home Editorial) ----------
+   Mesma moldura/sombra do resto da página: borda 4px, sombra dura, canto reto.
+   A geometria interna (3:2 no desktop, 1:1 no telefone, padding-bottom 35px
+   para o marquee) é a da Editorial, já calibrada com zoom 0.46. */
+.globo .hint{font-family:var(--mono);font-size:12px;color:var(--grey);
+  letter-spacing:.04em;margin:0 0 22px;line-height:1.6}
+.globo .cinema-frame{position:relative;border:var(--bw) solid var(--black);
+  box-shadow:10px 12px 0 var(--black);aspect-ratio:3/2;background:var(--azul);
+  overflow:visible;padding-bottom:35px}
+.globo .cinema-frame canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.globo .cinema-card{position:absolute;left:22px;top:22px;background:var(--white);
+  border:3px solid var(--black);box-shadow:5px 6px 0 var(--black);padding:13px 17px;color:var(--black)}
+.globo .cinema-card small{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.globo .cinema-card b{display:block;font-weight:700;font-size:34px;line-height:1;letter-spacing:-.03em;margin:4px 0 2px}
+.globo .cinema-card span{font-family:var(--mono);font-size:11px;color:var(--grey)}
+.globo .cinema-marq{position:absolute;left:0;right:0;bottom:0;background:var(--black);color:var(--neon);
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;padding:8px 0;white-space:nowrap;
+  overflow:hidden;border-top:3px solid var(--neon);line-height:16px}
+.globo .cinema-marq span{display:inline-block;animation:gv-mq 26s linear infinite}
+@keyframes gv-mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.globo .cinema-marq span{animation:none}}
+.globo .globe-tip{position:absolute;display:none;pointer-events:none;background:var(--black);
+  border:2px solid var(--neon);padding:7px 11px;font-family:var(--mono);font-size:11px;
+  white-space:nowrap;z-index:5;line-height:1.5;color:var(--white)}
+.globo .legenda{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:24px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.globo .legenda li{list-style:none;display:flex;align-items:center;gap:8px}
+.globo .legenda i{width:13px;height:13px;border:2px solid var(--black);flex:none}
+
+/* ---------- pacotes ---------- */
+.packs{display:grid;grid-template-columns:1fr;gap:0;border:var(--bw) solid var(--black);
+  background:var(--white)}
+@media(min-width:900px){.packs{grid-template-columns:repeat(3,1fr)}}
+.pack{padding:clamp(24px,3vw,36px);border-bottom:var(--bw) solid var(--black);
+  display:flex;flex-direction:column}
+@media(min-width:900px){
+  .pack{border-bottom:0;border-right:var(--bw) solid var(--black)}
+  .pack:last-child{border-right:0}
+}
+@media(max-width:899px){.pack:last-child{border-bottom:0}}
+.pack.fav{background:var(--paper)}
+.pack .nm{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px}
+.pack .nm i{font-style:normal;background:var(--neon);border:2px solid var(--black);padding:1px 7px;
+  font-size:10px;letter-spacing:.1em}
+.pack .pts{font-size:clamp(38px,4.6vw,52px);font-weight:700;letter-spacing:-.035em;
+  line-height:1;margin:16px 0 4px}
+.pack .pts small{font-size:.4em;font-weight:500;letter-spacing:0}
+.pack .prc{font-size:16px;font-weight:500}
+.pack .obs{font-family:var(--mono);font-size:12px;color:var(--grey);margin-top:6px;margin-bottom:26px}
+.pack .pillbtn{margin-top:auto}
+.packfoot{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+  margin-top:20px;font-size:14.5px}
+.packfoot a{border-bottom:3px solid var(--neon);font-weight:600}
+
+/* ---------- FAQ ---------- */
+.faq{border:var(--bw) solid var(--black);background:var(--white)}
+.faq details{border-bottom:3px solid var(--black)}
+.faq details:last-child{border-bottom:0}
+.faq summary{list-style:none;cursor:pointer;padding:clamp(18px,2.4vw,26px);
+  font-size:clamp(17px,2vw,21px);font-weight:700;letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--mono);font-size:26px;line-height:1;flex:none}
+.faq details[open] summary{background:var(--paper)}
+.faq details[open] summary::after{content:"\2013"}
+.faq .ans{padding:0 clamp(18px,2.4vw,26px) clamp(20px,2.4vw,26px);font-size:15.5px;
+  line-height:1.65;max-width:76ch}
+.faq .ans a{border-bottom:2px solid var(--neon);font-weight:600}
+
+/* ---------- bloco final full-bleed ---------- */
+.final{background:var(--neon);border-top:var(--bw) solid var(--black);
+  border-bottom:var(--bw) solid var(--black);position:relative;overflow:hidden}
+.final::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(to right,rgba(10,11,14,.18) 0 1px,transparent 1px 84px);
+  -webkit-mask-image:linear-gradient(to right,#000 0 9%,transparent 9% 91%,#000 91% 100%);
+          mask-image:linear-gradient(to right,#000 0 9%,transparent 9% 91%,#000 91% 100%)}
+.final .in{position:relative;text-align:center;padding:clamp(56px,9vw,120px) 0}
+.final p{margin:18px auto 0;font-size:clamp(16px,1.7vw,19px);max-width:52ch;font-weight:500}
+.final .pillbtn{margin-top:32px;background:var(--black);color:var(--white);
+  box-shadow:6px 8px 0 rgba(10,11,14,.35)}
+
+/* ---------- rodapé ---------- */
+.foot{background:var(--black);color:var(--white);
+  padding:clamp(40px,6vw,70px) 0 clamp(30px,4vw,48px)}
+.foot .cols{display:grid;grid-template-columns:1fr;gap:34px}
+@media(min-width:800px){.foot .cols{grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr))}}
+.foot h4{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:#9AA3AE;margin-bottom:14px;font-weight:500}
+.foot li{list-style:none;margin-bottom:10px;font-size:15px}
+.foot a:hover{color:var(--neon)}
+.foot .tag2{font-size:clamp(17px,2vw,21px);font-weight:500;max-width:34ch;line-height:1.45}
+.foot .legal{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;
+  margin-top:clamp(34px,5vw,56px);padding-top:22px;border-top:2px solid #262A31;
+  font-family:var(--mono);font-size:12px;color:#9AA3AE;letter-spacing:.06em}
+.foot .legal a{color:#9AA3AE}
+
+/* telefone: barra enxuta e painel com canto menor */
+@media(max-width:560px){
+  .bar .in{gap:12px}
+  .baract .pillbtn.ghost{display:none}
+  .pillbtn.sm{white-space:nowrap}
+  .panel{border-radius:34px;min-height:0;padding:20px 16px}
+  .screenish{max-width:100%}
+  /* globo quadrado ocupa quase toda a largura; o card sairia por cima dele */
+  .globo .cinema-frame{aspect-ratio:1/1;box-shadow:6px 8px 0 var(--black)}
+  .globo .cinema-card{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ====================== NAV ====================== -->
+<header class="bar">
+  <div class="wrap in">
+    <a href="#topo" aria-label="BlaXx Pontos">
+      <img class="mark" src="assets/marca/blaxx-wordmark-claro.svg" alt="BlaXx Rewards">
+    </a>
+    <nav class="navd" aria-label="Principal">
+      <a href="#recursos">O que dá pra fazer</a>
+      <a href="#pacotes">Comprar pontos</a>
+      <a href="parceiros.html">Parceiros</a>
+      <a href="#perguntas">Perguntas</a>
+    </nav>
+    <div class="baract">
+      <a class="pillbtn sm ghost" href="login.html">Entrar</a>
+      <a class="pillbtn sm dark" href="cadastro.html">Criar conta</a>
+      <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false"
+              aria-controls="menuMob" onclick="bxMenu(this)"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<div class="drawer" id="menuMob">
+  <a href="#recursos">O que dá pra fazer</a>
+  <a href="#pacotes">Comprar pontos</a>
+  <a href="parceiros.html">Parceiros</a>
+  <a href="como-funciona.html">Como funciona</a>
+  <a href="central-ajuda.html">Ajuda</a>
+  <a href="#perguntas">Perguntas</a>
+  <a href="login.html">Entrar na minha conta</a>
+</div>
+
+<!-- ====================== HERO ====================== -->
+<section class="hero" id="topo">
+  <span class="sq a" aria-hidden="true"></span>
+  <span class="sq b" aria-hidden="true"></span>
+  <span class="sq c" aria-hidden="true"></span>
+
+  <div class="seal" aria-hidden="true">
+    <svg viewBox="0 0 100 100">
+      <defs><path id="circ" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0"></path></defs>
+      <text font-family="JetBrains Mono, monospace" font-size="9.6" letter-spacing="2.2" fill="#0A0B0E">
+        <textPath href="#circ" startOffset="0">COMPRE · ENVIE · TROQUE · COMPRE · ENVIE · </textPath>
+      </text>
+    </svg>
+    <span class="cen">✳</span>
+  </div>
+
+  <div class="wrap in">
+    <div>
+      <span class="tagline"><i>✳</i> Programa de pontos · Brasil · 2026</span>
+      <h1 class="d1">Pontos<br>que viram<br><span class="hl">coisas</span>.</h1>
+      <p class="lead">Compre pontos, envie para quem você quiser e troque por benefícios
+        de verdade. Sem regra escondida, sem letra miúda, sem surpresa na hora de usar.</p>
+      <div class="ctas">
+        <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+        <a class="pillbtn ghost" href="#pacotes">Ver pacotes</a>
+      </div>
+      <div class="proof">
+        <span class="dots" aria-hidden="true">
+          <span style="background:var(--neon)">✳</span>
+          <span style="background:var(--azul)">↗</span>
+          <span style="background:var(--ouro)">◆</span>
+        </span>
+        <span>Feito para quem cansou de programa de pontos complicado.</span>
+      </div>
+    </div>
+
+    <div class="panel" aria-hidden="true">
+      <div class="screenish">
+        <div class="rot">SALDO DA CARTEIRA</div>
+        <div class="big">12.480<b>.</b></div>
+        <div class="un">pontos disponíveis</div>
+        <div class="rows">
+          <div><span>Compra de pacote</span><b class="up">+5.500</b></div>
+          <div><span>Recebido de um amigo</span><b class="up">+1.200</b></div>
+          <div><span>Troca por benefício</span><b class="dw">-2.000</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== MARQUEE ====================== -->
+<div class="marq" aria-hidden="true">
+  <div>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+  </div>
+</div>
+
+<!-- ====================== RECURSOS ====================== -->
+<section class="sec" id="recursos">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> O que dá pra fazer</span>
+      <h2 class="d2">Tudo em<br>um lugar só.</h2>
+    </div>
+    <div class="grid4">
+      <span class="lozenge" aria-hidden="true"></span>
+      <div class="cel">
+        <div class="ico" style="background:var(--neon)" aria-hidden="true">＋</div>
+        <h3>Comprar pontos</h3>
+        <p>Pacote pronto ou valor livre, do jeito que couber no mês. Pagamento por PIX ou
+          cartão, com o crédito caindo na carteira assim que o pagamento é confirmado.</p>
+      </div>
+      <div class="cel">
+        <div class="ico" style="background:var(--azul)" aria-hidden="true">↗</div>
+        <h3>Enviar para alguém</h3>
+        <p>Mande pontos para outra conta BlaXx informando e-mail ou CPF. Entre contas
+          pessoais o envio é gratuito e quem recebe usa como quiser.</p>
+      </div>
+      <div class="cel">
+        <div class="ico" style="background:var(--ouro)" aria-hidden="true">◆</div>
+        <h3>Trocar por benefício</h3>
+        <p>Vouchers, vantagens nas redes parceiras e cashback via PIX na chave cadastrada
+          no seu perfil. Você escolhe quando usar.</p>
+      </div>
+      <div class="cel">
+        <div class="ico" style="background:var(--paper)" aria-hidden="true">≡</div>
+        <h3>Ver tudo que entrou e saiu</h3>
+        <p>Extrato aberto com data e origem de cada ponto, e aviso com 30 dias de
+          antecedência antes de qualquer vencimento. Nada some sem você saber.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== SITUAÇÕES ====================== -->
+<section class="sec paper">
+  <div class="wrap split">
+    <div>
+      <span class="tagline"><i>✳</i> Na vida real</span>
+      <h2 class="d2" style="margin:18px 0 20px">Ponto bom<br>é o que<br>resolve algo.</h2>
+      <p class="lead">Ninguém acorda querendo juntar ponto. As pessoas querem resolver
+        alguma coisa. Esses são os três momentos em que a BlaXx costuma aparecer.</p>
+    </div>
+    <div class="stack">
+      <article class="scard">
+        <div class="ico" style="background:var(--azul)" aria-hidden="true">🎁</div>
+        <h3>O presente de última hora</h3>
+        <p>Aniversário hoje e você lembrou agora. Envie pontos na hora e deixe a pessoa
+          escolher o que fazer com eles.</p>
+      </article>
+      <article class="scard on">
+        <div class="ico" aria-hidden="true">🛒</div>
+        <h3>O mês que apertou</h3>
+        <p>Troque pontos por benefício em rede parceira, das categorias do dia a dia:
+          posto, supermercado e farmácia.</p>
+      </article>
+      <article class="scard">
+        <div class="ico" style="background:var(--ouro)" aria-hidden="true">👏</div>
+        <h3>O reconhecimento do time</h3>
+        <p>Compre um pacote e distribua pontos para quem entregou. Chega mais rápido que
+          qualquer premiação formal e cada um usa como preferir.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== NÚMEROS ====================== -->
+<section class="stats">
+  <div class="wrap in">
+    <div class="stat"><b><em>3</em></b><span>Categorias de rede parceira: postos, supermercados e farmácias</span></div>
+    <div class="stat"><b>12</b><span>Cidades já no mapa da rede</span></div>
+    <div class="stat"><b>24</b><span>Meses de validade de cada lote de pontos</span></div>
+    <div class="stat"><b>R$&nbsp;<em>0</em></b><span>Para enviar pontos a outra conta pessoal</span></div>
+  </div>
+</section>
+
+<!-- ====================== MAPA DA REDE ====================== -->
+<section class="sec globo" id="mapa">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Mapa da rede</span>
+      <h2 class="d2">Ganhe pontos<br>por todo o Brasil.</h2>
+    </div>
+    <p class="hint">Arraste para girar o globo. Toque ou passe o cursor num alfinete
+      para ver a cidade, e clique para abrir a página de parceiros.</p>
+    <div class="cinema-frame">
+      <canvas id="gvCanvas" aria-label="Globo com as cidades da rede parceira" role="img"></canvas>
+      <div id="globoTip" class="globe-tip"></div>
+      <div class="cinema-card"><small>Rede em expansão</small><b id="netCount">12</b><span>cidades no mapa</span></div>
+      <div class="cinema-marq" aria-hidden="true"><span>SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;</span></div>
+    </div>
+    <ul class="legenda">
+      <li><i style="background:rgb(231,178,74)"></i>Postos</li>
+      <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+      <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ====================== PACOTES ====================== -->
+<section class="sec" id="pacotes">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Pacotes</span>
+      <h2 class="d2">Escolha o seu<br>ponto de partida.</h2>
+    </div>
+    <div class="packs">
+      <div class="pack" data-pkg="start">
+        <span class="nm">Start</span>
+        <div class="pts"><span data-pts>2.000</span><small> pts</small></div>
+        <div class="prc"><span data-price>R$ 180,00</span></div>
+        <div class="obs">PIX ou cartão</div>
+        <a class="pillbtn" href="comprar-pontos.html">Comprar</a>
+      </div>
+      <div class="pack fav" data-pkg="plus">
+        <span class="nm">Plus <i>Mais escolhido</i></span>
+        <div class="pts"><span data-pts>5.500</span><small> pts</small></div>
+        <div class="prc"><span data-price>R$ 470,00</span></div>
+        <div class="obs">PIX ou cartão · cerca de 5% de bônus</div>
+        <a class="pillbtn" href="comprar-pontos.html">Comprar</a>
+      </div>
+      <div class="pack" data-pkg="prime">
+        <span class="nm">Prime</span>
+        <div class="pts"><span data-pts>12.000</span><small> pts</small></div>
+        <div class="prc"><span data-price>R$ 972,00</span></div>
+        <div class="obs">PIX ou cartão · cerca de 10% de bônus</div>
+        <a class="pillbtn" href="comprar-pontos.html">Comprar</a>
+      </div>
+    </div>
+    <div class="packfoot">
+      <span class="mut">Prefere outro valor? Dá pra comprar exatamente o que você quiser.</span>
+      <a href="comprar-livre.html">Comprar valor livre&nbsp;→</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PERGUNTAS ====================== -->
+<section class="sec paper" id="perguntas">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Perguntas</span>
+      <h2 class="d2">Antes que<br>você pergunte.</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Os pontos valem dinheiro?</summary>
+        <div class="ans">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro
+          da plataforma. Não são moeda, depósito, investimento, valor mobiliário nem criptoativo.
+          Tudo escrito em <a href="regras-pontos.html">regras de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Quanto custa participar?</summary>
+        <div class="ans">O cadastro e a manutenção da conta são gratuitos. Você só paga quando
+          decide <a href="comprar-pontos.html">comprar um pacote de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Como eu acumulo pontos?</summary>
+        <div class="ans">De quatro formas: comprando nas <a href="parceiros.html">redes parceiras</a>,
+          participando de campanhas, comprando pacotes na plataforma ou recebendo pontos de
+          outra conta BlaXx.</div>
+      </details>
+      <details>
+        <summary>Qual a validade dos pontos?</summary>
+        <div class="ans">Cada lote vale 24 meses a partir da data do acúmulo, salvo regra específica
+          avisada na campanha. Pontos perto de vencer aparecem em destaque no extrato e você é
+          avisado 30 dias antes por e-mail e push. No vencimento eles são debitados e não podem
+          ser restaurados.</div>
+      </details>
+      <details>
+        <summary>Posso mandar pontos para qualquer pessoa?</summary>
+        <div class="ans">Para qualquer pessoa que tenha conta BlaXx, informando e-mail ou CPF.
+          Entre contas pessoais o envio é gratuito, dentro dos limites diários. Confira sempre o
+          destinatário: transferência confirmada não pode ser revertida.</div>
+      </details>
+      <details>
+        <summary>E se eu me arrepender da compra?</summary>
+        <div class="ans">Compras a distância têm direito de arrependimento de 7 dias, conforme o
+          artigo 49 do Código de Defesa do Consumidor. Depois desse prazo a compra é definitiva,
+          salvo exceções descritas na <a href="politica-reembolso.html">política de reembolso</a>.</div>
+      </details>
+      <details>
+        <summary>Meus dados estão protegidos?</summary>
+        <div class="ans">O tratamento segue a LGPD (Lei 13.709/2018) e dá pra ativar verificação em
+          duas etapas na sua conta. Os detalhes estão na
+          <a href="privacidade.html">política de privacidade</a>.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== CHAMADA FINAL ====================== -->
+<section class="final">
+  <div class="wrap in">
+    <h2 class="d2">Pronto para<br>começar?</h2>
+    <p>Criar conta leva menos tempo do que ler as regras de qualquer outro programa de pontos.
+      E as regras daqui você já leu ali em cima.</p>
+    <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+  </div>
+</section>
+
+<!-- ====================== RODAPÉ ====================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <p class="tag2">Pontos que viram coisas. Você compra, envia e troca quando quiser.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+          <li><a href="comprar-livre.html">Valor livre</a></li>
+          <li><a href="parceiros.html">Parceiros</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Ajuda e regras</h4>
+        <ul>
+          <li><a href="central-ajuda.html">Central de ajuda</a></li>
+          <li><a href="regras-pontos.html">Regras de pontos</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+          <li><a href="privacidade.html">Privacidade e LGPD</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>BlaXx Pontos © 2026</span>
+      <span><a href="privacidade.html#direitos">Seus direitos LGPD</a></span>
+    </div>
+  </div>
+  <!-- O wordmark gigante saiu daqui a pedido (26/09). Para trazer de volta:
+       <div class="bigmark"><img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards"></div>
+       e a regra .bigmark, que continua em assets/blaxx-brutal.css. -->
+</footer>
+
+<script>
+// ---------- menu mobile ----------
+function bxMenu(btn){
+  var d = document.getElementById('menuMob');
+  var open = !d.classList.contains('on');
+  d.classList.toggle('on', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.querySelectorAll('#menuMob a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.getElementById('menuMob').classList.remove('on');
+    var b = document.querySelector('.burger');
+    if (b) b.setAttribute('aria-expanded','false');
+  });
+});
+</script>
+
+<script>
+// ---------- sobe o globo da rede (motor em assets/blaxx-globo.js) ----------
+// Mesmos parâmetros da home Editorial: direção Cinema, esfera Safira, zoom 0.46.
+// A página não quebra sem ele: se o fetch do mundo falhar, sobra a moldura azul.
+(function(){
+  var canvas = document.getElementById('gvCanvas');
+  if (!canvas || typeof blaxxCreateGlobe !== 'function') return;
+
+  // o número do card sai dos dados, não de um literal que envelhece no HTML
+  var contador = document.getElementById('netCount');
+  if (contador && typeof BLAXX_POINTS !== 'undefined') contador.textContent = BLAXX_POINTS.length;
+
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json')
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(world){
+      blaxxCreateGlobe(canvas, {
+        world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.46,
+        autoRotate: !reduzir,
+        tooltip: document.getElementById('globoTip'),
+        // a Editorial trocava de tela in-page; aqui vamos para a página real
+        onPointClick: function(){ location.href = 'parceiros.html'; },
+        sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+        landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)',
+        borderColor:'rgba(8,32,60,0.28)', gratColor:'rgba(8,32,60,0.10)',
+        ringAlpha:0.5, atmAlpha:0
+      });
+    })
+    .catch(function(e){ console.error('globo:', e); });
+})();
+</script>
+
+<script>
+// ---------- preços dos pacotes vindos da API (mesmo contrato da home atual) ----------
+// Os valores no HTML são o fallback: se o fetch falhar, a página não muda.
+(function(){
+  function resolveApi(){
+    var host = location.hostname;
+    var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
+    if (isLocal) return location.protocol + '//' + host + ':5050';
+    return 'https://blaxx-pontos-exe.onrender.com';
+  }
+  var API = resolveApi();
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){
+    return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fill(key, pkg){
+    if (!pkg) return;
+    var card = document.querySelector('.pack[data-pkg="' + key + '"]');
+    if (!card) return;
+    var p = card.querySelector('[data-pts]'), pr = card.querySelector('[data-price]');
+    if (p && pkg.points != null) p.textContent = fmtPts(pkg.points);
+    if (pr && pkg.price_brl != null) pr.textContent = fmtBrl(pkg.price_brl);
+  }
+  fetch(API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){ fill('start', d.start); fill('plus', d.plus); fill('prime', d.prime); })
+    .catch(function(){ /* silencioso: fallback do HTML continua valendo */ });
+})();
+</script>
+
+</body>
+</html>
