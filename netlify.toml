@@ -85,6 +85,62 @@
   status = 301
   force = true
 
+# Páginas fora do novo layout (16/10/2026): propostas antigas de home e o
+# protótipo em /app. Ficam no repositório; em produção levam para a home.
+[[redirects]]
+  from = "/blaxx-neon.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-brutal.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-opcoes.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-v1-cartaz.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-v2-ficha.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-v3-vitrine.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-v4-terminal.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-v5-revista.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/app/*"
+  to = "/"
+  status = 301
+  force = true
+
 # Rota /lander — legado de URL Forwarding do GoDaddy que aponta para este caminho.
 # Enquanto o DNS do GoDaddy não for corrigido para apontar diretamente ao Netlify,
 # qualquer visita que chegue em /lander é redirecionada para a home (301 permanente).

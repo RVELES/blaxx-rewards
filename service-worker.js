@@ -18,7 +18,7 @@
 // quem já visitou o site continua rodando a versão em cache, foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v37-rodape-logo';
+const CACHE = 'blaxx-v38-acesso';
 const PRECACHE = [
   '/',
   '/login.html',
@@ -41,6 +41,7 @@ const PRECACHE = [
   '/assets/blaxx-google.js',
   '/assets/blaxx-nav-user.js',
   '/assets/blaxx-nav.js',
+  '/assets/blaxx-acesso.js',
   '/assets/icons/icon.svg',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
