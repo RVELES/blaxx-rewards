@@ -458,10 +458,10 @@
           </div>
         </div>
         <div class="cc-quick">
-          <a href="comprar.html" class="cc-q primary"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></i>Comprar</a>
-          <a href="enviar.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/></svg></i>Enviar</a>
-          <a href="resgates.html" class="cc-q"><i>⇄</i>Resgatar</a>
-          <a href="parceiros.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></i>Parceiros</a>
+          <a href="comprar.html" class="cc-q primary"><i class="bx-ico" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg></i>Comprar</a>
+          <a href="enviar.html" class="cc-q"><i class="bx-ico" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/></svg></i>Enviar</a>
+          <a href="resgates.html" class="cc-q"><i class="bx-ico" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></i>Resgatar</a>
+          <a href="parceiros.html" class="cc-q"><i class="bx-ico" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5"/><path d="M13.5 14.8c2.4-.4 4.5 1.2 4.5 4.2"/></svg></i>Parceiros</a>
         </div>
       </article>
 
@@ -552,6 +552,16 @@
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => (
     {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+  // Ícones: desenhos de window.BlaxxIcones (assets/blaxx-nav.js) num quadrado
+  // neon (.bx-ico). O selo do parceiro sai da categoria: o logo_emoji do
+  // cadastro não pinta de preto.
+  const ico = n => (window.BlaxxIcones ? window.BlaxxIcones.svg(n) : '');
+  const ICO_CATEGORIA = { 'viagens':'aviao', 'viagem':'aviao', 'mercados':'supermercado',
+    'supermercado':'supermercado', 'streaming':'filme', 'farmácias':'farmacia',
+    'combustível':'posto', 'e-commerce':'carrinho', 'tecnologia':'celular',
+    'hotéis':'hotel', 'moda':'moda' };
+  const icoParceiro = p => ico(ICO_CATEGORIA[String(p.category||'').toLowerCase()] || 'loja');
+
   function renderWallet(w, txs){
     setText('cc-balance', w ? fmt(w.balance_pts) : ', ');
     setText('cc-tbal', w ? fmt(w.balance_pts) : ', ');
@@ -596,7 +606,7 @@
       const rule = p.accrual_rule || p.category || '';
       return `
       <a class="cc-exp" href="detalhe-parceiro.html?id=${encodeURIComponent(p.id)}">
-        <span class="cc-exp-top"><span class="em">${esc(p.logo_emoji||'🎁')}</span><i class="go" aria-hidden="true">→</i></span>
+        <span class="cc-exp-top"><span class="em bx-ico">${icoParceiro(p)}</span><i class="go" aria-hidden="true">→</i></span>
         <strong>${esc(p.name)}</strong>
         ${rule ? `<span class="rate">${esc(rule)}</span>` : ''}
       </a>`;
@@ -626,7 +636,7 @@
     if (!list.length){ wrap.innerHTML = '<p class="muted">Nenhuma campanha ativa.</p>'; return; }
     wrap.innerHTML = list.map(c=>`
       <a class="cc-tile" href="campanhas.html">
-        <span class="em">🎯</span>
+        <span class="em bx-ico">${ico('campanhas')}</span>
         <span class="bd"><span class="tt">${c.name}</span><span class="ss">${c.description||c.mechanic||'Campanha ativa'}</span></span>
         <span class="mt">+${fmt(c.reward_pts)}</span>
       </a>`).join('');
@@ -638,7 +648,7 @@
     if (!list.length){ wrap.innerHTML = '<p class="muted">Nenhuma movimentação ainda.</p>'; return; }
     wrap.innerHTML = list.map(t=>{
       const pos = Number(t.amount_pts)>0;
-      return `<div class="cc-tile"><span class="em">${pos?'↘':'↗'}</span>
+      return `<div class="cc-tile"><span class="em bx-ico">${ico(pos?'receber':'enviar')}</span>
         <span class="bd"><span class="tt">${t.description||t.type}</span><span class="ss">${t.type}</span></span>
         <span class="mt ${pos?'pos':'neg'}">${pos?'+':''}${fmt(t.amount_pts)}</span></div>`;
     }).join('');
@@ -664,7 +674,7 @@
 
   (async ()=>{
     const u = user();
-    setText('cc-greeting', `${greet()}, ${u && u.name ? u.name.split(' ')[0] : 'cliente'} 👋`);
+    setText('cc-greeting', `${greet()}, ${u && u.name ? u.name.split(' ')[0] : 'cliente'}`);
     if (!token()){ demo(); return; }
     const [w, c, p, cm, tx] = await Promise.all([
       get('/wallet/'), get('/card/'), get('/partners/'), get('/campaigns/'), get('/wallet/transactions')

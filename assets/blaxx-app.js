@@ -100,7 +100,7 @@
   // Marcador de build: este projeto já perdeu horas com o navegador servindo
   // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
   // hora se o que está rodando é o arquivo do disco.
-  window.BLAXX_APP_BUILD = 'sem-valor-ponto-2026-10-16';
+  window.BLAXX_APP_BUILD = 'icones-og-mobile-2026-10-16';
 
   var STORE = {
     token: function () {
@@ -190,7 +190,8 @@
       'padding:10px 16px;font-family:var(--bx-sans,system-ui,sans-serif);font-size:13px;font-weight:600;' +
       'text-align:center;border-bottom:1px solid var(--bx-line,#D9D6CE);box-shadow:0 2px 6px rgba(0,0,0,.08);';
     bar.innerHTML =
-      '<span id="bx-offline-msg">⚠ Conexao instavel com o servidor. Tentando reconectar…</span> ' +
+      '<span class="bx-ico" style="width:22px;height:22px;border-radius:6px;vertical-align:middle;margin-right:6px;">' + _bxIconeSvg('alerta') + '</span>' +
+      '<span id="bx-offline-msg">Conexao instavel com o servidor. Tentando reconectar…</span> ' +
       '<button id="bx-offline-retry" style="margin-left:12px;background:var(--warn-text,#7a5a00);color:#fff;border:0;' +
       'padding:4px 12px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;">' +
       'Verificar agora</button>';
@@ -241,7 +242,7 @@
       if (_bxAutoRecoverAttempts > BX_AUTO_RECOVER_MAX_ATTEMPTS) {
         _bxStopAutoRecover();
         var msg = document.getElementById('bx-offline-msg');
-        if (msg) msg.innerHTML = '⚠ Backend indisponivel ha muito tempo. Atualize a pagina.';
+        if (msg) msg.innerHTML = 'Backend indisponivel ha muito tempo. Atualize a pagina.';
         return;
       }
       _bxProbeHealth().then(function (ok) {
@@ -427,8 +428,9 @@
       'padding:10px 16px;display:flex;align-items:center;gap:12px;' +
       'font-size:13px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12);';
     bar.innerHTML =
+      '<span class="bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('seguranca') + '</span>' +
       '<span style="flex:1;">' +
-        '🔑 Sua conta entra via Google. ' +
+        'Sua conta entra via Google. ' +
         '<strong style="color:#fff;">Defina uma senha</strong> para também usar o app do Windows.' +
       '</span>' +
       '<button id="bx-setpwd-cta" style="background:#59FD27;color:#0B1820;border:0;padding:7px 14px;' +
@@ -602,9 +604,9 @@
             return;
           }
           var deliverNote = resp && resp.delivered === false
-            ? ' (⚠ provedor reportou falha no envio, confira Render Logs)'
+            ? ' (provedor reportou falha no envio, confira Render Logs)'
             : '';
-          sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '.' + deliverNote +
+          sentMsg.textContent = 'Código enviado para ' + emailMasked + '.' + deliverNote +
             ' Confira sua caixa de entrada (e spam).';
           stepSend.style.display = 'none';
           stepInput.style.display = 'block';
@@ -889,36 +891,48 @@
   // (●, ◆, ≡, ⊙, ★, ✓, ▲, +, −, →, ♥, ⚙, 🔒, ?, ↩).
   // Reescreve cada badge .ic baseado no data-side do <a> ancestral. Mais
   // robusto que match por texto. Cobre 100% das sidebars em runtime.
+  // Ícones da lateral: desenhos de traço de window.BlaxxIcones (assets/
+  // blaxx-nav.js), pintados de preto sobre quadrado neon pelo CSS (16/10/2026,
+  // padrão único do site). Antes eram emoji coloridos.
   var SIDEBAR_ICON_BY_SIDE = {
-    'dashboard':      '🏠',
-    'carteira':       '💳',
-    'extrato':        '📊',
-    'parceiros':      '🏬',
-    'resgates':       '🎁',
-    'meus-resgates':  '🎟️',
-    'campanhas':      '🎯',
-    'comprar-pontos': '💰',
-    'venda-pontos':   '💼',
-    'vender-pontos':  '💼',
-    'enviar-pontos':  '📤',
-    'indique':        '💝',
-    'indique-ganhe':  '💝',
-    'perfil':         '👤',
-    'seguranca':      '🔐',
-    'ajuda':          '💬',
-    'central-ajuda':  '💬',
-    'sair':           '🚪',
-    'logout':         '🚪'
+    'dashboard': 'inicio', 'carteira': 'carteira', 'extrato': 'extrato',
+    'parceiros': 'parceiros', 'resgates': 'resgates', 'meus-resgates': 'voucher',
+    'campanhas': 'campanhas', 'comprar-pontos': 'comprar', 'venda-pontos': 'trocar',
+    'vender-pontos': 'trocar', 'enviar-pontos': 'enviar', 'indique': 'indique',
+    'indique-ganhe': 'indique', 'perfil': 'perfil', 'seguranca': 'seguranca',
+    'ajuda': 'ajuda', 'central-ajuda': 'ajuda', 'sair': 'sair', 'logout': 'sair'
   };
+  function _bxIconeSvg(nome) {
+    return (window.BlaxxIcones && nome) ? window.BlaxxIcones.svg(nome) : '';
+  }
+  // Emoji/símbolo que vem do backend (logo_emoji, image_emoji, icon das
+  // notificações) -> nome do desenho em window.BlaxxIcones. Emoji não pinta
+  // de preto; o desenho de traço sim (padrão 16/10/2026).
+  var _BX_ICONE_POR_GLIFO = {
+    '🛒': 'supermercado', '⊕': 'farmacia', '⛽': 'posto', '▶': 'filme',
+    '🍽': 'loja', '🛍': 'carrinho', '✈': 'aviao', '✦': 'estrela',
+    '★': 'estrela', '♡': 'favorito', '✓': 'check', '⚠': 'alerta',
+    '💸': 'carteira', '↩': 'trocar', '↪': 'receber',
+    // categorias de parceiro do seed do backend (emoji_by_cat)
+    '👗': 'moda', '💄': 'moda', '🛡': 'seguranca', '📱': 'celular',
+    '📞': 'celular', '🏦': 'carteira', '💳': 'cartao', '🏠': 'inicio',
+    '⚕': 'farmacia', '💊': 'farmacia', '📺': 'filme', '📦': 'carrinho'
+  };
+  function _bxIconeDoGlifo(glifo, padrao) {
+    var g = String(glifo || '').replace(/\uFE0F/g, '').trim();
+    return _BX_ICONE_POR_GLIFO[g] || padrao;
+  }
   function upgradeHardcodedSidebarIcons() {
     var sidebar = document.querySelector('aside.sidebar');
     if (!sidebar) return;
+    // A lateral padrão (blaxx-nav.js) já nasce com os ícones certos.
+    if (sidebar.hasAttribute('data-bx-lateral')) return;
     sidebar.querySelectorAll('a[data-side]').forEach(function (a) {
       var side = a.getAttribute('data-side');
-      var newIcon = SIDEBAR_ICON_BY_SIDE[side];
-      if (!newIcon) return;
+      var svg = _bxIconeSvg(SIDEBAR_ICON_BY_SIDE[side]);
+      if (!svg) return;
       var ic = a.querySelector('.ic');
-      if (ic) ic.textContent = newIcon;
+      if (ic) ic.innerHTML = svg;
     });
     // Cobre links de "Sair" hardcoded, alguns templates tem so
     // <a href="login.html">Sair</a> sem data attribute. Detecta por
@@ -933,7 +947,7 @@
       );
       if (!isLogout) return;
       var ic = a.querySelector('.ic');
-      if (ic) ic.textContent = '🚪';
+      if (ic && _bxIconeSvg('sair')) ic.innerHTML = _bxIconeSvg('sair');
     });
   }
 
@@ -983,7 +997,7 @@
   //     <a href="login.html" class="button ghost">Entrar</a>
   //     <a href="cadastro.html" class="button">Cadastre-se</a>
   //   </div>
-  // Quando logado, troca por: 🔔 + "Olá, Nome" + Sair, igual ao dashboard.
+  // Quando logado, troca por: sino + "Olá, Nome" + Sair, igual ao dashboard.
   function replaceLandingCtaWithUserWidget(firstName) {
     var ctaRows = $$('.cta-row');
     if (!ctaRows.length) return;
@@ -1001,11 +1015,11 @@
       // sem querer, derrubando a sessao). Em mobile pequeno (<=480px) o
       // CSS abaixo esconde o texto e mantem so o icone na area compacta.
       row.innerHTML =
-        '<a href="central-notificacoes.html" class="button ghost" aria-label="Notificações" title="Notificações">🔔</a>' +
+        '<a href="central-notificacoes.html" class="button ghost" aria-label="Notificações" title="Notificações"><span class="bx-ico" style="width:24px;height:24px;border-radius:6px;">' + _bxIconeSvg('notificacoes') + '</span></a>' +
         '<a href="perfil.html" class="button secondary">Olá, ' + firstName + '</a>' +
         '<a href="login.html" class="button ghost" data-bx-logout="1" aria-label="Sair" title="Sair">' +
           '<span class="bx-logout-label">Sair</span>' +
-          '<span style="margin-left:6px;" aria-hidden="true">⎋</span>' +
+          '<span class="bx-ico" style="margin-left:6px;width:22px;height:22px;border-radius:6px;" aria-hidden="true">' + _bxIconeSvg('sair') + '</span>' +
         '</a>';
       // Wire o handler de logout no link novo
       var logoutLink = row.querySelector('[data-bx-logout]');
@@ -1052,28 +1066,28 @@
     // antigos. Pedido: "icones mais alegres e 1,5x maior que o atual".
     // Tamanho dos badges aumentado via CSS (.side-nav .ic).
     var sideMenu = [
-      { id: 'dashboard',     icon: '🏠', label: 'Início',         href: 'dashboard.html' },
-      { id: 'carteira',      icon: '💳', label: 'Carteira',       href: 'carteira.html' },
-      { id: 'extrato',       icon: '📊', label: 'Extrato',        href: 'extrato.html' },
-      { id: 'parceiros',     icon: '🏬', label: 'Parceiros',      href: 'parceiros.html' },
-      { id: 'resgates',      icon: '🎁', label: 'Resgates',       href: 'resgates.html' },
-      { id: 'meus-resgates', icon: '🎟️', label: 'Meus resgates',  href: 'meus-resgates.html' },
-      { id: 'campanhas',     icon: '🎯', label: 'Campanhas',      href: 'campanhas.html' },
-      { id: 'comprar-pontos',icon: '💰', label: 'Comprar pontos', href: 'comprar-pontos.html' },
-      { id: 'venda-pontos',  icon: '💼', label: 'Vender pontos',  href: 'venda-pontos.html' },
-      { id: 'enviar-pontos', icon: '📤', label: 'Enviar pontos',  href: 'enviar-pontos.html' },
-      { id: 'indique',       icon: '💝', label: 'Indique e ganhe',href: 'indique-ganhe.html' }
+      { id: 'dashboard',     icon: 'inicio', label: 'Início',         href: 'dashboard.html' },
+      { id: 'carteira',      icon: 'carteira', label: 'Carteira',       href: 'carteira.html' },
+      { id: 'extrato',       icon: 'extrato', label: 'Extrato',        href: 'extrato.html' },
+      { id: 'parceiros',     icon: 'parceiros', label: 'Parceiros',      href: 'parceiros.html' },
+      { id: 'resgates',      icon: 'resgates', label: 'Resgates',       href: 'resgates.html' },
+      { id: 'meus-resgates', icon: 'voucher', label: 'Meus resgates',  href: 'meus-resgates.html' },
+      { id: 'campanhas',     icon: 'campanhas', label: 'Campanhas',      href: 'campanhas.html' },
+      { id: 'comprar-pontos',icon: 'comprar', label: 'Comprar pontos', href: 'comprar-pontos.html' },
+      { id: 'venda-pontos',  icon: 'trocar', label: 'Vender pontos',  href: 'venda-pontos.html' },
+      { id: 'enviar-pontos', icon: 'enviar', label: 'Enviar pontos',  href: 'enviar-pontos.html' },
+      { id: 'indique',       icon: 'indique', label: 'Indique e ganhe',href: 'indique-ganhe.html' }
     ];
     var sideFoot = [
-      { id: 'perfil',    icon: '👤', label: 'Perfil',     href: 'perfil.html' },
-      { id: 'seguranca', icon: '🔐', label: 'Segurança',  href: 'seguranca.html' },
-      { id: 'ajuda',     icon: '💬', label: 'Ajuda',      href: 'central-ajuda.html' }
+      { id: 'perfil',    icon: 'perfil', label: 'Perfil',     href: 'perfil.html' },
+      { id: 'seguranca', icon: 'seguranca', label: 'Segurança',  href: 'seguranca.html' },
+      { id: 'ajuda',     icon: 'ajuda', label: 'Ajuda',      href: 'central-ajuda.html' }
     ];
     var avatarLetter = ((user.name || '?')[0] || '?').toUpperCase();
     function buildItems(items) {
       return items.map(function (it) {
         var active = (pageBase === it.id) ? ' style="background:var(--black);color:var(--lime);font-weight:700;"' : '';
-        return '<li><a href="' + it.href + '" data-side="' + it.id + '"' + active + '><span class="ic">' + it.icon + '</span> ' + it.label + '</a></li>';
+        return '<li><a href="' + it.href + '" data-side="' + it.id + '"' + active + '><span class="ic">' + _bxIconeSvg(it.icon) + '</span> ' + it.label + '</a></li>';
       }).join('');
     }
     var sidebarHtml =
@@ -1086,7 +1100,7 @@
       '</div>' +
       '<ul class="side-nav">' + buildItems(sideMenu) + '</ul>' +
       '<div class="side-foot"><ul class="side-nav">' + buildItems(sideFoot) +
-        '<li><a href="#" data-bx-logout-side="1"><span class="ic">↩</span> Sair</a></li>' +
+        '<li><a href="#" data-bx-logout-side="1"><span class="ic">' + _bxIconeSvg('sair') + '</span> Sair</a></li>' +
       '</ul></div>';
 
     // Cria o <aside> e wrapper .app-shell
@@ -1549,10 +1563,11 @@
     var fab = document.createElement('button');
     fab.id = 'bx-scan-fab';
     fab.title = 'Escanear QR de parceiro';
-    fab.innerHTML = '⊞';
+    fab.className = 'bx-ico';
+    fab.innerHTML = _bxIconeSvg('busca');
     fab.style.cssText =
       'position:fixed;bottom:20px;left:20px;z-index:8000;width:56px;height:56px;' +
-      'background:#080907;color:#59FD27;border:0;border-radius:50%;font-size:24px;' +
+      'border:0;' +
       'box-shadow:0 12px 32px rgba(0,0,0,.18);cursor:pointer;';
     fab.addEventListener('click', function () {
       window.blaxxScanQR(function (code) {
@@ -1624,7 +1639,7 @@
         sel.removeAllRanges(); sel.addRange(range);
         try {
           document.execCommand('copy');
-          copyBtn.textContent = '✓ Copiado';
+          copyBtn.textContent = 'Copiado';
           setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2000);
         } catch (e) { /* silent */ }
         sel.removeAllRanges();
@@ -1649,7 +1664,7 @@
           if (pill) {
             pill.style.background = 'var(--ok-soft, #efffe6)';
             pill.style.color = 'var(--ok-text, #2d651b)';
-            pill.textContent = '✓ Pagamento confirmado';
+            pill.textContent = 'Pagamento confirmado';
           }
           STORE.setFlow('charge_paid', c);
           setTimeout(function () { location.href = '/compra-aprovada'; }, 1200);
@@ -1658,7 +1673,7 @@
           if (pill) {
             pill.style.background = '#ffede8';
             pill.style.color = '#a83417';
-            pill.textContent = c.status === 'expired' ? '⏱ Expirado' : '✗ Rejeitado';
+            pill.textContent = c.status === 'expired' ? 'Expirado' : 'Rejeitado';
           }
         }
       }).catch(function () { /* silent retry */ });
@@ -1731,7 +1746,7 @@
         '<div><span class="k">Pontos</span><span class="v" style="font-size:20px;font-weight:700;">' + fmt(p.amount_pts) + ' pts</span></div>' +
         (p.message ? '<div><span class="k">Mensagem</span><span class="v">' + p.message + '</span></div>' : '') +
       '</div>' +
-      '<div class="alert warn mt-2"><div class="alert-icon">!</div><div><p>Pontos não podem ser cancelados após confirmação.</p></div></div>' +
+      '<div class="alert warn mt-2"><div class="alert-icon bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('alerta') + '</div><div><p>Pontos não podem ser cancelados após confirmação.</p></div></div>' +
       '<div style="display:flex;gap:8px;margin-top:14px;">' +
         '<button id="bx-cancel" class="button secondary">Voltar e editar</button>' +
         '<button id="bx-confirm" class="button">Confirmar envio →</button>' +
@@ -1763,7 +1778,7 @@
       box.style.cssText = 'padding:24px;margin:24px auto;max-width:720px;text-align:left;';
       box.innerHTML =
         '<div style="display:flex;align-items:center;gap:14px;">' +
-          '<div style="width:54px;height:54px;border-radius:50%;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;">✓</div>' +
+          '<div class="bx-ico" style="width:54px;height:54px;">' + _bxIconeSvg('check') + '</div>' +
           '<div><h2 style="margin:0;">Pontos enviados.</h2><p style="margin:0;color:var(--muted);">Comprovante registrado no extrato.</p></div>' +
         '</div>' +
         '<div class="dl mt-4">' +
@@ -1810,17 +1825,17 @@
           box.style.display = 'block';
           if (r.status === 'paid') {
             box.className = 'alert success mt-2';
-            box.innerHTML = '<div class="alert-icon">✓</div><div><p><strong>' + brl(r.amount_brl) + ' transferidos</strong> para <code>' + esc(r.pix_key) + '</code></p><p>EndToEndID: <code>' + esc(r.end_to_end_id) + '</code></p></div>';
+            box.innerHTML = '<div class="alert-icon bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('check') + '</div><div><p><strong>' + brl(r.amount_brl) + ' transferidos</strong> para <code>' + esc(r.pix_key) + '</code></p><p>EndToEndID: <code>' + esc(r.end_to_end_id) + '</code></p></div>';
           } else if (r.status === 'processing') {
             // PAYOUT_MODE=manual: débito retido, PIX sai em até 1 dia útil.
             box.className = 'alert info mt-2';
-            box.innerHTML = '<div class="alert-icon">⏱</div><div><p><strong>Resgate em processamento</strong></p><p>' + brl(r.amount_brl) + ' por transferência em até 1 dia útil. Acompanhe no extrato.</p></div>';
+            box.innerHTML = '<div class="alert-icon bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('relogio') + '</div><div><p><strong>Resgate em processamento</strong></p><p>' + brl(r.amount_brl) + ' por transferência em até 1 dia útil. Acompanhe no extrato.</p></div>';
           } else if (r.status === 'failed') {
             box.className = 'alert warn mt-2';
-            box.innerHTML = '<div class="alert-icon">!</div><div><p><strong>Transferência não concluída:</strong> ' + esc(r.failure_reason) + '</p><p>' + fmt(r.points_debited) + ' pts <strong>estornados automaticamente</strong>.</p></div>';
+            box.innerHTML = '<div class="alert-icon bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('alerta') + '</div><div><p><strong>Transferência não concluída:</strong> ' + esc(r.failure_reason) + '</p><p>' + fmt(r.points_debited) + ' pts <strong>estornados automaticamente</strong>.</p></div>';
           } else {
             box.className = 'alert info mt-2';
-            box.innerHTML = '<div class="alert-icon">i</div><div><p>Status: ' + esc(r.status) + '</p></div>';
+            box.innerHTML = '<div class="alert-icon bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('info') + '</div><div><p>Status: ' + esc(r.status) + '</p></div>';
           }
           applyUserToShell(); // atualiza saldo
           btn.disabled = false; btn.textContent = 'Resgatar';
@@ -1829,7 +1844,7 @@
           var box = $('#bx-r-out');
           box.style.display = 'block';
           box.className = 'alert error mt-2';
-          box.innerHTML = '<div class="alert-icon">✗</div><div><p>' + e.message + '</p></div>';
+          box.innerHTML = '<div class="alert-icon bx-ico" style="width:28px;height:28px;border-radius:8px;">' + _bxIconeSvg('erro') + '</div><div><p>' + e.message + '</p></div>';
           btn.disabled = false; btn.textContent = 'Resgatar';
         });
     });
@@ -2002,7 +2017,7 @@
       if (!grid) return;
       var html = items.map(function (p) {
         return '<div class="bx-card" style="padding:16px;border:1px solid #eee;border-radius:12px;margin:8px;">'
-          + '<div style="font-size:20px;">' + (p.logo_emoji || '◯') + ' <strong>' + p.name + '</strong></div>'
+          + '<div style="font-size:20px;"><span class="bx-ico" style="width:32px;height:32px;vertical-align:middle;">' + _bxIconeSvg(_bxIconeDoGlifo(p.logo_emoji, 'loja')) + '</span> <strong>' + p.name + '</strong></div>'
           + '<div style="color:#888;font-size:13px;margin-top:4px;">' + p.category + '</div>'
           + '<div style="margin-top:8px;font-size:14px;">' + (p.description || '') + '</div>'
           + '<div style="margin-top:10px;background:#F0FAD9;color:#5AB800;padding:6px 10px;border-radius:6px;display:inline-block;font-size:12px;font-weight:600;">'
@@ -2025,7 +2040,7 @@
       container.innerHTML = items.map(function (b) {
         return '<div class="bx-benefit-card" data-id="' + b.id + '" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;cursor:pointer;">'
           + (b.tag ? '<span style="background:#F0FAD9;color:#5AB800;padding:2px 8px;border-radius:4px;font-size:11px;">' + b.tag + '</span>' : '')
-          + '<div style="font-size:28px;margin-top:6px;">' + (b.image_emoji || '★') + '</div>'
+          + '<div style="margin-top:6px;"><span class="bx-ico">' + _bxIconeSvg(_bxIconeDoGlifo(b.image_emoji, 'estrela')) + '</span></div>'
           + '<strong>' + b.name + '</strong>'
           + (b.partner_name ? '<div style="color:#888;font-size:12px;">' + b.partner_name + '</div>' : '')
           + '<div style="margin-top:8px;font-weight:600;">' + fmt(b.cost_pts) + ' pts</div>'
@@ -2047,7 +2062,7 @@
     Promise.all([api('/benefits/' + id), api('/wallet/')]).then(function (res) {
       var b = res[0], w = res[1];
       if (target) {
-        target.innerHTML = '<h2>' + (b.image_emoji || '★') + ' ' + b.name + '</h2>'
+        target.innerHTML = '<h2><span class="bx-ico" style="width:36px;height:36px;vertical-align:middle;">' + _bxIconeSvg(_bxIconeDoGlifo(b.image_emoji, 'estrela')) + '</span> ' + b.name + '</h2>'
           + '<p>' + (b.description || '') + '</p>'
           + '<p><strong>Custo:</strong> ' + fmt(b.cost_pts) + ' pts</p>'
           + '<p><strong>Seu saldo:</strong> ' + fmt(w.balance_pts) + ' pts</p>'
@@ -2084,7 +2099,7 @@
       container.innerHTML = items.map(function (c) {
         var pct = c.progress_pct || 0;
         return '<div class="bx-camp-card" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;">'
-          + (c.completed_at ? '<span style="color:#5AB800">✓ Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
+          + (c.completed_at ? '<span style="color:#5AB800">Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
           + '<h3>' + c.name + '</h3>'
           + '<p>' + (c.description || '') + '</p>'
           + '<p style="color:#888;font-size:12px;">' + (c.mechanic || '') + '</p>'
@@ -2139,7 +2154,7 @@
         return '<div class="bx-notif" data-id="' + n.id + '" style="padding:12px;border-bottom:1px solid #eee;'
           + (n.is_read ? '' : 'background:rgba(89,253,39,0.06);')
           + 'cursor:pointer;">'
-          + '<div style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#0A0A0A;color:#59FD27;text-align:center;line-height:32px;">' + (n.icon || '!') + '</div> '
+          + '<div class="bx-ico" style="width:32px;height:32px;vertical-align:middle;">' + _bxIconeSvg(_bxIconeDoGlifo(n.icon, 'notificacoes')) + '</div> '
           + '<strong>' + n.title + (n.is_read ? '' : ' •') + '</strong>'
           + '<p style="margin:4px 0 0;color:#888;font-size:13px;">' + (n.body || '') + '</p>'
           + '</div>';
@@ -2495,10 +2510,10 @@
     var btn = '<button type="button" id="' + btnId + '" ' +
       'style="background:var(--lime,#59FD27);color:var(--ink,#080907);border:0;padding:10px 20px;' +
       'border-radius:999px;font-weight:700;cursor:pointer;margin-top:14px;font-size:13px;">' +
-      '↻ Tentar novamente</button>';
+      'Tentar novamente</button>';
     var body =
       '<div style="text-align:center;padding:32px 24px;color:' + color + ';">' +
-        '<div style="font-size:32px;margin-bottom:8px;">⚠</div>' +
+        '<div style="margin-bottom:8px;"><span class="bx-ico">' + _bxIconeSvg('alerta') + '</span></div>' +
         '<div style="font-size:16px;font-weight:700;margin-bottom:4px;color:var(--ink,#080907);">' + msg + '</div>' +
         '<div style="font-size:13px;color:var(--muted,#5f665e);margin-bottom:6px;max-width:420px;margin-left:auto;margin-right:auto;">' +
           hint +
@@ -2613,7 +2628,7 @@
               'class="partner-logo-img" loading="lazy" ' +
               'onerror="bxLogoErr(this,\'' + fallback + '\')">';
           } else {
-            logoBox.innerHTML = '<span class="partner-logo-fallback">' + fallback + '</span>';
+            logoBox.innerHTML = '<span class="partner-logo-fallback bx-ico" style="width:64px;height:64px;">' + _bxIconeSvg(_bxIconeDoGlifo(p.logo_emoji, 'loja')) + '</span>';
           }
         }
         // Atualiza title da pagina
@@ -2656,7 +2671,7 @@
         if (!b.partner_name) return '';
         var logoUrl = bxLogoUrlFromName(b.partner_name);
         if (!logoUrl) return '';
-        var tag = b.tag ? '<div class="tag-row"><span class="glyph-sm">▣</span> ' + b.tag + '</div>' : '';
+        var tag = b.tag ? '<div class="tag-row"><span class="glyph-sm bx-ico">' + _bxIconeSvg('tag') + '</span> ' + b.tag + '</div>' : '';
         return '<a href="beneficio-detalhe.html?id=' + b.id + '" class="market-card" ' +
           'data-bx-hidden="1">' +
           tag +
@@ -2818,7 +2833,7 @@
       var r = passwordStrength(pwd);
       var colors = ['#a83417','#a83417','#8a6500','#2d651b','#2d651b'];
       target.style.color = colors[Math.max(0, r.score - 1)] || '#888';
-      target.textContent = 'Senha ' + r.label + (r.hints.length ? ', falta: ' + r.hints.join(', ') : ' ✓');
+      target.textContent = 'Senha ' + r.label + (r.hints.length ? ', falta: ' + r.hints.join(', ') : '');
     });
   }
 
@@ -3043,7 +3058,7 @@
             api('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: u.email }) })
               .then(function () {
                 notify('Link enviado para ' + u.email + '. Confira sua caixa.', 'ok');
-                btn.textContent = '✓ Link enviado';
+                btn.textContent = 'Link enviado';
               })
               .catch(function () {
                 notify('Falha ao enviar', 'err');
@@ -3184,7 +3199,7 @@
             notify('Telefone verificado!', 'ok');
             STORE.setUser(d.user);
             formVerify.style.display = 'none';
-            if (phoneStatusEl) phoneStatusEl.textContent = 'Telefone verificado ✓';
+            if (phoneStatusEl) phoneStatusEl.textContent = 'Telefone verificado';
             loadMe();
           })
           .catch(function (err) { notify((err && err.message) || 'Código inválido', 'err'); })
@@ -3265,20 +3280,20 @@
     // ------ 4. Histórico de acessos ------
     var logBody = $('#bx-access-log');
     var eventLabels = {
-      'auth.login.success': '✓ Login com sucesso',
-      'auth.login.fail': '✗ Tentativa de login (falha)',
-      'auth.login.blocked': '✗ Login bloqueado',
-      'auth.logout': '↩ Logout',
-      'auth.logout.all': '↩ Logout de todas as sessões',
-      'user.password.changed': '🔑 Senha alterada',
-      'auth.reset_password.success': '🔑 Senha redefinida via email',
-      'user.mfa.enabled': '🛡 2FA ativada',
-      'user.mfa.disabled': '🛡 2FA desativada',
-      'auth.mfa.challenge_success': '🛡 2FA validada no login',
-      'auth.mfa.challenge_fail': '🛡 Falha em 2FA',
-      'user.phone.verified': '📱 Telefone verificado',
-      'user.phone.removed': '📱 Telefone removido',
-      'user.email.changed': '✉ Email alterado'
+      'auth.login.success': 'Login com sucesso',
+      'auth.login.fail': 'Tentativa de login (falha)',
+      'auth.login.blocked': 'Login bloqueado',
+      'auth.logout': 'Logout',
+      'auth.logout.all': 'Logout de todas as sessões',
+      'user.password.changed': 'Senha alterada',
+      'auth.reset_password.success': 'Senha redefinida via email',
+      'user.mfa.enabled': '2FA ativada',
+      'user.mfa.disabled': '2FA desativada',
+      'auth.mfa.challenge_success': '2FA validada no login',
+      'auth.mfa.challenge_fail': 'Falha em 2FA',
+      'user.phone.verified': 'Telefone verificado',
+      'user.phone.removed': 'Telefone removido',
+      'user.email.changed': 'Email alterado'
     };
     var eventStatusClass = function (ev) {
       if (ev.indexOf('fail') >= 0 || ev.indexOf('blocked') >= 0) return 'pendente';

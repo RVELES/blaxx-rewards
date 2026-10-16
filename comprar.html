@@ -129,6 +129,18 @@
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Comprar","item":"https://blaxxpontos.com.br/comprar.html"}]}
 </script>
 <script src="assets/blaxx-acesso.js"></script>
+<!-- prévia do link (WhatsApp, redes): cartão de embarque em assets/og/blaxx-og.png -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaXx Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="BlaXx · Comprar pontos">
+<meta property="og:description" content="Compre pontos, envie para quem quiser e troque por benefícios em parceiros selecionados. Sem mensalidade.">
+<meta property="og:url" content="https://blaxxpontos.com.br/comprar">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/og/blaxx-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartão de embarque BlaXx: Seus pontos. Novas aventuras.">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body data-screen="comprar">
 <main>
@@ -180,7 +192,7 @@
 <!-- Overlay de pagamento PIX -->
 <div class="pixov" id="pixov">
   <div class="pixov__card">
-    <span class="pixov__status" id="pixStatus">⏱ Aguardando pagamento</span>
+    <span class="pixov__status" id="pixStatus">Aguardando pagamento</span>
     <h2 style="margin:16px 0 4px;font-family:var(--font-display);font-weight:900;">Pague com o QR Code</h2>
     <p style="color:var(--fg-muted);font-size:13px;margin:0 0 4px;">Escaneie com o app do seu banco ou copie o código (Pix copia e cola).</p>
     <img class="pixov__qr" id="pixQr" alt="QR Code de pagamento" style="display:none;">
@@ -290,7 +302,7 @@
     $('pixAmt').textContent = brl(charge.amount_brl);
     if (charge.qr_code_image){ $('pixQr').src = charge.qr_code_image; $('pixQr').style.display='block'; $('pixQrPh').style.display='none'; }
     else { $('pixQr').style.display='none'; $('pixQrPh').style.display='grid'; $('pixQrPh').textContent='QR indisponível, use o copia-e-cola'; }
-    $('pixStatus').textContent = '⏱ Aguardando pagamento';
+    $('pixStatus').textContent = 'Aguardando pagamento';
     $('pixSim').style.display = isMock ? 'block' : 'none';
     $('pixSim').onclick = function(){ simulate(charge); };
     $('pixov').classList.add('open');
@@ -303,7 +315,7 @@
   });
 
   function onPaid(){
-    $('pixStatus').textContent = '✓ Pagamento confirmado';
+    $('pixStatus').textContent = 'Pagamento confirmado';
     if(pollTimer){ clearInterval(pollTimer); pollTimer=null; }
     setTimeout(function(){ location.href = 'carteira.html'; }, 900);
   }

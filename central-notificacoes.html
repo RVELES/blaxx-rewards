@@ -66,6 +66,18 @@
   }
 </style>
 <script src="assets/blaxx-acesso.js"></script>
+<!-- prévia do link (WhatsApp, redes): cartão de embarque em assets/og/blaxx-og.png -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaXx Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="BlaXx · Notificações">
+<meta property="og:description" content="Compre pontos, envie para quem quiser e troque por benefícios em parceiros selecionados. Sem mensalidade.">
+<meta property="og:url" content="https://blaxxpontos.com.br/central-notificacoes">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/og/blaxx-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartão de embarque BlaXx: Seus pontos. Novas aventuras.">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body data-screen="central-notificacoes">
 <main>
@@ -98,7 +110,12 @@
   if (!token()) { location.href = 'login.html'; return; }
 
   var ITEMS = [], filter = 'all';
-  var DEFAULT_ICONS = { purchase:'＋', transfer:'↪', expiration:'⏱', campaign:'▲', system:'★', redeem:'★' };
+  // Ícones: desenhos de window.BlaxxIcones (assets/blaxx-nav.js) no quadrado
+  // neon (.bx-ico). O backend grava um símbolo em n.icon; ele vira o nome do
+  // desenho, e o que não tiver par cai no padrão do tipo.
+  var DEFAULT_ICONS = { purchase:'comprar', transfer:'trocar', expiration:'relogio', campaign:'campanhas', system:'info', redeem:'resgates', voucher:'voucher' };
+  var ICON_BY_SYMBOL = { '★':'estrela', '✓':'check', '⚠':'alerta', '↪':'receber', '↩':'trocar', '💸':'carteira', '✦':'voucher', '＋':'comprar' };
+  function iconSvg(name){ return (window.BlaxxIcones && name) ? window.BlaxxIcones.svg(name) : ''; }
 
   function ago(iso){
     var d = new Date(iso), s = (Date.now()-d)/1000;
@@ -115,9 +132,9 @@
     if (!list.length){ $('list').innerHTML = '<div class="nf-empty">'+(filter==='unread'?'Nenhuma não lida.':'Nenhuma notificação ainda.')+'</div>'; return; }
     $('list').innerHTML = list.map(function(n){
       var unread = !n.read_at;
-      var ico = n.icon || DEFAULT_ICONS[n.type] || '•';
+      var ico = iconSvg(ICON_BY_SYMBOL[n.icon] || n.icon) || iconSvg(DEFAULT_ICONS[n.type]) || iconSvg('notificacoes');
       return '<div class="nf '+(unread?'unread':'')+'" data-id="'+n.id+'">'
-        + '<span class="nf__ico">'+ico+'</span>'
+        + '<span class="nf__ico bx-ico">'+ico+'</span>'
         + '<div class="nf__b"><div class="nf__top"><span class="nf__t">'+(n.title||'')+'</span><span class="nf__time">'+ago(n.created_at)+'</span></div>'
         + (n.body?('<div class="nf__d">'+n.body+'</div>'):'')+'</div>'
         + (unread?'<span class="nf__dot"></span>':'')

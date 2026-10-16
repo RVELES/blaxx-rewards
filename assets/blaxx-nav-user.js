@@ -147,7 +147,7 @@
     for (var i = 0; i < alvos.length; i++) {
       if (!u) { alvos[i].style.display = 'none'; continue; }
       alvos[i].style.display = '';
-      alvos[i].textContent = 'Olá, ' + primeiroNome(u) + ' 👋';
+      alvos[i].textContent = 'Olá, ' + primeiroNome(u);
     }
   }
 

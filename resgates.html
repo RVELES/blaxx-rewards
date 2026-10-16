@@ -104,6 +104,18 @@
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Resgates","item":"https://blaxxpontos.com.br/resgates.html"}]}
 </script>
 <script src="assets/blaxx-acesso.js"></script>
+<!-- prévia do link (WhatsApp, redes): cartão de embarque em assets/og/blaxx-og.png -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaXx Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="BlaXx · Resgates">
+<meta property="og:description" content="Compre pontos, envie para quem quiser e troque por benefícios em parceiros selecionados. Sem mensalidade.">
+<meta property="og:url" content="https://blaxxpontos.com.br/resgates">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/og/blaxx-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartão de embarque BlaXx: Seus pontos. Novas aventuras.">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body data-screen="resgates">
 <main>
@@ -163,12 +175,12 @@
     $('catalog').innerHTML = list.map(function(b){
       var can = balance >= b.cost_pts;
       return '<div class="card rw">'
-        + '<div class="rw__img"><span class="rw__cat">'+(b.category||'')+'</span>'+(b.image_emoji||'🎁')+'</div>'
+        + '<div class="rw__img"><span class="rw__cat">'+(b.category||'')+'</span><span class="bx-ico">'+(window.BlaxxIcones?window.BlaxxIcones.svg('resgates'):'')+'</span></div>'
         + '<div class="rw__name">'+(b.name||'')+'</div>'
         + '<div class="rw__desc">'+(b.description||'')+'</div>'
         + '<div class="rw__foot"><div class="rw__cost">'+fmt(b.cost_pts)+' <span>pts</span></div>'
         + '<button class="btn btn--primary btn--sm" data-redeem="'+b.id+'" '+(can?'':'disabled')+'>Resgatar</button></div>'
-        + '<div class="afford '+(can?'':'no')+'">'+(can?'✓ Você pode resgatar':'Faltam '+fmt(b.cost_pts-balance)+' pts')+'</div>'
+        + '<div class="afford '+(can?'':'no')+'">'+(can?'<span class="bx-ico" style="width:16px;height:16px;border-radius:4px">'+(window.BlaxxIcones?window.BlaxxIcones.svg('check'):'')+'</span>Você pode resgatar':'Faltam '+fmt(b.cost_pts-balance)+' pts')+'</div>'
         + '</div>';
     }).join('');
     $('catalog').querySelectorAll('[data-redeem]').forEach(function(btn){
@@ -201,13 +213,13 @@
       if (!items.length){ $('vouchers').innerHTML='<div class="empty">Você ainda não tem resgates.</div>'; return; }
       $('vouchers').innerHTML = items.map(function(v){
         var name = v.benefit_name || (v.benefit && v.benefit.name) || 'Voucher';
-        var emoji = v.image_emoji || (v.benefit && v.benefit.image_emoji) || '🎟️';
+        var icone = '<span class="bx-ico">'+(window.BlaxxIcones?window.BlaxxIcones.svg('voucher'):'')+'</span>';
         var st = v.status || (v.used_at ? 'used' : 'active');
         var stCls = st==='active' ? 'st-on' : 'st-used';
         var stTxt = st==='active' ? 'ATIVO' : (st==='used' ? 'USADO' : 'EXPIRADO');
         var code = v.code || '';
         var exp = v.expires_at ? new Date(v.expires_at).toLocaleDateString('pt-BR') : '';
-        return '<div class="card voucher"><div class="voucher__stub">'+emoji+'</div>'
+        return '<div class="card voucher"><div class="voucher__stub">'+icone+'</div>'
           + '<div class="voucher__body"><div style="display:flex;align-items:center;justify-content:space-between"><span class="voucher__name">'+name+'</span><span class="chip '+stCls+'">'+stTxt+'</span></div>'
           + (st==='active' && code ? ('<div class="voucher__code"><span>'+code+'</span><button class="btn btn--outline btn--sm" style="padding:5px 12px" data-copy="'+code+'">Copiar</button></div>') : '')
           + '<div class="voucher__meta">'+(v.points_spent?(fmt(v.points_spent)+' pts'):'')+(exp?(' · VÁLIDO ATÉ '+exp):'')+'</div>'

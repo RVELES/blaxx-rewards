@@ -192,16 +192,18 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
 .topbar .nav > .brand,.topbar .nav > .links,.topbar .nav > .cta-row{ grid-column:auto; justify-self:auto; }
 .topbar .nav > .cta-row,.topbar .topbar__right{ margin-left:auto; }
 
-/* Marca fora da barra (fundo claro): o B característico, neon. */
+/* Marca fora da barra (fundo claro): o mesmo logo da barra, só "BlaXx", na
+   variante clara (16/10: "aplique o logo da home para todo o site, menos o
+   rodapé"). Desenho 825 × 166. */
 .brand{ display:flex; align-items:center; gap:0; font-size:0; color:transparent; }
 .brand .mark,.mark{
-  display:block; width:33px; height:38px; min-width:0; padding:0;
-  background:transparent url('marca/blaxx-simbolo-b.svg') left center / contain no-repeat;
+  display:block; width:140px; height:28px; min-width:0; padding:0;
+  background:transparent url('marca/blaxx-wordmark-barra-claro.svg') left center / contain no-repeat;
   border:0; border-radius:0; box-shadow:none; font-size:0; color:transparent;
 }
 /* Na barra preta: só a palavra "BlaXx", sem o B e sem "REWARDS" (16/10),
    variante de fundo ESCURO ("Bla" branco, "Xx" neon). Desenho: 817 × 158. */
-.topbar .brand .mark,.topbar .mark{ width:140px; height:27px; background-image:url('marca/blaxx-wordmark-barra.svg'); }
+.topbar .brand .mark,.topbar .mark,.bx-b2b-barra .mark{ width:140px; height:27px; background-image:url('marca/blaxx-wordmark-barra.svg'); }
 .topbar .brand__img{ height:27px !important; width:auto; }
 .brand-sub{ display:none; }
 
@@ -970,3 +972,474 @@ html{ scrollbar-gutter:stable; }
 }
 .topbar[data-bx-comum] .bx-sino svg{ width:18px; height:18px; }
 .topbar[data-bx-comum] .bx-sino:hover{ border-color:var(--bx-neon); }
+
+/* ==========================================================================
+   Ícones padronizados (16/10/2026)
+   Todo ícone do site: quadrado verde neon com o desenho em preto. Os desenhos
+   são de traço (window.BlaxxIcones, em assets/blaxx-nav.js) e herdam a cor;
+   emoji e símbolos de texto foram trocados porque não pintam de preto.
+   Vale também para as variantes que eram escuras (.dark, .tile--ink) e para
+   o ícone do item ativo da lateral, que antes ficava transparente.
+   ========================================================================== */
+.bx-ico,.card-icon,.icon-badge,.mark-glyph,.glyph,.tile,.ico,.way .ico,.empty .icon,
+.glyph.dark,.icon-badge.dark,.tile--ink,.bx-convite-ico,.side-nav .ic,.nav-item .ico,
+.side-nav a.active .ic,.nav-item.is-active .ico{
+  background:var(--bx-neon) !important; color:var(--bx-ink) !important;
+  border:0 !important; box-shadow:none !important;
+}
+.bx-ico{ display:inline-grid; place-items:center; flex:none; width:44px; height:44px; border-radius:var(--bx-r-sm); }
+.bx-ico svg,.card-icon svg,.icon-badge svg,.mark-glyph svg,.glyph svg,.tile svg,.ico svg,.empty .icon svg,.bx-convite-ico svg{
+  stroke:currentColor; color:var(--bx-ink);
+}
+.bx-ico svg{ width:56%; height:56%; display:block; }
+/* lateral: quadradinho de 28px com o desenho de 16px */
+.side-nav .ic{ width:28px !important; height:28px !important; border-radius:8px !important; display:grid !important; place-items:center; flex:none; font-size:0 !important; }
+.side-nav .ic svg{ width:16px !important; height:16px !important; display:block; }
+/* barra de abas do celular: cada ícone no seu quadrado neon */
+.bx-tabbar a svg,.bx-tabbar button svg{
+  box-sizing:border-box; width:30px !important; height:30px !important; padding:5px;
+  background:var(--bx-neon); color:var(--bx-ink); border-radius:8px;
+}
+/* sino da barra logada */
+.topbar[data-bx-comum] .bx-sino,.topbar .nav-bell{ background:var(--bx-neon) !important; color:var(--bx-ink) !important; border:0 !important; }
+
+/* ==========================================================================
+   Kit da home (16/10/2026)
+   Os componentes de home-embarque.html em classes bx-* reaproveitáveis, para
+   montar outras páginas com a mesma arte: cartão de embarque, rota com escalas,
+   bilhetes com canhoto e picote, recibo e painel de partidas (quadro preto).
+   Medidas, cores e breakpoints (1000/900/520) são os da home, que continua
+   com o CSS inline dela. Os motivos (.bx-perf, .bx-zig, .bx-leader,
+   .bx-tracejo, .bx-barcode, .bx-rotulo, .bx-vert, .bx-wrap) estão acima.
+   Proteção contra as folhas-base (assets/styles.css e styles.css): cada raiz
+   do kit fixa fonte, tamanho e entrelinha (a home herda 16px/normal; as
+   folhas põem 15px e 1.5-1.55), cada classe zera margem e caixa alta, e os
+   títulos levam !important em ≤900, onde h1/h2 !important das folhas e o
+   h1 !important desta folha (≤880) os achatavam.
+   Regras de conteúdo: neon só como preenchimento (nunca texto neon sobre
+   claro); sem valor do ponto ("pts/R$", "taxa") no bilhete nem no recibo.
+   ========================================================================== */
+
+/* ---- base: seção, rótulo, título, só-leitor ---------------------------------
+   <main class="bx-pagina">                    (opcional: zera o respiro do <main>)
+     <section class="bx-secao">                (+ --hero no topo, --sem-pe no fim)
+       <div class="bx-wrap">
+         <div class="bx-secao-cab">             (+ --linha: título e link lado a lado)
+           <span class="bx-secao-rotulo">Rota · Como funciona</span>
+           <h2 class="bx-titulo-secao">Título</h2>
+         </div> …conteúdo…
+   <input class="bx-sr-only" …>   ·   <br class="bx-so-celular"> */
+main.bx-pagina{ padding:0 !important; }    /* folhas-base: 36px 40px / 24px 16px !important */
+@media (max-width:880px){ main.bx-pagina{ padding-top:20px !important; } }
+.bx-secao{ padding:0 0 clamp(56px,7vw,88px); }
+/* coluna da home: 1280px de CONTEÚDO (a home não tem o box-sizing:border-box
+   das folhas-base); com elas a coluna encolhia para 1168 e o cartão mudava */
+.bx-secao > .bx-wrap{ box-sizing:content-box; }
+.bx-secao--hero{ padding:clamp(28px,4vw,48px) 0 clamp(48px,6vw,80px); }
+.bx-secao--sem-pe{ padding-bottom:0; }
+.bx-secao-cab{ display:flex; flex-direction:column; gap:14px; margin:0 0 40px; min-width:0; font-size:16px; line-height:normal; }
+.bx-secao-cab--linha{ flex-direction:row; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:24px; }
+.bx-secao-rotulo{
+  display:block; margin:0; padding:0; font-family:var(--bx-mono); font-size:13px; font-weight:400; line-height:normal;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--bx-grey);
+}
+.bx-titulo-secao{
+  margin:0; padding:0; max-width:none; font-family:var(--bx-sans); font-size:clamp(34px,4vw,52px); font-weight:800;
+  font-stretch:normal; line-height:1; letter-spacing:-.03em; text-transform:none; color:var(--bx-ink);
+}
+.bx-secao-link{
+  font-family:var(--bx-sans); font-size:16px; line-height:normal; color:var(--bx-ink); text-decoration:none;
+  border-bottom:2px solid var(--bx-ink); white-space:nowrap;
+}
+.bx-sr-only{
+  position:absolute !important; width:1px !important; height:1px !important; min-width:0 !important; min-height:0 !important;
+  padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important; border:0 !important;
+}
+.bx-so-celular{ display:none; }
+
+/* ---- cartão de embarque (hero) ----------------------------------------------
+   <div class="bx-cartao">
+     <div class="bx-cartao-miolo">
+       <div class="bx-cartao-topo"><span>Cartão de embarque · BlaXx</span><span>Brasil · 2026</span></div>
+       <h1 class="bx-cartao-titulo"><span>Linha 1.</span><span>Linha 2.</span><span><mark>Destaque<br class="bx-so-celular"> em neon.</mark></span></h1>
+       <div class="bx-cartao-grade"><div><span class="bx-rotulo">De</span><b>Pontos</b></div> …até 4</div>
+       <p class="bx-cartao-lead">Texto.</p>
+     </div>
+     <div class="bx-perf" aria-hidden="true"></div>
+     <aside class="bx-cartao-canhoto">
+       <div class="bx-cartao-dados"><div><span class="bx-rotulo">Passageiro</span><b>Você</b></div> …</div>
+       <div class="bx-cartao-acoes">
+         <a class="bx-cartao-cta" href="…">Começar agora</a>
+         <span class="bx-cartao-ja">Já tenho conta · <a href="login.html"><b>Entrar →</b></a></span>
+         <div class="bx-barcode" aria-hidden="true"></div>
+       </div>
+     </aside>
+   </div> */
+.bx-cartao{
+  display:flex; background:var(--bx-surface); border-radius:var(--bx-r-xl); overflow:hidden; box-shadow:var(--bx-sh);
+  color:var(--bx-ink); font-family:var(--bx-sans); font-size:16px; line-height:normal; text-align:left;
+}
+.bx-cartao-miolo{ flex:1; min-width:0; padding:clamp(28px,4vw,48px) clamp(22px,4.4vw,56px); display:flex; flex-direction:column; gap:32px; }
+.bx-cartao-topo{
+  display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin:0;
+  font-family:var(--bx-mono); font-size:13px; color:var(--bx-grey); letter-spacing:.08em; text-transform:uppercase;
+}
+/* o tamanho acompanha a largura do miolo (o canhoto tira 300px fixos) */
+.bx-cartao-titulo{
+  margin:0; padding:0; max-width:none; font-family:var(--bx-sans); font-size:clamp(44px,calc(12vw - 44px),104px);
+  line-height:.88; font-weight:900; font-stretch:80%; letter-spacing:-.035em; text-transform:none; color:var(--bx-ink);
+}
+.bx-cartao-titulo > span{ display:block; }   /* uma linha por <span>, como o letreiro da home */
+.bx-cartao-titulo mark{
+  display:inline-block; font-size:.6em; line-height:1.08; margin-top:.14em; background:var(--bx-neon); color:inherit;
+  padding:0 .14em; box-decoration-break:clone; -webkit-box-decoration-break:clone;
+}
+.bx-cartao-grade{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; margin:0; padding:24px 0 0; border-top:1px solid var(--bx-line); }
+.bx-cartao-grade > div,.bx-cartao-dados > div{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.bx-cartao-lead{ margin:0; font-size:19px; line-height:1.5; color:var(--bx-grey); max-width:640px; }
+.bx-cartao-canhoto{ width:300px; flex:none; box-sizing:content-box; padding:48px 32px; display:flex; flex-direction:column; justify-content:space-between; gap:24px; }
+.bx-cartao-dados{ display:flex; flex-direction:column; gap:20px; }
+.bx-cartao-acoes{ display:flex; flex-direction:column; gap:12px; }
+.bx-cartao-cta{
+  display:block; background:var(--bx-neon); color:var(--bx-ink); text-align:center; padding:18px; border-radius:var(--bx-r-sm);
+  font-family:var(--bx-sans); font-weight:700; font-size:17px; line-height:normal; text-decoration:none; text-transform:none;
+}
+.bx-cartao-cta:hover{ background:#4FE81F; color:var(--bx-ink); }
+.bx-cartao-ja{ text-align:center; font-size:15px; color:var(--bx-ink); }
+.bx-cartao-ja a{ color:inherit; text-decoration:none; }
+.bx-cartao-ja a:hover{ text-decoration:underline; text-underline-offset:3px; }
+.bx-cartao-canhoto .bx-barcode{ height:56px; }
+
+/* ---- rota com escalas (como funciona) ---------------------------------------
+   <div class="bx-rota-grid">                  (ou <ol>; sobre outro chão: --bx-rota-fundo)
+     <div class="bx-escala">
+       <span class="bx-escala-n">Escala 01 · Comprar</span>
+       <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><span class="bx-escala-t">Compre</span></div>
+       <p class="bx-escala-d">Texto.</p>
+     </div> …a última escala ganha o ponto neon
+   </div> */
+.bx-rota-grid{
+  position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:32px; margin:0; padding:0; list-style:none;
+  color:var(--bx-ink); font-family:var(--bx-sans); font-size:16px; line-height:normal;
+}
+.bx-escala{ position:relative; display:flex; flex-direction:column; gap:14px; min-width:0; margin:0; padding:0; }
+.bx-escala-acao{ position:relative; display:flex; align-items:center; gap:14px; }
+/* o tracejado liga um ponto ao seguinte e passa por trás da palavra */
+.bx-escala-acao::before{ content:''; position:absolute; left:12px; right:-32px; top:50%; border-top:2px dashed var(--bx-ink); }
+.bx-escala:last-child .bx-escala-acao::before{ right:0; }
+.bx-escala-ponto{ position:relative; z-index:1; flex:none; width:24px; height:24px; border-radius:50%; background:var(--bx-ink); border:2px solid var(--bx-ink); box-sizing:border-box; }
+.bx-escala:last-child .bx-escala-ponto{ background:var(--bx-neon); }
+.bx-escala-n{
+  display:block; margin:0; padding-left:38px; font-family:var(--bx-mono); font-size:13px; font-weight:400; line-height:18px;
+  color:var(--bx-grey); letter-spacing:.04em; text-transform:uppercase;
+}
+.bx-escala-t{
+  position:relative; z-index:1; background:var(--bx-rota-fundo,var(--bx-bg)); margin:0 0 0 -14px; padding:0 14px;
+  font-family:var(--bx-sans); font-size:40px; font-weight:800; line-height:1; letter-spacing:-.02em; text-transform:none; color:var(--bx-ink);
+}
+.bx-escala-d{ box-sizing:content-box; margin:0; padding-left:38px; font-size:17px; color:var(--bx-grey); line-height:1.5; max-width:280px; }
+
+/* ---- bilhetes (pacotes) -----------------------------------------------------
+   <div class="bx-bilhetes">                   (coluna; com recibo: .bx-bilhetes-recibo > .bx-bilhetes + .bx-recibo)
+     <label class="bx-bilhete">                 (ou <a>/<div> com .bx-bilhete--selecionado)
+       <input class="bx-sr-only" type="radio" name="pacote" value="…">
+       <div class="bx-bilhete-miolo">
+         <div class="bx-bilhete-cab"><span>BX · Plus</span><span>cartão ou transferência</span></div>
+         <span class="bx-bilhete-pts">5.500<small> pts</small></span>
+         <div><span class="bx-rotulo">Tarifa</span><b>…</b></div>
+       </div>
+       <div class="bx-perf" aria-hidden="true"></div>
+       <div class="bx-bilhete-canhoto" aria-hidden="true"><span class="bx-vert">Selecionar</span><span class="bx-bilhete-selo"></span></div>
+     </label>
+   </div> */
+.bx-bilhetes-recibo{ display:grid; grid-template-columns:minmax(0,1fr) 440px; gap:48px; align-items:start; font-size:16px; line-height:normal; }
+.bx-bilhetes{ display:flex; flex-direction:column; gap:24px; min-width:0; font-size:16px; line-height:normal; }
+.bx-bilhetes > .bx-secao-cab{ margin:0; }
+.bx-bilhete{
+  position:relative; display:flex; margin:0; padding:0; background:var(--bx-surface); border-radius:var(--bx-r-lg); overflow:hidden;
+  border:2px solid transparent; cursor:pointer; transition:border-color .15s;
+  color:var(--bx-ink); font-family:var(--bx-sans); font-size:16px; font-weight:400; line-height:normal;
+  letter-spacing:0; text-transform:none; text-decoration:none;   /* label{font-weight:700} da folha-base */
+}
+.bx-bilhete:has(:checked),.bx-bilhete--selecionado{ border-color:var(--bx-ink); }
+.bx-bilhete:focus-within{ outline:3px solid var(--bx-ink); outline-offset:2px; }
+.bx-bilhete-miolo{ flex:1; min-width:0; padding:24px 28px; display:flex; flex-direction:column; gap:14px; }
+.bx-bilhete-cab{ display:flex; justify-content:space-between; gap:12px; font-family:var(--bx-mono); font-size:12px; color:var(--bx-grey); text-transform:uppercase; }
+.bx-bilhete-pts{ font-size:clamp(40px,4vw,52px); font-weight:800; letter-spacing:-.02em; line-height:1; color:var(--bx-ink); }
+.bx-bilhete-pts small{ font-size:18px; font-weight:600; color:var(--bx-grey); }
+.bx-bilhete-canhoto{
+  width:96px; flex:none; background:var(--bx-surface); display:flex; flex-direction:column; justify-content:space-between;
+  align-items:center; padding:20px 0; transition:background .15s;
+}
+.bx-bilhete:has(:checked) .bx-bilhete-canhoto,.bx-bilhete--selecionado .bx-bilhete-canhoto{ background:var(--bx-neon); }
+/* seletor redondo do canhoto: ganha o visto quando o bilhete é escolhido */
+.bx-bilhete-selo{
+  width:30px; height:30px; box-sizing:border-box; border-radius:50%; border:2px solid var(--bx-ink);
+  display:flex; align-items:center; justify-content:center; transition:background .15s;
+}
+.bx-bilhete-selo::after{
+  content:''; width:10px; height:5px; border-left:2.5px solid var(--bx-neon); border-bottom:2.5px solid var(--bx-neon);
+  transform:translateY(-1px) rotate(-45deg); opacity:0; transition:opacity .15s;
+}
+.bx-bilhete:has(:checked) .bx-bilhete-selo,.bx-bilhete--selecionado .bx-bilhete-selo{ background:var(--bx-ink); }
+.bx-bilhete:has(:checked) .bx-bilhete-selo::after,.bx-bilhete--selecionado .bx-bilhete-selo::after{ opacity:1; }
+
+/* ---- recibo -----------------------------------------------------------------
+   <div class="bx-recibo" aria-live="polite">  (+ --reto: sem a inclinação)
+     <div class="bx-zig" aria-hidden="true"></div>
+     <div class="bx-recibo-corpo">
+       <div class="bx-recibo-cabeca"><img src="assets/marca/blaxx-wordmark-barra.svg" alt="BlaXx"><span>EXTRATO</span></div>
+       <div class="bx-tracejo" aria-hidden="true"></div>
+       <div class="bx-leader"><span>PACOTE</span><i></i><span>…</span></div> …
+       <div class="bx-recibo-total"><span>TOTAL</span><b>…</b></div>
+       <div class="bx-recibo-faixa"><div class="bx-leader"><span>PONTOS NA CONTA</span><i></i><span>…</span></div></div>
+       <span class="bx-recibo-nota">Texto.</span>
+       <div class="bx-recibo-via" aria-hidden="true">Via do passageiro</div>
+       <a class="bx-recibo-acao" href="…">Comprar →</a>
+     </div>
+     <div class="bx-zig bx-zig--baixo" aria-hidden="true"></div>
+   </div>
+   Sem linha de valor por ponto nem de "taxa". */
+.bx-recibo{
+  --bx-recibo-py:32px; --bx-recibo-px:36px;   /* padding do corpo; a cabeça anda junto */
+  filter:drop-shadow(0 18px 30px rgba(10,11,14,.12)); transform:rotate(1deg); margin-top:24px; min-width:0;
+  color:var(--bx-ink); font-family:var(--bx-sans); font-size:16px; line-height:normal;
+}
+.bx-recibo--reto{ transform:none; }
+.bx-recibo-corpo{
+  background:var(--bx-surface); padding:var(--bx-recibo-py) var(--bx-recibo-px);
+  font-family:var(--bx-mono); font-size:15px; display:flex; flex-direction:column; gap:16px;
+}
+/* a cabeça preta destaca a marca; o serrilhado de cima acompanha */
+.bx-recibo:has(.bx-recibo-cabeca) > .bx-zig:first-child{ --bx-zig-cor:var(--bx-ink); }
+.bx-recibo-cabeca{
+  text-align:center; display:flex; flex-direction:column; gap:10px; align-items:center; background:var(--bx-ink);
+  margin:calc(var(--bx-recibo-py) * -1) calc(var(--bx-recibo-px) * -1) 0; padding:22px var(--bx-recibo-px) 20px;
+}
+.bx-recibo-cabeca img{ height:30px; width:auto; max-width:none; }   /* wordmark de fundo escuro, como na home */
+.bx-recibo-cabeca span{ font-size:12px; color:var(--bx-bar-fg); letter-spacing:.08em; }
+.bx-recibo-total{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+.bx-recibo-total b{ font-family:var(--bx-sans); font-size:48px; font-weight:900; letter-spacing:-.03em; line-height:1; }
+.bx-recibo-faixa{ background:var(--bx-neon); margin:0 -12px; padding:10px 12px; }
+.bx-recibo-faixa .bx-leader > i{ border-color:rgba(10,11,14,.35); }
+.bx-recibo-nota{ margin:0; font-size:12px; color:var(--bx-grey); line-height:1.5; }
+.bx-recibo-via{ display:flex; align-items:center; gap:12px; font-family:var(--bx-mono); font-size:11px; letter-spacing:.08em; color:var(--bx-grey); text-transform:uppercase; }
+.bx-recibo-via::before,.bx-recibo-via::after{ content:''; flex:1; border-top:2px dashed var(--bx-line); }
+.bx-recibo-acao{
+  display:block; box-sizing:border-box; width:100%; margin:0; padding:18px; border:0; border-radius:0; box-shadow:none; cursor:pointer;
+  background:var(--bx-ink); color:var(--bx-surface); text-align:center; font-family:var(--bx-sans); font-weight:700; font-size:17px;
+  line-height:normal; letter-spacing:0; text-decoration:none; text-transform:uppercase;
+}
+.bx-recibo-acao:hover{ background:var(--bx-ink-2); color:var(--bx-surface); }
+
+/* ---- painel de partidas -----------------------------------------------------
+   <div class="bx-painel">                     (topo na largura toda; embaixo, duas colunas)
+     <div class="bx-painel-topo">
+       <div class="bx-painel-titulo"><span class="bx-secao-rotulo">Painel de partidas</span><h2 class="bx-titulo-secao">Título</h2></div>
+       <div class="bx-painel-resumo">
+         <div class="bx-painel-grande"><b>27</b><span>cidades no mapa</span></div>
+         <ul class="bx-painel-legenda"><li><i style="background:…"></i>Postos</li> …</ul>
+       </div>
+     </div>
+     <div class="bx-painel-globo"><div class="bx-painel-frame"><canvas></canvas><div class="bx-painel-tip"></div></div>
+       <span class="bx-painel-hint">Arraste para girar</span></div>
+     <div class="bx-quadro bx-quadro--ao-lado"> … </div>
+   </div> */
+.bx-painel{
+  background:var(--bx-surface); color:var(--bx-ink); border:1px solid var(--bx-line); border-radius:var(--bx-r-xl);
+  padding:clamp(24px,4vw,48px); display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:32px 40px; box-shadow:var(--bx-sh);
+  font-family:var(--bx-sans); font-size:16px; line-height:normal;
+}
+.bx-painel-topo{
+  grid-column:1 / -1; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px 40px;
+  padding-bottom:28px; border-bottom:2px dashed var(--bx-line);
+}
+.bx-painel-titulo{ display:flex; flex-direction:column; gap:14px; min-width:0; }
+.bx-painel-titulo .bx-titulo-secao{ max-width:15ch; }
+.bx-painel-resumo{ display:flex; flex-direction:column; align-items:flex-end; gap:14px; min-width:0; }
+.bx-painel-grande{ display:flex; align-items:baseline; gap:12px; }
+.bx-painel-grande b{ font-size:clamp(48px,6vw,72px); font-weight:900; color:var(--bx-ink); line-height:1; letter-spacing:-.03em; background:var(--bx-neon); padding:0 .08em; }
+.bx-painel-grande span{ font-size:15px; color:var(--bx-ink); }
+.bx-painel-legenda{
+  display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px 22px; margin:0; padding:0; list-style:none;
+  font-family:var(--bx-mono); font-size:12px; color:var(--bx-grey);
+}
+.bx-painel-legenda li{ display:flex; align-items:center; gap:8px; margin:0; padding:0; }
+.bx-painel-legenda i{ width:12px; height:12px; border-radius:3px; flex:none; }
+.bx-painel-globo{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+.bx-painel-frame{ position:relative; border-radius:var(--bx-r-lg); border:1px solid var(--bx-line); overflow:hidden; aspect-ratio:1/1; background:var(--bx-surface-2); }
+.bx-painel-frame canvas{ width:100%; height:100%; max-width:none; display:block; cursor:grab; touch-action:none; }
+.bx-painel-hint{ font-family:var(--bx-mono); font-size:12px; line-height:1.4; color:var(--bx-grey); }
+.bx-painel-tip{
+  position:absolute; display:none; pointer-events:none; background:var(--bx-ink); color:#F4F2EC; border-radius:var(--bx-r-xxs);
+  padding:7px 10px; font-family:var(--bx-mono); font-size:12px; line-height:1.3; white-space:nowrap; box-shadow:var(--bx-sh);
+}
+.bx-painel-tip > div{ display:none; }
+
+/* ---- quadro preto de partidas -----------------------------------------------
+   <div class="bx-quadro">                     (+ --ao-lado: ocupa a altura do vizinho e rola por dentro)
+     <div class="bx-quadro-cab" aria-hidden="true"><span>Destino</span><span>País</span><span>Situação</span></div>
+     <div class="bx-quadro-lista" role="list">
+       <button type="button" class="bx-quadro-linha" role="listitem">   (+ --ativa)
+         <span>São Paulo</span><span class="bx-quadro-meio">Brasil</span>
+         <span class="bx-quadro-sit"><i aria-hidden="true"></i><em>Em expansão</em></span>   (+ --on)
+       </button> …
+     </div>
+     <div class="bx-quadro-info" aria-live="polite"><b>Título</b><span class="bx-quadro-vazio">Texto.</span></div>
+   </div>
+   Com ícone: <span class="bx-quadro-nome"><span class="bx-ico">SVG</span><span>Nome</span></span> na 1ª coluna. */
+.bx-quadro{
+  min-width:0; min-height:0; display:flex; flex-direction:column; background:var(--bx-ink); color:#F4F2EC;
+  border-radius:var(--bx-r-lg); overflow:hidden; font-family:var(--bx-mono); font-size:14px; line-height:normal;
+}
+.bx-quadro--ao-lado{ contain:size; }
+.bx-quadro-cab,.bx-quadro-linha{ display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 9.5em; gap:12px; align-items:center; }
+.bx-quadro-cab{
+  margin:0; padding:18px 20px 12px; color:var(--bx-ink-muted); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  border-bottom:1px solid var(--bx-ink-2);
+}
+.bx-quadro-cab span:last-child{ text-align:right; }
+.bx-quadro-lista{
+  flex:none; max-height:372px; min-height:0; overflow:auto; margin:0; padding:0; list-style:none;
+  scrollbar-width:thin; scrollbar-color:#3A3D45 transparent;
+}
+.bx-quadro--ao-lado .bx-quadro-lista{ flex:1 1 auto; max-height:none; }
+.bx-quadro-linha{
+  box-sizing:border-box; width:100%; margin:0; padding:12px 20px; border:0; border-bottom:1px solid #1C1F25; border-radius:0; box-shadow:none;
+  background:transparent; color:#F4F2EC; font:inherit; letter-spacing:0; text-align:left; text-decoration:none; text-transform:uppercase; cursor:pointer;
+}
+.bx-quadro-linha:hover,.bx-quadro-linha:focus-visible{ background:#15171C; color:#F4F2EC; outline:none; }
+.bx-quadro-linha--ativa,.bx-quadro-linha--ativa:hover,.bx-quadro-linha--ativa:focus-visible{ background:var(--bx-neon); color:var(--bx-ink); }
+.bx-quadro-meio{ color:var(--bx-ink-muted); text-transform:none; }
+.bx-quadro-linha--ativa .bx-quadro-meio{ color:var(--bx-ink); }
+.bx-quadro-nome{ display:flex; align-items:center; gap:10px; min-width:0; }
+.bx-quadro-nome > span:last-child{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bx-quadro-nome .bx-ico{ width:28px; height:28px; border-radius:8px; }
+.bx-quadro-sit{ display:inline-flex; align-items:center; justify-content:flex-end; gap:8px; font-size:11px; letter-spacing:.06em; color:var(--bx-ink-muted); white-space:nowrap; }
+.bx-quadro-sit i{ width:8px; height:8px; border-radius:50%; background:#4A4D55; flex:none; }
+.bx-quadro-sit em{ font-style:normal; }
+.bx-quadro-sit--on{ color:var(--bx-neon); }   /* neon como texto só aqui, sobre o preto */
+.bx-quadro-sit--on i{ background:var(--bx-neon); }
+.bx-quadro-linha--ativa .bx-quadro-sit{ color:var(--bx-ink); }
+.bx-quadro-linha--ativa .bx-quadro-sit i{ background:var(--bx-ink); }
+.bx-quadro-info{
+  flex:none; min-height:104px; box-sizing:border-box; border-top:1px solid var(--bx-ink-2); padding:16px 20px 18px;
+  display:flex; flex-direction:column; gap:8px; font-family:var(--bx-mono); font-size:13px; background:#111318; color:#F4F2EC;
+}
+.bx-quadro-info b{ font-family:var(--bx-sans); font-size:20px; font-weight:800; letter-spacing:-.02em; text-transform:none; color:#fff; }
+.bx-quadro-info p,.bx-quadro-vazio{ margin:0; color:var(--bx-ink-muted); line-height:1.5; }
+.bx-quadro-info a{ color:var(--bx-neon); font-weight:700; text-decoration:none; border-bottom:2px solid var(--bx-neon); width:max-content; max-width:100%; }
+.bx-quadro-chips{ display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; }
+.bx-quadro-chips span{
+  display:inline-flex; align-items:center; gap:6px; background:#1A1D23; border:1px solid var(--bx-ink-2); color:#F4F2EC;
+  border-radius:999px; padding:4px 10px; font-size:12px;
+}
+.bx-quadro-chips i{ width:9px; height:9px; border-radius:50%; flex:none; }
+
+/* ---- kit: responsivo (os mesmos cortes da home) ------------------------------ */
+@media (max-width:1000px){
+  .bx-bilhetes-recibo{ grid-template-columns:minmax(0,1fr); }
+  .bx-recibo{ transform:none; max-width:520px; }
+  .bx-painel{ grid-template-columns:minmax(0,1fr); gap:28px; }
+  .bx-painel-topo{ align-items:flex-start; padding-bottom:24px; }
+  .bx-painel-resumo{ align-items:flex-start; }
+  .bx-painel-legenda{ justify-content:flex-start; }
+  .bx-quadro--ao-lado{ contain:none; }
+  .bx-quadro--ao-lado .bx-quadro-lista{ flex:none; max-height:372px; }
+}
+@media (max-width:900px){
+  .bx-secao{ padding-bottom:48px; }
+  .bx-secao--hero{ padding:16px 0 40px; }
+  .bx-secao--sem-pe{ padding-bottom:0; }
+  .bx-secao-cab{ margin-bottom:24px; }
+  .bx-secao-cab--linha{ margin-bottom:14px; }
+  /* títulos: vencem h1/h2 !important das folhas-base (≤480/≤360) e o h1 !important desta folha (≤880) */
+  .bx-titulo-secao{ font-size:clamp(34px,4vw,52px) !important; }
+  .bx-so-celular{ display:inline; }
+  /* cartão empilha; o picote vira horizontal */
+  .bx-cartao{ flex-direction:column; }
+  .bx-cartao-miolo{ padding:24px 18px; gap:22px; }
+  .bx-cartao-topo{ font-size:11px; }
+  .bx-cartao-titulo{ font-size:clamp(40px,12.6vw,96px) !important; }
+  .bx-cartao-grade{ grid-template-columns:1fr 1fr; gap:16px; }
+  .bx-cartao-lead{ font-size:16px; }
+  .bx-cartao-canhoto{ width:auto; padding:28px 22px; }
+  .bx-cartao > .bx-perf{ width:auto; height:0; border-left:0; border-top:2px dashed var(--bx-line); align-self:auto; margin:0 -1px; }
+  .bx-cartao > .bx-perf::before{ top:-14px; left:-14px; }
+  .bx-cartao > .bx-perf::after{ top:-14px; bottom:auto; left:auto; right:-14px; }
+  /* rota vira linha do tempo vertical: um trecho por escala, de ponto a ponto
+     (rótulo 18px + vão 6px + metade da ação 34px = 41px) */
+  .bx-rota-grid{ grid-template-columns:minmax(0,1fr); gap:0; }
+  .bx-escala{ padding:0 0 30px; gap:6px; }
+  .bx-escala:last-child{ padding-bottom:0; }
+  .bx-escala-acao::before{ display:none; }
+  .bx-escala:not(:last-child)::after{ content:''; position:absolute; left:11px; top:41px; bottom:-41px; border-left:2px dashed var(--bx-ink); }
+  .bx-escala-n{ font-size:12px; }
+  .bx-escala-t{ font-size:34px; }
+  .bx-escala-d{ font-size:15px; max-width:none; }
+  .bx-bilhetes-recibo{ gap:28px; }
+  .bx-bilhetes{ gap:14px; }
+  .bx-bilhete-miolo{ padding:18px 16px; gap:10px; }
+  .bx-bilhete-pts{ font-size:36px; }
+  .bx-recibo{ margin-top:6px; }
+  .bx-painel{ padding:20px 16px; gap:22px; }
+  .bx-quadro-linha,.bx-quadro-cab{ grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) auto; font-size:13px; padding-left:16px; padding-right:16px; }
+  .bx-quadro-linha > span:not(.bx-quadro-sit):not(.bx-quadro-nome){ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bx-quadro-meio{ font-size:12px; }
+  .bx-quadro-cab{ font-size:11px; }
+  .bx-quadro-info{ padding:14px 16px 16px; }
+}
+@media (max-width:520px){
+  .bx-bilhete-canhoto{ width:72px; }
+  .bx-recibo{ --bx-recibo-py:24px; --bx-recibo-px:18px; }
+  .bx-recibo-corpo{ font-size:13px; }
+  .bx-recibo-cabeca{ padding-top:18px; padding-bottom:16px; }
+  .bx-recibo-total b{ font-size:38px; }
+  .bx-quadro-sit em{ display:none; }
+  .bx-quadro-cab span:last-child{ font-size:0; }
+  .bx-quadro-cab span:last-child::after{ content:'●'; font-size:11px; }
+}
+/* celular ≤600, como a diagramação refeita da home (16/10): margem única,
+   título de capa, dados do canhoto numa linha, bilhete sem o texto vertical,
+   40px entre seções. Vem depois do ≤520 e vence onde os dois falam. */
+@media (max-width:600px){
+  .bx-secao{ padding-bottom:40px; }
+  .bx-secao--hero{ padding:16px 0 40px; }
+  .bx-secao--sem-pe{ padding-bottom:0; }
+  .bx-titulo-secao{ font-size:34px !important; line-height:1 !important; }
+  .bx-cartao{ border-radius:24px; }
+  .bx-cartao-miolo{ padding:22px 16px 24px; gap:20px; }
+  .bx-cartao-topo{ font-size:11px; letter-spacing:.1em; gap:4px 12px; }
+  .bx-cartao-titulo{ font-size:clamp(40px,14.8vw,64px) !important; line-height:.9 !important; letter-spacing:-.03em !important; }
+  /* a linha do neon diminui inteira (não só o mark), sem vão entre as faixas */
+  .bx-cartao-titulo > span:last-child{ margin-top:10px; font-size:.66em; line-height:1.24; }
+  .bx-cartao-titulo mark{ display:inline; font-size:1em; line-height:1.28; padding:.05em .18em; margin:0; }
+  .bx-cartao-grade{ grid-template-columns:1fr 1fr; gap:16px 14px; padding-top:18px; }
+  .bx-cartao-grade b,.bx-cartao-dados b{ font-size:14px; line-height:1.3; }
+  .bx-cartao-grade .bx-rotulo,.bx-cartao-dados .bx-rotulo{ font-size:10px; }
+  .bx-cartao-lead{ font-size:16px; line-height:1.5; }
+  .bx-cartao-canhoto{ padding:20px 20px 22px; gap:18px; }
+  .bx-cartao-dados{ flex-direction:row; justify-content:space-between; gap:10px; }
+  .bx-cartao-cta{ padding:16px; font-size:16px; }
+  .bx-cartao-canhoto .bx-barcode{ height:36px; }
+  .bx-bilhetes{ gap:12px; }
+  .bx-bilhete-miolo{ padding:16px 16px 14px; gap:8px; }
+  .bx-bilhete-cab{ flex-direction:column; align-items:flex-start; gap:2px; font-size:11px; }
+  .bx-bilhete-pts{ font-size:34px; }
+  .bx-bilhete-canhoto{ width:56px; padding:14px 0; justify-content:center; }
+  .bx-bilhete-canhoto .bx-vert{ display:none; }
+  .bx-recibo{ --bx-recibo-py:22px; --bx-recibo-px:16px; }
+  .bx-recibo-corpo{ gap:14px; }
+  .bx-recibo-total b{ font-size:36px; }
+  .bx-painel{ padding:20px 16px; border-radius:24px; }
+  .bx-painel-grande b{ font-size:44px; }
+  .bx-painel-legenda{ gap:8px 16px; }
+  .bx-quadro-lista,.bx-quadro--ao-lado .bx-quadro-lista{ max-height:300px; }
+}
+/* Ícones antigos (.ico, .card-icon, .icon-badge, .glyph, .mark-glyph, .tile):
+   o desenho ocupava o quadrado inteiro, encostando na borda; agora tem o
+   mesmo respiro do .bx-ico (desenho em 56% do quadrado). */
+.card-icon svg,.icon-badge svg,.mark-glyph svg,.glyph svg,.tile svg,.ico svg{
+  width:56% !important; height:56% !important; display:block; margin:auto;
+}

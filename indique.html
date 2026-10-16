@@ -133,6 +133,18 @@
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Indique","item":"https://blaxxpontos.com.br/indique.html"}]}
 </script>
 <script src="assets/blaxx-acesso.js"></script>
+<!-- prévia do link (WhatsApp, redes): cartão de embarque em assets/og/blaxx-og.png -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaXx Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="BlaXx · Indique e ganhe">
+<meta property="og:description" content="Compre pontos, envie para quem quiser e troque por benefícios em parceiros selecionados. Sem mensalidade.">
+<meta property="og:url" content="https://blaxxpontos.com.br/indique">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/og/blaxx-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartão de embarque BlaXx: Seus pontos. Novas aventuras.">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body data-screen="indique">
 <main>
@@ -232,11 +244,11 @@
   var shareText = function(){ return 'Use meu código '+code+' no BlaXx e ganhe pontos de boas-vindas. '+link; };
 
   $('copyBtn').addEventListener('click', function(){
-    navigator.clipboard.writeText(code + ' · ' + link).then(function(){ $('copyBtn').textContent='Copiado ✓'; setTimeout(function(){$('copyBtn').textContent='Copiar';},1600); });
+    navigator.clipboard.writeText(code + ' · ' + link).then(function(){ $('copyBtn').textContent='Copiado'; setTimeout(function(){$('copyBtn').textContent='Copiar';},1600); });
   });
   $('shareBtn').addEventListener('click', function(){
     if (navigator.share){ navigator.share({ title:'BlaXx', text:'Use meu código '+code, url:link }).catch(function(){}); }
-    else { navigator.clipboard.writeText(link).then(function(){ $('shareBtn').textContent='Link copiado ✓'; setTimeout(function(){$('shareBtn').textContent='Compartilhar link →';},1600); }); }
+    else { navigator.clipboard.writeText(link).then(function(){ $('shareBtn').textContent='Link copiado'; setTimeout(function(){$('shareBtn').textContent='Compartilhar link →';},1600); }); }
   });
   $('waBtn').addEventListener('click', function(){
     window.open('https://wa.me/?text='+encodeURIComponent(shareText()), '_blank', 'noopener');

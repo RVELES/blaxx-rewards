@@ -79,6 +79,18 @@
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Segurança","item":"https://blaxxpontos.com.br/seguranca.html"}]}
 </script>
 <script src="assets/blaxx-acesso.js"></script>
+<!-- prévia do link (WhatsApp, redes): cartão de embarque em assets/og/blaxx-og.png -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BlaXx Pontos">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="BlaXx · Segurança">
+<meta property="og:description" content="Compre pontos, envie para quem quiser e troque por benefícios em parceiros selecionados. Sem mensalidade.">
+<meta property="og:url" content="https://blaxxpontos.com.br/seguranca">
+<meta property="og:image" content="https://blaxxpontos.com.br/assets/og/blaxx-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartão de embarque BlaXx: Seus pontos. Novas aventuras.">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body data-screen="seguranca">
 <main>
@@ -101,10 +113,10 @@
         <div class="row">
           <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 19h2"/></svg></span>
           <div class="b"><div class="t">Verificação em duas etapas (2FA)</div><div class="s">App autenticador (TOTP) ativo desde 12/03/2026.</div></div>
-          <span class="chip">ATIVA ✓</span>
+          <span class="chip">ATIVA</span>
         </div>
         <div class="row">
-          <span class="ico">✉️</span>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:100%;height:100%;display:block"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></span>
           <div class="b"><div class="t">Confirmação por e-mail</div><div class="s">Exigida para transferências e resgates.</div></div>
           <span class="chip" id="emailVChip">—</span>
         </div>
@@ -164,7 +176,7 @@
   // status de verificação de e-mail (real)
   fetch(apiBase()+'/auth/me', {headers:{Authorization:'Bearer '+token()}})
     .then(function(r){ return r.ok?r.json():null; })
-    .then(function(u){ if(u){ $('emailVChip').textContent = (u.email_verified || u.email_verified_at) ? 'VERIFICADO ✓' : 'PENDENTE'; } })
+    .then(function(u){ if(u){ $('emailVChip').textContent = (u.email_verified || u.email_verified_at) ? 'VERIFICADO' : 'PENDENTE'; } })
     .catch(function(){});
 
   var ov = $('pwOverlay');
