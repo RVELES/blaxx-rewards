@@ -37,14 +37,15 @@
   }
 
   // ---------------- Google OAuth ----------------
-  // Client ID Web do projeto "BlaXx" no Google Cloud Console.
+  // Client ID Web do projeto "BlaXx Pontos" (blaxx-pontos-511816) no Google
+  // Cloud Console, na conta da empresa rveles@blaxxpontos.com.br (16/10/2026).
   // Esse valor é PÚBLICO por design, pode aparecer no JS do browser sem risco
   // (a segurança vem da validação do ID token no backend, não do Client ID).
-  // Atualizado em 02/08/2026 com o valor lido direto do Google Cloud Console.
-  // O anterior (105341431878-tj5vi2is…) foi aposentado. Se mudar aqui, mude
+  // O anterior (602998235238-…) segue aceito pelo backend na transição; o de
+  // antes dele (105341431878-tj5vi2is…) foi aposentado. Se mudar aqui, mude
   // também GOOGLE_WEB_CLIENT_ID_DEFAULT em blaxx_exe/backend/app/config.py,   // o backend só aceita ID token cujo `aud` esteja na lista dele, e o
   // test_google_oauth.py::test_17 falha se os dois divergirem.
-  window.BLAXX_GOOGLE_CLIENT_ID = "602998235238-ab43odgkvqjph1l0tgu8n49iafgkrcke.apps.googleusercontent.com";
+  window.BLAXX_GOOGLE_CLIENT_ID = "502025699810-eg0oj08j8ok02funb8or9gbe4e5uiqkb.apps.googleusercontent.com";
 
   if (window.console && console.log) console.log('[Blaxx] API:', window.BLAXX_API);
 })();

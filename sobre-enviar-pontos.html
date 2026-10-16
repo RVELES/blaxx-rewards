@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Enviar pontos: como funciona | BlaXx</title>
+<meta name="description" content="Como enviar pontos BlaXx para outra conta ativa: destinatário por e-mail ou CPF, confirmação com senha, limites do regulamento e registro no extrato das duas contas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<script src="assets/blaxx-acesso.js"></script>
+</head>
+<body>
+<!-- Página de explicação do link "Enviar pontos" do rodapé (16/10/2026).
+     Menu, rodapé e faixa "Criar conta" entram pelo assets/blaxx-nav.js.
+     Fontes dos fatos: regulamento.html (§ 06 Transferência entre Participantes,
+     § 09 Fraude e abuso, § 01 Definições), enviar-pontos.html, confirmar-envio.html,
+     envio-concluido.html, central-ajuda.html e o backend
+     (blaxx_exe/backend/app/api/transfer.py, app/services/transfer.py, app/config.py). -->
+<main class="bx-sobre">
+  <header class="bx-sobre-topo">
+    <span class="bx-sobre-rotulo">Produto · Enviar pontos</span>
+    <h1>Enviar pontos</h1>
+    <p class="bx-sobre-lead">Mande pontos da sua conta para outra conta BlaXx ativa, informando o e-mail ou o CPF de quem vai receber. O envio é gratuito e fica registrado no extrato das duas contas.</p>
+    <div class="bx-sobre-acoes">
+      <a class="bx-sobre-cta" href="enviar-pontos.html">Enviar pontos <span aria-hidden="true">→</span></a>
+      <a class="bx-sobre-link" href="regulamento.html#transferencia">Ler o regulamento</a>
+    </div>
+  </header>
+
+  <section class="bx-sobre-sec" aria-labelledby="sobrePassos">
+    <h2 id="sobrePassos">Passo a passo</h2>
+    <ol class="bx-sobre-passos">
+      <li><b>01</b><h3>Entre na sua conta</h3><p>O envio é feito dentro da conta BlaXx, que precisa estar ativa e com o e-mail verificado.</p></li>
+      <li><b>02</b><h3>Informe o destinatário</h3><p>Digite o e-mail ou o CPF de quem vai receber. A pessoa precisa ter conta BlaXx. Não é possível enviar para a própria conta.</p></li>
+      <li><b>03</b><h3>Escolha a quantidade</h3><p>A partir de 100 pontos por envio. Se quiser, escreva uma mensagem de até 140 caracteres.</p></li>
+      <li><b>04</b><h3>Confira e confirme</h3><p>Informe a senha da sua conta, revise os dados e confirme o envio. Você recebe um comprovante.</p></li>
+    </ol>
+  </section>
+
+  <section class="bx-sobre-sec" aria-labelledby="sobreFicha">
+    <h2 id="sobreFicha">O que você precisa saber</h2>
+    <dl class="bx-sobre-ficha">
+      <div><dt>Quem pode receber</dt><dd>Outra conta BlaXx ativa, identificada pelo e-mail ou pelo CPF.</dd></div>
+      <div><dt>Custo</dt><dd>Nenhum. A transferência é gratuita.</dd></div>
+      <div><dt>Limites</dt><dd>Mínimo de 100 pontos por operação e até 50.000 pontos por dia.</dd></div>
+      <div><dt>Pontos comprados</dt><dd>Só podem ser transferidos depois de uma carência de 48 horas após a compra.</dd></div>
+      <div><dt>Crédito</dt><dd>Os pontos saem do seu saldo na confirmação e entram na conta do destinatário depois de 60 segundos.</dd></div>
+      <div><dt>Registro</dt><dd>A transferência aparece no extrato das duas contas.</dd></div>
+    </dl>
+  </section>
+
+  <section class="bx-sobre-sec" aria-labelledby="sobreFaq">
+    <h2 id="sobreFaq">Dúvidas comuns</h2>
+    <div class="bx-sobre-faq">
+      <details><summary>Posso enviar para quem não tem conta?</summary><p>Não. O destinatário precisa ter conta BlaXx com o e-mail ou CPF informado. Se nenhuma conta for encontrada, o envio não é feito.</p></details>
+      <details><summary>Posso cancelar um envio?</summary><p>Não. Envios confirmados não podem ser cancelados, então confira o destinatário antes de confirmar. Se houve erro, peça a devolução ao destinatário.</p></details>
+      <details><summary>Posso enviar pontos que acabei de comprar?</summary><p>Só depois de uma carência de 48 horas após a compra. É um dos limites antifraude do regulamento.</p></details>
+      <details><summary>Posso usar o envio para revender pontos?</summary><p>Não. A transferência não pode ser usada para revenda de pontos a terceiros. A BlaXx pode suspender a conta e cancelar pontos quando identifica uso do programa para finalidade diversa da fidelização.</p></details>
+      <details><summary>O que são os pontos BlaXx?</summary><p>Os pontos BlaXx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</p></details>
+    </div>
+  </section>
+
+  <nav class="bx-sobre-veja" aria-label="Veja também">
+    <span>Veja também</span>
+    <a href="sobre-comprar-pontos.html">Comprar pontos</a>
+    <a href="sobre-resgatar-beneficios.html">Resgatar benefícios</a>
+    <a href="sobre-parceiros.html">Parceiros</a>
+    <a href="regulamento.html">Regulamento</a>
+  </nav>
+</main>
+<script src="assets/blaxx-nav-user.js"></script>
+<script src="assets/blaxx-nav.js"></script>
+</body>
+</html>

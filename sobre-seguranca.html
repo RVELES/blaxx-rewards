@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Segurança da conta: como funciona | BlaXx</title>
+<meta name="description" content="Como a BlaXx protege a sua conta: senha, verificação de e-mail, confirmação de senha no envio de pontos, encerramento de acessos e privacidade conforme a LGPD.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<script src="assets/blaxx-acesso.js"></script>
+</head>
+<body>
+<!-- Página de explicação do link "Segurança" do rodapé (16/10/2026).
+     Menu, rodapé e faixa "Criar conta" entram pelo assets/blaxx-nav.js.
+     Fontes dos fatos: seguranca.html (troca de senha, status do e-mail, boas práticas),
+     perfil.html (sair, excluir conta), excluir-conta.html, privacidade.html (§ 04, § 06),
+     regulamento.html (§ 05 Resgate, § 06 Transferência, § 09 Fraude e abuso), faq.html,
+     central-ajuda.html, login.html, recuperar-senha.html e o backend
+     blaxx_exe/backend/app (api/auth.py, api/security.py, security.py, __init__.py,
+     services/transfer.py). -->
+<main class="bx-sobre">
+  <header class="bx-sobre-topo">
+    <span class="bx-sobre-rotulo">Ajuda · Segurança</span>
+    <h1>Segurança da conta</h1>
+    <p class="bx-sobre-lead">A BlaXx protege a sua conta com senha, verificação de e-mail e confirmação de senha no envio de pontos. Veja como funciona e o que você pode fazer para manter a conta segura.</p>
+    <div class="bx-sobre-acoes">
+      <a class="bx-sobre-cta" href="seguranca.html">Configurar segurança da conta <span aria-hidden="true">→</span></a>
+      <a class="bx-sobre-link" href="privacidade.html">Ler a política de privacidade</a>
+    </div>
+  </header>
+
+  <section class="bx-sobre-sec" aria-labelledby="sobrePassos">
+    <h2 id="sobrePassos">Passo a passo</h2>
+    <ol class="bx-sobre-passos">
+      <li><b>01</b><h3>Confirme seu e-mail</h3><p>No cadastro, enviamos um código de 6 dígitos para o seu e-mail. A tela de segurança mostra se o e-mail já está verificado.</p></li>
+      <li><b>02</b><h3>Cuide da senha</h3><p>Mantenha uma senha forte e exclusiva, com no mínimo 7 caracteres. Para trocar, informe a senha atual e a nova na tela de segurança.</p></li>
+      <li><b>03</b><h3>Controle os acessos</h3><p>Você pode encerrar o acesso de um aparelho específico ou de todos de uma vez. Sair da conta encerra a sessão no aparelho em uso.</p></li>
+      <li><b>04</b><h3>Desconfie de pedidos de código</h3><p>A BlaXx nunca pede o código de verificação em duas etapas (2FA) por telefone ou WhatsApp. Suspeita de fraude? Abra um chamado.</p></li>
+    </ol>
+  </section>
+
+  <section class="bx-sobre-sec" aria-labelledby="sobreFicha">
+    <h2 id="sobreFicha">O que você precisa saber</h2>
+    <dl class="bx-sobre-ficha">
+      <div><dt>Senha</dt><dd>Mínimo de 7 caracteres, em qualquer formato. Senhas muito conhecidas são recusadas. No cadastro, a senha também não pode conter seu e-mail, nome, CPF ou telefone.</dd></div>
+      <div><dt>Verificação de e-mail</dt><dd>Código de 6 dígitos, com até 3 tentativas por código. O código do cadastro vale 30 minutos; um código reenviado vale 10 minutos. Sem e-mail verificado, não é possível enviar pontos nem fazer resgates.</dd></div>
+      <div><dt>Confirmação de senha</dt><dd>Enviar pontos e excluir a conta exigem que você confirme a sua senha.</dd></div>
+      <div><dt>Tentativas de login</dt><dd>Depois de 5 tentativas com senha errada, a conta fica bloqueada por 15 minutos. A partir de 10, o bloqueio é de 1 hora. A mensagem de erro não diz se o problema está no e-mail ou na senha.</dd></div>
+      <div><dt>Antifraude</dt><dd>O envio de pontos tem limites: mínimo de 100 pontos por operação e até 50.000 pontos por dia. Pontos comprados só podem ser enviados 48 horas depois da compra. Se houver indício de fraude, a BlaXx pode suspender a conta e bloquear resgates. Você é notificado e pode contestar pelos canais de atendimento.</dd></div>
+      <div><dt>Seus dados</dt><dd>Tratados conforme a LGPD (Lei 13.709/2018). Não vendemos dados pessoais. Você pode acessar, corrigir, pedir a exclusão e a portabilidade dos seus dados pelo perfil ou abrindo um chamado.</dd></div>
+    </dl>
+  </section>
+
+  <section class="bx-sobre-sec" aria-labelledby="sobreFaq">
+    <h2 id="sobreFaq">Dúvidas comuns</h2>
+    <div class="bx-sobre-faq">
+      <details><summary>Esqueci a senha. O que faço?</summary><p>Use a opção Esqueci a senha na tela de entrada e informe seu e-mail. Se ele estiver cadastrado, enviamos um link para criar uma nova senha. O link expira em 30 minutos e só pode ser usado uma vez.</p></details>
+      <details><summary>Posso entrar com a conta Google?</summary><p>Sim, quando a opção aparece na tela de entrada. A conta Google precisa ter o e-mail verificado, e quem entra pelo Google já tem o e-mail confirmado na BlaXx. Quem entra só pelo Google não tem senha própria; para criar uma, use Esqueci a senha.</p></details>
+      <details><summary>Troquei a senha. O que acontece com os outros aparelhos?</summary><p>Os acessos abertos antes da troca deixam de valer. Para continuar, é preciso entrar de novo com a senha nova.</p></details>
+      <details><summary>Notei algo estranho na minha conta. O que faço?</summary><p>Troque a senha, encerre os acessos que você não reconhece e abra um chamado pela Central de ajuda. A resposta vem em até 1 dia útil.</p></details>
+      <details><summary>Como excluo minha conta?</summary><p>Pelo perfil, em Excluir minha conta, ou abrindo um chamado. A exclusão é definitiva: você perde o acesso aos pontos, aos vouchers ativos e ao histórico, e não é possível restaurar a conta. Os dados pessoais são anonimizados, e o CPF fica guardado por 5 anos, por exigência fiscal.</p></details>
+    </div>
+  </section>
+
+  <nav class="bx-sobre-veja" aria-label="Veja também">
+    <span>Veja também</span>
+    <a href="sobre-enviar-pontos.html">Enviar pontos</a>
+    <a href="sobre-resgatar-beneficios.html">Resgatar benefícios</a>
+    <a href="privacidade.html">Privacidade e LGPD</a>
+    <a href="central-ajuda.html">Central de ajuda</a>
+  </nav>
+</main>
+<script src="assets/blaxx-nav-user.js"></script>
+<script src="assets/blaxx-nav.js"></script>
+</body>
+</html>

@@ -181,7 +181,7 @@
       ['',   'Sem mensalidade']
     ],
     dir: [
-      ['Segurança', 'seguranca.html'],
+      ['Segurança', 'sobre-seguranca.html'],
       ['Central de ajuda', 'central-ajuda.html']
     ]
   };
@@ -213,8 +213,8 @@
           ]],
           ['OUTRAS FORMAS', [
             ['Valor livre', 'Escolha quanto quer comprar', 'comprar-livre.html'],
-            ['Enviar pontos', 'Mande para quem quiser', u ? 'enviar.html' : 'como-funciona.html'],
-            ['Resgatar benefícios', 'Troque pontos por vantagens', u ? 'resgates.html' : 'regras-pontos.html']
+            ['Enviar pontos', 'Mande para quem quiser', u ? 'enviar.html' : 'sobre-enviar-pontos.html'],
+            ['Resgatar benefícios', 'Troque pontos por vantagens', u ? 'resgates.html' : 'sobre-resgatar-beneficios.html']
           ]]
         ],
         destaque: { tipo: 'neon', rotulo: 'MAIS ESCOLHIDO', num: fmtPts(p.plus.pts), un: 'pts',
@@ -243,7 +243,7 @@
           ['COMEÇAR', [
             ['Como funciona', 'Compre, envie e troque', 'como-funciona.html'],
             ['Regulamento do programa', 'As regras, por extenso', 'regulamento.html'],
-            ['Segurança', 'Como protegemos sua conta', 'seguranca.html']
+            ['Segurança', 'Como protegemos sua conta', 'sobre-seguranca.html']
           ]],
           ['SUPORTE', [
             ['Central de ajuda', 'Perguntas frequentes', 'central-ajuda.html'],
@@ -263,17 +263,19 @@
   // (decisão de 03/08) e mandava metade dos links para em-breve.html; o design
   // 3a tem três colunas curtas e todas apontam para páginas reais.
   var RODAPE = [
+    // Cada link leva a uma página que EXPLICA o tema (pedido de 16/10); a
+    // funcionalidade fica no botão dela. Nada aqui aponta para tela de função.
     ['PRODUTO', [
-      ['Comprar pontos', 'comprar-pontos.html'],
-      ['Parceiros', 'parceiros.html'],
-      ['Enviar pontos', 'enviar-pontos.html'],
-      ['Resgatar benefícios', 'resgates.html']
+      ['Comprar pontos', 'sobre-comprar-pontos.html'],
+      ['Parceiros', 'sobre-parceiros.html'],
+      ['Enviar pontos', 'sobre-enviar-pontos.html'],
+      ['Resgatar benefícios', 'sobre-resgatar-beneficios.html']
     ]],
     ['AJUDA', [
       ['Como funciona', 'como-funciona.html'],
       ['Central de ajuda', 'central-ajuda.html'],
       ['Falar com a gente', 'contato.html'],
-      ['Segurança', 'seguranca.html']
+      ['Segurança', 'sobre-seguranca.html']
     ]],
     ['LEGAL', [
       ['Termos de uso', 'documentos-termos.html'],
