@@ -100,7 +100,7 @@
   // Marcador de build: este projeto já perdeu horas com o navegador servindo
   // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
   // hora se o que está rodando é o arquivo do disco.
-  window.BLAXX_APP_BUILD = 'sobre-google-2026-10-16';
+  window.BLAXX_APP_BUILD = 'area-logada-2026-10-16';
 
   var STORE = {
     token: function () {

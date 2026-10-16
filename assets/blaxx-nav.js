@@ -422,7 +422,11 @@
     }
     var nu = window.BlaxxNavUser || {};
     var nome = nu.primeiroNome ? nu.primeiroNome(u) : '';
-    return '<a class="bx-chip" href="' + HOME_LOGADA + '" aria-label="Minha conta">' +
+    return '<a class="bx-sino nav-bell" href="central-notificacoes.html" aria-label="Notificações">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" ' +
+      'stroke-linejoin="round" aria-hidden="true"><path d="M6 16V10a6 6 0 0 1 12 0v6l1.5 2.2H4.5Z"/>' +
+      '<path d="M10 19a2 2 0 0 0 4 0"/></svg></a>' +
+      '<a class="bx-chip" href="perfil.html" aria-label="Perfil">' +
       '<span class="bx-chip-av" aria-hidden="true">' + esc(nu.inicial ? nu.inicial(u) : '') + '</span>' +
       '<span class="bx-chip-nome">' + esc(nome ? 'Olá, ' + nome : 'Minha conta') + '</span></a>' +
       '<button type="button" class="bx-sair">Sair</button>';
@@ -446,13 +450,16 @@
     barra.removeAttribute('data-bx-mega');
     [].forEach.call(document.querySelectorAll('.bx-mega'), function (m) { m.remove(); });
     var atual = pagina(location.pathname), links = '';
-    NAV_VISITANTE.forEach(function (it) {
-      links += '<a href="' + esc(it[1]) + '"' + (pagina(it[1]) === atual ? ' aria-current="page"' : '') +
+    if (u) atual = ATIVO_LOGADO[atual] || atual;
+    (u ? NAV_LOGADO : NAV_VISITANTE).forEach(function (it) {
+      var ativo = pagina(it[1]) === atual;
+      links += '<a href="' + esc(it[1]) + '"' + (ativo ? ' class="active" aria-current="page"' : '') +
         '>' + esc(it[0]) + '</a>';
     });
+    if (u) barra.setAttribute('data-bx-logado', '1'); else barra.removeAttribute('data-bx-logado');
     barra.innerHTML =
       '<nav class="nav" aria-label="Principal">' +
-        '<a class="brand" href="/" aria-label="BlaXx Pontos, página inicial"><span class="mark">BlaXx</span></a>' +
+        '<a class="brand" href="' + (u ? HOME_LOGADA : '/') + '" aria-label="BlaXx Pontos, página inicial"><span class="mark">BlaXx</span></a>' +
         '<div class="links">' + links + '</div>' +
         '<div class="cta-row">' + acoesComuns(u) + '</div>' +
       '</nav>';
@@ -460,6 +467,95 @@
     var botaoSair = barra.querySelector('.bx-sair');
     if (botaoSair) botaoSair.addEventListener('click', sair);
     return barra;
+  }
+
+  // --------------------------------------------------------------------- //
+  // Área logada no padrão do painel (16/10)                                //
+  // --------------------------------------------------------------------- //
+  // "Aplique dashboard.html para toda área logada": com sessão, TODA página
+  // ganha o menu do topo do painel (os seis itens que o blaxx-app.js fixou),
+  // a mesma barra lateral (perfil, itens e ícones do painel) e a mesma coluna
+  // centralizada (.app-shell). Antes as páginas do chrome.js tinham outra
+  // lateral, colada na borda, e as públicas mostravam o menu de visitante.
+  // Administração e protótipo têm barra própria.
+  var SEM_BARRA_LOGADA = ['admin.html', 'app.html'];
+  var NAV_LOGADO = [
+    ['Início', 'dashboard.html'],
+    ['Como funciona', 'como-funciona.html'],
+    ['Parceiros', 'parceiros.html'],
+    ['Resgates', 'resgates.html'],
+    ['Comprar pontos', 'comprar-pontos.html'],
+    ['Vender pontos', 'venda-pontos.html']
+  ];
+  var ATIVO_LOGADO = { 'index.html': 'dashboard.html', 'vender-pontos.html': 'venda-pontos.html' };
+  // [data-side, ícone, rótulo, destino]: os do painel, com os ícones que o
+  // blaxx-app.js usa (SIDEBAR_ICON_BY_SIDE), para não haver duas versões.
+  var LATERAL = [
+    ['dashboard', '🏠', 'Início', 'dashboard.html'],
+    ['carteira', '💳', 'Carteira', 'carteira.html'],
+    ['extrato', '📊', 'Extrato', 'extrato.html'],
+    ['parceiros', '🏬', 'Parceiros', 'parceiros.html'],
+    ['resgates', '🎁', 'Resgates', 'resgates.html'],
+    ['meus-resgates', '🎟️', 'Meus resgates', 'meus-resgates.html'],
+    ['campanhas', '🎯', 'Campanhas', 'campanhas.html'],
+    ['comprar-pontos', '💰', 'Comprar pontos', 'comprar-pontos.html'],
+    ['enviar-pontos', '📤', 'Enviar pontos', 'enviar-pontos.html'],
+    ['indique', '💝', 'Indique e ganhe', 'indique-ganhe.html']
+  ];
+  var LATERAL_PE = [
+    ['perfil', '👤', 'Perfil', 'perfil.html'],
+    ['seguranca', '🔐', 'Segurança', 'seguranca.html'],
+    ['ajuda', '💬', 'Ajuda', 'central-ajuda.html']
+  ];
+  var LADO_ATIVO = { 'index.html': 'dashboard', 'indique-ganhe.html': 'indique', 'indique.html': 'indique', 'central-ajuda.html': 'ajuda' };
+  // Telas que não são "área de conta": entrada, erro, administração e a home
+  // de marketing (layout de largura total).
+  var SEM_LATERAL = ['login.html', 'cadastro.html', 'recuperar-senha.html', 'redefinir-senha.html',
+    'validacao.html', 'manutencao.html', '404.html', 'app.html', 'admin.html', 'home-embarque.html'];
+
+  function montarLateral(u) {
+    if (!u || document.documentElement.hasAttribute('data-bx-sem-lateral')) return;
+    var pg = pagina(location.pathname);
+    if (SEM_LATERAL.indexOf(pg) >= 0) return;
+    var aside = document.querySelector('aside.sidebar');
+    if (aside && aside.getAttribute('data-bx-lateral')) return;
+    // O chrome.js chama iniciar() ANTES de montar o .shell dele; mexer no
+    // <main> nessa hora embaralharia as duas estruturas. A chamada do
+    // DOMContentLoaded, que vem depois, faz o trabalho.
+    if (document.querySelector('script[src$="chrome.js"]') && !document.querySelector('.shell, .app-shell')) return;
+    var main = document.querySelector('main');
+    if (!main) return;
+    var casca = aside ? aside.parentNode : null;
+    if (!aside) {
+      aside = document.createElement('aside');
+      casca = document.createElement('div');
+      main.parentNode.insertBefore(casca, main);
+      casca.appendChild(aside);
+      casca.appendChild(main);
+    }
+    casca.className = 'app-shell';
+    aside.className = 'sidebar';
+    aside.setAttribute('data-bx-lateral', '1');
+    var lado = LADO_ATIVO[pg] || pg.replace(/\.html$/, '');
+    function itens(lista) {
+      return lista.map(function (it) {
+        var ativo = it[0] === lado;
+        return '<li><a href="' + it[3] + '" data-side="' + it[0] + '"' + (ativo ? ' class="active" aria-current="page"' : '') +
+          '><span class="ic" aria-hidden="true">' + it[1] + '</span> ' + esc(it[2]) + '</a></li>';
+      }).join('');
+    }
+    var nu = window.BlaxxNavUser || {};
+    aside.innerHTML =
+      '<div class="side-user">' +
+        '<div class="avatar">' + esc(nu.inicial ? nu.inicial(u) : '') + '</div>' +
+        '<div><div class="side-user-name">' + esc(u.name || u.nome || (nu.primeiroNome ? nu.primeiroNome(u) : '')) + '</div>' +
+        '<div class="side-user-tier">Minha conta</div></div>' +
+      '</div>' +
+      '<ul class="side-nav">' + itens(LATERAL) + '</ul>' +
+      '<div class="side-foot"><ul class="side-nav">' + itens(LATERAL_PE) +
+        '<li><a href="login.html" data-bxnav-sair><span class="ic" aria-hidden="true">🚪</span> Sair</a></li>' +
+      '</ul></div>';
+    aside.querySelector('[data-bxnav-sair]').addEventListener('click', function (ev) { ev.preventDefault(); sair(); });
   }
 
   // Convite "Criar conta" no corpo de toda página pública, para quem não
@@ -474,28 +570,41 @@
     var sec = document.createElement('section');
     sec.className = 'bx-convite';
     sec.setAttribute('aria-labelledby', 'bxConviteTitulo');
-    var passos = ['Compre', 'Ganhe', 'Envie', 'Troque'].map(function (p, i) {
-      return '<li><b>0' + (i + 1) + '</b>' + p + '</li>';
+    // Cartões no modelo dos atalhos do painel: ícone de traço em quadrado
+    // neon, título e uma linha. Fatos: cadastro gratuito (termos.html), login
+    // com Google (login/cadastro), mensalidade nenhuma (home), envio entre
+    // contas e benefícios em parceiros selecionados (regulamento).
+    var ICONE = function (d) {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+    };
+    var CARTOES = [
+      ['<circle cx="10" cy="8" r="3.6"/><path d="M3.5 20c0-3.6 2.9-5.5 6.5-5.5 1.6 0 3 .4 4.1 1"/><path d="M18 14v6M15 17h6"/>',
+       'Cadastro em minutos', 'Crie sua conta com e-mail ou com o Google. O cadastro é gratuito.'],
+      ['<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m9.5 13.5 5 5M14.5 13.5l-5 5"/>',
+       'Sem mensalidade', 'Nada de taxa fixa por mês para manter a conta.'],
+      ['<path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/>',
+       'Envie para quem quiser', 'Mande pontos para outras contas BlaXx, com registro no extrato.'],
+      ['<rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/>',
+       'Troque por benefícios', 'Benefícios e experiências em parceiros selecionados.']
+    ].map(function (c) {
+      return '<li class="bx-convite-card"><span class="bx-convite-ico">' + ICONE(c[0]) + '</span>' +
+        '<h3>' + c[1] + '</h3><p>' + c[2] + '</p></li>';
     }).join('');
     sec.innerHTML =
       '<div class="bx-convite-in">' +
-        '<div class="bx-convite-txt">' +
+        '<div class="bx-convite-topo">' +
           '<span class="bx-convite-rotulo">CRIAR CONTA · SEM MENSALIDADE</span>' +
-          '<h2 id="bxConviteTitulo">Inicie sua aventura<br> com a BlaXx.</h2>' +
-          '<p>Abra sua conta em poucos minutos. Compre pontos, envie para quem quiser ' +
-          'e troque por benefícios em parceiros selecionados.</p>' +
-          '<ol class="bx-convite-passos" aria-label="Como funciona">' + passos + '</ol>' +
+          '<h2 id="bxConviteTitulo">Inicie sua aventura com a BlaXx.</h2>' +
+          '<p>Abra sua conta em poucos minutos e comece a comprar, enviar e trocar pontos.</p>' +
         '</div>' +
-        '<div class="bx-convite-bilhete">' +
-          '<span class="bx-convite-bil-rot">BILHETE · NOVA CONTA</span>' +
-          '<dl>' +
-            '<div><dt>Passageiro</dt><dd>Você</dd></div>' +
-            '<div><dt>Mensalidade</dt><dd>Nenhuma</dd></div>' +
-            '<div><dt>Pagamento</dt><dd>Cartão ou transferência</dd></div>' +
-          '</dl>' +
-          '<span class="bx-convite-picote" aria-hidden="true"></span>' +
-          '<a class="bx-convite-criar" href="cadastro.html">Criar conta <span aria-hidden="true">→</span></a>' +
-          '<a class="bx-convite-entrar" href="login.html">Já tenho conta · Entrar</a>' +
+        '<ul class="bx-convite-grade">' + CARTOES + '</ul>' +
+        '<div class="bx-convite-acao">' +
+          '<div><b>Pronto para embarcar?</b><span>Sua conta BlaXx fica pronta em poucos minutos.</span></div>' +
+          '<div class="bx-convite-botoes">' +
+            '<a class="bx-convite-criar" href="cadastro.html">Criar conta <span aria-hidden="true">→</span></a>' +
+            '<a class="bx-convite-entrar" href="login.html">Já tenho conta · Entrar</a>' +
+          '</div>' +
         '</div>' +
       '</div>';
     pe.parentNode.insertBefore(sec, pe);
@@ -713,11 +822,12 @@
       if (barra.hasAttribute('data-bx-comum')) { /* links e ações já canônicos */ }
       else if (!u) { montarNavVisitante(topo); montarAcoesVisitante(topo); }
       else montarAcoesLogado(topo, u);
-      montarBusca(topo);
+      if (!barra.hasAttribute('data-bx-logado')) montarBusca(topo);
       barra.setAttribute('data-bx-embarque', '1');
     }
     montarTabBar(u);
-    montarMega(barra, topo, u);
+    // o menu do painel não tem mega-menus: os itens levam direto às páginas
+    if (!barra.hasAttribute('data-bx-logado')) montarMega(barra, topo, u);
   }
 
   function sair() {
@@ -753,7 +863,11 @@
     // inconsistência aparecia.
     var u = usuario();
     var comum = areaComum();
-    if (comum) montarBarraComum(u);
+    // Com sessão, o menu do painel vale em toda página; sem sessão, o menu
+    // comum vale nas páginas públicas.
+    var canonica = (comum || u) && SEM_BARRA_LOGADA.indexOf(pagina(location.pathname)) < 0;
+    if (canonica) montarBarraComum(u);
+    montarLateral(u);
     var barra = document.querySelector('.topbar');
 
     // Vale para TODA página com barra, inclusive as que já têm gaveta própria:
@@ -778,7 +892,7 @@
     // Na área comum a gaveta é sempre esta, para o menu do celular também ser
     // um só; a do chrome.js fica sem botão que a abra.
     if (document.getElementById(ID_GAVETA)) return;
-    if (!comum && document.querySelector('.drawer')) return;
+    if (!canonica && document.querySelector('.drawer')) return;
 
     // Construir a gaveta exige a topbar INLINE (`.topbar .nav`), que é a que
     // não tem menu mobile. A do chrome.js já tem a sua.
