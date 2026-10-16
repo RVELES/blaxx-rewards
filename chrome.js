@@ -91,8 +91,8 @@
   // Exige fundo ESCURO: "Bla" é branco. A barra do tema "Embarque" é PRETA
   // (15/10), então é esta mesmo.
   const brandMarkup = () => `
-    <img class="brand__img" src="assets/marca/blaxx-wordmark.svg"
-         alt="BlaXx Rewards"
+    <img class="brand__img" src="assets/marca/blaxx-simbolo-b.svg"
+         alt="BlaXx"
          style="display:block;flex:0 0 auto;height:28px;width:auto">`;
 
   const navItem = (label, href, icoKey, key, badge) => `

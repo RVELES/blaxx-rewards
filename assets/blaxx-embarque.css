@@ -192,14 +192,14 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
 .topbar .nav > .brand,.topbar .nav > .links,.topbar .nav > .cta-row{ grid-column:auto; justify-self:auto; }
 .topbar .nav > .cta-row,.topbar .topbar__right{ margin-left:auto; }
 
-/* Marca oficial, variante para fundo ESCURO ("Bla" branco, "Xx" neon). */
+/* Marca: só o B característico (16/10), variante de fundo ESCURO. */
 .brand{ display:flex; align-items:center; gap:0; font-size:0; color:transparent; }
 .brand .mark,.mark{
-  display:block; width:132px; height:40px; min-width:0; padding:0;
-  background:transparent url('marca/blaxx-wordmark.svg') left center / contain no-repeat;
+  display:block; width:40px; height:40px; min-width:0; padding:0;
+  background:transparent url('marca/blaxx-simbolo-b.svg') center / contain no-repeat;
   border:0; border-radius:0; box-shadow:none; font-size:0; color:transparent;
 }
-.brand__img{ height:34px !important; width:auto; }
+.brand__img{ height:38px !important; width:auto; }
 .brand-sub{ display:none; }
 
 /* Itens de navegação: pílula 8px, hover em superfície-2 (como o mock). */
@@ -518,10 +518,13 @@ input[type="range"]{ border:0; box-shadow:none; }   /* sem background:transparen
 /* Mesma largura da barra de navegação (pedido de 15/10): preto de borda a
    borda, conteúdo na coluna de 1280px com o mesmo respiro lateral da barra. */
 footer.footer,footer.site-footer{
-  background:transparent; border:0; color:#F4F2EC; margin:72px 0 0; padding:0;
+  /* preto de ponta a ponta (16/10): o próprio <footer> é o fundo; o conteúdo
+     segue na coluna de 1280px. O serrilhado some, porque não há mais o chão
+     claro entre ele e o preto. */
+  background:var(--bx-ink); border:0; color:#F4F2EC; margin:72px 0 0; padding:0;
 }
 .bx-foot{ max-width:none; margin:0; filter:none; }
-.bx-foot .bx-zig--baixo{ display:none; }
+.bx-foot .bx-zig{ display:none; }
 /* Rodapé PRETO, cores invertidas (pedido de 15/10): recibo escuro, texto
    papel, cinza #8A8D96 (5,9:1 sobre preto), serrilhado e barras na cor da
    superfície, logo na variante de fundo escuro ("Bla" branco). */
@@ -533,7 +536,7 @@ footer.footer,footer.site-footer{
   display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:32px;
 }
 .bx-foot-marca{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
-.bx-foot-marca img{ height:36px; width:auto; display:block; }
+.bx-foot-marca img{ height:48px; width:auto; display:block; }
 .bx-foot-marca p{ color:var(--bx-ink-muted); line-height:1.5; max-width:320px; margin:0; }
 .bx-foot-col{ display:flex; flex-direction:column; gap:12px; }
 .bx-foot-col h4{ margin:0; color:#F4F2EC; font-family:var(--bx-mono); font-size:12px; letter-spacing:.08em; font-weight:400; }
@@ -559,7 +562,7 @@ footer.footer,footer.site-footer{
 @media (max-width:880px){
   .topbar .nav,.topbar > .bx-topo{ padding:10px 16px; gap:10px; }
   .links,.topnav{ display:none; }
-  .brand .mark,.mark{ width:112px; height:34px; }
+  .brand .mark,.mark{ width:36px; height:36px; }
   /* assets/styles.css esconde TODO .button.ghost do .cta-row no celular; a
      intenção era o "Entrar" do visitante, mas levava junto o "Voltar" de
      comprar-livre. Só o "Entrar" some. */
@@ -611,7 +614,9 @@ footer.footer,footer.site-footer{
   .bx-tabbar a.ativa{ color:var(--bx-neon); }
   .bx-tabbar a:active,.bx-tabbar button:active{ background:rgba(244,242,236,.08); }
   /* o conteúdo e o rodapé não podem ficar debaixo da barra */
-  .bx-com-tabbar body{ padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)) !important; }
+  /* com a barra de abas, o respiro de baixo é do rodapé (preto), não do body (claro) */
+  .bx-com-tabbar body{ padding-bottom:0 !important; }
+  .bx-com-tabbar footer.footer,.bx-com-tabbar footer.site-footer{ padding-bottom:calc(66px + env(safe-area-inset-bottom,0px)); }
   /* com abas + gaveta, a sidebar virada em grade abaixo do conteúdo é redundante */
   .bx-com-tabbar .app-shell > .sidebar,.bx-com-tabbar .shell > .sidebar{ display:none !important; }
   .bx-com-tabbar .bxnav-drawer,.bx-com-tabbar .drawer{ padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)); }
@@ -631,8 +636,8 @@ footer.footer,footer.site-footer{
   /* barra do topo mais baixa; busca não existe aqui */
   .bx-util-in{ padding:7px 16px; font-size:11px; }
   .topbar .nav,.topbar > .bx-topo{ min-height:60px; padding:8px 16px; }
-  .brand .mark,.mark{ width:104px; height:32px; }
-  .brand__img{ height:28px !important; }
+  .brand .mark,.mark{ width:34px; height:34px; }
+  .brand__img{ height:32px !important; }
 
   /* gaveta: cartão claro, itens de 48px, ativo em preto, CTA neon */
   .bxnav-drawer,.drawer{ width:min(88vw,360px); padding:14px 14px 28px; }

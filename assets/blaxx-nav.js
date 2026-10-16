@@ -111,6 +111,16 @@
     return trocados;
   }
 
+  // Em produção o Netlify reescreve os links para URL limpa ("login.html" vira
+  // "/login") e serve "/carteira" no lugar de "/carteira.html". Toda comparação
+  // de destino passa por aqui; comparar o href cru duplicou "Entrar / Criar
+  // conta" na home publicada (16/10).
+  function pagina(href) {
+    var h = String(href || '').split(/[?#]/)[0].split('/').pop().toLowerCase();
+    if (!h) return 'index.html';
+    return /\.[a-z0-9]+$/.test(h) ? h : h + '.html';
+  }
+
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -119,12 +129,12 @@
 
   function montarMenu(u) {
     var grupos = u ? MENU_LOGADO : MENU_VISITANTE;
-    var atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var atual = pagina(location.pathname);
     var html = '';
     grupos.forEach(function (g) {
       html += '<p class="bxnav-grupo">' + esc(g[0]) + '</p>';
       g[1].forEach(function (item) {
-        var ativo = item[1].toLowerCase() === atual ? ' aria-current="page"' : '';
+        var ativo = pagina(item[1]) === atual ? ' aria-current="page"' : '';
         html += '<a href="' + esc(item[1]) + '"' + ativo + '>' + esc(item[0]) + '</a>';
       });
     });
@@ -293,7 +303,7 @@
 
     var html = '<div class="bx-foot"><div class="bx-zig"></div><div class="bx-foot-corpo">' +
       '<div class="bx-foot-marca">' +
-        '<a href="index.html" aria-label="BlaXx Pontos"><img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards"></a>'   /* rodapé preto: "Bla" branco */ +
+        '<a href="index.html" aria-label="BlaXx Pontos"><img src="assets/marca/blaxx-simbolo-b.svg" alt="BlaXx"></a>'   /* rodapé preto: B de fundo escuro */ +
         '<p>Um programa de recompensas simples: compre pontos, envie para quem quiser ' +
         'e troque por benefícios em parceiros selecionados. Sem letra miúda.</p>' +
       '</div>';
@@ -349,21 +359,22 @@
     return topo;
   }
 
-  // A barra é preta: qualquer wordmark de fundo claro que a página traga no
-  // HTML vira a variante escura ("Bla" branco, "Xx" neon).
+  // Na barra preta a marca é só o B característico (pedido de 16/10), na
+  // variante de fundo escuro; qualquer wordmark que a página traga vira o B.
   function normalizarMarca(barra) {
-    barra.querySelectorAll('img[src*="blaxx-wordmark-claro"]').forEach(function (img) {
-      img.src = img.src.replace(/blaxx-wordmark-claro(-neon)?\.svg/, 'blaxx-wordmark.svg');
+    barra.querySelectorAll('img[src*="blaxx-wordmark"]').forEach(function (img) {
+      img.src = img.src.replace(/blaxx-wordmark(-claro(-neon)?)?\.svg/, 'blaxx-simbolo-b.svg');
+      img.alt = 'BlaXx';
     });
   }
 
   function montarNavVisitante(topo) {
     var links = topo.querySelector('.links, .topnav');
     if (!links) return;
-    var atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var atual = pagina(location.pathname);
     var html = '';
     NAV_VISITANTE.forEach(function (it) {
-      var ativo = it[1].toLowerCase() === atual ? ' aria-current="page"' : '';
+      var ativo = pagina(it[1]) === atual ? ' aria-current="page"' : '';
       html += '<a href="' + esc(it[1]) + '"' + ativo + '>' + esc(it[0]) + '</a>';
     });
     links.innerHTML = html;
@@ -372,7 +383,11 @@
   function montarAcoesVisitante(topo) {
     var dir = topo.querySelector('.cta-row, .topbar__right');
     if (!dir) return;
-    if (dir.querySelector('a[href="login.html"], a[href="cadastro.html"]')) return;
+    var jaTem = [].some.call(dir.querySelectorAll('a[href]'), function (a) {
+      var pg = pagina(a.getAttribute('href'));
+      return pg === 'login.html' || pg === 'cadastro.html';
+    });
+    if (jaTem || dir.querySelector('.bx-entrar, .bx-criar')) return;
     dir.querySelectorAll('.user-pill, .nav-user, .nav-bell').forEach(function (n) { n.remove(); });
     dir.insertAdjacentHTML('beforeend',
       '<a class="bx-entrar" href="login.html">Entrar</a>' +
@@ -433,8 +448,7 @@
     var dados = megaDados(u), montados = {}, abertos = null, temporizador = null;
 
     links.forEach(function (a) {
-      var href = (a.getAttribute('href') || '').split(/[?#]/)[0].toLowerCase();
-      var chave = MEGA_POR_HREF[href];
+      var chave = MEGA_POR_HREF[pagina(a.getAttribute('href'))];
       if (!chave || !dados[chave] || montados[chave]) return;
       barra.insertAdjacentHTML('beforeend', megaHtml(chave, dados[chave]));
       var painel = barra.querySelector('#bxMega-' + chave);
@@ -529,7 +543,7 @@
   ];
   function montarTabBar(u) {
     if (!u || document.querySelector('.bx-tabbar')) return;
-    var atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var atual = pagina(location.pathname);
     var nav = document.createElement('nav');
     nav.className = 'bx-tabbar';
     nav.setAttribute('aria-label', 'Navegação principal');
