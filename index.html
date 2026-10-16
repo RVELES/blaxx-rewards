@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-bx-area="logada">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -401,6 +401,18 @@
 {"@context":"https://schema.org","@type":"WebSite","name":"BlaxX Pontos","url":"https://blaxxpontos.com.br/"}
 </script>
 <script src="assets/blaxx-acesso.js"></script>
+<script>
+  // Em produção / e /index.html servem a home (netlify.toml); este painel
+  // antigo, com saldo de exemplo, só abre em servidor local. Sem sessão, vai
+  // para a home, como lá.
+  (function () {
+    try {
+      var s = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      if (localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token') || (s && s.token)) return;
+    } catch (e) {}
+    location.replace('home-embarque.html');
+  })();
+</script>
 </head>
 <body data-screen="inicio">
 <main>

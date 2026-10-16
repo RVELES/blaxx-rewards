@@ -192,14 +192,17 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
 .topbar .nav > .brand,.topbar .nav > .links,.topbar .nav > .cta-row{ grid-column:auto; justify-self:auto; }
 .topbar .nav > .cta-row,.topbar .topbar__right{ margin-left:auto; }
 
-/* Marca: só o B característico (16/10), variante de fundo ESCURO. */
+/* Marca fora da barra (fundo claro): o B característico, neon. */
 .brand{ display:flex; align-items:center; gap:0; font-size:0; color:transparent; }
 .brand .mark,.mark{
   display:block; width:33px; height:38px; min-width:0; padding:0;
   background:transparent url('marca/blaxx-simbolo-b.svg') left center / contain no-repeat;
   border:0; border-radius:0; box-shadow:none; font-size:0; color:transparent;
 }
-.brand__img{ height:36px !important; width:auto; }
+/* Na barra preta: só a palavra "BlaXx", sem o B e sem "REWARDS" (16/10),
+   variante de fundo ESCURO ("Bla" branco, "Xx" neon). Desenho: 817 × 158. */
+.topbar .brand .mark,.topbar .mark{ width:140px; height:27px; background-image:url('marca/blaxx-wordmark-barra.svg'); }
+.topbar .brand__img{ height:27px !important; width:auto; }
 .brand-sub{ display:none; }
 
 /* Itens de navegação: pílula 8px, hover em superfície-2 (como o mock). */
@@ -249,6 +252,15 @@ a[aria-expanded="true"] .bx-caret{ transform:rotate(225deg) translateY(-1px); }
   font-family:var(--bx-sans); font-size:15px; font-weight:500; color:#F4F2EC; text-transform:none; letter-spacing:0;
 }
 .bx-entrar:hover{ text-decoration:underline; text-underline-offset:4px; }
+/* "Sair" do logado, à vista na barra (16/10); é <button>, então zera o estilo
+   de botão da folha-base. */
+.bx-sair{
+  background:transparent; border:1px solid var(--bx-ink-2); border-radius:999px; box-shadow:none;
+  padding:9px 16px; font-family:var(--bx-sans); font-size:15px; font-weight:500; line-height:1;
+  color:#F4F2EC; text-transform:none; letter-spacing:0; cursor:pointer; white-space:nowrap;
+}
+.bx-sair:hover{ border-color:var(--bx-neon); color:var(--bx-neon); }
+.bx-sair:focus-visible{ outline:2px solid var(--bx-neon); outline-offset:2px; }
 .bx-criar,.cta-row > a.button:not(.ghost):not(.secondary):not(.nav-user){
   background:var(--bx-neon); color:var(--bx-ink); border:0; border-radius:var(--bx-r-xxs);
   padding:11px 18px; font-family:var(--bx-sans); font-size:15px; font-weight:600; letter-spacing:0; text-transform:none;
@@ -493,6 +505,37 @@ input[type="range"]{ border:0; box-shadow:none; }   /* sem background:transparen
 .shell--sem-sidebar > main{ max-width:1280px; margin:0 auto; width:100%; padding:36px clamp(16px,4.4vw,56px) 80px; }
 @media (max-width:880px){ .sidebar .side-nav a{ border:1px solid var(--bx-line); box-shadow:none; } }
 
+/* Estrutura da gaveta do blaxx-nav.js. Morava só em assets/styles.css; as
+   páginas da outra folha (chrome.js) e a home ficavam com a gaveta sem forma
+   e o hambúrguer reduzido a um traço de 14px. */
+.bxnav-scrim{ position:fixed; inset:0; z-index:199; opacity:0; pointer-events:none; transition:opacity .2s; }
+.bxnav-scrim.on{ opacity:1; pointer-events:auto; }
+.bxnav-drawer{
+  position:fixed; top:0; right:0; z-index:200; box-sizing:border-box;
+  width:min(86vw,340px); height:100%; display:flex; flex-direction:column; gap:2px;
+  padding:16px 14px 28px; overflow-y:auto; overflow-x:hidden;
+  transform:translateX(100%); transition:transform .2s ease-out;
+}
+.bxnav-drawer.aberta{ transform:translateX(0); }
+.bxnav-drawer[hidden]{ display:none; }
+.bxnav-drawer a{ display:block; padding:13px 12px; min-height:48px; box-sizing:border-box; font-size:16px; text-decoration:none; overflow-wrap:anywhere; }
+.bxnav-grupo{ margin:18px 12px 6px; font-size:11px; letter-spacing:.09em; text-transform:uppercase; }
+.bxnav-grupo:first-of-type{ margin-top:8px; }
+.bxnav-cta{ margin-top:14px; text-align:center; }
+.bxnav-cta--vazado{ margin-top:10px; }
+.bxnav-fechar{ align-self:flex-end; width:44px; height:44px; flex:0 0 44px; font-size:24px; line-height:1; cursor:pointer; border-radius:999px; }
+.bx-gaveta-esq .bxnav-drawer{ right:auto; left:0; transform:translateX(-100%); }
+.bx-gaveta-esq .bxnav-drawer.aberta{ transform:translateX(0); }
+.bxnav-burger{ display:none; }
+@media (max-width:880px){
+  .bxnav-burger{
+    display:inline-flex; flex-direction:column; justify-content:center; gap:4px;
+    width:44px; height:44px; flex:0 0 44px; padding:0 12px; box-sizing:border-box;
+    border-radius:999px; cursor:pointer;
+  }
+  .bxnav-burger span{ display:block; width:100%; height:2px; border-radius:2px; }
+}
+
 /* ==========================================================================
    Gaveta do mobile (as três implementações), clara como a barra
    ========================================================================== */
@@ -563,7 +606,7 @@ footer.footer,footer.site-footer{
 @media (max-width:880px){
   .topbar .nav,.topbar > .bx-topo{ padding:10px 16px; gap:10px; }
   .links,.topnav{ display:none; }
-  .brand .mark,.mark{ width:30px; height:34px; }
+  .topbar .brand .mark,.topbar .mark{ width:124px; height:24px; }
   /* assets/styles.css esconde TODO .button.ghost do .cta-row no celular; a
      intenção era o "Entrar" do visitante, mas levava junto o "Voltar" de
      comprar-livre. Só o "Entrar" some. */
@@ -637,8 +680,8 @@ footer.footer,footer.site-footer{
   /* barra do topo mais baixa; busca não existe aqui */
   .bx-util-in{ padding:7px 16px; font-size:11px; }
   .topbar .nav,.topbar > .bx-topo{ min-height:60px; padding:8px 16px; }
-  .brand .mark,.mark{ width:28px; height:32px; }
-  .brand__img{ height:30px !important; }
+  .topbar .brand .mark,.topbar .mark{ width:114px; height:22px; }
+  .topbar .brand__img{ height:22px !important; }
 
   /* gaveta: cartão claro, itens de 48px, ativo em preto, CTA neon */
   .bxnav-drawer,.drawer{ width:min(88vw,360px); padding:14px 14px 28px; }
@@ -676,3 +719,177 @@ footer.footer,footer.site-footer{
   .form-row.split{ gap:12px !important; }
   a.chip,button.chip{ min-height:44px; display:inline-flex; align-items:center; }
 }
+
+/* ==========================================================================
+   Área comum: menu e rodapé IGUAIS em toda página pública (16/10/2026)
+   "O menu e o rodapé não se movem ou se alteram na área comum sob nenhuma
+   hipótese." O blaxx-nav.js refaz a barra (.topbar[data-bx-comum]) com a
+   mesma marcação em todas; aqui a geometria é fixada contra as duas
+   folhas-base (assets/styles.css e styles.css) e a home, que não carrega
+   nenhuma delas: fonte, padding, altura e sublinhado de link divergiam.
+   ========================================================================== */
+/* O menu não rola junto com a página. Com overflow-x:hidden no html E no
+   body, o body vira contêiner de rolagem e o sticky deixa de grudar na
+   janela: em 13 páginas o menu sumia ao rolar. "clip" corta a sobra lateral
+   do mesmo jeito sem criar contêiner (navegador sem "clip" fica como antes). */
+@supports (overflow-x:clip){
+  html,body{ overflow-x:clip !important; overflow-y:visible !important; }
+}
+.topbar[data-bx-comum]{ position:sticky !important; top:0 !important; z-index:60; margin:0 !important; width:auto; transform:none; }
+.topbar[data-bx-comum] .nav{
+  box-sizing:border-box; max-width:1280px; height:72px; min-height:0; margin:0 auto;
+  padding:0 clamp(16px,4.4vw,56px) !important;
+  display:flex !important; align-items:center; gap:22px;
+  position:static; background:none; border:0; box-shadow:none;
+}
+.topbar[data-bx-comum] .brand{ flex:none; display:flex; align-items:center; margin:0; padding:0; text-decoration:none; }
+.topbar[data-bx-comum] .links{ display:flex; align-items:center; gap:2px; margin:0; padding:0; flex:none; }
+.topbar[data-bx-comum] .links a{
+  margin:0; border:0; text-decoration:none; text-transform:none; letter-spacing:0;
+  font-family:var(--bx-sans); font-size:15px; line-height:20px; font-weight:500; padding:10px 14px;
+}
+.topbar[data-bx-comum] .links a[aria-current="page"]{ font-weight:600; }
+.topbar[data-bx-comum] .bx-busca{ flex:1 1 180px; min-width:0; max-width:420px; height:42px; margin:0; box-sizing:border-box; }
+.topbar[data-bx-comum] .cta-row{ display:flex; align-items:center; gap:10px; margin:0 0 0 auto; padding:0; flex:none; }
+.topbar[data-bx-comum] .cta-row > a,.topbar[data-bx-comum] .cta-row > button{
+  margin:0; min-height:0; line-height:20px; text-decoration:none; letter-spacing:0; text-transform:none;
+  font-family:var(--bx-sans); font-size:15px; white-space:nowrap; box-sizing:border-box;
+}
+.topbar[data-bx-comum] .bx-entrar{ padding:10px 8px; font-weight:500; color:#F4F2EC; background:none; border:0; }
+.topbar[data-bx-comum] .bx-criar{ padding:11px 18px; font-weight:600; color:var(--bx-ink); background:var(--bx-neon); border:0; border-radius:var(--bx-r-xxs); }
+.topbar[data-bx-comum] .bx-entrar:hover{ text-decoration:underline; text-underline-offset:4px; }
+.topbar[data-bx-comum] .bx-criar:hover{ text-decoration:none; background:#4FE81F; }
+/* logado: saudação (vai para a área logada) e Sair */
+.bx-chip{
+  display:inline-flex; align-items:center; gap:8px; height:42px; padding:0 14px 0 5px;
+  border:1px solid var(--bx-ink-2); border-radius:999px; background:transparent;
+  color:#F4F2EC; font-weight:600;
+}
+.bx-chip:hover{ border-color:var(--bx-neon); }
+.bx-chip-av{
+  width:32px; height:32px; flex:none; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  background:var(--bx-neon); color:var(--bx-ink); font-family:var(--bx-sans); font-size:14px; font-weight:700; line-height:1;
+}
+.bxnav-burger{ background:transparent; border:1px solid var(--bx-ink-2); order:9; }
+.bxnav-burger span{ background:#F4F2EC; }
+@media (max-width:880px){
+  .topbar[data-bx-comum] .nav{ height:60px; padding:0 16px !important; gap:10px; }
+  .topbar[data-bx-comum] .links,.topbar[data-bx-comum] .bx-busca,
+  .topbar[data-bx-comum] .bx-entrar,.topbar[data-bx-comum] .bx-sair{ display:none !important; }
+  .topbar[data-bx-comum] .bx-criar{ padding:10px 14px; font-size:14px; }
+  .bx-chip{ padding:0 4px; height:42px; }
+  .bx-chip-nome{ display:none; }
+}
+
+/* Rodapé: mesma tipografia em qualquer folha-base (a altura no celular
+   variava 816/892/907px conforme a página). */
+footer.footer,footer.site-footer{ display:block; width:auto; max-width:none; box-sizing:border-box; }
+.bx-foot,.bx-foot p,.bx-foot a,.bx-foot span{ font-family:var(--bx-sans); letter-spacing:0; text-transform:none; }
+.bx-foot-corpo{ font-size:15px; line-height:1.5; }
+.bx-foot-marca p{ font-size:15px; line-height:1.5; }
+.bx-foot-col a{ display:block; font-size:15px; line-height:1.4; padding:0; margin:0; border:0; font-weight:400; }
+.bx-foot-col h4{ font-family:var(--bx-mono); line-height:1.3; padding:0; text-transform:none; }
+.bx-foot-base,.bx-foot-base span:not(.bx-foot-aviso){ font-family:var(--bx-mono); font-size:12px; line-height:1.5; }
+.bx-foot-aviso{ font-family:var(--bx-sans); font-size:12px; line-height:1.55; }
+/* Telas de entrada (login, cadastro, senha): a faixa própria com o B e
+   "Cadastre-se" repetia o menu, que agora também está nelas. */
+.topbar[data-bx-comum] ~ .auth-top{ display:none !important; }
+/* Área logada: barra com seis links, saudação e Sair não comporta a busca
+   (ela virava um traço de 40px com o "/" por cima); ali ela sai. No celular
+   o Sair fica na gaveta, onde já estava, e a barra não quebra em duas. */
+.topbar:not([data-bx-comum]) .links:has(> a:nth-child(5)) ~ .bx-busca{ display:none; }
+@media (max-width:880px){ .topbar .bx-sair{ display:none !important; } }
+
+/* Ajustes finos da área comum (16/10, segunda medição) ---------------------- */
+/* barra de rolagem sempre reservada: página curta (sem rolagem) deslocava o
+   menu inteiro 7px para a direita em relação às outras */
+html{ scrollbar-gutter:stable; }
+/* item da página atual muda só a cor; o negrito alargava o item e empurrava
+   os seguintes 1-2px */
+.topbar[data-bx-comum] .links a[aria-current="page"]{ font-weight:500; }
+/* a regra de campos do tema pintava um retângulo branco dentro da busca */
+.topbar .bx-busca input[type="search"],.topbar .bx-busca input{
+  background:transparent !important; border:0 !important; box-shadow:none !important;
+  border-radius:0 !important; padding:0 !important; height:auto !important; min-height:0 !important;
+  color:#F4F2EC !important; font-family:var(--bx-sans); font-size:14px !important; font-weight:400 !important;
+}
+.topbar[data-bx-comum] .brand{ height:44px; }
+/* "pular para o conteúdo": fora da tela até receber foco (no regulamento ele
+   ficava visível e empurrava o menu 21px) */
+.bx-skip-link{ position:absolute !important; top:-100px !important; left:8px; z-index:9999; }
+.bx-skip-link:focus,.bx-skip-link:focus-visible{ top:8px !important; }
+/* celular: o hambúrguer é o menu; "Criar conta" mora dentro dele (16/10) */
+@media (max-width:880px){
+  .topbar[data-bx-comum] .bx-criar{ display:none !important; }
+}
+
+/* Convite "Criar conta" no corpo das páginas públicas, para quem não entrou
+   (16/10), montado pelo blaxx-nav.js antes do rodapé. Faixa neon com o texto
+   à esquerda e, à direita, um canhoto de bilhete preto com o botão; as duas
+   colunas centradas uma na outra e na mesma coluna de 1280px do menu. */
+.bx-convite{ background:var(--bx-neon); color:var(--bx-ink); margin:72px 0 0; }
+.bx-convite + footer.footer,.bx-convite + footer.site-footer{ margin-top:0; }
+.bx-convite-in{
+  box-sizing:border-box; max-width:1280px; margin:0 auto; padding:64px clamp(16px,4.4vw,56px);
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,400px); gap:40px 72px; align-items:center;
+}
+.bx-convite-txt{ min-width:0; }
+.bx-convite-rotulo{ display:block; margin:0 0 16px; font-family:var(--bx-mono); font-size:12px; line-height:1.3; letter-spacing:.08em; color:var(--bx-ink); }
+.bx-convite h2{
+  margin:0; max-width:none; color:var(--bx-ink); font-family:var(--bx-sans); font-weight:900; font-stretch:80%;
+  font-size:clamp(40px,4.7vw,68px); line-height:.95; letter-spacing:-.02em; text-transform:none;
+}
+.bx-convite p{ margin:20px 0 0; max-width:50ch; font-family:var(--bx-sans); font-size:18px; line-height:1.5; color:var(--bx-ink); }
+.bx-convite-passos{ display:flex; flex-wrap:wrap; gap:10px; margin:28px 0 0; padding:0; list-style:none; }
+.bx-convite-passos li{
+  display:inline-flex; align-items:center; gap:10px; margin:0; padding:6px 16px 6px 6px;
+  border:1.5px solid var(--bx-ink); border-radius:999px;
+  font-family:var(--bx-sans); font-size:15px; font-weight:600; line-height:1; color:var(--bx-ink);
+}
+.bx-convite-passos b{
+  display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:999px;
+  background:var(--bx-ink); color:var(--bx-neon); font-family:var(--bx-mono); font-size:11px; font-weight:400;
+}
+.bx-convite-bilhete{
+  box-sizing:border-box; display:flex; flex-direction:column; gap:18px; padding:28px;
+  background:var(--bx-ink); color:#F4F2EC; border-radius:var(--bx-r-lg);
+  box-shadow:0 24px 48px rgba(10,11,14,.22);
+}
+.bx-convite-bil-rot{ font-family:var(--bx-mono); font-size:12px; line-height:1.3; letter-spacing:.08em; color:var(--bx-ink-muted); }
+.bx-convite-bilhete dl{ margin:0; padding:0; border-top:1px dashed #2A2D35; }
+.bx-convite-bilhete dl > div{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding:11px 0; border-bottom:1px dashed #2A2D35; }
+.bx-convite-bilhete dt{ margin:0; font-family:var(--bx-mono); font-size:12px; line-height:1.4; letter-spacing:.06em; text-transform:uppercase; color:var(--bx-ink-muted); }
+.bx-convite-bilhete dd{ margin:0; text-align:right; font-family:var(--bx-sans); font-size:15px; font-weight:600; line-height:1.4; color:#F4F2EC; }
+.bx-convite-criar{
+  display:flex; align-items:center; justify-content:center; gap:10px; min-height:56px; padding:0 24px; margin-top:4px;
+  background:var(--bx-neon); color:var(--bx-ink) !important; border-radius:var(--bx-r-xxs);
+  font-family:var(--bx-sans); font-size:17px; font-weight:700; text-decoration:none; white-space:nowrap;
+}
+.bx-convite-criar:hover{ background:#4FE81F; }
+.bx-convite-criar:focus-visible,.bx-convite-entrar:focus-visible{ outline:2px solid var(--bx-neon); outline-offset:3px; }
+.bx-convite-entrar{ align-self:center; color:#F4F2EC !important; font-family:var(--bx-sans); font-size:15px; text-decoration:underline; text-underline-offset:4px; }
+.bx-convite-entrar:hover{ color:var(--bx-neon) !important; }
+/* picote do bilhete: linha tracejada com os dois furos na cor da faixa (no
+   lugar de mais um código de barras; a home já tinha sete) */
+.bx-convite-bilhete dl > div:last-child{ border-bottom:0; }
+.bx-convite-picote{ position:relative; display:block; height:0; margin:0; border-top:2px dashed #2A2D35; }
+.bx-convite-picote::before,.bx-convite-picote::after{
+  content:''; position:absolute; top:-12px; width:22px; height:22px; border-radius:50%; background:var(--bx-neon);
+}
+.bx-convite-picote::before{ left:-39px; }
+.bx-convite-picote::after{ right:-39px; }
+@media (max-width:880px){
+  .bx-convite{ margin-top:48px; }
+  .bx-convite-in{ grid-template-columns:minmax(0,1fr); padding:48px 16px 52px; gap:32px; }
+  .bx-convite h2{ max-width:none; font-size:clamp(36px,10.5vw,52px); }
+  .bx-convite p{ margin-top:16px; font-size:16px; }
+  .bx-convite-passos{ display:grid; grid-template-columns:1fr 1fr; margin-top:22px; gap:8px; }
+  .bx-convite-passos li{ font-size:14px; padding-right:12px; }
+  .bx-convite h2 br{ display:none; }
+  .bx-convite-bilhete{ padding:22px 20px; gap:16px; }
+  .bx-convite-picote::before{ left:-31px; }
+  .bx-convite-picote::after{ right:-31px; }
+}
+.bxnav-cta--topo{ margin-top:4px; background:var(--bx-neon) !important; color:var(--bx-ink) !important; border:0; }
+/* mesma renderização de texto em qualquer folha-base (uma delas liga optimizeLegibility no body) */
+.topbar[data-bx-comum],.bx-util,.bx-foot,.bx-convite{ text-rendering:optimizeLegibility; font-kerning:normal; }

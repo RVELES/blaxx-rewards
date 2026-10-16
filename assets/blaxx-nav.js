@@ -57,6 +57,7 @@
 
   var MENU_VISITANTE = [
     ['Conheça', [
+      ['Comprar pontos', 'comprar-pontos.html'],
       ['Como funciona', 'como-funciona.html'],
       ['Parceiros', 'parceiros.html'],
       ['Regulamento', 'regulamento.html'],
@@ -130,7 +131,11 @@
   function montarMenu(u) {
     var grupos = u ? MENU_LOGADO : MENU_VISITANTE;
     var atual = pagina(location.pathname);
-    var html = '';
+    // Visitante: "Criar conta" abre a gaveta (16/10). No celular ela saiu da
+    // barra e mora só aqui, então vem primeiro, antes dos grupos.
+    var html = u ? '' :
+      '<a class="bxnav-cta bxnav-cta--topo" href="cadastro.html">Criar conta</a>' +
+      '<a class="bxnav-cta bxnav-cta--vazado" href="login.html">Entrar</a>';
     grupos.forEach(function (g) {
       html += '<p class="bxnav-grupo">' + esc(g[0]) + '</p>';
       g[1].forEach(function (item) {
@@ -138,10 +143,7 @@
         html += '<a href="' + esc(item[1]) + '"' + ativo + '>' + esc(item[0]) + '</a>';
       });
     });
-    html += u
-      ? '<a class="bxnav-cta" href="#" data-bxnav-sair>Sair</a>'
-      : '<a class="bxnav-cta" href="login.html">Entrar</a>' +
-        '<a class="bxnav-cta bxnav-cta--vazado" href="cadastro.html">Criar conta</a>';
+    if (u) html += '<a class="bxnav-cta" href="#" data-bxnav-sair>Sair</a>';
     return html;
   }
 
@@ -359,11 +361,12 @@
     return topo;
   }
 
-  // Na barra preta a marca é só o B característico (pedido de 16/10), na
-  // variante de fundo escuro; qualquer wordmark que a página traga vira o B.
+  // Na barra preta a marca é só a palavra "BlaXx", sem o B e sem "REWARDS"
+  // (pedido de 16/10), na variante de fundo escuro; qualquer wordmark ou B
+  // que a página traga vira essa.
   function normalizarMarca(barra) {
-    barra.querySelectorAll('img[src*="blaxx-wordmark"]').forEach(function (img) {
-      img.src = img.src.replace(/blaxx-wordmark(-claro(-neon)?)?\.svg/, 'blaxx-simbolo-b.svg');
+    barra.querySelectorAll('img[src*="blaxx-wordmark"], img[src*="blaxx-simbolo-b"]').forEach(function (img) {
+      img.src = img.src.replace(/blaxx-(wordmark(-claro(-neon)?)?|simbolo-b(-claro(-neon)?)?)\.svg/, 'blaxx-wordmark-barra.svg');
       img.alt = 'BlaXx';
     });
   }
@@ -392,6 +395,142 @@
     dir.insertAdjacentHTML('beforeend',
       '<a class="bx-entrar" href="login.html">Entrar</a>' +
       '<a class="bx-criar" href="cadastro.html">Criar conta</a>');
+  }
+
+  // --------------------------------------------------------------------- //
+  // Área comum: o mesmo menu em toda página pública (16/10)                //
+  // --------------------------------------------------------------------- //
+  // "O menu e o rodapé não se movem ou se alteram na área comum sob nenhuma
+  // hipótese." Medido antes: três marcações de barra (topbar inline,
+  // chrome.js, home), três pares de ações à direita ("Criar conta",
+  // "Cadastre-se", só o sino), logo em x=73 na home e x=129 nas outras, oito
+  // páginas sem barra e menu que rolava para fora em 13. Em página pública a
+  // barra é refeita aqui, sempre com a mesma marcação: a página não escolhe
+  // o menu. Só o lado direito acompanha a sessão.
+  function areaComum() {
+    if (document.documentElement.getAttribute('data-bx-area') === 'logada') return false;
+    var a = window.BlaxxAcesso;
+    return !(a && a.fechada && a.fechada('/' + pagina(location.pathname)));
+  }
+
+  function acoesComuns(u) {
+    if (!u) {
+      return '<a class="bx-entrar" href="login.html">Entrar</a>' +
+        '<a class="bx-criar" href="cadastro.html">Criar conta</a>';
+    }
+    var nu = window.BlaxxNavUser || {};
+    var nome = nu.primeiroNome ? nu.primeiroNome(u) : '';
+    return '<a class="bx-chip" href="' + HOME_LOGADA + '" aria-label="Minha conta">' +
+      '<span class="bx-chip-av" aria-hidden="true">' + esc(nu.inicial ? nu.inicial(u) : '') + '</span>' +
+      '<span class="bx-chip-nome">' + esc(nome ? 'Olá, ' + nome : 'Minha conta') + '</span></a>' +
+      '<button type="button" class="bx-sair">Sair</button>';
+  }
+
+  function montarBarraComum(u) {
+    var barras = document.querySelectorAll('.topbar');
+    var barra = document.querySelector('.topbar[data-bx-comum]');
+    if (barra) {
+      // o chrome.js pode nascer depois com a barra dele: fica uma só
+      [].forEach.call(barras, function (b) { if (b !== barra) b.remove(); });
+      return barra;
+    }
+    barra = barras[0] || document.createElement('header');
+    [].forEach.call(barras, function (b) { if (b !== barra) b.remove(); });
+    // sempre filho direto do <body>, logo após o link "pular para o conteúdo"
+    var pular = document.querySelector('body > .bx-skip-link');
+    document.body.insertBefore(barra, pular ? pular.nextSibling : document.body.firstChild);
+    barra.className = 'topbar';
+    barra.removeAttribute('data-bx-embarque');
+    barra.removeAttribute('data-bx-mega');
+    [].forEach.call(document.querySelectorAll('.bx-mega'), function (m) { m.remove(); });
+    var atual = pagina(location.pathname), links = '';
+    NAV_VISITANTE.forEach(function (it) {
+      links += '<a href="' + esc(it[1]) + '"' + (pagina(it[1]) === atual ? ' aria-current="page"' : '') +
+        '>' + esc(it[0]) + '</a>';
+    });
+    barra.innerHTML =
+      '<nav class="nav" aria-label="Principal">' +
+        '<a class="brand" href="/" aria-label="BlaXx Pontos, página inicial"><span class="mark">BlaXx</span></a>' +
+        '<div class="links">' + links + '</div>' +
+        '<div class="cta-row">' + acoesComuns(u) + '</div>' +
+      '</nav>';
+    barra.setAttribute('data-bx-comum', '1');
+    var botaoSair = barra.querySelector('.bx-sair');
+    if (botaoSair) botaoSair.addEventListener('click', sair);
+    return barra;
+  }
+
+  // Convite "Criar conta" no corpo de toda página pública, para quem não
+  // entrou (16/10): faixa antes do rodapé. Fica fora das telas que já são o
+  // próprio cadastro ou login.
+  var SEM_CONVITE = ['cadastro.html', 'login.html', 'recuperar-senha.html', 'redefinir-senha.html', 'validacao.html'];
+  function montarConvite() {
+    if (document.querySelector('.bx-convite')) return;
+    if (SEM_CONVITE.indexOf(pagina(location.pathname)) >= 0) return;
+    var pe = document.querySelector('footer.footer, footer.site-footer');
+    if (!pe) return;
+    var sec = document.createElement('section');
+    sec.className = 'bx-convite';
+    sec.setAttribute('aria-labelledby', 'bxConviteTitulo');
+    var passos = ['Compre', 'Ganhe', 'Envie', 'Troque'].map(function (p, i) {
+      return '<li><b>0' + (i + 1) + '</b>' + p + '</li>';
+    }).join('');
+    sec.innerHTML =
+      '<div class="bx-convite-in">' +
+        '<div class="bx-convite-txt">' +
+          '<span class="bx-convite-rotulo">CRIAR CONTA · SEM MENSALIDADE</span>' +
+          '<h2 id="bxConviteTitulo">Inicie sua aventura<br> com a BlaXx.</h2>' +
+          '<p>Abra sua conta em poucos minutos. Compre pontos, envie para quem quiser ' +
+          'e troque por benefícios em parceiros selecionados.</p>' +
+          '<ol class="bx-convite-passos" aria-label="Como funciona">' + passos + '</ol>' +
+        '</div>' +
+        '<div class="bx-convite-bilhete">' +
+          '<span class="bx-convite-bil-rot">BILHETE · NOVA CONTA</span>' +
+          '<dl>' +
+            '<div><dt>Passageiro</dt><dd>Você</dd></div>' +
+            '<div><dt>Mensalidade</dt><dd>Nenhuma</dd></div>' +
+            '<div><dt>Pagamento</dt><dd>Cartão ou transferência</dd></div>' +
+          '</dl>' +
+          '<span class="bx-convite-picote" aria-hidden="true"></span>' +
+          '<a class="bx-convite-criar" href="cadastro.html">Criar conta <span aria-hidden="true">→</span></a>' +
+          '<a class="bx-convite-entrar" href="login.html">Já tenho conta · Entrar</a>' +
+        '</div>' +
+      '</div>';
+    pe.parentNode.insertBefore(sec, pe);
+  }
+
+  // Logado: "Sair" à vista na barra, não só dentro da gaveta (pedido de
+  // 16/10). Página que traz "Entrar / Criar conta" fixo no HTML (a home) troca
+  // esses dois pela saudação, que leva para a área logada.
+  function montarAcoesLogado(topo, u) {
+    var dir = topo.querySelector('.cta-row, .topbar__right');
+    if (!dir) return;
+    var visitante = [].filter.call(dir.querySelectorAll('a[href]'), function (a) {
+      var pg = pagina(a.getAttribute('href'));
+      return (pg === 'login.html' || pg === 'cadastro.html') && !/sair/i.test(a.textContent || '');
+    });
+    if (visitante.length) {
+      visitante.forEach(function (a) { a.remove(); });
+      if (!dir.querySelector('.nav-user, .user-pill')) {
+        var nu = window.BlaxxNavUser || {};
+        var nome = nu.primeiroNome ? nu.primeiroNome(u) : '';
+        dir.insertAdjacentHTML('beforeend',
+          '<a class="button secondary nav-user" href="' + HOME_LOGADA + '" aria-label="Minha conta">' +
+          '<span class="nav-av" aria-hidden="true">' + esc(nu.inicial ? nu.inicial(u) : '') + '</span>' +
+          '<span class="nav-user__nome">' + esc(nome ? 'Olá, ' + nome : 'Minha conta') + '</span></a>');
+      }
+    }
+    var jaTem = dir.querySelector('.bx-sair, [data-bx-logout], [data-bxnav-sair]') ||
+      [].some.call(dir.querySelectorAll('a, button'), function (el) {
+        return (el.textContent || '').trim().toLowerCase() === 'sair';
+      });
+    if (jaTem) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'bx-sair';
+    b.textContent = 'Sair';
+    b.addEventListener('click', sair);
+    dir.appendChild(b);
   }
 
   function montarBusca(topo) {
@@ -569,7 +708,9 @@
     normalizarMarca(barra);
     if (!barra.getAttribute('data-bx-embarque')) {
       montarUtil(barra);
-      if (!u) { montarNavVisitante(topo); montarAcoesVisitante(topo); }
+      if (barra.hasAttribute('data-bx-comum')) { /* links e ações já canônicos */ }
+      else if (!u) { montarNavVisitante(topo); montarAcoesVisitante(topo); }
+      else montarAcoesLogado(topo, u);
       montarBusca(topo);
       barra.setAttribute('data-bx-embarque', '1');
     }
@@ -578,9 +719,15 @@
   }
 
   function sair() {
+    // O blaxx-app.js, quando está na página, avisa o backend (revoga o
+    // refresh) antes de limpar; sem ele, limpa a sessão local aqui mesmo.
+    if (typeof window.blaxxLogout === 'function') { window.blaxxLogout(); return; }
     try {
-      ['blaxx_session', 'blaxx_token', 'blaxx_user', 'blaxx_refresh'].forEach(function (k) {
-        localStorage.removeItem(k);
+      [localStorage, sessionStorage].forEach(function (st) {
+        Object.keys(st).forEach(function (k) {
+          if (k.indexOf('blaxx_') === 0 && k !== 'blaxx_set_password_dismissed_at' &&
+              k !== 'blaxx_cookie_consent_v1') st.removeItem(k);
+        });
       });
     } catch (e) {}
     location.href = 'login.html';
@@ -602,8 +749,10 @@
     // `<div class="topbar">` SEM `.nav` dentro, exigir `.nav` aqui deixava as
     // 23 páginas dele de fora justamente da regra de lado, que é onde a
     // inconsistência aparecia.
-    var barra = document.querySelector('.topbar');
     var u = usuario();
+    var comum = areaComum();
+    if (comum) montarBarraComum(u);
+    var barra = document.querySelector('.topbar');
 
     // Vale para TODA página com barra, inclusive as que já têm gaveta própria:
     // o lado e a prisão no app não dependem de quem construiu o menu.
@@ -614,6 +763,7 @@
     // O rodapé não depende da barra: página sem topbar (regulamento, parceiro,
     // 404) ganha o rodapé-recibo se trouxer <footer class="footer"> no HTML.
     montarRodape();
+    if (comum && !u) montarConvite();
     // DEPOIS do rodapé: ele acabou de inserir links, e alguns (Conta BlaXx,
     // Cadastre-se) sairiam do app para quem já está logado.
     if (u) prenderNoApp();
@@ -623,7 +773,10 @@
     // próprio, ali não se constrói outra. O `.bx-drawer` do blaxx-app.js NÃO
     // entra nesta lista de propósito: ele cede a nós (ver installHamburgerMenu),
     // para que as 49 páginas inline tenham UMA gaveta só, e a mesma.
-    if (document.querySelector('.drawer, #' + ID_GAVETA)) return;
+    // Na área comum a gaveta é sempre esta, para o menu do celular também ser
+    // um só; a do chrome.js fica sem botão que a abra.
+    if (document.getElementById(ID_GAVETA)) return;
+    if (!comum && document.querySelector('.drawer')) return;
 
     // Construir a gaveta exige a topbar INLINE (`.topbar .nav`), que é a que
     // não tem menu mobile. A do chrome.js já tem a sua.

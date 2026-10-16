@@ -82,14 +82,19 @@
 .rota{padding:0 0 clamp(56px,7vw,88px)}
 .rota .bx-wrap{display:flex;flex-direction:column;gap:40px}
 .rota .secao-rotulo{font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.08em;text-transform:uppercase}
-.rota-grid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
-.rota-grid::before{content:'';position:absolute;left:12px;right:12px;top:11px;border-top:2px dashed var(--bx-ink)}
+/* o ponto da rota fica na linha da AÇÃO (Compre, Ganhe…), não sobre o rótulo
+   da escala (16/10); rótulo e texto alinham com a palavra. A linha tracejada
+   liga um ponto ao seguinte e passa por trás da palavra, que a cobre. */
+.rota-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px}
 .escala{position:relative;display:flex;flex-direction:column;gap:14px;min-width:0}
-.escala .ponto{width:24px;height:24px;border-radius:50%;background:var(--bx-ink);border:2px solid var(--bx-ink);box-sizing:border-box}
+.escala .acao{position:relative;display:flex;align-items:center;gap:14px}
+.escala .acao::before{content:'';position:absolute;left:12px;right:-32px;top:50%;border-top:2px dashed var(--bx-ink)}
+.escala:last-child .acao::before{right:0}
+.escala .ponto{position:relative;z-index:1;flex:none;width:24px;height:24px;border-radius:50%;background:var(--bx-ink);border:2px solid var(--bx-ink);box-sizing:border-box}
 .escala:last-child .ponto{background:var(--bx-neon)}
-.escala .n{font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.04em;text-transform:uppercase}
-.escala .t{font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--bx-ink)}
-.escala .d{font-size:17px;color:var(--bx-grey);line-height:1.5;max-width:300px;margin:0}
+.escala .n{display:block;padding-left:38px;font-family:var(--bx-mono);font-size:13px;line-height:18px;color:var(--bx-grey);letter-spacing:.04em;text-transform:uppercase}
+.escala .t{position:relative;z-index:1;background:var(--bx-bg);padding:0 14px;margin-left:-14px;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--bx-ink)}
+.escala .d{padding-left:38px;font-size:17px;color:var(--bx-grey);line-height:1.5;max-width:280px;margin:0}
 
 /* ---------- pacotes + recibo ---------- */
 .pacotes{padding:0 0 clamp(64px,8vw,96px)}
@@ -107,67 +112,98 @@
 .bilhete .pts small{font-size:18px;font-weight:600;color:var(--bx-grey)}
 .bilhete .canhoto-b{width:96px;flex:none;background:var(--bx-surface);display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:20px 0;transition:background .15s}
 .bilhete:has(:checked) .canhoto-b{background:var(--bx-neon)}
-.bilhete .canhoto-b .bx-barcode{height:36px;width:52px}
+/* seletor redondo no canhoto (16/10): no lugar do código de barras, que se
+   repetia em todo bilhete; preenche com o visto quando o pacote é escolhido */
+.bilhete .canhoto-b .selo-b{width:30px;height:30px;box-sizing:border-box;border-radius:50%;border:2px solid var(--bx-ink);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.bilhete .canhoto-b .selo-b::after{content:'';width:10px;height:5px;border-left:2.5px solid var(--bx-neon);border-bottom:2.5px solid var(--bx-neon);transform:translateY(-1px) rotate(-45deg);opacity:0;transition:opacity .15s}
+.bilhete:has(:checked) .canhoto-b .selo-b{background:var(--bx-ink)}
+.bilhete:has(:checked) .canhoto-b .selo-b::after{opacity:1}
 .bilhete .bx-perf{--bx-perf-fundo:var(--bx-bg)}
 
 .recibo{filter:drop-shadow(0 18px 30px rgba(10,11,14,.12));transform:rotate(1deg);margin-top:24px;min-width:0}
 .recibo .corpo{background:var(--bx-surface);padding:32px 36px;font-family:var(--bx-mono);font-size:15px;display:flex;flex-direction:column;gap:16px}
-.recibo .cabeca{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+/* cabeçalho preto para destacar a marca (16/10); o serrilhado de cima
+   acompanha, e o recibo começa "impresso" em preto */
+.recibo > .bx-zig:first-child{--bx-zig-cor:var(--bx-ink)}
+.recibo .cabeca{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;background:var(--bx-ink);margin:-32px -36px 0;padding:22px 36px 20px}
 .recibo .cabeca img{height:39px;width:auto}
-.recibo .cabeca span{font-size:12px;color:var(--bx-grey);letter-spacing:.04em}
+.recibo .cabeca span{font-size:12px;color:#C9CBD1;letter-spacing:.08em}
 .recibo .total{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .recibo .total b{font-family:var(--bx-sans);font-size:48px;font-weight:900;letter-spacing:-.03em;line-height:1}
 .recibo .faixa{background:var(--bx-neon);margin:0 -12px;padding:10px 12px}
 .recibo .faixa .bx-leader > i{border-color:rgba(10,11,14,.35)}
 .recibo .nota{font-size:12px;color:var(--bx-grey);line-height:1.5}
-.recibo .bx-barcode{height:52px}
+/* picote "via do passageiro" no lugar do código de barras do recibo */
+.recibo .via{display:flex;align-items:center;gap:12px;font-family:var(--bx-mono);font-size:11px;letter-spacing:.08em;color:var(--bx-grey);text-transform:uppercase}
+.recibo .via::before,.recibo .via::after{content:'';flex:1;border-top:2px dashed var(--bx-line)}
 .recibo .comprar{display:block;background:var(--bx-ink);color:var(--bx-surface);text-align:center;padding:18px;font-family:var(--bx-sans);font-weight:700;font-size:17px;text-decoration:none;text-transform:uppercase}
 .recibo .comprar:hover{background:var(--bx-ink-2)}
 
-/* ---------- painel de partidas: mapa (fundo claro, 15/10) ----------
-   O globo ganha a coluna maior e proporção quadrada; o quadro lista cidade e
-   país e só mostra os serviços ao clicar (na linha ou no alfinete). */
-.mapa{padding:0 0 clamp(56px,7vw,88px)}
-.painel{background:var(--bx-surface);color:var(--bx-ink);border:1px solid var(--bx-line);border-radius:var(--bx-r-xl);padding:clamp(24px,4vw,48px);display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;box-shadow:var(--bx-sh)}
-.painel .lado{display:flex;flex-direction:column;gap:20px;min-width:0}
+/* ---------- painel de partidas: mapa (realinhado 16/10) ----------
+   Cabeçalho numa faixa só (título à esquerda; contagem e legenda à direita).
+   Embaixo, globo e quadro de partidas lado a lado e com a MESMA altura: o
+   quadro não dita a altura da linha (contain:size), ocupa a do globo e rola
+   por dentro. O quadro é preto, como os de aeroporto, e ganhou a coluna
+   Situação; a dica de uso saiu de cima dos alfinetes e fica sob o globo. */
+/* sem respiro próprio embaixo: a faixa "Criar conta" (ou o rodapé, para quem
+   entrou) já traz a margem; somadas, sobravam 160px vazios */
+.mapa{padding:0}
+.painel{background:var(--bx-surface);color:var(--bx-ink);border:1px solid var(--bx-line);border-radius:var(--bx-r-xl);padding:clamp(24px,4vw,48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"topo topo" "globo quadro";gap:32px 40px;box-shadow:var(--bx-sh)}
+.painel-topo{grid-area:topo;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px 40px;padding-bottom:28px;border-bottom:2px dashed var(--bx-line)}
+.painel-topo .titulo{display:flex;flex-direction:column;gap:14px;min-width:0}
 .painel .secao-rotulo{font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.08em;text-transform:uppercase}
-.painel h2{margin:0;font-size:clamp(34px,4vw,52px);line-height:1;font-weight:800;letter-spacing:-.03em;color:var(--bx-ink)}
+.painel h2{margin:0;font-size:clamp(34px,4vw,52px);line-height:1;font-weight:800;letter-spacing:-.03em;color:var(--bx-ink);max-width:15ch}
+.painel-resumo{display:flex;flex-direction:column;align-items:flex-end;gap:14px;min-width:0}
+.grande{display:flex;align-items:baseline;gap:12px}
+.grande b{font-size:clamp(48px,6vw,72px);font-weight:900;color:var(--bx-ink);line-height:1;letter-spacing:-.03em;background:var(--bx-neon);padding:0 .08em}
+.grande span{font-size:15px;color:var(--bx-ink)}
+.legenda{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px 22px;margin:0;padding:0;list-style:none;font-family:var(--bx-mono);font-size:12px;color:var(--bx-grey)}
+.legenda li{display:flex;align-items:center;gap:8px}
+.legenda i{width:12px;height:12px;border-radius:3px;flex:none}
+.painel-globo{grid-area:globo;display:flex;flex-direction:column;gap:12px;min-width:0}
 .cinema-frame{position:relative;border-radius:var(--bx-r-lg);border:1px solid var(--bx-line);overflow:hidden;aspect-ratio:1/1;background:var(--bx-surface-2)}
 .cinema-frame canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
-.cinema-frame .hint{position:absolute;left:14px;right:14px;bottom:12px;font-family:var(--bx-mono);font-size:11px;color:var(--bx-grey);pointer-events:none}
+.painel-globo .hint{font-family:var(--bx-mono);font-size:12px;line-height:1.4;color:var(--bx-grey)}
 /* o motor escreve o nome da cidade em branco (inline), por isso a dica é escura;
    os chips de serviço que ele monta ficam escondidos: serviço só no clique */
 .globe-tip{position:absolute;display:none;pointer-events:none;background:var(--bx-ink);color:#F4F2EC;border-radius:var(--bx-r-xxs);padding:7px 10px;font-family:var(--bx-mono);font-size:12px;line-height:1.3;white-space:nowrap;box-shadow:var(--bx-sh)}
 .globe-tip > div{display:none}
-.grande{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.grande b{font-size:clamp(56px,7vw,80px);font-weight:900;color:var(--bx-ink);line-height:1;letter-spacing:-.03em;background:var(--bx-neon);padding:0 .08em}
-.grande span{font-size:15px;color:var(--bx-ink)}
-.legenda{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0;padding:0;list-style:none;font-family:var(--bx-mono);font-size:12px;color:var(--bx-grey)}
-.legenda li{display:flex;align-items:center;gap:8px}
-.legenda i{width:12px;height:12px;border-radius:3px;flex:none}
-.quadro{font-family:var(--bx-mono);font-size:14px;min-width:0;display:flex;flex-direction:column}
-.quadro .cab{display:grid;grid-template-columns:1.6fr 1fr;gap:10px;padding:10px 0;color:var(--bx-grey);font-size:12px;border-bottom:1px solid var(--bx-line);text-transform:uppercase}
-.quadro .lista{overflow:auto;max-height:560px;scrollbar-width:thin}
-.quadro .linha{display:grid;grid-template-columns:1.6fr 1fr;gap:10px;width:100%;padding:13px 6px;border:0;border-bottom:1px solid var(--bx-line);background:transparent;color:var(--bx-ink);font:inherit;text-align:left;cursor:pointer;text-transform:uppercase;border-radius:0}
-.quadro .linha:hover{background:var(--bx-surface-2)}
-.quadro .linha.ativa{background:var(--bx-ink);color:var(--bx-surface)}
-.quadro .linha .pais{color:var(--bx-grey);text-transform:none}
-.quadro .linha.ativa .pais{color:var(--bx-ink-muted)}
-/* detalhe da cidade escolhida: recibo curto */
-.cidade-info{border:1px solid var(--bx-line);border-radius:var(--bx-r-md);padding:16px 18px;margin-top:14px;display:flex;flex-direction:column;gap:8px;font-family:var(--bx-mono);font-size:13px;background:var(--bx-surface-2)}
-.cidade-info b{font-family:var(--bx-sans);font-size:20px;font-weight:800;letter-spacing:-.02em;text-transform:none}
+.quadro{grid-area:quadro;contain:size;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--bx-ink);color:#F4F2EC;border-radius:var(--bx-r-lg);overflow:hidden;font-family:var(--bx-mono);font-size:14px}
+.quadro .cab,.quadro .linha{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 9.5em;gap:12px;align-items:center}
+.quadro .cab{padding:18px 20px 12px;color:var(--bx-ink-muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bx-ink-2)}
+.quadro .cab span:last-child{text-align:right}
+.quadro .lista{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#3A3D45 transparent}
+.quadro .linha{width:100%;padding:12px 20px;border:0;border-bottom:1px solid #1C1F25;background:transparent;color:#F4F2EC;font:inherit;text-align:left;cursor:pointer;text-transform:uppercase;border-radius:0}
+.quadro .linha:hover,.quadro .linha:focus-visible{background:#15171C;outline:none}
+.quadro .linha.ativa{background:var(--bx-neon);color:var(--bx-ink)}
+.quadro .linha .pais{color:var(--bx-ink-muted);text-transform:none}
+.quadro .linha.ativa .pais{color:var(--bx-ink)}
+.quadro .sit{display:inline-flex;align-items:center;justify-content:flex-end;gap:8px;font-size:11px;letter-spacing:.06em;color:var(--bx-ink-muted);white-space:nowrap}
+.quadro .sit i{width:8px;height:8px;border-radius:50%;background:#4A4D55;flex:none}
+.quadro .sit em{font-style:normal}
+.quadro .sit.on{color:var(--bx-neon)}
+.quadro .sit.on i{background:var(--bx-neon)}
+.quadro .linha.ativa .sit{color:var(--bx-ink)}
+.quadro .linha.ativa .sit i{background:var(--bx-ink)}
+/* detalhe da cidade escolhida, no pé do quadro */
+.cidade-info{flex:none;min-height:104px;box-sizing:border-box;border-top:1px solid var(--bx-ink-2);padding:16px 20px 18px;display:flex;flex-direction:column;gap:8px;font-family:var(--bx-mono);font-size:13px;background:#111318;color:#F4F2EC}
+.cidade-info b{font-family:var(--bx-sans);font-size:20px;font-weight:800;letter-spacing:-.02em;text-transform:none;color:#fff}
 .cidade-info .chips{display:flex;flex-wrap:wrap;gap:8px}
-.cidade-info .chips span{display:inline-flex;align-items:center;gap:6px;background:var(--bx-surface);border:1px solid var(--bx-line);border-radius:999px;padding:4px 10px;font-size:12px}
+.cidade-info .chips span{display:inline-flex;align-items:center;gap:6px;background:#1A1D23;border:1px solid var(--bx-ink-2);color:#F4F2EC;border-radius:999px;padding:4px 10px;font-size:12px}
 .cidade-info .chips i{width:9px;height:9px;border-radius:50%;flex:none}
-.cidade-info .vazio{color:var(--bx-grey)}
-.cidade-info a{color:var(--bx-ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--bx-ink);width:max-content}
+.cidade-info .vazio{color:var(--bx-ink-muted);line-height:1.5}
+.cidade-info a{color:var(--bx-neon);font-weight:700;text-decoration:none;border-bottom:2px solid var(--bx-neon);width:max-content;max-width:100%}
 
 /* ---------- responsivo ---------- */
 @media (max-width:1000px){
   .pacotes .bx-wrap{grid-template-columns:1fr}
   .recibo{transform:none;max-width:520px}
-  .painel{grid-template-columns:1fr;gap:32px}
-  .quadro .lista{max-height:380px}
+  .painel{grid-template-columns:minmax(0,1fr);grid-template-areas:"topo" "globo" "quadro";gap:28px}
+  .painel-topo{align-items:flex-start;padding-bottom:24px}
+  .painel-resumo{align-items:flex-start}
+  .legenda{justify-content:flex-start}
+  .quadro{contain:none}
+  .quadro .lista{flex:none;max-height:372px}
 }
 @media (max-width:900px){
   /* celular: hero mais curto, rota vira linha do tempo vertical, bilhetes e
@@ -177,21 +213,27 @@
   .topo-linha{font-size:11px}
   .cartao .lead{font-size:16px}
   .cartao .canhoto{padding:22px 18px}
-  .rota{padding:0 0 44px}
-  .rota .bx-wrap{gap:22px}
-  .rota-grid{gap:0;padding-left:34px;position:relative}
-  .rota-grid::before{display:block;left:11px;right:auto;top:6px;bottom:14px;border-top:0;border-left:2px dashed var(--bx-ink)}
-  .escala{padding:0 0 26px}
-  .escala .ponto{position:absolute;left:-34px;top:2px}
-  .escala .t{font-size:30px}
-  .escala .d{font-size:15px}
+  /* rota vertical (16/10): trilho tracejado entre os pontos, um trecho por
+     escala, para a linha começar e terminar exatamente nos pontos */
+  .rota{padding:0 0 48px}
+  .rota .bx-wrap{gap:24px}
+  .rota-grid{grid-template-columns:minmax(0,1fr);gap:0}
+  .escala{padding:0 0 30px;gap:6px}
+  .escala:last-child{padding-bottom:0}
+  .escala .acao::before{display:none}
+  /* trilho vertical do centro deste ponto ao centro do próximo:
+     rótulo 18px + 6px de vão + metade da ação (34px) = 41px */
+  .escala:not(:last-child)::after{content:'';position:absolute;left:11px;top:41px;bottom:-41px;border-left:2px dashed var(--bx-ink)}
+  .escala .n{font-size:12px}
+  .escala .t{font-size:34px}
+  .escala .d{font-size:15px;max-width:none}
   .pacotes{padding:0 0 48px}
   .pacotes .bx-wrap{gap:28px}
   .lista-bilhetes{gap:14px}
   .bilhete .miolo-b{padding:18px 16px;gap:10px}
   .bilhete .pts{font-size:36px}
   .recibo{margin-top:6px}
-  .mapa{padding:0 0 44px}
+  .mapa{padding:0}
   .painel{padding:20px 16px;gap:22px}
   .cartao{flex-direction:column}
   .cartao h1{font-size:clamp(40px,12.6vw,96px)}
@@ -201,15 +243,20 @@
   .cartao .bx-perf::before{top:-14px;left:-14px}
   .cartao .bx-perf::after{top:-14px;bottom:auto;left:auto;right:-14px}
   .grade{grid-template-columns:1fr 1fr;gap:16px}
-  .rota-grid{grid-template-columns:1fr;gap:28px}
-  .rota-grid::before{display:none}
-  .escala .t{font-size:32px}
-  .quadro .linha,.quadro .cab{grid-template-columns:1.4fr 1fr;font-size:13px}
+  .quadro .linha,.quadro .cab{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) auto;font-size:13px;padding-left:16px;padding-right:16px}
+  .quadro .linha > span:not(.sit){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .quadro .linha .pais{font-size:12px}
+  .quadro .cab{font-size:11px}
+  .cidade-info{padding:14px 16px 16px}
 }
 @media (max-width:520px){
   .bilhete .miolo-b{padding:18px 16px}
   .bilhete .canhoto-b{width:72px}
   .recibo .corpo{padding:24px 18px;font-size:13px}
+  .recibo .cabeca{margin:-24px -18px 0;padding:18px 18px 16px}
+  .quadro .sit em{display:none}
+  .quadro .cab span:last-child{font-size:0}
+  .quadro .cab span:last-child::after{content:'●';font-size:11px}
   .recibo .total b{font-size:38px}
   .grade{grid-template-columns:1fr 1fr}
 }
@@ -278,21 +325,23 @@
     <span class="secao-rotulo" id="rotaTitulo">Rota · Como funciona</span>
     <div class="rota-grid">
       <div class="escala">
-        <span class="ponto" aria-hidden="true"></span>
         <span class="n">Escala 01 · Comprar</span>
-        <span class="t">Compre</span>
+        <div class="acao"><span class="ponto" aria-hidden="true"></span><span class="t">Compre</span></div>
         <p class="d">Pacotes ou valor livre. Pagamento com cartão ou transferência.</p>
       </div>
       <div class="escala">
-        <span class="ponto" aria-hidden="true"></span>
-        <span class="n">Escala 02 · Enviar</span>
-        <span class="t">Envie</span>
+        <span class="n">Escala 02 · Ganhar</span>
+        <div class="acao"><span class="ponto" aria-hidden="true"></span><span class="t">Ganhe</span></div>
+        <p class="d">Bônus nos pacotes maiores e pontos extras nas campanhas.</p>
+      </div>
+      <div class="escala">
+        <span class="n">Escala 03 · Enviar</span>
+        <div class="acao"><span class="ponto" aria-hidden="true"></span><span class="t">Envie</span></div>
         <p class="d">Mande pontos para quem você quiser, entre contas BlaXx.</p>
       </div>
       <div class="escala">
-        <span class="ponto" aria-hidden="true"></span>
-        <span class="n">Escala 03 · Trocar</span>
-        <span class="t">Troque</span>
+        <span class="n">Escala 04 · Trocar</span>
+        <div class="acao"><span class="ponto" aria-hidden="true"></span><span class="t">Troque</span></div>
         <p class="d">Benefícios e experiências em parceiros selecionados.</p>
       </div>
     </div>
@@ -317,7 +366,7 @@
           <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 180,00</b></div>
         </div>
         <div class="bx-perf" aria-hidden="true"></div>
-        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><div class="bx-barcode"></div></div>
+        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><span class="selo-b"></span></div>
       </label>
       <label class="bilhete" data-pkg="plus">
         <input class="sr-only" type="radio" name="pacote" value="plus" checked>
@@ -327,7 +376,7 @@
           <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 470,00</b></div>
         </div>
         <div class="bx-perf" aria-hidden="true"></div>
-        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><div class="bx-barcode"></div></div>
+        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><span class="selo-b"></span></div>
       </label>
       <label class="bilhete" data-pkg="prime">
         <input class="sr-only" type="radio" name="pacote" value="prime">
@@ -337,7 +386,7 @@
           <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 972,00</b></div>
         </div>
         <div class="bx-perf" aria-hidden="true"></div>
-        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><div class="bx-barcode"></div></div>
+        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><span class="selo-b"></span></div>
       </label>
     </div>
 
@@ -345,7 +394,7 @@
       <div class="bx-zig" aria-hidden="true"></div>
       <div class="corpo">
         <div class="cabeca">
-          <img src="assets/marca/blaxx-simbolo-b-claro-neon.svg" alt="BlaXx">
+          <img src="assets/marca/blaxx-simbolo-b.svg" alt="BlaXx">
           <span>EXTRATO DA SUA COMPRA</span>
         </div>
         <div class="bx-tracejo" aria-hidden="true"></div>
@@ -358,7 +407,7 @@
         <div class="total"><span>TOTAL</span><b id="rcPreco">R$ 470,00</b></div>
         <div class="faixa"><div class="bx-leader"><span>PONTOS NA CONTA</span><i></i><span id="rcConta">5.500</span></div></div>
         <span class="nota">Os pontos do pacote já incluem o bônus. Pontos são créditos promocionais de uso restrito na plataforma.</span>
-        <div class="bx-barcode" aria-hidden="true"></div>
+        <div class="via" aria-hidden="true">Via do passageiro</div>
         <a class="comprar" id="rcComprar" href="comprar-pontos.html">Comprar 5.500 pts →</a>
       </div>
       <div class="bx-zig bx-zig--baixo" aria-hidden="true"></div>
@@ -370,24 +419,30 @@
 <section class="mapa" id="mapa" aria-labelledby="mapaTitulo">
   <div class="bx-wrap">
     <div class="painel">
-      <div class="lado">
-        <span class="secao-rotulo">Painel de partidas · Mapa</span>
-        <h2 id="mapaTitulo">Seus pontos, o mundo inteiro.</h2>
+      <div class="painel-topo">
+        <div class="titulo">
+          <span class="secao-rotulo">Painel de partidas · Mapa</span>
+          <h2 id="mapaTitulo">Seus pontos, o mundo inteiro.</h2>
+        </div>
+        <div class="painel-resumo">
+          <div class="grande"><b id="netCount">27</b><span>cidades no mapa</span></div>
+          <ul class="legenda" aria-label="Legenda">
+            <li><i style="background:rgb(231,178,74)"></i>Postos</li>
+            <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+            <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+            <li><i style="background:rgb(10,11,14)"></i>Rede em expansão</li>
+          </ul>
+        </div>
+      </div>
+      <div class="painel-globo">
         <div class="cinema-frame">
           <canvas id="gvCanvas" aria-label="Globo com as principais cidades do mundo e as cidades da rede parceira" role="img"></canvas>
           <div id="globoTip" class="globe-tip"></div>
-          <span class="hint">Arraste para girar · clique numa cidade para ver os serviços</span>
         </div>
-        <div class="grande"><b id="netCount">27</b><span>cidades no mapa</span></div>
-        <ul class="legenda" aria-label="Legenda">
-          <li><i style="background:rgb(231,178,74)"></i>Postos</li>
-          <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
-          <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
-          <li><i style="background:rgb(10,11,14)"></i>Rede em expansão</li>
-        </ul>
+        <span class="hint">Arraste para girar · clique numa cidade para ver os serviços</span>
       </div>
       <div class="quadro" id="quadro">
-        <div class="cab" aria-hidden="true"><span>Destino</span><span>País</span></div>
+        <div class="cab" aria-hidden="true"><span>Destino</span><span>País</span><span>Situação</span></div>
         <!-- As cidades do Brasil vêm de BLAXX_POINTS (assets/blaxx-globo.js); as
              outras, da lista CIDADES_MUNDO abaixo. O JS reescreve esta lista. -->
         <div class="lista" role="list" aria-label="Cidades no mapa">
@@ -580,7 +635,9 @@
 
   var lista = document.querySelector('#quadro .lista'), info = document.getElementById('cidadeInfo');
   lista.innerHTML = CIDADES.map(function(c, i){
-    return '<button type="button" class="linha" role="listitem" data-i="' + i + '"><span>' + c.c + '</span><span class="pais">' + c.p + '</span></button>';
+    var on = c.verticais.length > 0;
+    return '<button type="button" class="linha" role="listitem" data-i="' + i + '"><span>' + c.c + '</span><span class="pais">' + c.p + '</span>' +
+      '<span class="sit' + (on ? ' on' : '') + '"><i aria-hidden="true"></i><em>' + (on ? 'Com parceiros' : 'Em expansão') + '</em></span></button>';
   }).join('');
 
   function mostrar(c){
@@ -608,7 +665,7 @@
     .then(function(world){
       globo = blaxxCreateGlobe(canvas, {
         world: world, points: PONTOS, suppliers: SUP,
-        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.5,   // abre no Brasil, como a home anterior
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.44,   // abre no Brasil, como a home anterior
         autoRotate: !reduzir, rotateSpeed: 0.12,
         tooltip: document.getElementById('globoTip'),
         onPointClick: function(ponto){ var c = porNome[ponto.c]; if (c){ mostrar(c); var b = lista.querySelector('.linha.ativa'); if (b) b.scrollIntoView({ block: 'nearest' }); } },

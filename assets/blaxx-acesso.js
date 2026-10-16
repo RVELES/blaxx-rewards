@@ -11,8 +11,10 @@
  * (histórico, notificações, comprovantes); um link para elas também vai ao
  * login. Página nova que exija sessão entra numa das duas listas.
  *
- * Três camadas: reescreve os href ao carregar, observa links inseridos depois
- * (menus, cards montados por JS) e, como garantia, intercepta o clique.
+ * Quatro camadas: a própria página fechada, aberta por URL digitada ou
+ * favorito, manda o visitante ao login; reescreve os href ao carregar; observa
+ * links inseridos depois (menus, cards montados por JS); e, como garantia,
+ * intercepta o clique.
  */
 (function () {
   'use strict';
@@ -115,6 +117,15 @@
   window.BlaxxAcesso = { logado: logado, fechada: function (href) {
     var a = document.createElement('a'); a.setAttribute('href', href); return !!destinoFechado(a);
   } };
+
+  // Primeira camada: este script fica no <head>, então o visitante sai antes
+  // de a tela (com saldo e nome de exemplo) aparecer. As PROTEGIDAS já faziam
+  // isso por conta própria; as de CONTA abriam normalmente.
+  var aqui = pagina(location);
+  if (!logado() && FECHADAS[aqui]) {
+    location.replace(paraLogin('/' + aqui + location.search + location.hash));
+    return;
+  }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
