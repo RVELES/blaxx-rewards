@@ -195,11 +195,11 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
 /* Marca: só o B característico (16/10), variante de fundo ESCURO. */
 .brand{ display:flex; align-items:center; gap:0; font-size:0; color:transparent; }
 .brand .mark,.mark{
-  display:block; width:40px; height:40px; min-width:0; padding:0;
-  background:transparent url('marca/blaxx-simbolo-b.svg') center / contain no-repeat;
+  display:block; width:33px; height:38px; min-width:0; padding:0;
+  background:transparent url('marca/blaxx-simbolo-b.svg') left center / contain no-repeat;
   border:0; border-radius:0; box-shadow:none; font-size:0; color:transparent;
 }
-.brand__img{ height:38px !important; width:auto; }
+.brand__img{ height:36px !important; width:auto; }
 .brand-sub{ display:none; }
 
 /* Itens de navegação: pílula 8px, hover em superfície-2 (como o mock). */
@@ -536,7 +536,7 @@ footer.footer,footer.site-footer{
   display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:32px;
 }
 .bx-foot-marca{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
-.bx-foot-marca img{ height:48px; width:auto; display:block; }
+.bx-foot-marca img{ height:46px; width:auto; display:block; }
 .bx-foot-marca p{ color:var(--bx-ink-muted); line-height:1.5; max-width:320px; margin:0; }
 .bx-foot-col{ display:flex; flex-direction:column; gap:12px; }
 .bx-foot-col h4{ margin:0; color:#F4F2EC; font-family:var(--bx-mono); font-size:12px; letter-spacing:.08em; font-weight:400; }
@@ -562,7 +562,7 @@ footer.footer,footer.site-footer{
 @media (max-width:880px){
   .topbar .nav,.topbar > .bx-topo{ padding:10px 16px; gap:10px; }
   .links,.topnav{ display:none; }
-  .brand .mark,.mark{ width:36px; height:36px; }
+  .brand .mark,.mark{ width:30px; height:34px; }
   /* assets/styles.css esconde TODO .button.ghost do .cta-row no celular; a
      intenção era o "Entrar" do visitante, mas levava junto o "Voltar" de
      comprar-livre. Só o "Entrar" some. */
@@ -636,8 +636,8 @@ footer.footer,footer.site-footer{
   /* barra do topo mais baixa; busca não existe aqui */
   .bx-util-in{ padding:7px 16px; font-size:11px; }
   .topbar .nav,.topbar > .bx-topo{ min-height:60px; padding:8px 16px; }
-  .brand .mark,.mark{ width:34px; height:34px; }
-  .brand__img{ height:32px !important; }
+  .brand .mark,.mark{ width:28px; height:32px; }
+  .brand__img{ height:30px !important; }
 
   /* gaveta: cartão claro, itens de 48px, ativo em preto, CTA neon */
   .bxnav-drawer,.drawer{ width:min(88vw,360px); padding:14px 14px 28px; }
