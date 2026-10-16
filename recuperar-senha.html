@@ -38,6 +38,24 @@
   .msg.err { background: rgba(224,72,61,.08); border: 1px solid rgba(224,72,61,.3); color: #c0392b; }
   .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
   .auth-foot a { text-decoration: underline; }
+  /* ── Celular (≤ 880px) ──────────────────────────────────────────────
+     Barra preta mais baixa, cartão a 16px das bordas e com 24px por
+     dentro (o 36px do desktop comia um quinto da tela), formulário logo
+     abaixo da barra em vez de flutuar no meio, campos a 16px (o iOS não
+     amplia a tela ao focar) e cada link ou alvo com 44px de altura. Os
+     links do rodapé seguem corridos; só ganham área de toque. */
+  @media (max-width: 880px){
+    .auth-top { padding: 8px 16px; gap: 8px 14px; min-height: 60px; }
+    .auth-top a { display: inline-flex; align-items: center; min-height: 44px; }
+    .auth-top a.alt { gap: .32em; }   /* o flex engole o espaço antes do <b> */
+    .auth-wrap { padding: 16px 16px 24px; align-items: start; }
+    .auth { padding: 24px 20px; }
+    .auth h1 { font-size: 28px; }
+    .auth .sub { font-size: 15px; }
+    .f input { font-size: 16px; min-height: 48px; }
+    .auth-foot { padding: 8px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+    .auth-foot a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Recuperar senha","item":"https://blaxxpontos.com.br/recuperar-senha.html"}]}

@@ -23,6 +23,17 @@
   details[open] summary::after { transform: rotate(45deg); }
   details .a { padding: 0 24px 18px; font-size: 13.5px; color: var(--fg-muted); }
   details .a a { text-decoration: underline; }
+  @media (max-width: 880px){
+    /* Ritmo do celular: cabeçalho de seção mais curto, acordeão com o mesmo
+       respiro de 18px dos cartões do tema e texto em corpo de leitura
+       (13,5–14,5px era letra miúda em 375px). */
+    .sec-head { margin: 32px 0 12px; }
+    summary { padding: 15px 18px; font-size: 15px; min-height: 48px; }
+    details .a { padding: 0 18px 18px; font-size: 15px; }
+    /* Os links da resposta são texto corrido dentro de um <div>: a folha raiz
+       os transformava em caixas de 44px no meio da frase. */
+    details .a a { min-height: 0; display: inline; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"FAQ","item":"https://blaxxpontos.com.br/faq.html"}]}
@@ -38,21 +49,21 @@
 
   <div class="sec-head"><span class="n">01</span><h2 class="h-section">Sobre o programa</h2></div>
   <div class="card qa">
-    <details open><summary>O que é o BlaXx?</summary><div class="a">Um programa de fidelidade brasileiro que conecta consumidores e marcas. Você acumula pontos consumindo na rede de parceiros, em campanhas patrocinadas ou comprando pacotes via Pix, e usa em benefícios, transferências ou resgates.</div></details>
-    <details><summary>Os pontos valem dinheiro?</summary><div class="a">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro da plataforma. Não são moeda, depósito, investimento, valor mobiliário ou criptoativo. Veja as <a href="regras-pontos.html">regras de pontos</a>.</div></details>
-    <details><summary>Quanto custa participar?</summary><div class="a">O cadastro e a manutenção da conta são gratuitos. Você só paga quando opta por <a href="comprar.html">comprar pacotes de pontos</a> via Pix.</div></details>
+    <details open><summary>O que é o BlaXx?</summary><div class="a">Um programa de recompensas brasileiro que conecta consumidores e marcas. Você acumula pontos consumindo na rede de parceiros, em campanhas patrocinadas ou comprando pacotes, e troca por benefícios e experiências em parceiros selecionados, ou envia para outras contas BlaXx.</div></details>
+    <details><summary>Os pontos têm valor monetário?</summary><div class="a">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro do programa. Não são moeda, depósito, investimento, valor mobiliário ou criptoativo. Veja as <a href="regras-pontos.html">regras de pontos</a>.</div></details>
+    <details><summary>Quanto custa participar?</summary><div class="a">O cadastro e a manutenção da conta são gratuitos. Você só paga quando opta por <a href="comprar.html">comprar pacotes de pontos</a>, com cartão ou transferência.</div></details>
   </div>
 
   <div class="sec-head"><span class="n">02</span><h2 class="h-section">Acúmulo</h2></div>
   <div class="card qa">
-    <details><summary>Como acumulo pontos?</summary><div class="a">De 4 formas: (1) comprando em <a href="parceiros.html">parceiros</a> da rede; (2) participando de <a href="campanhas.html">campanhas</a>; (3) <a href="comprar.html">comprando pacotes</a> via Pix; (4) recebendo pontos de outras contas BlaXx.</div></details>
+    <details><summary>Como acumulo pontos?</summary><div class="a">De 4 formas: (1) comprando em <a href="parceiros.html">parceiros</a> da rede; (2) participando de <a href="campanhas.html">campanhas</a>; (3) <a href="comprar.html">comprando pacotes</a> de pontos; (4) recebendo pontos de outras contas BlaXx.</div></details>
     <details><summary>Qual a validade dos pontos?</summary><div class="a">24 meses a partir da data de acúmulo, salvo regra específica indicada na campanha. Pontos próximos de expirar aparecem em destaque no <a href="extrato.html">extrato</a> e você é avisado 30 dias antes por e-mail e push.</div></details>
-    <details><summary>O que acontece se eu não usar os pontos no prazo?</summary><div class="a">Pontos expirados são debitados automaticamente da carteira e não podem ser restaurados, conforme as <a href="regras-pontos.html">regras de pontos</a>.</div></details>
+    <details><summary>O que acontece se eu não usar os pontos no prazo?</summary><div class="a">Pontos expirados são debitados automaticamente da sua conta e não podem ser restaurados, conforme as <a href="regras-pontos.html">regras de pontos</a>.</div></details>
   </div>
 
   <div class="sec-head"><span class="n">03</span><h2 class="h-section">Compra de pontos</h2></div>
   <div class="card qa">
-    <details><summary>Como compro pontos?</summary><div class="a">Em <a href="comprar.html">Comprar pontos</a>, escolha um pacote (ou valor livre) e pague via Pix. O crédito é praticamente imediato após a confirmação do pagamento.</div></details>
+    <details><summary>Como compro pontos?</summary><div class="a">Em <a href="comprar.html">Comprar pontos</a>, escolha um pacote ou um valor livre e pague com cartão ou transferência. Os pontos são creditados assim que o pagamento é confirmado.</div></details>
     <details><summary>Posso pedir reembolso?</summary><div class="a">Compras à distância têm direito de arrependimento de 7 dias (art. 49 do CDC). Depois disso, são definitivas, salvo exceções. Detalhes na <a href="politica-reembolso.html">política de reembolso</a>.</div></details>
   </div>
 
@@ -64,7 +75,7 @@
 
   <div class="sec-head"><span class="n">05</span><h2 class="h-section">Resgates</h2></div>
   <div class="card qa">
-    <details><summary>O que posso resgatar?</summary><div class="a">Vouchers (iFood, Amazon, Mercado Livre e 80+ marcas), milhas e viagens, assinaturas e cashback via Pix. Veja o catálogo em <a href="resgates.html">Resgates</a>.</div></details>
+    <details><summary>O que posso resgatar?</summary><div class="a">Vouchers, viagens e assinaturas de marcas parceiras, entre outros benefícios e experiências em parceiros selecionados. Veja o catálogo em <a href="resgates.html">Resgates</a>.</div></details>
     <details><summary>Resgate pode ser cancelado?</summary><div class="a">Após a confirmação, o resgate é definitivo e não cancelável. Vouchers seguem regras próprias de cada parceiro, conforme os <a href="termos.html">termos de uso</a>.</div></details>
   </div>
 

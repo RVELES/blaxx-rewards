@@ -1229,7 +1229,7 @@
         if (!skipNumeric) {
           // Saldo total
           t = t.replace(/84\.750/g, saldoStr);
-          t = t.replace(/R\$ 847,50/g, 'R$ ' + brlStr);
+          t = t.replace(/≈?\s*R\$ 847,50/g, '');   /* 15/10: sem equivalência do saldo em reais na tela */
           // "Disponíveis" (era 82.300 - subset do saldo)
           t = t.replace(/82\.300/g, saldoStr);
           // "Pendentes" / "Próx. expirar" (eram 2.450)
@@ -1573,7 +1573,7 @@
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         if (!requireAuth()) return;
-        btn.style.opacity = '.6'; btn.textContent = 'Gerando PIX...';
+        btn.style.opacity = '.6'; btn.textContent = 'Gerando cobrança…';
         api('/pix/charge', { method: 'POST', body: JSON.stringify({ package: pkgKey }) })
           .then(function (charge) {
             STORE.setFlow('charge', charge);
@@ -1764,7 +1764,7 @@
       box.innerHTML =
         '<div style="display:flex;align-items:center;gap:14px;">' +
           '<div style="width:54px;height:54px;border-radius:50%;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;">✓</div>' +
-          '<div><h2 style="margin:0;">Pontos enviados!</h2><p style="margin:0;color:var(--muted);">Comprovante registrado no extrato.</p></div>' +
+          '<div><h2 style="margin:0;">Pontos enviados.</h2><p style="margin:0;color:var(--muted);">Comprovante registrado no extrato.</p></div>' +
         '</div>' +
         '<div class="dl mt-4">' +
           '<div><span class="k">Pontos enviados</span><span class="v" style="font-size:20px;">' + fmt(t.amount_pts) + ' pts</span></div>' +
@@ -1793,7 +1793,7 @@
     function quote() {
       var p = parseInt(ptsInput.value || '0');
       $('#bx-r-quote').textContent = p > 0
-        ? '≈ ' + brl(p * BX_CENTS_PER_POINT / 100)
+        ? ''   /* 15/10: sem equivalência em reais na tela — o valor do ponto não é exibido */
         : '';
     }
     ptsInput.addEventListener('input', quote); quote();
@@ -1810,14 +1810,14 @@
           box.style.display = 'block';
           if (r.status === 'paid') {
             box.className = 'alert success mt-2';
-            box.innerHTML = '<div class="alert-icon">✓</div><div><p><strong>' + brl(r.amount_brl) + ' enviados via PIX</strong> para <code>' + esc(r.pix_key) + '</code></p><p>EndToEndID: <code>' + esc(r.end_to_end_id) + '</code></p></div>';
+            box.innerHTML = '<div class="alert-icon">✓</div><div><p><strong>' + brl(r.amount_brl) + ' transferidos</strong> para <code>' + esc(r.pix_key) + '</code></p><p>EndToEndID: <code>' + esc(r.end_to_end_id) + '</code></p></div>';
           } else if (r.status === 'processing') {
             // PAYOUT_MODE=manual: débito retido, PIX sai em até 1 dia útil.
             box.className = 'alert info mt-2';
-            box.innerHTML = '<div class="alert-icon">⏱</div><div><p><strong>Resgate em processamento</strong></p><p>' + brl(r.amount_brl) + ' via PIX em até 1 dia útil. Acompanhe no extrato.</p></div>';
+            box.innerHTML = '<div class="alert-icon">⏱</div><div><p><strong>Resgate em processamento</strong></p><p>' + brl(r.amount_brl) + ' por transferência em até 1 dia útil. Acompanhe no extrato.</p></div>';
           } else if (r.status === 'failed') {
             box.className = 'alert warn mt-2';
-            box.innerHTML = '<div class="alert-icon">!</div><div><p><strong>Payout falhou:</strong> ' + esc(r.failure_reason) + '</p><p>' + fmt(r.points_debited) + ' pts <strong>estornados automaticamente</strong>.</p></div>';
+            box.innerHTML = '<div class="alert-icon">!</div><div><p><strong>Transferência não concluída:</strong> ' + esc(r.failure_reason) + '</p><p>' + fmt(r.points_debited) + ' pts <strong>estornados automaticamente</strong>.</p></div>';
           } else {
             box.className = 'alert info mt-2';
             box.innerHTML = '<div class="alert-icon">i</div><div><p>Status: ' + esc(r.status) + '</p></div>';
@@ -2195,13 +2195,14 @@
     var brl = (w.balance_brl_equiv || 0).toFixed(2).replace('.', ',');
     // Dashboard
     if ($('dash-balance')) $('dash-balance').textContent = fmt(balance);
-    if ($('dash-balance-brl')) $('dash-balance-brl').textContent = 'R$ ' + brl;
+    // 15/10: o saldo não é mais exibido em reais (valor do ponto fora da tela)
+    if ($('dash-balance-brl')) { $('dash-balance-brl').textContent = ''; $('dash-balance-brl').style.display = 'none'; }
     if ($('dash-available')) $('dash-available').textContent = fmt(balance - pending);
     if ($('dash-pending')) $('dash-pending').textContent = fmt(pending);
     if ($('dash-expire')) $('dash-expire').textContent = '0';  // sem expiração ativa por enquanto
     // Carteira
     if ($('wallet-balance')) $('wallet-balance').innerHTML = fmt(balance) + ' <small>pts</small>';
-    if ($('wallet-balance-brl')) $('wallet-balance-brl').textContent = 'R$ ' + brl;
+    if ($('wallet-balance-brl')) { $('wallet-balance-brl').textContent = ''; $('wallet-balance-brl').style.display = 'none'; }
     if ($('wallet-available')) $('wallet-available').textContent = fmt(balance - pending);
     if ($('wallet-pending')) $('wallet-pending').textContent = fmt(pending);
     if ($('wallet-expire')) $('wallet-expire').textContent = '0';
@@ -2345,7 +2346,7 @@
           attachPkgClickHandlers();
         })
         .catch(function (err) {
-          var cls = bxClassifyError(err, 'Endpoint /pix/packages nao respondeu.');
+          var cls = bxClassifyError(err, 'Os pacotes não responderam.');
           bxRenderError({
             kind: 'grid', host: grid,
             message: cls.message, hint: cls.hint,
@@ -2904,13 +2905,13 @@
     };
 
     if (!token) {
-      setState('Não recebeu o link? Informe seu email abaixo para reenviar.', 'info');
+      setState('Não recebeu o link? Informe seu e-mail abaixo para reenviar.', 'info');
       if (resendForm) resendForm.style.display = 'block';
     } else {
-      setState('Validando seu email...', 'info');
+      setState('Validando seu e-mail…', 'info');
       api('/auth/verify-email', { method: 'POST', body: JSON.stringify({ token: token }) })
         .then(function () {
-          setState('Email confirmado com sucesso! Redirecionando para o login...', 'ok');
+          setState('E-mail confirmado. Redirecionando para o login…', 'ok');
           setTimeout(function () { location.href = '/login'; }, 1800);
         })
         .catch(function (err) {

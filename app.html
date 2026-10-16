@@ -80,6 +80,30 @@
   @media (max-width:480px) {
     #charge-area > div[style*="grid-template-columns"] { grid-template-columns:1fr !important; }
   }
+  /* Celular (≤ 880px), camada Embarque. A barra fixa quebrava em duas linhas
+     (116px colados no topo em toda rolagem): "backend conectado" + endereço
+     da API + menu não cabiam ao lado da marca. A pílula fica mais justa e o
+     endereço, informação de desenvolvedor, sai do chrome abaixo de 600px.
+     Título na escala do tema (assets/styles.css força 26px no .page-head h1
+     com !important), campos em 16px e 44px (o iOS dá zoom abaixo de 16px),
+     rótulos pequenos em 12px, e as linhas título + etiqueta do endpoint
+     quebram em vez de espremer. */
+  @media (max-width:880px) {
+    .page-head h1 { font-size:clamp(28px,8vw,34px) !important; }
+    .live-pill { padding:3px 8px; }
+    .row-input input, .login-bar input { font-size:16px !important; min-height:44px; }
+    .balance-big { font-size:36px; }
+    .pkg-btn { min-height:44px; }
+    .pkg-btn .nm, .pkg-btn .pt { font-size:12px; }
+    .brcode-box { font-size:11px; max-height:120px; }
+    .tx-row span { font-size:12px !important; }
+    #app .card > div[style*="space-between"], #charge-area div[style*="gap:8px"] { flex-wrap:wrap; gap:6px 10px; }
+    .endpoint-tag { overflow-wrap:anywhere; }
+    #logout { min-height:44px; }
+  }
+  @media (max-width:600px) {
+    .api-badge { display:none; }
+  }
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
@@ -116,7 +140,7 @@
   <div class="page-head">
     <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> App ao vivo</div>
     <h1>App <span style="background:var(--bx-neon);color:inherit;padding:0 .08em;">funcional</span></h1>
-    <p class="lead" style="max-width:60ch;margin-top:14px;">Esta tela usa o backend Python real. Login, saldo, compra de pontos via PIX, envio entre clientes e resgate via PIX, tudo passando pelos endpoints Flask.</p>
+    <p class="lead" style="max-width:60ch;margin-top:14px;">Esta tela usa o backend Python real. Login, saldo, compra de pontos, envio entre clientes e resgate, tudo passando pelos endpoints Flask.</p>
   </div>
 
   <!-- ====================== LOGIN ====================== -->
@@ -128,10 +152,10 @@
       </div>
       <div class="login-bar">
         <input id="li-email" type="email" placeholder="e-mail" value="mariana@blaxx.com" style="padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;">
-        <input id="li-pass" type="password" placeholder="senha" value="123456" style="padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;">
+        <input id="li-pass" type="password" placeholder="senha" value="" style="padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;">
         <button class="button" id="li-go">Entrar</button>
       </div>
-      <p style="margin-top:10px;font-size:12px;color:var(--muted);">Demo: <strong>mariana@blaxx.com</strong> ou <strong>lucas@blaxx.com</strong> · senha <strong>123456</strong></p>
+      <p style="margin-top:10px;font-size:12px;color:var(--muted);">Demo: <strong>mariana@blaxx.com</strong> ou <strong>lucas@blaxx.com</strong></p>
       <div id="li-msg"></div>
     </div>
   </section>
@@ -146,7 +170,7 @@
           <div>
             <div style="color:var(--bx-neon);font-family:var(--bx-mono);font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;">Carteira de <span id="me-name">…</span></div>
             <div class="balance-big" style="color:var(--bx-neon);margin-top:8px;"><span id="bal-pts">…</span> <span style="font-size:18px;color:#F4F2EC;">pts</span></div>
-            <div class="balance-sub" style="color:var(--bx-ink-muted);">≈ R$ <span id="bal-brl">…</span></div>
+            <div class="balance-sub" style="color:var(--bx-ink-muted);">Disponíveis para resgatar benefícios<span id="bal-brl"></span></div>
           </div>
           <button class="button ghost" id="logout" style="background:transparent;color:#F4F2EC;border:1px solid rgba(244,242,236,.35);">Sair</button>
         </div>
@@ -159,7 +183,7 @@
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
           <div style="display:flex;gap:10px;align-items:center;">
             <span class="step-label">Fluxo 1</span>
-            <h2 style="margin:0;">Comprar pontos via PIX</h2>
+            <h2 style="margin:0;">Comprar pontos</h2>
           </div>
           <span class="endpoint-tag">POST /pix/charge → /pix/simulate-payment</span>
         </div>
@@ -204,7 +228,7 @@
         <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:8px;margin-top:12px;align-items:end;">
           <div class="row-input"><label>Destinatário (e-mail ou CPF)</label><input id="t-to" value="lucas@blaxx.com"></div>
           <div class="row-input"><label>Quantidade (pts)</label><input id="t-amt" type="number" value="2000" min="100" step="100"></div>
-          <div class="row-input"><label>Sua senha</label><input id="t-pwd" type="password" value="123456"></div>
+          <div class="row-input"><label>Sua senha</label><input id="t-pwd" type="password" value=""></div>
           <button class="button" id="t-send">Enviar</button>
         </div>
         <div class="row-input" style="margin-top:10px;"><label>Mensagem (opcional, máx 140)</label><input id="t-msg" maxlength="140" placeholder="obrigado!"></div>
@@ -218,7 +242,7 @@
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
           <div style="display:flex;gap:10px;align-items:center;">
             <span class="step-label">Fluxo 3</span>
-            <h2 style="margin:0;">Resgatar pontos via PIX</h2>
+            <h2 style="margin:0;">Resgatar pontos</h2>
           </div>
           <span class="endpoint-tag">POST /redeem/</span>
         </div>
@@ -226,8 +250,8 @@
 
         <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr auto;gap:8px;margin-top:12px;align-items:end;">
           <div class="row-input"><label>Pontos</label><input id="r-pts" type="number" value="1000" min="1" step="1"></div>
-          <div class="row-input"><label>Chave PIX</label><input id="r-key" value="ricardo.veles@gmail.com"></div>
-          <div class="row-input"><label>Sua senha</label><input id="r-pwd" type="password" value="123456"></div>
+          <div class="row-input"><label>Chave PIX</label><input id="r-key" value=""></div>
+          <div class="row-input"><label>Sua senha</label><input id="r-pwd" type="password" value=""></div>
           <button class="button" id="r-go">Resgatar</button>
         </div>
         <div id="r-quote" style="margin-top:8px;font-size:12px;color:var(--muted);"></div>
@@ -356,7 +380,7 @@ async function showApp() {
 async function refresh() {
   const w = await api('/wallet/');
   $('bal-pts').textContent = fmt(w.balance_pts);
-  $('bal-brl').textContent = w.balance_brl_equiv.toFixed(2).replace('.', ',');
+  $('bal-brl').textContent = '';  // 15/10: sem equivalência em reais na tela — o valor do ponto não é exibido
 
   const t = await api('/wallet/transactions?limit=10');
   if (!t.items.length) { $('extrato').textContent = 'sem movimentações ainda.'; return; }
@@ -458,7 +482,7 @@ $('t-send').addEventListener('click', async () => {
 const CENTS_PER_POINT = 9;
 $('r-pts').addEventListener('input', () => {
   const pts = parseInt($('r-pts').value || 0);
-  if (pts > 0) $('r-quote').textContent = `≈ ${brl(pts * CENTS_PER_POINT / 100)}`;
+  if (pts > 0) $('r-quote').textContent = '';  // 15/10: sem equivalência em reais na tela — o valor do ponto não é exibido
 });
 $('r-pts').dispatchEvent(new Event('input'));
 
@@ -475,10 +499,10 @@ $('r-go').addEventListener('click', async () => {
     });
     if (r.status === 'paid') {
       alertBox('r-msg', 'ok',
-        `✓ ${brl(r.amount_brl)} enviados via PIX · E2E <code>${esc(r.end_to_end_id)}</code>`);
+        `✓ Resgate concluído · ${brl(r.amount_brl)} por transferência · E2E <code>${esc(r.end_to_end_id)}</code>`);
     } else if (r.status === 'failed') {
       alertBox('r-msg', 'warn',
-        `⚠ Payout falhou: ${esc(r.failure_reason)} · ${fmt(r.points_debited)} pts <strong>estornados automaticamente</strong>`);
+        `⚠ Transferência não concluída: ${esc(r.failure_reason)} · ${fmt(r.points_debited)} pts <strong>estornados automaticamente</strong>`);
     } else {
       alertBox('r-msg', 'ok', `Status: ${esc(r.status)}`);
     }

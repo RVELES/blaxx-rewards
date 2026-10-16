@@ -27,6 +27,22 @@
   .done-tag { background: var(--lime); color: var(--ink); font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); }
   .empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
   @media (max-width: 900px){ .cgrid{grid-template-columns:1fr;} }
+
+  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
+     respiro, cartões de 18px). Só o que esta página tem de próprio. */
+  @media (max-width: 880px){
+    .page-head { margin-bottom: 18px; }
+    .cgrid { gap: 14px; }
+    .camp { padding: 18px; }
+    .camp__title { font-size: 19px; }
+    /* título + recompensa: a pílula desce para baixo do texto em vez de
+       espremer o título numa coluna de poucas palavras */
+    .camp__top { flex-wrap: wrap; gap: 10px 12px; }
+    .camp__reward { align-self: flex-start; }
+    .camp__prog { padding-top: 14px; }
+    .camp__foot { flex-wrap: wrap; }
+    .empty { padding: 32px 16px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Campanhas","item":"https://blaxxpontos.com.br/campanhas.html"}]}
@@ -36,8 +52,8 @@
 <main>
   <header class="page-head" data-screen-label="Campanhas">
     <span class="eyebrow">CAMPANHAS</span>
-    <h1 class="h-display">Missões que valem pontos.</h1>
-    <p class="lead">Participe das campanhas ativas e ganhe pontos extras ao bater as metas.</p>
+    <h1 class="h-display">Metas que valem pontos.</h1>
+    <p class="lead">Participe das campanhas ativas e receba pontos extras ao cumprir as metas.</p>
   </header>
 
   <div class="cgrid" id="cgrid"><div class="empty">Carregando…</div></div>

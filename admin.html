@@ -54,6 +54,27 @@
     /* Tabelas de 6 a 8 colunas rolam dentro da própria caixa, não a página. */
     table.admin-tbl { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
   }
+  /* Celular (≤ 880px), camada Embarque. A barra fixa quebrava em duas linhas
+     (120px de topo colado em toda rolagem): nome + Voltar + Sair + menu não
+     cabiam ao lado da marca. "Sair" fica compacto como o "Criar conta" do
+     tema e o nome do admin some abaixo de 520px, ele já está no menu. Campos
+     em 16px (o iOS dá zoom abaixo disso) e com 44px de altura, inclusive os
+     do cadastro de rede, que não têm type= e caíam no padrão do navegador. */
+  @media (max-width: 880px) {
+    .admin-shell { padding: 20px 16px 40px; }
+    .topbar .cta-row .button { padding: 10px 14px; font-size: 14px; min-height: 44px; }
+    .toolbar input[type="search"], .toolbar select, #nova-rede input, #nova-rede select { font-size: 16px; min-height: 44px; }
+    .toolbar input[type="search"] { min-width: 0; flex-basis: 100%; }
+    .tab-row { gap: 4px; }
+    .tab-row button { padding: 10px 12px; min-height: 44px; }
+    .pager { flex-wrap: wrap; gap: 10px; }
+    .pager button { min-height: 44px; padding: 8px 14px; }
+    /* avisos amarelos e caixas de código ganham o canto do tema */
+    .aviso-amarelo, #credencial-valor, #b2b-alerta { border-radius: var(--bx-r-sm) !important; }
+  }
+  @media (max-width: 520px) {
+    #admin-name { display: none; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Admin","item":"https://blaxxpontos.com.br/admin.html"}]}
@@ -75,7 +96,7 @@
 
 <div class="admin-shell">
   <h1 style="font-size:32px;margin-bottom:4px;">Painel do Administrador</h1>
-  <p style="color:var(--bx-grey);margin-bottom:24px;">Visão geral e gestão de usuários, transações e VIPs.</p>
+  <p style="color:var(--bx-grey);margin-bottom:24px;">Visão geral e gestão de usuários, movimentações e VIPs.</p>
 
   <!-- Stats -->
   <div class="stats-grid" id="stats-grid">
@@ -90,7 +111,7 @@
       Pagamentos pendentes <span id="pending-count" style="background:var(--danger-text);color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
     <button data-tab="payouts" onclick="switchTab('payouts')">
-      Resgates PIX <span id="payouts-count" style="background:var(--danger-text);color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
+      Resgates pendentes <span id="payouts-count" style="background:var(--danger-text);color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
     <button data-tab="packages" onclick="switchTab('packages')">Pacotes</button>
     <button data-tab="merchants" onclick="switchTab('merchants')">Redes B2B</button>
@@ -137,7 +158,7 @@
   <!-- Tab: Payments (PIX manual pendente) -->
   <div id="tab-payments" style="display:none;">
     <p style="color:var(--bx-grey);font-size:13px;margin-bottom:12px;">
-      Usuários que pagaram via PIX e estão aguardando confirmação. Confirme no extrato bancário e clique <b>Confirmar</b> para liberar os pontos.
+      Compras pagas por transferência que aguardam confirmação. Confira o extrato bancário e clique <b>Confirmar</b> para liberar os pontos.
     </p>
     <table class="admin-tbl">
       <thead>
@@ -156,8 +177,8 @@
   <!-- Tab: Payouts (venda/resgate PIX aguardando execução manual) -->
   <div id="tab-payouts" style="display:none;">
     <p style="color:var(--bx-grey);font-size:13px;margin-bottom:12px;">
-      Resgates em que os pontos já foram <b>debitados</b> e aguardam a transferência PIX.
-      Faça o PIX no banco para a chave indicada, cole o <b>EndToEndID</b> do comprovante e clique <b>Confirmar</b>.
+      Resgates em que os pontos já foram <b>debitados</b> e aguardam a transferência.
+      Faça a transferência no banco para a chave indicada, cole o <b>EndToEndID</b> do comprovante e clique <b>Confirmar</b>.
       Se a chave for inválida, clique <b>Falhou</b> para <b>estornar</b> os pontos automaticamente.
     </p>
     <table class="admin-tbl">
@@ -215,7 +236,7 @@
       Preços dos pacotes de pontos exibidos na landing e cobrados na compra.
     </p>
     <p class="aviso-amarelo" style="font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;">
-      ⚠️ Alterar o preço muda o valor cobrado do cliente no PIX. Editar salva como <b>rascunho</b>; só vai ao ar ao <b>Publicar</b>.
+      ⚠️ Alterar o preço muda o valor cobrado do cliente na compra. Editar salva como <b>rascunho</b>; só vai ao ar ao <b>Publicar</b>.
     </p>
     <div id="packages-toolbar" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
       <button id="pkg-publish-btn" class="button" onclick="publishPackages(this)" disabled style="font-size:13px;padding:8px 16px;">Publicar alterações</button>
@@ -241,7 +262,7 @@
   <div id="tab-merchants" style="display:none;">
     <p style="color:var(--bx-grey);font-size:13px;margin-bottom:8px;">
       Redes que EMITEM pontos na compra do cliente e devem à BlaXx por isso.
-      Diferente de "parceiros", que são só vitrine.
+      Diferente dos "parceiros" do catálogo, que não emitem pontos.
     </p>
     <div id="b2b-alerta" style="display:none;background:var(--danger);border:1px solid rgba(154,47,21,.35);color:var(--danger-text);font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;"></div>
 

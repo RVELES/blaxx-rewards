@@ -9,6 +9,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/blaxx-embarque.css">
+<style>
+  /* Celular (≤ 880px), camada Embarque: título na escala do tema (a folha
+     base força 26px no .page-head h1 com !important); as amostras de cor são
+     itens curtos e vão a duas colunas em vez de oito cartões empilhados; as
+     fileiras de botões e de status quebram com 8px entre alvos. */
+  @media (max-width:880px) {
+    .page-head h1 { font-size:clamp(28px,8vw,34px) !important; }
+    /* !important porque assets/styles.css força 1fr com !important a 480px */
+    .grid.four { grid-template-columns:1fr 1fr !important; gap:12px; }
+    .grid.four .card > div:first-child { height:88px !important; }
+    .grid.four .card > div:last-child { padding:12px 14px !important; }
+    .flex.gap-sm { gap:8px; }
+    .section { margin:28px 0; }
+    .empty { padding:32px 18px; }
+  }
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -189,12 +205,12 @@
         <div class="wallet">
             <div class="label">Saldo</div>
             <div class="big">84.750 <small>pts</small></div>
-            <div class="equiv">≈ R$ 847,50 em resgates</div>
+            <div class="equiv">Disponíveis para resgatar benefícios</div>
         </div>
         <div class="wallet dark">
             <div class="label">Saldo</div>
             <div class="big">84.750 <small>pts</small></div>
-            <div class="equiv">≈ R$ 847,50 em resgates</div>
+            <div class="equiv">Disponíveis para resgatar benefícios</div>
         </div>
     </div>
 </section>
@@ -277,7 +293,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>

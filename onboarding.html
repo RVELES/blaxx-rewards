@@ -53,7 +53,7 @@
     </div>
 
     <h2>Conte para a gente</h2>
-    <p class="sub">Vamos personalizar suas recomendações de parceiros e resgates.</p>
+    <p class="sub">Vamos personalizar suas recomendações de parceiros e benefícios.</p>
 
     <form action="dashboard.html">
         <div class="form-row">
@@ -86,7 +86,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -131,6 +131,27 @@
   [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+
+  /* Celular (≤ 880px): o cartão de boas-vindas dentro do sistema "Embarque"
+     mobile (assets/blaxx-embarque.css). Só o que a folha base deixava errado. */
+  @media (max-width: 880px) {
+    /* 22px de moldura + 36px de cartão deixavam 225px de coluna em 375px
+       (a folha base crava a moldura com !important abaixo de 480px) */
+    .auth-wrap { padding: 0 !important; margin: 20px 16px 36px !important; max-width: 100% !important; }
+    .auth-card { padding: 24px 18px 26px; border-radius: var(--bx-r-lg); box-shadow: none; }
+    /* é o título da tela: escala do tema (28-34px), não o h2 de 22px da folha */
+    .auth-card > h2 { font-size: clamp(28px, 8vw, 32px) !important; line-height: 1.05; letter-spacing: -.03em; }
+    .auth-card .sub { font-size: 15px; }
+    /* etapas viram rótulo mono, como os eyebrows do tema */
+    .steps-labels { font-family: var(--bx-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+    /* cada opção é uma linha de 44px: a etiqueta inteira é o alvo do toque */
+    .checkbox-row { margin: 0; min-height: 44px; align-items: center; gap: 12px; }
+    .checkbox-row input[type="checkbox"] { width: 22px; height: 22px; margin: 0; flex: none; }
+    .checkbox-row label { flex: 1; min-height: 44px; display: flex; align-items: center; font-size: 15px; }
+    /* "Pular" + "Concluir" não cabem lado a lado: pilha, ação principal em cima */
+    .auth-card form > .flex { flex-direction: column-reverse; align-items: stretch; gap: 10px; }
+    .auth-card form > .flex .button { width: 100%; justify-content: center; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

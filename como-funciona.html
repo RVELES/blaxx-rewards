@@ -55,12 +55,39 @@
     /* O título mantém nowrap (folha raiz) e o link "Regras completas →" não
        cabe ao lado dele em 375px: desce inteiro para a linha de baixo em vez
        de quebrar em três linhas encostado no h2. */
-    .sec-head { flex-wrap: wrap; gap: 6px 16px; }
-    .sec-head .link { white-space: nowrap; }
+    .sec-head { flex-wrap: wrap; gap: 6px 16px; margin: 36px 0 14px; }
+    /* "Regras completas →" é link solto (não corrido): alvo de 44px. */
+    .sec-head .link { white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
+    /* Cartões no ritmo do tema no celular (18px) e texto em corpo de leitura:
+       13–13,5px era letra miúda numa tela de 375px. */
+    .step { padding: 18px; }
+    .way { padding: 18px; }
+    .step p, .way p { font-size: 15px; }
+    .cta { padding: 22px; margin-top: 32px; }
+    .cta h2 { font-size: 26px; }
   }
   @media (max-width: 520px){
     /* Célula mais justa no celular: menos rolagem lateral dentro do cartão. */
     table.rates th, table.rates td { padding: 12px 14px; }
+    /* Abaixo de 520px a tabela vira lista-recibo: cada linha é um bloco com
+       categoria, taxa, crédito e a pílula de bônus à direita. Rolar a tabela
+       dentro do cartão escondia duas colunas sem aviso nenhum. Os rótulos
+       vêm do próprio cabeçalho (o thead some). */
+    table.rates, table.rates tbody { display: block; width: 100%; overflow: visible; }
+    table.rates thead { display: none; }
+    table.rates tr { display: grid; grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto auto auto; column-gap: 12px; row-gap: 3px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    table.rates tr:first-child { padding-top: 6px; }
+    table.rates tr:last-child { border-bottom: 0; padding-bottom: 6px; }
+    table.rates td { display: block; padding: 0; border: 0; white-space: normal; }
+    table.rates td:nth-child(1) { grid-column: 1; grid-row: 1; font-weight: 700; font-size: 15px; color: var(--ink); }
+    table.rates td:nth-child(2) { grid-column: 1; grid-row: 2; font-size: 13px; white-space: nowrap; }
+    table.rates td:nth-child(3) { grid-column: 1; grid-row: 3; font-family: var(--bx-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+    table.rates td:nth-child(3)::before { content: 'Crédito · '; }
+    table.rates td:nth-child(4) { grid-column: 2; grid-row: 1 / span 3; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    table.rates td:nth-child(4)::before { content: 'Em campanha'; font-family: var(--bx-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); white-space: nowrap; }
+    /* Botões em pilha, largura total: lado a lado não cabem em 271px. */
+    .step .btn { align-self: stretch; justify-content: center; }
+    .cta .btn { flex: 1 1 100%; justify-content: center; }
   }
 </style>
 <script type="application/ld+json">
@@ -72,26 +99,26 @@
   <header class="page-head" data-screen-label="Como funciona">
     <span class="eyebrow">SEM MENSALIDADE · SEM LETRAS MIÚDAS</span>
     <h1 class="h-display">Como funciona o BlaXx.</h1>
-    <p class="lead">Um programa simples: compre nos parceiros, acumule pontos e troque por <b>benefícios reais</b>, vouchers, milhas e cashback no Pix.</p>
+    <p class="lead">Um programa de recompensas simples: compre nos parceiros, acumule pontos e troque por <b>benefícios e experiências</b> em parceiros selecionados.</p>
   </header>
 
   <section class="steps">
     <div class="card step">
       <span class="step__n">PASSO 01</span>
       <h3>Crie sua conta</h3>
-      <p>Cadastro gratuito em menos de 2 minutos. Você ganha <b>500 pontos de boas-vindas</b> só por se inscrever.</p>
+      <p>Cadastro gratuito, em menos de 2 minutos. Você recebe <b>500 pontos de boas-vindas</b> ao concluir a inscrição.</p>
       <a href="cadastro.html" class="btn btn--dark">Começar agora →</a>
     </div>
     <div class="card step">
       <span class="step__n">PASSO 02</span>
       <h3>Compre nos parceiros</h3>
-      <p>Use o BlaXx em supermercados, farmácias, postos, viagens e centenas de lojas. Pontos caem em até <b>24h</b>.</p>
+      <p>Use o BlaXx em supermercados, farmácias, postos, viagens e nas demais lojas da rede. Os pontos são creditados em até <b>24h</b>.</p>
       <a href="parceiros.html" class="btn btn--outline">Ver parceiros →</a>
     </div>
     <div class="card step">
       <span class="step__n">PASSO 03</span>
-      <h3>Resgate o que quiser</h3>
-      <p>Vouchers, milhas, descontos e assinaturas de centenas de marcas. Resgates a partir de <b>1.000 pontos</b>.</p>
+      <h3>Resgate benefícios</h3>
+      <p>Vouchers, descontos e assinaturas de marcas parceiras, além de experiências selecionadas. Resgates a partir de <b>1.000 pontos</b>.</p>
       <a href="resgates.html" class="btn btn--outline">Ver resgates →</a>
     </div>
   </section>
@@ -119,7 +146,7 @@
     <div class="card way">
       <span class="ico">+</span>
       <h4>Compre pontos</h4>
-      <p>Pacotes com até <b>15% de bônus</b>, pagamento via Pix.</p>
+      <p>Pacotes com até <b>15% de bônus</b>. Pagamento com cartão ou transferência.</p>
       <a href="comprar.html" class="btn btn--sm btn--outline">Ver pacotes →</a>
     </div>
     <div class="card way">
@@ -131,7 +158,7 @@
     <div class="card way">
       <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M12 20S4 14.5 4 9.2A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 8 2.2C20 14.5 12 20 12 20Z"/></svg></span>
       <h4>Indique amigos</h4>
-      <p><b>5.000 pts</b> por amigo cadastrado, e 500 pts pra ele.</p>
+      <p><b>5.000 pts</b> por amigo cadastrado, e 500 pts para quem chega.</p>
       <a href="indique.html" class="btn btn--sm btn--outline">Indicar →</a>
     </div>
     <div class="card way">
@@ -144,8 +171,8 @@
 
   <div class="card card--dark cta">
     <div>
-      <h2 style="color:var(--fg-on-dark)">Pronto pra começar?</h2>
-      <p>Crie sua conta grátis e ganhe 500 pontos de boas-vindas.</p>
+      <h2 style="color:var(--fg-on-dark)">Pronto para começar?</h2>
+      <p>Crie sua conta gratuita e receba 500 pontos de boas-vindas.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <a href="cadastro.html" class="btn btn--primary">Criar conta grátis</a>

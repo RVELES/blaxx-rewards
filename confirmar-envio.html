@@ -75,7 +75,7 @@
 <div class="page-head">
     <div class="crumbs"><a href="enviar-pontos.html">Enviar pontos</a><span class="sep">/</span> Confirmar</div>
     <h1 style="font-size:32px;">Confirmar envio</h1>
-    <p class="muted">Confira os dados antes de transferir.</p>
+    <p class="muted">Confira os dados antes de confirmar o envio.</p>
 </div>
 
 <section class="section">
@@ -101,7 +101,7 @@
                 <div class="alert-icon">!</div>
                 <div>
                     <h4>Atenção</h4>
-                    <p>Pontos transferidos não podem ser cancelados ou reembolsados após confirmação.</p>
+                    <p>Pontos enviados não podem ser cancelados nem devolvidos após a confirmação.</p>
                 </div>
             </div>
 
@@ -134,7 +134,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas. Acumule, compre, envie e troque pontos por benefícios e experiências em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -184,6 +184,32 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="enviar-pontos"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="enviar-pontos"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+
+  /* ---- Celular (≤ 880px): a página dentro do sistema "Embarque" ----
+     assets/styles.css trava o título da .page-head em 26px (!important) e o
+     tema pede 28-34px. O vazio sob a barra somava 74px (28px do .app-shell +
+     18px de padding da .page-head + margens); sobra só o respiro do <main>.
+     O rastro de navegação ganha 44px de toque sem virar caixa: o padding
+     invisível é anulado pela margem negativa. */
+  @media (max-width: 880px) {
+    .app-shell { padding-top: 0; }
+    .page-head { padding-top: 0 !important; margin-top: 0; }
+    .page-head h1 { font-size: clamp(28px, 8vw, 34px) !important; position: relative; } /* fica por cima da área de toque do rastro */
+    .crumbs a { display: inline-block; padding: 13px 0; margin: -13px 0; }
+    /* Destinatário: avatar e nome lado a lado (a quebra geral de .flex do
+       celular empilhava o avatar em cima do nome); o e-mail longo quebra
+       dentro da coluna em vez de empurrá-la. */
+    .card .flex { flex-wrap: nowrap; }
+    .card .flex > div:last-child { min-width: 0; overflow-wrap: anywhere; }
+    .card .flex > .avatar { flex: none; }
+    /* Revisão montada pelo assets/blaxx-app.js (card no topo do <main>):
+       os dois botões vêm numa linha flex inline que não cabe em 375px e
+       deixava dois botões curtos desalinhados; viram pilha de largura total.
+       O seletor casa "720px" porque o navegador serializa o style do card
+       com espaços ("max-width: 720px") e a linha dos botões sem. */
+    main > .card[style*="720px"] > div[style*="display:flex"] { flex-direction: column; }
+    main > .card[style*="720px"] .button { width: 100%; justify-content: center; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

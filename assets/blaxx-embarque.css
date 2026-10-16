@@ -409,7 +409,7 @@ input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--bx-ink
 .reward-img{ border-bottom:1px solid var(--bx-line); border-radius:var(--bx-r-md) var(--bx-r-md) 0 0; background:var(--bx-surface-2); }
 .partner-logo,.market-card .market-logo,.partner-hero-logo{ border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); }
 .empty .icon{ border:0; border-radius:50%; background:var(--bx-surface-2); }
-input[type="range"]{ border:0; background:transparent; box-shadow:none; }
+input[type="range"]{ border:0; box-shadow:none; }   /* sem background:transparent — apagava o trilho */
 /* títulos dentro de superfície preta: a regra global de h1-h4 os pintava de tinta */
 .card--dark h1,.card--dark h2,.card--dark h3,.card--dark h4,
 .card.featured h1,.card.featured h2,.card.featured h3,.card.featured h4,
@@ -566,6 +566,10 @@ footer.footer,footer.site-footer{
   .cta-row > a.button.ghost:not(.nav-bell):not([href="login.html"]){ display:inline-flex; }
   .cta-row > a.button.ghost[href="login.html"],.cta-row > .bx-entrar{ display:none; }
   .bx-criar,.cta-row > a.button:not(.ghost):not(.secondary):not(.nav-user){ padding:10px 14px; font-size:14px; }
+  /* chip do usuário no celular: a folha-base tira o fundo do .nav-av e a barra
+     preta engolia a inicial; volta o círculo neon com a letra em tinta */
+  .cta-row .button.secondary.nav-user{ background:var(--bx-neon); border-color:var(--bx-neon); }
+  .cta-row .button.secondary.nav-user .nav-av{ color:var(--bx-ink); }
 }
 /* Ancora os mega-menus: a .topbar precisa ser o contexto do absolute. */
 .topbar{ position:sticky; }
@@ -575,4 +579,94 @@ footer.footer,footer.site-footer{
    480px; só outro !important traz a escala do tema de volta. E os links
    corridos dentro de cards não podem virar caixas de 44px no meio da frase. */
 @media (max-width:480px){ .card{ border-radius:var(--bx-r-lg) !important; } }
-@media (max-width:900px){ .card p a,.card li a,.card td a,p > a{ min-height:0; display:inline; } }
+@media (max-width:900px){
+  .card p a,.card li a,.card td a,p > a,label a,details a,.note a,.card .a a,.card span > a{ min-height:0; display:inline; }
+  .sec-head{ flex-wrap:wrap; gap:4px 16px; }
+  .sec-head .h-section{ white-space:normal; }
+  .sec-head > a{ min-height:44px; display:inline-flex; align-items:center; white-space:nowrap; }
+}
+
+/* ==========================================================================
+   Celular (≤ 880px) — o site refeito para o polegar (15/10/2026)
+   ==========================================================================
+   Barra de abas inferior para quem entrou, gaveta em estilo de cartão, faixa
+   de offline e banner de cookies fora do caminho das barras, ritmo vertical
+   mais curto, cartões de borda a borda com 16px de respiro.
+   ========================================================================== */
+.bx-tabbar{ display:none; }
+@media (max-width:880px){
+  .bx-tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:150;
+    display:grid; grid-template-columns:repeat(5,1fr);
+    background:var(--bx-ink); border-top:1px solid var(--bx-ink-2);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+  }
+  .bx-tabbar a,.bx-tabbar button{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    min-height:52px; padding:4px 2px; border:0; background:transparent; border-radius:var(--bx-r-xs);
+    color:var(--bx-ink-muted); text-decoration:none; font:inherit; cursor:pointer;
+  }
+  .bx-tabbar svg{ width:22px; height:22px; }
+  .bx-tabbar span{ font-family:var(--bx-mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; }
+  .bx-tabbar a.ativa{ color:var(--bx-neon); }
+  .bx-tabbar a:active,.bx-tabbar button:active{ background:rgba(244,242,236,.08); }
+  /* o conteúdo e o rodapé não podem ficar debaixo da barra */
+  .bx-com-tabbar body{ padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)) !important; }
+  /* com abas + gaveta, a sidebar virada em grade abaixo do conteúdo é redundante */
+  .bx-com-tabbar .app-shell > .sidebar,.bx-com-tabbar .shell > .sidebar{ display:none !important; }
+  .bx-com-tabbar .bxnav-drawer,.bx-com-tabbar .drawer{ padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)); }
+  .bx-com-tabbar div[style*="z-index:9500"]{ bottom:calc(66px + env(safe-area-inset-bottom,0px)) !important; }
+
+  /* A faixa "conexão instável" nascia fixa no topo, por cima da barra de
+     navegação. No celular ela vira um aviso no pé, acima das abas. */
+  #bx-offline-banner{
+    top:auto !important; bottom:calc(76px + env(safe-area-inset-bottom,0px)) !important;
+    left:12px !important; right:12px !important; border-radius:var(--bx-r-sm);
+    border:1px solid var(--bx-line) !important; box-shadow:var(--bx-sh) !important;
+  }
+  html:not(.bx-com-tabbar) #bx-offline-banner{ bottom:12px !important; }
+  /* com a gaveta aberta a faixa sumia por cima do menu */
+  html:has(.bxnav-drawer.aberta, .drawer.open) #bx-offline-banner{ display:none !important; }
+
+  /* barra do topo mais baixa; busca não existe aqui */
+  .bx-util-in{ padding:7px 16px; font-size:11px; }
+  .topbar .nav,.topbar > .bx-topo{ min-height:60px; padding:8px 16px; }
+  .brand .mark,.mark{ width:104px; height:32px; }
+  .brand__img{ height:28px !important; }
+
+  /* gaveta: cartão claro, itens de 48px, ativo em preto, CTA neon */
+  .bxnav-drawer,.drawer{ width:min(88vw,360px); padding:14px 14px 28px; }
+  .bxnav-drawer a,.drawer .nav-item{ min-height:48px; border-radius:var(--bx-r-xs); border-bottom:0; margin-bottom:2px; padding:12px 14px; }
+  .bxnav-grupo{ margin:16px 14px 6px; }
+  .bxnav-cta{ min-height:50px; display:flex; align-items:center; justify-content:center; background:var(--bx-neon); color:var(--bx-ink) !important; }
+  .bxnav-cta--vazado{ background:transparent; color:var(--bx-ink) !important; border:1px solid var(--bx-line); }
+
+  /* ritmo vertical e respiro lateral */
+  .bx-wrap,.shell--sem-sidebar > main{ padding-left:16px; padding-right:16px; }
+  .shell--sem-sidebar > main,main{ padding-top:20px; }
+  .section{ margin:24px 0; }
+  .card,.panel{ padding:18px; }
+  h1,.h-display{ font-size:clamp(28px,8vw,34px); }
+  h2,.h-section{ font-size:clamp(22px,6vw,26px); }
+  p.lead,.lead{ font-size:16px; }
+  .button,.btn{ min-height:48px; }
+  .button.full,.btn--block{ width:100%; }
+  /* rodapé: colunas em duas, texto menor */
+  .bx-foot-corpo{ padding:28px 16px 20px; gap:22px 16px; font-size:14px; }
+  .bx-foot-col{ gap:10px; }
+  .bx-foot-base{ padding:0 16px 24px; }
+}
+
+/* Ajustes que a varredura mobile de 15/10 pediu em arquivo compartilhado */
+@media (max-width:880px){
+  input,select,textarea{ font-size:16px; }                 /* sem zoom do iOS entre 481 e 880px */
+  .page-head h1,h1{ font-size:clamp(28px,8vw,34px) !important; }  /* vence o 26px !important da folha-base */
+  .app-shell{ padding-top:12px !important; padding-bottom:24px !important; }
+  .app-shell > .shell,.app-shell > main.shell{ padding-left:0 !important; padding-right:0 !important; }  /* respiro não dobra */
+  .page-head{ padding-top:0 !important; margin-top:0 !important; }
+  footer.footer,footer.site-footer{ margin-top:40px; }
+  .checkbox-row{ display:flex; flex-wrap:nowrap !important; align-items:center; gap:12px; min-height:44px; }
+  .checkbox-row input[type="checkbox"],.checkbox-row input[type="radio"]{ width:20px; height:20px; flex:none; }
+  .form-row.split{ gap:12px !important; }
+  a.chip,button.chip{ min-height:44px; display:inline-flex; align-items:center; }
+}

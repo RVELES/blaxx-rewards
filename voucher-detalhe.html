@@ -101,7 +101,7 @@
                 <div><span class="k">Código</span><span class="v">RSG-2026-0428-7821</span></div>
                 <div><span class="k">Categoria</span><span class="v">Streaming</span></div>
                 <div><span class="k">Resgatado em</span><span class="v">28/04/2026</span></div>
-                <div><span class="k">Pontos usados</span><span class="v">12.000 pts</span></div>
+                <div><span class="k">Pontos resgatados</span><span class="v">12.000 pts</span></div>
                 <div><span class="k">Validade do código</span><span class="v">28/07/2026</span></div>
                 <div><span class="k">Status</span><span class="v" style="color:var(--ok-text);">Ativo</span></div>
             </div>
@@ -110,15 +110,15 @@
             <ol style="padding-left:20px;color:var(--muted);font-size:14px;line-height:1.7;">
                 <li>Acesse netflix.com/redeem.</li>
                 <li>Cole o código exibido ao lado.</li>
-                <li>Escolha o plano e finalize.</li>
+                <li>Confirme o plano e conclua a ativação.</li>
             </ol>
 
             <div class="alert info mt-2">
                 <div class="alert-icon">i</div>
-                <div><p>Voucher não reembolsável. Em caso de problema, abra um chamado no suporte.</p></div>
+                <div><p>O resgate deste voucher é definitivo. Se algo não funcionar, abra um chamado no suporte.</p></div>
             </div>
 
-            <a href="abrir-chamado.html" class="button secondary full mt-2">Reportar problema</a>
+            <a href="abrir-chamado.html" class="button secondary full mt-2">Relatar um problema</a>
         </div>
     </div>
 </section>
@@ -130,7 +130,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Um programa de recompensas: acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -178,6 +178,19 @@
   [data-link="resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="meus-resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
   [data-side="meus-resgates"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* ---- Celular (A7) ---- */
+  @media (max-width:880px){
+    /* O main já dá o respiro; sem este corte os farelos ficavam 46px abaixo
+       da barra (a home fica a 20px). */
+    .page-head{ margin-top:0; padding-top:0 !important; }
+    /* O padding:36px inline do cartão do voucher valia entre 481 e 880px;
+       abaixo disso o styles.css já apertava para 20px. Um valor só. */
+    .split-page .card[style*="padding:36px"]{ padding:20px !important; }
+    /* A página não tem h1: o nome do benefício (h2) é o título da tela. */
+    .split-page .card > h2{ font-size:28px !important; line-height:1.1; letter-spacing:-.02em; }
+    /* passos de uso no corpo de 15px, não 14 */
+    .summary-card ol[style]{ font-size:15px !important; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

@@ -117,7 +117,7 @@
 
             <h3 class="mt-4">Regras</h3>
             <ul style="padding-left:22px;color:var(--muted);line-height:1.8;font-size:14px;">
-                <li>Promoção válida até 30/04/2026 às 23h59.</li>
+                <li>Campanha válida até 30/04/2026 às 23h59.</li>
                 <li>Não cumulativa com outras campanhas em andamento.</li>
                 <li>Pontos extras estão sujeitos à confirmação do parceiro.</li>
                 <li>Reservamo-nos o direito de encerrar a campanha a qualquer momento por motivos operacionais.</li>
@@ -194,6 +194,22 @@
   [data-link="campanhas"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="campanhas"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="campanhas"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* Celular (≤ 880px) — versão mobile do grupo A6 (15/10/2026).
+     O .band-dark nasce com padding:48px inline (medida de desktop): em 375px
+     sobravam 247px para o título e o botão. A grade de duas colunas já vira
+     uma pela folha-base; aqui só o respiro e o número grande encolhem. */
+  @media (max-width:880px){
+    .app-shell{ padding-top:8px; }
+    .page-head{ margin:0 0 18px; }
+    .band-dark[style]{ padding:24px 20px !important; }
+    .band-dark .grid.two[style]{ gap:20px !important; }
+    .band-dark .card[style]{ padding:18px; }
+    /* "+50%" em 48px cabia; em indique-ganhe "15.000 pts" passava da caixa */
+    .band-dark .card [style*="font-size:48px"]{ font-size:40px !important; }
+    .band-dark .actions{ margin-top:18px; }
+    /* ol/ul com fonte inline de 15/14px: o parágrafo do tema é 15px */
+    .card ol[style],.card ul[style]{ padding-left:20px !important; font-size:15px !important; line-height:1.6 !important; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

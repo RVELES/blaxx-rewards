@@ -87,7 +87,7 @@
         <div class="card">
             <h4><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:6px;vertical-align:-3px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></span>Pontos &amp; resgates</h4>
             <ul>
-                <li><a href="resgates.html">Marketplace de resgates</a></li>
+                <li><a href="resgates.html">Catálogo de benefícios</a></li>
                 <li><a href="detalhe-beneficio.html">Detalhe do benefício</a></li>
                 <li><a href="confirmar-resgate.html">Confirmar resgate</a></li>
                 <li><a href="resgate-concluido.html">Resgate concluído</a></li>
@@ -102,7 +102,7 @@
             <ul>
                 <li><a href="comprar-pontos.html">Pacotes</a></li>
                 <li><a href="checkout.html">Checkout</a></li>
-                <li><a href="pagamento-pix.html">Pagamento PIX</a></li>
+                <li><a href="pagamento-pix.html">Pagamento por transferência</a></li>
                 <li><a href="pagamento-cartao.html">Pagamento cartão</a></li>
                 <li><a href="compra-aprovada.html">Compra aprovada</a></li>
                 <li><a href="compra-pendente.html">Compra pendente</a></li>
@@ -188,7 +188,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -233,6 +233,21 @@
   [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+
+  /* Celular (≤ 880px): o mapa dentro do sistema "Embarque" mobile
+     (assets/blaxx-embarque.css). Só o que a folha base deixava errado. */
+  @media (max-width: 880px) {
+    /* a folha base crava 26px; a escala do tema no celular é 28-34 */
+    .page-head h1 { font-size: clamp(28px, 8vw, 32px) !important; }
+    /* Aqui os links da lista SÃO o conteúdo, não texto corrido: cada um vira
+       uma linha de 44px, de borda a borda do cartão (a camada do tema os
+       deixa inline para não virarem caixas dentro de parágrafos) */
+    .sitemap-grid .card ul li { padding: 0; }
+    .sitemap-grid .card ul li a { display: flex; align-items: center; min-height: 44px; padding: 8px 10px; margin: 0 -10px; font-size: 15px; border-radius: var(--bx-r-xs); }
+    .sitemap-grid .card h4 + ul { margin-top: 6px; }
+    /* ação do pé ocupa a largura toda, ao alcance do polegar */
+    .card.lime .button { width: 100%; justify-content: center; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

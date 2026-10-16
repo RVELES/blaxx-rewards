@@ -227,7 +227,7 @@
       ? 'Pagar com cartão' : 'Gerar QR Code de pagamento';
     var title = document.getElementById('page-title');
     if (title) title.textContent = currentMethod === 'card'
-      ? 'Comprar pontos no cartão' : 'Comprar pontos via PIX';
+      ? 'Comprar pontos no cartão' : 'Comprar pontos por transferência';
   };
 
   function getQueryMethod() {
@@ -273,7 +273,7 @@
           // Veio de comprar-pontos.html?method=card mas o cartão está
           // desligado (CARD_ENABLED=0), avisa e segue com PIX em vez de
           // deixar um método morto selecionado.
-          showInlineError('Pagamento com cartão indisponível no momento, use PIX.', 'info');
+          showInlineError('Pagamento com cartão indisponível no momento, use a transferência.', 'info');
         }
       })
       .catch(function () { /* cartão indisponível → segue PIX-only */ });
@@ -378,7 +378,7 @@
         mountStripeCard(Number(p.price_brl), { package: pkg });
       }).catch(function (e) {
         if (e.status !== 401) {
-          showInlineError(e.message || 'Falha ao carregar o pacote, tente PIX.');
+          showInlineError(e.message || 'Falha ao carregar o pacote, tente a transferência.');
           recoverToStep1();
         }
       });
@@ -527,7 +527,7 @@
     }).catch(function (err) {
       try { console.warn('[card] stripe mount fail', err); } catch (e) {}
       showInlineError('Não foi possível carregar o formulário do cartão. ' +
-        'Recarregue a página ou pague via PIX.', 'err');
+        'Recarregue a página ou pague por transferência.', 'err');
     });
   }
 
@@ -559,12 +559,12 @@
       // mostraria a própria tela de sucesso contradizendo o aviso.
       if (charge.status === 'rejected' || charge.status === 'cancelled') {
         showInlineError('O pagamento não foi aprovado pelo emissor. ' +
-          'Tente outro cartão ou PIX.', 'err');
+          'Tente outro cartão ou a transferência.', 'err');
         var errNeg = new Error('card_' + charge.status);
         errNeg.bxHandled = true; // aviso já exibido, catch não deve sobrescrever
         throw errNeg;
       }
-      showInlineError('Pagamento em estado ' + String(charge.status || '') + ', acompanhe na carteira.', 'warn');
+      showInlineError('Pagamento em estado ' + String(charge.status || '') + ', acompanhe no seu saldo.', 'warn');
       var errUnk = new Error('card_status_' + String(charge.status || 'unknown'));
       errUnk.bxHandled = true;
       throw errUnk;
@@ -578,7 +578,7 @@
       // bxHandled = status terminal negativo já tratado no .then acima (mensagem
       // amigável com o kind certo). Não reexibir com e.message técnico.
       if (!e.bxHandled) {
-        showInlineError(e.message || 'Pagamento recusado. Tente outro cartão ou PIX.', 'err');
+        showInlineError(e.message || 'Pagamento recusado. Tente outro cartão ou a transferência.', 'err');
       }
       throw e; // rejeita a promise → Brick reabilita o botão de pagar
     });
@@ -593,7 +593,7 @@
           '<span class="status-pill status-confirming">⏱ Aguardando aprovação do emissor…</span>' +
           '<div style="font-size:13px;color:var(--bx-grey,#555860);margin-top:10px;">' +
             'Isso pode levar alguns instantes. Assim que aprovar, os pontos ' +
-            'entram automaticamente na sua carteira.' +
+            'entram automaticamente no seu saldo.' +
           '</div>' +
         '</div>';
     }
@@ -606,7 +606,7 @@
     pollHandle = setInterval(function () {
       if (Date.now() - pollStartedAt > POLL_MAX_DURATION_MS) {
         clearInterval(pollHandle); pollHandle = null;
-        showInlineError('A análise está demorando, acompanhe o status na sua carteira.', 'warn');
+        showInlineError('A análise está demorando, acompanhe o status no seu saldo.', 'warn');
         return;
       }
       api('/payments/card/charge/' + chargeId).then(function (c) {
@@ -616,7 +616,7 @@
         } else if (c.status === 'rejected' || c.status === 'cancelled') {
           clearInterval(pollHandle); pollHandle = null;
           showInlineError('O pagamento não foi aprovado pelo emissor. ' +
-            'Tente outro cartão ou PIX.', 'err');
+            'Tente outro cartão ou a transferência.', 'err');
         }
       }).catch(function () { /* tenta de novo no próximo tick */ });
     }, POLL_INTERVAL_MS);
@@ -649,7 +649,7 @@
       brBox.id = 'br-code-box';
       brBox.style.cssText = 'margin-top:16px;text-align:left;';
       brBox.innerHTML =
-        '<div style="font-size:12px;color:var(--bx-grey,#555860);margin-bottom:6px;">Ou copie o código PIX:</div>' +
+        '<div style="font-size:12px;color:var(--bx-grey,#555860);margin-bottom:6px;">Ou copie o código:</div>' +
         '<div style="display:flex;gap:8px;align-items:stretch;">' +
           '<textarea id="br-code-text" readonly style="flex:1;height:64px;font-family:var(--bx-mono,ui-monospace,monospace);font-size:11px;background:var(--bx-surface-2,#F4F2EC);border:1px solid var(--bx-line,#D9D6CE);border-radius:8px;padding:8px;resize:none;"></textarea>' +
           '<button id="br-code-copy" class="button secondary" type="button" style="white-space:nowrap;">Copiar</button>' +
@@ -774,12 +774,12 @@
     step3.innerHTML =
       '<h3 style="margin-bottom:12px;"><span class="step-num">3</span> Pagamento confirmado!</h3>' +
       '<p style="font-size:18px;">+' + (charge.points_to_credit || 0).toLocaleString('pt-BR') +
-        ' pts adicionados à sua carteira.</p>' +
+        ' pts adicionados ao seu saldo.</p>' +
       '<div style="text-align:center;margin-top:16px;">' +
         '<span class="status-pill status-paid">✓ Pontos liberados</span>' +
       '</div>' +
       '<button class="button full lg" type="button" onclick="goWallet()" style="margin-top:18px;">' +
-        'Ir para minha carteira' +
+        'Ver meu saldo' +
       '</button>';
 
     // Atualiza /me em background para refletir novo saldo em STORE

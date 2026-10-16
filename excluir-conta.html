@@ -89,7 +89,7 @@
     <div class="card">
         <h3>O que será removido</h3>
         <ul style="padding-left:22px;color:var(--muted);line-height:1.8;font-size:14px;margin-top:10px;">
-            <li><strong style="color:var(--ink);">84.750 pts</strong> da sua carteira (sem reembolso)</li>
+            <li><strong style="color:var(--ink);">84.750 pts</strong> do seu saldo (sem restituição)</li>
             <li>2 vouchers ativos (Netflix 30d, iFood R$ 50)</li>
             <li>Histórico completo de compras e movimentações</li>
             <li>Acesso ao plano Plus e benefícios atuais</li>
@@ -101,7 +101,7 @@
         <div class="grid two mt-2">
             <a href="resgates.html" class="card lime">
                 <h3>Resgatar seus 84.750 pts</h3>
-                <p style="margin:0;">Use seu saldo antes de encerrar a conta.</p>
+                <p style="margin:0;">Troque seus pontos por benefícios antes de encerrar a conta.</p>
             </a>
             <a href="enviar-pontos.html" class="card lime">
                 <h3>Enviar pontos para alguém</h3>
@@ -160,7 +160,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas. Acumule, compre, envie e troque pontos por benefícios e experiências em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -210,6 +210,29 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="perfil"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="perfil"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+
+  /* ---- Celular (≤ 880px): a página dentro do sistema "Embarque" ----
+     assets/styles.css trava o título da .page-head em 26px (!important) e o
+     tema pede 28-34px. O vazio sob a barra somava 74px (28px do .app-shell +
+     18px de padding da .page-head + margens); sobra só o respiro do <main>.
+     O rastro de navegação ganha 44px de toque sem virar caixa: o padding
+     invisível é anulado pela margem negativa. */
+  @media (max-width: 880px) {
+    .app-shell { padding-top: 0; }
+    .page-head { padding-top: 0 !important; margin-top: 0; }
+    .page-head h1 { font-size: clamp(28px, 8vw, 34px) !important; position: relative; } /* fica por cima da área de toque do rastro */
+    .crumbs a { display: inline-block; padding: 13px 0; margin: -13px 0; }
+    /* Os dois cartões-link neon ("Resgatar", "Enviar") são <a>: a regra de alvo
+       de toque do celular (assets/styles.css) os deixa em flex de linha e o
+       título ficava por baixo do parágrafo; voltam a empilhar. */
+    a.card.lime { flex-direction: column; align-items: flex-start; }
+    /* Aceite da exclusão: a caixa de 16px encolhia para 13px no flex e era
+       um alvo de toque minúsculo numa decisão irreversível; fica em 24px,
+       sem encolher, e a linha inteira alcança os 44px de toque. */
+    .checkbox-row { min-height: 44px; align-items: flex-start; }
+    .checkbox-row input[type="checkbox"] { width: 24px; height: 24px; flex: none; margin-top: 0; }
+    .checkbox-row label { padding-top: 3px; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

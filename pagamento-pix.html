@@ -21,6 +21,31 @@
   .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
   .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
   .alert.info p{ color:var(--bx-grey); opacity:1; }
+  /* BX-MOBILE-A3 inicio */
+  /* ---- Celular (≤ 880px): a página dentro do sistema mobile do tema ---- */
+  @media (max-width:880px){
+    /* A coluna do .app-shell tem min-width:auto: nada aqui pode empurrar o
+       <main> para fora da tela; o respiro acima do título cai para o do tema. */
+    .app-shell > main.shell{ min-width:0; max-width:100%; padding-top:0; padding-bottom:16px; }
+    /* a trilha de migalhas e o cartão do QR ficam colados: conteúdo primeiro */
+    .page-head{ margin-top:0; margin-bottom:0; padding-bottom:0 !important; }
+    .page-head + .section{ margin-top:10px !important; }
+    /* o cartão do QR tinha 40px de padding inline; no celular o QR de 260px
+       precisa do espaço e o tema usa 18px */
+    .split-page > .card.center{ padding:22px 18px !important; }
+    #bx-qr-placeholder{ max-width:100%; }
+    /* código copia-e-cola: texto em cima e "Copiar" com altura de toque embaixo */
+    .copy-box{ flex-direction:column; align-items:stretch !important; gap:10px; }
+    #bx-brcode-copy{
+      font-size:14px !important; font-weight:700; min-height:44px; width:100%; color:var(--bx-ink);
+      border:1px solid var(--bx-line) !important; border-radius:var(--bx-r-sm);
+      background:var(--bx-surface) !important; text-decoration:none !important;
+      font-family:var(--bx-sans); text-align:center; justify-content:center;
+    }
+    .summary-card{ position:static; padding:18px; }
+    .dl > div{ flex-wrap:wrap; }
+  }
+  /* BX-MOBILE-A3 fim */
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
@@ -60,7 +85,7 @@
     <div class="split-page">
         <div class="card center" style="padding:40px;">
             <span class="kicker" id="bx-status-pill" style="background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">⏱ Aguardando pagamento</span>
-            <h2 style="margin:14px 0 6px;">Pague com PIX em segundos</h2>
+            <h2 style="margin:14px 0 6px;">Pague com o QR Code</h2>
             <p>Escaneie o QR Code com o app do seu banco ou copie o código abaixo.</p>
 
             <div style="margin:28px 0;display:flex;justify-content:center;">
@@ -88,9 +113,9 @@
             <h3 class="mt-4">Como pagar</h3>
             <ol style="padding-left:20px;color:var(--muted);font-size:14px;line-height:1.8;">
                 <li>Abra o app do seu banco.</li>
-                <li>Escolha pagar com PIX por QR Code ou Pix Copia e Cola.</li>
+                <li>Escolha PIX e leia o QR Code, ou use o código copia e cola.</li>
                 <li>Confirme os dados do pagamento.</li>
-                <li>Pronto! Os pontos caem em até 1 minuto.</li>
+                <li>Os pontos são creditados assim que o pagamento é confirmado.</li>
             </ol>
 
             <div class="alert info mt-2">

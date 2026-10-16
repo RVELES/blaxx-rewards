@@ -21,6 +21,53 @@
   .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
   .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
   .alert.info p{ color:var(--bx-grey); opacity:1; }
+  /* BX-MOBILE-A3 inicio */
+  /* ---- Celular (≤ 880px): a página dentro do sistema mobile do tema ---- */
+  @media (max-width:880px){
+    /* A coluna do .app-shell tem min-width:auto: nada aqui pode empurrar o
+       <main> para fora da tela; o respiro acima do título cai para o do tema. */
+    .app-shell > main.shell{ min-width:0; max-width:100%; padding-top:0; padding-bottom:16px; }
+    /* a trilha de migalhas e o formulário ficam colados: conteúdo primeiro */
+    .page-head{ margin-top:0; margin-bottom:0; padding-bottom:0 !important; }
+    .page-head + .section{ margin-top:10px !important; }
+    /* campos com 16px: o iOS não dá zoom ao focar */
+    .form-row input,.form-row select{ font-size:16px; }
+    /* Validade e CVV são campos curtos: ficam lado a lado mesmo no estreito
+       (assets/styles.css força 1 coluna abaixo de 480px) */
+    .form-row.split{ grid-template-columns:1fr 1fr !important; gap:12px !important; }
+    /* "Salvar este cartão": linha, caixa e rótulo com 44px de alvo de toque.
+       A caixa nativa não aceita área extra, então ela vira um quadrado de
+       44px (appearance:none) que desenha o quadradinho de 22px por dentro;
+       o rótulo for="save" também cresce para 44px e segue clicável. */
+    .checkbox-row{ align-items:center; gap:0; min-height:44px; margin:6px 0; }
+    .checkbox-row input[type="checkbox"]{
+      appearance:none; -webkit-appearance:none; flex:none; width:44px; height:44px;
+      margin:0 0 0 -11px; display:grid; place-content:center; cursor:pointer;
+      background:transparent; border:0; border-radius:var(--bx-r-xs,10px);
+    }
+    .checkbox-row input[type="checkbox"]::before{
+      content:""; width:22px; height:22px; border:1px solid var(--bx-line);
+      border-radius:6px; background:var(--bx-surface); box-sizing:border-box;
+    }
+    .checkbox-row input[type="checkbox"]:checked::before{
+      background:var(--bx-neon); border-color:var(--bx-ink);
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230A0B0E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12.5l4.5 4.5L19 7'/></svg>");
+      background-size:16px; background-position:center; background-repeat:no-repeat;
+    }
+    .checkbox-row input[type="checkbox"]:focus-visible{ outline:none; }
+    .checkbox-row input[type="checkbox"]:focus-visible::before{ box-shadow:0 0 0 3px rgba(89,253,39,.35); border-color:var(--bx-ink); }
+    .checkbox-row label{ min-height:44px; display:flex; align-items:center; cursor:pointer; }
+    /* resumo deixa de ser fixo e vem depois do formulário, na coluna única.
+       O !important é necessário: assets/styles.css impõe padding:20px !important
+       abaixo de 480px; aqui o cartão fica nos 18px do sistema mobile. */
+    .split-page .summary-card{ position:static; padding:18px !important; }
+    .dl > div{ flex-wrap:wrap; }
+    /* A página não tem h1 (o .page-head só traz migalhas); o h2 do cartão é o
+       título da tela e no celular ganha o tamanho de h1 do tema (28px). O
+       !important vence o h2{22px !important} de assets/styles.css ≤480px. */
+    .split-page .card > h2{ font-size:28px !important; line-height:1.05; }
+  }
+  /* BX-MOBILE-A3 fim */
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">

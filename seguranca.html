@@ -47,6 +47,33 @@
   .score { padding: 26px; }
   .score__num { font-family: var(--bx-sans); font-weight: 900; letter-spacing: -.03em; font-size: 54px; color: var(--bx-neon); line-height: 1; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
+  /* ── Celular (≤ 880px) ──────────────────────────────────────────────
+     Linhas de ícone + texto + botão quebram em vez de espremer a frase
+     (o "Alterar senha" deixava ~100px para o texto): o botão desce para
+     a linha de baixo, alinhado à direita. Painéis com 18px, textos no
+     tamanho de leitura do celular e campos do overlay a 16px. */
+  @media (max-width: 880px){
+    .grid { gap: 16px; }
+    .panel { padding: 18px; }
+    .panel__title { font-size: 19px; }
+    .panel__sub { font-size: 14px; margin-bottom: 12px; }
+    .row { flex-wrap: wrap; gap: 10px 14px; padding: 14px 0; }
+    .row .b { flex: 1 1 170px; }
+    .row .t { font-size: 15px; }
+    .row .s { font-size: 13px; }
+    .row > .btn, .row > .chip { margin-left: auto; }
+    .ses { flex-wrap: wrap; gap: 8px 12px; }
+    .ses .d { font-size: 14px; }
+    .ses > .btn, .ses > .chip { margin-left: auto; }
+    .score { padding: 20px; }
+    .score__num { font-size: 48px; }
+    /* overlay de senha: o estilo inline dos campos (14,5px) só cede com
+       !important; a 16px o iOS não amplia a tela ao focar */
+    #pwOverlay { padding: 16px !important; }
+    #pwOverlay .card { padding: 22px 18px !important; }
+    #pwOverlay input { font-size: 16px !important; min-height: 48px; }
+    #pwOverlay .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Segurança","item":"https://blaxxpontos.com.br/seguranca.html"}]}
@@ -57,7 +84,7 @@
   <header class="page-head" data-screen-label="Segurança" style="margin-bottom:32px">
     <span class="eyebrow">SUA CONTA</span>
     <h1 class="h-display">Segurança.</h1>
-    <p class="lead">Proteja seus pontos como protege seu dinheiro: <b>2FA, sessões e alertas</b>.</p>
+    <p class="lead">Proteja seus pontos e benefícios: <b>2FA, sessões e alertas</b>.</p>
   </header>
 
   <div class="grid">
@@ -96,12 +123,12 @@
       <div class="card card--dark score">
         <span class="mono" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-on-dark-muted)">Nível de proteção</span>
         <div class="score__num">92<span style="font-size:20px;color:var(--fg-on-dark-muted)">/100</span></div>
-        <p style="font-size:13px;color:var(--fg-on-dark-muted);margin:10px 0 0">Sua conta está bem protegida. Ative ofertas de alerta por SMS para chegar a 100.</p>
+        <p style="font-size:13px;color:var(--fg-on-dark-muted);margin:10px 0 0">Sua conta está bem protegida. Ative os alertas por SMS para chegar a 100.</p>
       </div>
       <div class="card panel">
         <h2 class="panel__title">Boas práticas</h2>
         <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Nunca compartilhe códigos</div><div class="s">O BlaXx nunca pede o código 2FA por telefone ou WhatsApp.</div></div></div>
-        <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Confira a chave Pix</div><div class="s">Resgates só vão para a chave cadastrada no seu <a href="perfil.html" style="text-decoration:underline">perfil</a>.</div></div></div>
+        <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Confira o destino dos resgates</div><div class="s">Resgates por transferência seguem apenas para o destino cadastrado no seu <a href="perfil.html" style="text-decoration:underline">perfil</a>.</div></div></div>
         <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Desconfie de links</div><div class="s">Suspeita de fraude? <a href="abrir-chamado.html" style="text-decoration:underline">Abra um chamado</a> imediatamente.</div></div></div>
       </div>
     </div>
@@ -156,7 +183,7 @@
       .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
       .then(function(res){
         b.disabled=false; b.textContent=o;
-        if(res.s===200 && res.j.ok){ msg('ok','Senha alterada com sucesso!'); setTimeout(close,1400); return; }
+        if(res.s===200 && res.j.ok){ msg('ok','Senha alterada.'); setTimeout(close,1400); return; }
         msg('err',(res.j&&res.j.error)||'Não foi possível alterar a senha.');
       })
       .catch(function(e){ b.disabled=false; b.textContent=o; msg('err','Falha de conexão: '+e.message); });

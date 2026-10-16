@@ -66,6 +66,22 @@
   .msgbox.ok { background: rgba(89,253,39,.12); border:1px solid var(--lime-40); color: var(--lime); }
 
   @media (max-width: 900px){ .send-grid{grid-template-columns:1fr;} .recap{position:static;} }
+
+  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
+     respiro, cartões de 18px). Só o que esta página tem de próprio. */
+  @media (max-width: 880px){
+    .page-head { margin-bottom: 18px; }
+    .form-card, .recap { padding: 18px; }
+    .field { margin-bottom: 18px; }
+    input.amount-input { font-size: 32px; padding: 16px 14px; }
+    .recap__amt { font-size: 40px; }
+    /* Um e-mail longo como destinatário não pode esticar o cartão: a coluna
+       do nome encolhe e a string quebra onde precisar. */
+    .recap__to > div { min-width: 0; overflow-wrap: anywhere; }
+    /* o aviso em mono de 10,5px sobe para os 11px dos rótulos do tema
+       (!important porque o tamanho está no style="" inline) */
+    .recap > p { font-size: 11px !important; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Enviar","item":"https://blaxxpontos.com.br/enviar.html"}]}
@@ -75,8 +91,8 @@
 <main>
   <header class="page-head" data-screen-label="Enviar pontos">
     <span class="eyebrow">ENVIAR PONTOS</span>
-    <h1 class="h-display">Pontos pra quem você curte.</h1>
-    <p class="lead"><b>Zero taxa</b> entre amigos BlaXx. A transferência cai na hora.</p>
+    <h1 class="h-display">Pontos para quem você quiser.</h1>
+    <p class="lead"><b>Sem taxa</b> entre contas BlaXx. Os pontos chegam na hora.</p>
   </header>
 
   <div class="send-grid">
@@ -87,7 +103,7 @@
       </div>
 
       <div class="field">
-        <label>Quanto enviar</label>
+        <label>Pontos a enviar</label>
         <div class="amount-wrap">
           <input class="amount-input" type="text" id="amt" value="" placeholder="0" inputmode="numeric">
         </div>
@@ -102,7 +118,7 @@
 
       <div class="field">
         <label>Mensagem (opcional)</label>
-        <input class="input" type="text" id="msg" placeholder="Valeu pela força! 🙌" maxlength="140">
+        <input class="input" type="text" id="msg" placeholder="Um presente para você" maxlength="140">
       </div>
 
       <div class="field" style="margin-bottom:0">
@@ -121,8 +137,8 @@
       <div style="font-family:var(--font-mono);font-size:12px;color:var(--fg-on-dark-muted);margin-bottom:18px">pontos</div>
 
       <div class="rline"><span class="k">Taxa de envio</span><span class="free-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M4 12.5 9.5 18 20 6"/></svg> GRÁTIS</span></div>
-      <div class="rline"><span class="k">Saldo atual</span><span class="v" id="balNow">—</span></div>
-      <div class="rline"><span class="k">Saldo após envio</span><span class="v" id="after">—</span></div>
+      <div class="rline"><span class="k">Seus pontos</span><span class="v" id="balNow">—</span></div>
+      <div class="rline"><span class="k">Após o envio</span><span class="v" id="after">—</span></div>
 
       <div id="msgBox" class="msgbox" style="display:none"></div>
 
@@ -181,8 +197,8 @@
     var msg = $('msg').value.trim();
     var pw = $('pw').value;
     if (!who){ show('err','Informe o e-mail ou CPF do destinatário.'); return; }
-    if (amount < 100){ show('err','Valor mínimo de envio é 100 pts.'); return; }
-    if (amount > balance){ show('err','Saldo insuficiente.'); return; }
+    if (amount < 100){ show('err','O envio mínimo é de 100 pts.'); return; }
+    if (amount > balance){ show('err','Pontos insuficientes.'); return; }
     if (!pw){ show('err','Confirme com sua senha.'); return; }
     var body = { to: who, amount_pts: amount, password: pw };
     if (msg) body.message = msg;
@@ -192,7 +208,7 @@
       .then(function(res){
         btn.disabled = false; btn.textContent = old;
         if (res.s === 201 || (res.j && res.j.receipt_code)){
-          show('ok','Enviado! Comprovante '+(res.j.receipt_code||'')+'. Redirecionando…');
+          show('ok','Envio concluído. Comprovante '+(res.j.receipt_code||'')+'. Redirecionando…');
           $('pw').value=''; $('amt').value=''; recalc();
           setTimeout(function(){ location.href='extrato.html'; }, 1400);
           return;

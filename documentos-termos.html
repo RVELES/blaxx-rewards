@@ -43,7 +43,7 @@
 <div class="page-head">
     <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> Documentos</div>
     <h1 style="font-size:32px;">Documentos &amp; termos</h1>
-    <p class="muted">Tudo que rege o programa BlaXx, num só lugar.</p>
+    <p class="muted">Tudo o que rege o programa BlaXx, em um só lugar.</p>
 </div>
 
 <section class="section">
@@ -125,7 +125,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -166,6 +166,18 @@
         <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</span>
     </div>
 </footer>
+<style>
+  /* Celular (≤ 880px): a lista de documentos dentro do sistema "Embarque"
+     mobile (assets/blaxx-embarque.css). Só o que a folha base deixava errado. */
+  @media (max-width: 880px) {
+    /* a folha base crava 26px; a escala do tema no celular é 28-34 */
+    .page-head h1 { font-size: clamp(28px, 8vw, 32px) !important; }
+    /* título + versão: a versão desce para a linha de baixo quando não cabe,
+       em vez de espremer o título; e os dois ficam alinhados pela base */
+    .card .flex.between { align-items: baseline; gap: 4px 12px; }
+    .card .flex.between .muted { font-family: var(--bx-mono); letter-spacing: .04em; }
+  }
+</style>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {

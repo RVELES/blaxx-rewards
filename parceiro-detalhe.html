@@ -51,16 +51,16 @@
             <div>
                 <span class="kicker">Supermercado</span>
                 <h1 style="margin-top:14px;color:white;">Mercado Bom Preço</h1>
-                <p>Mais de 80 lojas em todo o Brasil. Acumule pontos em todas as compras, presencial ou online, sem limite.</p>
+                <p>Mais de 80 lojas em todo o Brasil. Pontos em todas as compras, na loja ou online, sem limite.</p>
                 <div class="actions">
                     <a href="resgates.html" class="button">Ver resgates</a>
                     <a href="#" class="button secondary">Encontrar loja</a>
                 </div>
             </div>
             <div class="card" style="background:var(--bx-ink-2);border-color:var(--bx-ink-3);color:#F4F2EC;box-shadow:none;">
-                <h3 style="color:white;">Você ganha</h3>
+                <h3 style="color:white;">Você acumula</h3>
                 <div style="font-size:48px;font-weight:900;letter-spacing:-0.04em;color:var(--lime);line-height:1;">10 pts</div>
-                <p style="color:var(--bx-ink-muted);">a cada R$ 1 gasto · crédito em 24h</p>
+                <p style="color:var(--bx-ink-muted);">a cada R$ 1 em compras · crédito em até 24h</p>
                 <span class="status ativo" style="margin-top:8px;">● Campanha ativa: +50%</span>
             </div>
         </div>
@@ -76,13 +76,13 @@
         </div>
         <div class="card">
             <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
-            <h3>Sem valor mínimo</h3>
-            <p>Acumule pontos a partir de qualquer valor de compra.</p>
+            <h3>Sem compra mínima</h3>
+            <p>Toda compra acumula pontos, sem exigência de mínimo.</p>
         </div>
         <div class="card">
             <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 19h2"/></svg></div>
             <h3>Online &amp; loja</h3>
-            <p>Funciona no app, no site e em todas as lojas físicas.</p>
+            <p>Vale no app, no site e em todas as lojas físicas.</p>
         </div>
     </div>
 </section>
@@ -100,7 +100,7 @@
         <div class="card">
             <div class="card-icon">2</div>
             <h3>Finalize a compra</h3>
-            <p>Pague normalmente com qualquer forma aceita pelo parceiro.</p>
+            <p>Conclua o pagamento com qualquer forma aceita pelo parceiro.</p>
         </div>
         <div class="card">
             <div class="card-icon">3</div>
@@ -121,7 +121,7 @@
                 <h3 style="margin-top:10px;">Bônus em hortifruti</h3>
             </div>
             <div class="campaign-body">
-                <p>Ganhe 50% a mais em pontos em qualquer compra na seção de hortifruti.</p>
+                <p>Compras na seção de hortifruti rendem 50% a mais em pontos.</p>
                 <div class="progress-row"><span>Sua participação</span><span><strong style="color:var(--ink);">3 compras</strong></span></div>
             </div>
         </a>
@@ -131,7 +131,7 @@
                 <h3 style="margin-top:10px;">Compre pelo app</h3>
             </div>
             <div class="campaign-body">
-                <p>Pedidos pelo app do parceiro recebem 30% extra em pontos. Sem limite.</p>
+                <p>Pedidos pelo app do parceiro acumulam 30% a mais em pontos. Sem limite.</p>
                 <div class="progress-row"><span>Sua participação</span><span><strong style="color:var(--ink);">1 compra</strong></span></div>
             </div>
         </a>
@@ -144,7 +144,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Um programa de recompensas: acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -192,6 +192,32 @@
   [data-link="parceiros"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
   [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* ---- Celular (A7) ---- */
+  @media (max-width:880px){
+    /* O app-shell e o main já dão o respiro; sem este corte os farelos
+       ficavam 84px abaixo da barra (a home fica a 20px). */
+    .page-head{ margin-top:0; padding-top:0 !important; }
+    /* O padding:40px e o gap:40px inline da faixa escura valiam entre 481 e
+       880px; abaixo de 480 o styles.css já apertava. Um valor só. */
+    .band-dark[style]{ padding:28px 20px !important; }
+    .band-dark .grid.two[style]{ gap:20px !important; }
+    .band-dark .actions{ flex-direction:column; align-items:stretch; gap:8px; }
+    .band-dark .actions .button{ width:100%; }
+    /* Os seis cartões de três colunas viravam uma torre de 1.150px com o
+       ícone em cima do texto. No celular cada um vira uma linha: ícone à
+       esquerda, título e texto à direita (mesma leitura das "escalas" da
+       home). */
+    .section > .grid:not(.two){ gap:10px !important; }
+    .section > .grid:not(.two) .card{
+      display:grid; grid-template-columns:44px minmax(0,1fr);
+      column-gap:14px; row-gap:4px; align-items:start;
+    }
+    .section > .grid:not(.two) .card .card-icon{ grid-row:1 / span 2; margin:0; }
+    .section > .grid:not(.two) .card h3{ grid-column:2; margin:0; font-size:17px !important; align-self:center; }
+    .section > .grid:not(.two) .card p{ grid-column:2; margin:0; font-size:15px; }
+    /* capa da campanha mais baixa */
+    .campaign-cover{ padding:18px !important; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

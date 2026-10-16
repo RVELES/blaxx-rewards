@@ -372,6 +372,27 @@
     .cc-grid, .cc-bottom { gap: 18px; }
     .cc-stack { gap: 18px; }
   }
+
+  /* ── Celular (≤ 880px): a página dentro do sistema Embarque (15/10/2026)
+     Medido em 375 e 390px com a barra de abas inferior. ───────────────── */
+  @media (max-width: 880px) {
+    /* O cabeçalho de seção cortava o título em reticências ("MARKETPLACE
+       DE E…"). No celular o título quebra em duas linhas e o link fica à
+       direita, com 44px de altura para o polegar. */
+    .cc-section-head { margin-bottom: 8px; }
+    .cc-section-head h3 { white-space: normal; overflow: visible; text-overflow: clip; }
+    .cc-section-head > a { min-height: 44px; display: inline-flex; align-items: center; }
+    /* Painéis no respiro de 18px dos cartões do tema; a regra de 26/24px
+       vinha depois da media query de 760px e vencia. */
+    .cc-hero { padding: 20px 18px; }
+    .cc-oppo { padding: 22px 18px; min-height: 0; }
+    .cc-oppo h2 { font-size: 26px; margin-top: 14px; }
+    .cc-market, .cc-levels, .cc-transfer, .cc-light { padding: 18px; }
+    /* O rótulo de progresso era um <small> de 10px, abaixo do mínimo. */
+    .cc-prog-head small { font-size: 12px; }
+    /* Campanha e movimentação: o título quebra em vez de sumir. */
+    .cc-tile .tt { white-space: normal; overflow: visible; text-overflow: clip; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"BlaxX Pontos","url":"https://blaxxpontos.com.br/","logo":"https://blaxxpontos.com.br/assets/blaxx-logo.png","sameAs":["https://instagram.com/blaxx.pontos"]}
@@ -399,7 +420,7 @@
         <div class="cc-hero-row">
           <div>
             <div class="cc-head-row">
-              <div class="cc-eyebrow">Patrimônio em Rewards</div>
+              <div class="cc-eyebrow">Saldo em pontos</div>
               <span class="cc-trend"><span id="cc-month">+0</span> <small>este mês</small></span>
             </div>
             <div class="cc-balance"><span id="cc-balance">, </span><small>pts</small></div>
@@ -425,7 +446,7 @@
         </div>
         <div class="cc-quick">
           <a href="comprar.html" class="cc-q primary"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></i>Comprar</a>
-          <a href="enviar.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/></svg></i>Transferir</a>
+          <a href="enviar.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/></svg></i>Enviar</a>
           <a href="resgates.html" class="cc-q"><i>⇄</i>Resgatar</a>
           <a href="parceiros.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></i>Parceiros</a>
         </div>
@@ -457,7 +478,7 @@
       <!-- NÍVEIS (REAL) -->
       <article class="cc-panel cc-levels">
         <div class="cc-section-head"><h3>Níveis Blaxx</h3><a href="cartao.html" class="cc-lime">Cartão →</a></div>
-        <div class="cc-level-card" id="cc-level-card"><h2 id="cc-tier">, </h2><small id="cc-tier-sub">Programa de pontos</small></div>
+        <div class="cc-level-card" id="cc-level-card"><h2 id="cc-tier">, </h2><small id="cc-tier-sub">Programa de recompensas</small></div>
         <div class="cc-prog-head"><small id="cc-next-label">Progresso</small><b id="cc-progress-pct">0%</b></div>
         <div class="cc-progress"><span id="cc-progress-fill"></span></div>
         <p class="muted" id="cc-next-hint" style="margin-top:10px;font-size:13px"></p>
@@ -465,7 +486,7 @@
 
       <!-- TRANSFERIR (REAL CTA) -->
       <article class="cc-panel cc-transfer">
-        <h3 style="margin:0">Transferir pontos</h3>
+        <h3 style="margin:0">Enviar pontos</h3>
         <p class="muted" style="margin:6px 0 0">Envie pontos a outro cliente Blaxx, sem taxa.</p>
         <div class="cc-tbal"><small>Saldo disponível</small><div class="cc-tamount"><span id="cc-tbal">, </span> <span>pts</span></div></div>
         <a href="enviar.html" class="btn btn--primary btn--block">Enviar agora →</a>
@@ -540,7 +561,7 @@
     setText('cc-tier-mini', (t.label||', ').toUpperCase());
     const card = document.getElementById('cc-level-card');
     if (card && t.color){ card.style.background = t.color; card.style.color = t.text_color || '#fff'; }
-    setText('cc-tier-sub', c.lifetime_points>0 ? fmt(c.lifetime_points)+' pts acumulados' : 'Programa de pontos');
+    setText('cc-tier-sub', c.lifetime_points>0 ? fmt(c.lifetime_points)+' pts acumulados' : 'Programa de recompensas');
     const pct = Number(c.progress_pct||0);
     setText('cc-progress-pct', pct+'%');
     const fill = document.getElementById('cc-progress-fill'); if(fill) requestAnimationFrame(()=>fill.style.width=pct+'%');
@@ -620,7 +641,7 @@
       {id:'pulse',name:'Pulse Eletro',logo_emoji:'📱',accrual_rule:'Até 4 pts/R$',category:'Tecnologia'}]);
     const _demo = [
       {id:'1',name:'Dobro de pontos em viagens',description:'Até 30/06 · parceiros selecionados',reward_pts:2000},
-      {id:'2',name:'Cashback turbo no varejo',description:'Válido por 6 meses',reward_pts:5000}];
+      {id:'2',name:'Bônus de pontos no varejo',description:'Válido por 6 meses',reward_pts:5000}];
     renderCampaigns(_demo); renderOportunidade(_demo);
     renderActivity([
       {amount_pts:1240,description:'Compra · Mercado Vivo',type:'compra'},

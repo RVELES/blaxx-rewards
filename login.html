@@ -40,6 +40,27 @@
   .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line, rgba(10,11,14,.15)); }
   /* O GSI injeta um iframe de largura fixa; centralizar evita o botão colado à esquerda. */
   #g-signin-btn { display: flex; justify-content: center; min-height: 44px; }
+  /* ── Celular (≤ 880px) ──────────────────────────────────────────────
+     Barra preta mais baixa, cartão a 16px das bordas e com 24px por
+     dentro (o 36px do desktop comia um quinto da tela), formulário logo
+     abaixo da barra em vez de flutuar no meio, campos a 16px (o iOS não
+     amplia a tela ao focar) e cada link ou alvo com 44px de altura. Os
+     links do rodapé seguem corridos; só ganham área de toque. */
+  @media (max-width: 880px){
+    .auth-top { padding: 8px 16px; gap: 8px 14px; min-height: 60px; }
+    .auth-top a { display: inline-flex; align-items: center; min-height: 44px; }
+    .auth-top a.alt { gap: .32em; }   /* o flex engole o espaço antes do <b> */
+    .auth-wrap { padding: 16px 16px 24px; align-items: start; }
+    .auth { padding: 24px 20px; }
+    .auth h1 { font-size: 28px; }
+    .auth .sub { font-size: 15px; }
+    .f input { font-size: 16px; min-height: 48px; }
+    .row { gap: 8px 12px; flex-wrap: wrap; }
+    .row label { min-height: 44px; }
+    .row input[type="checkbox"] { width: 18px; height: 18px; }
+    .auth-foot { padding: 8px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+    .auth-foot a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Entrar","item":"https://blaxxpontos.com.br/login.html"}]}
@@ -57,7 +78,7 @@
   <div class="auth-wrap" role="main">
     <div class="card auth">
       <h1>Bem-vindo de volta.</h1>
-      <p class="sub">Entre para acessar seus pontos.</p>
+      <p class="sub">Entre para acessar seus pontos e benefícios.</p>
       <div class="f">
         <label for="email">E-mail ou CPF</label>
         <input id="email" type="text" placeholder="voce@email.com" autocomplete="username">

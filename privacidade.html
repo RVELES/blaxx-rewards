@@ -26,6 +26,24 @@
   .body ul { padding-left: 20px; margin: 8px 0; }
   .note { background: var(--lime-06); border: 1px solid var(--lime-20); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13px; color: var(--fg-muted); margin: 16px 0; }
   @media (max-width: 900px){ .doc { grid-template-columns: 1fr; } .toc { position: static; } .body { padding: 24px; } }
+  @media (max-width: 880px){
+    .doc { gap: 16px; }
+    /* No celular o sumário vira trilho de fichas que rola dentro do próprio
+       cartão: a lista empilhada (8–10 links de 44px) empurrava o texto para
+       fora da primeira tela — o documento é o conteúdo, o sumário é atalho. */
+    .toc { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 12px 14px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc h4 { flex: none; margin: 0 6px 0 0; }
+    .toc a { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--bx-line); border-radius: 999px; background: var(--bx-surface-2); color: var(--bx-ink); font-size: 13px; white-space: nowrap; overflow-wrap: normal; word-break: normal; }
+    /* Corpo do documento no ritmo do tema (18px) e texto em corpo de leitura:
+       14px era letra miúda numa tela de 375px. */
+    .body { padding: 18px; }
+    .body p, .body li { font-size: 15px; }
+    .note { font-size: 14px; }
+    /* Os links da nota são texto corrido dentro de um <div>: a folha raiz os
+       transformava em caixas de 44px no meio da frase. */
+    .note a { min-height: 0; display: inline; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Privacidade","item":"https://blaxxpontos.com.br/privacidade.html"}]}
@@ -54,7 +72,7 @@
 
     <article class="card body">
       <h2 id="coleta"><span class="n">01</span>O que coletamos</h2>
-      <p>Dados de cadastro (nome, e-mail, celular, CPF), dados transacionais (acúmulos, compras, envios, resgates), dados de uso da plataforma e a chave Pix indicada para resgates.</p>
+      <p>Dados de cadastro (nome, e-mail, celular, CPF), dados transacionais (acúmulos, compras, envios, resgates), dados de uso da plataforma e os dados de transferência informados para resgates.</p>
 
       <h2 id="uso"><span class="n">02</span>Como usamos</h2>
       <ul>
@@ -65,7 +83,7 @@
       </ul>
 
       <h2 id="compartilhamento"><span class="n">03</span>Compartilhamento</h2>
-      <p>Compartilhamos apenas o necessário com parceiros para confirmação de acúmulos e emissão de vouchers, com provedores de pagamento para processar Pix, e com autoridades quando exigido por lei. <b>Não vendemos dados pessoais.</b></p>
+      <p>Compartilhamos apenas o necessário com parceiros para confirmação de acúmulos e emissão de vouchers, com provedores de pagamento para processar compras e resgates, e com autoridades quando exigido por lei. <b>Não vendemos dados pessoais.</b></p>
 
       <h2 id="direitos"><span class="n">04</span>Seus direitos (LGPD)</h2>
       <p>Você pode, a qualquer momento: confirmar a existência de tratamento; acessar, corrigir ou atualizar dados; solicitar anonimização ou exclusão; revogar consentimentos; e solicitar portabilidade. Exercite seus direitos pelo <a href="perfil.html" style="text-decoration:underline">perfil</a> ou <a href="abrir-chamado.html" style="text-decoration:underline">abrindo um chamado</a>.</p>

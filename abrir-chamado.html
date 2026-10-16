@@ -50,6 +50,20 @@
   .side .row { flex-wrap: nowrap; }
   .side .row a { display: inline; min-height: 0; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
+
+  /* ── Celular (≤ 880px): a página dentro do sistema Embarque (15/10/2026)
+     Medido em 375 e 390px com a barra de abas inferior. ───────────────── */
+  @media (max-width: 880px) {
+    .grid { gap: 14px; }
+    /* Formulário e cartões laterais no respiro de 18px do tema. */
+    .form { padding: 20px 18px; }
+    .side { padding: 18px; }
+    /* 16px nos campos evita o zoom do iOS ao focar; a regra da página
+       (14px) vencia a folha-base. O campo de arquivo entra junto. */
+    .f input, .f select, .f textarea { font-size: 16px; min-height: 44px; }
+    .f textarea { min-height: 120px; }
+    .f { margin-bottom: 16px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Abrir chamado","item":"https://blaxxpontos.com.br/abrir-chamado.html"}]}
@@ -69,7 +83,7 @@
         <label for="cat">Categoria</label>
         <select id="cat">
           <option>Pontos não creditados</option>
-          <option>Compra de pontos / Pix</option>
+          <option>Compra de pontos / pagamento</option>
           <option>Resgate ou voucher</option>
           <option>Envio entre contas</option>
           <option>Conta e acesso</option>
@@ -80,7 +94,7 @@
       </div>
       <div class="f">
         <label for="assunto">Assunto</label>
-        <input id="assunto" type="text" placeholder="Ex.: pontos da compra no Mercado Vila não caíram">
+        <input id="assunto" type="text" placeholder="Ex.: pontos da compra no Mercado Vila não foram creditados">
       </div>
       <div class="f">
         <label for="desc">Descrição</label>

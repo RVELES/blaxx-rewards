@@ -44,7 +44,7 @@
 <section class="section">
     <div class="card center" style="padding:56px 32px;max-width:640px;margin:40px auto;">
         <div class="icon-badge" style="background:var(--ok);color:var(--ok-text);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
-        <h1 style="font-size:36px;">Resgate concluído!</h1>
+        <h1 style="font-size:36px;">Resgate concluído.</h1>
         <p class="lead" style="max-width:48ch;margin:8px auto 22px;">Seu voucher Netflix 30 dias foi enviado para <strong style="color:var(--ink);">mariana@email.com</strong>. Confira a caixa de entrada.</p>
 
         <div class="dl" style="text-align:left;max-width:420px;margin:0 auto 22px;">
@@ -76,7 +76,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -124,6 +124,19 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* === A5-MOBILE: início === */
+  /* Celular (≤ 880px): ajustes desta página dentro do sistema "Embarque". */
+  @media (max-width:880px){
+    /* O cartão de confirmação nascia com 56px/32px de respiro e 40px de margem
+       (valores de mesa); no celular vale o ritmo do tema: 18px nas laterais. */
+    .card.center{ padding:28px 18px !important; margin:8px auto 0 !important; }
+    .grid > .card{ padding:18px !important; }
+    /* Recibo (rótulo/valor) ocupa a coluna inteira; o par fica alinhado à esquerda. */
+    .card.center .dl{ max-width:none !important; }
+    /* Os dois botões já empilham (folha-base); 48px de altura para o polegar. */
+    .actions .button{ min-height:48px; }
+  }
+  /* === A5-MOBILE: fim === */
 </style>
 <script>
   if ('serviceWorker' in navigator) {

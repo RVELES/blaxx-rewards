@@ -31,6 +31,17 @@
   .eb-box h2 { font-size: 17px; margin: 0 0 8px; }
   .eb-box p { margin: 0; color: var(--bx-grey); line-height: 1.55; }
   .eb-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  /* Celular: os dois botões quebravam em par desigual (155px e 227px) e
+     ficavam soltos à esquerda; viram pilha de largura total. Respiro de 16px
+     e ritmo mais curto, como no resto da camada Embarque. */
+  @media (max-width:880px){
+    .eb-wrap { padding: 28px 16px 56px; }
+    .eb-wrap .sub { font-size: 16px; }
+    .eb-box { padding: 18px; margin-top: 22px; }
+    .eb-acoes { flex-direction: column; gap: 10px; margin-top: 22px; }
+    .eb-acoes .button { width: 100%; }
+    .eb-acoes .button.ghost { border: 1px solid var(--bx-line); }
+  }
 </style>
 </head>
 <body>
@@ -93,7 +104,7 @@
     'plataforma':      ['Plataforma BlaXx',
       'Oferecer a infraestrutura de pontos como serviço para outras empresas — o chamado white label. Está no roteiro de produto, sem contrato assinado até aqui.'],
     'lojas-online':    ['Ganhar pontos em lojas online',
-      'A ideia é creditar pontos em compras feitas em lojas parceiras na internet. Hoje os pontos da BlaXx entram por compra direta, com PIX ou cartão.'],
+      'A ideia é creditar pontos em compras feitas em lojas parceiras na internet. Hoje os pontos da BlaXx entram por compra direta, com cartão ou transferência.'],
     'cartoes':         ['Ganhar pontos com cartões de crédito',
       'Um cartão parceiro que credita pontos a cada gasto. Não confunda com o Cartão BlaXx, que já existe e é o seu cartão de fidelidade dentro do programa.'],
     'bancos':          ['Ganhar pontos com bancos parceiros',
@@ -101,17 +112,17 @@
     'lojas-fisicas':   ['Ganhar pontos em lojas físicas',
       'Acúmulo no caixa de lojas credenciadas, com CPF ou app. Depende da rede de parceiros presenciais, que está em formação.'],
     'cashback':        ['Cashback BlaXx',
-      'Devolver parte do valor de uma compra em pontos. Hoje o caminho inverso é que existe: você resgata pontos em dinheiro via PIX.'],
+      'Devolver parte do valor de uma compra em pontos. Hoje os pontos entram por compra direta e são trocados por benefícios em parceiros selecionados.'],
     'cupons':          ['Lembrete de cupons',
       'Uma extensão de navegador que avisa quando há oferta em loja parceira. Depende da rede de lojas online.'],
     'programa':        ['Programa BlaXx+',
-      'Níveis com benefícios crescentes. Os planos Plus e Prime já existem na sua carteira; o programa ampliado ainda está sendo desenhado.'],
+      'Níveis com benefícios crescentes. Os planos Plus e Prime já existem; o programa ampliado ainda está sendo desenhado.'],
     'produtos':        ['Trocar pontos por produtos',
-      'Um catálogo de produtos físicos. Hoje os pontos são resgatados em dinheiro via PIX ou usados em benefícios de parceiros.'],
+      'Um catálogo de produtos físicos. Hoje os pontos são resgatados em benefícios de parceiros selecionados.'],
     'viagens':         ['Trocar pontos por viagens',
       'Passagens e hospedagem pagas com pontos. Exige integração com um consolidador de viagens.'],
     'contas':          ['Pagar contas com pontos',
-      'Usar o saldo para quitar boletos e contas de consumo. Envolve exigências regulatórias que ainda estão sendo avaliadas.'],
+      'Usar pontos para pagar boletos e contas de consumo. Envolve exigências regulatórias que ainda estão sendo avaliadas.'],
     'investidores':    ['Relação com investidores',
       'Informações societárias e financeiras para investidores. A estrutura societária da BlaXx está em constituição.'],
     'trabalhe':        ['Trabalhe conosco',

@@ -104,8 +104,8 @@
                 <span class="muted" style="font-size:12px;">12/04/2026</span>
             </div>
             <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/><path d="M16 15l5 5m0-5-5 5"/></svg></div>
-            <h3>PIX R$ 20</h3>
-            <p style="font-size:13px;">Transferido em 12/04/2026 às 14h32</p>
+            <h3>Resgate por transferência</h3>
+            <p style="font-size:13px;">Concluído em 12/04/2026 às 14h32</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver detalhes</a>
         </div>
         <div class="card">
@@ -158,7 +158,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -206,6 +206,29 @@
   [data-link="resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="meus-resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="meus-resgates"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* === A5-MOBILE: início === */
+  /* Celular (≤ 880px): ajustes desta página dentro do sistema "Embarque". */
+  @media (max-width:880px){
+    /* A folha-base fixa o h1 em 26px !important; o tema pede 28-34. */
+    .page-head h1{ font-size:clamp(28px,8vw,32px) !important; }
+    /* Cada resgate vira uma linha de lista: miniatura de 72px à esquerda,
+       título e descrição ao lado, botão embaixo. A faixa de 120px por item
+       fazia seis resgates ocuparem mais de 2.000px de rolagem. */
+    .grid > .card{ padding:18px !important; display:grid; grid-template-columns:72px minmax(0,1fr); column-gap:14px; align-items:center; }
+    .grid > .card > .flex.between{ grid-column:1 / -1; margin-bottom:12px; }
+    .grid > .card > .reward-img{ grid-column:1; grid-row:2 / span 2; width:72px; height:72px !important; margin:0 !important; padding:12px; box-sizing:border-box; border:1px solid var(--bx-line); border-radius:var(--bx-r-sm) !important; }
+    .grid > .card > h3{ grid-column:2; grid-row:2; margin:0; align-self:end; }
+    .grid > .card > p{ grid-column:2; grid-row:3; margin:2px 0 0; font-size:14px !important; align-self:start; }
+    .grid > .card > .button{ grid-column:1 / -1; grid-row:4; margin-top:14px; min-height:48px; }
+    /* Migalhas: alvo de 44px sem virar caixa (a margem negativa anula o avanço). */
+    .crumbs a{ display:inline-block; padding:14px 0; margin:-14px 0; }
+    /* O menu em grade da folha-base (2 colunas, nowrap, overflow hidden) corta
+       "Resgatar por transferência" e "Comprar pontos" sem reticências em 375px.
+       Deixa o rótulo quebrar linha; o ícone não encolhe. */
+    .sidebar .side-nav > li > a{ white-space:normal; overflow:visible; line-height:1.25; }
+    .sidebar .side-nav .ic{ flex:none; }
+  }
+  /* === A5-MOBILE: fim === */
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

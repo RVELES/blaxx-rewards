@@ -71,6 +71,34 @@
   .empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
   @media (max-width: 900px){ .grid{grid-template-columns:1fr 1fr;} .vouchers{grid-template-columns:1fr;} }
   @media (max-width: 560px){ .grid{grid-template-columns:1fr;} }
+
+  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
+     respiro, cartões de 18px). Só o que esta página tem de próprio. */
+  @media (max-width: 880px){
+    .page-head { gap: 14px; margin-bottom: 18px; }
+    .bal-pill { padding: 12px 18px; }
+    /* rótulos em mono ficam nos 11px do tema (eram 10 e 10,5px) */
+    .bal-pill .l, .rw__cat, .afford { font-size: 11px; }
+    /* as duas abas ocupam a largura toda: alvo maior para o polegar */
+    .vtabs { width: 100%; display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 16px; }
+    .vtabs button { padding: 10px 12px; }
+    .chips { margin-bottom: 16px; }
+    .empty { padding: 32px 16px; }
+    /* Voucher: o selo de status NÃO é alvo de toque, mas o styles.css dá
+       44px e inline-flex a todo .chip no celular, e o selo virava um pilar
+       com "ATIV/O" partido. Volta a ser pílula de uma linha, e a linha
+       nome + selo quebra em vez de espremer o nome. */
+    .voucher__stub { width: 72px; font-size: 30px; }
+    .voucher__body { padding: 16px; }
+    .voucher__body > div:first-child { flex-wrap: wrap; gap: 6px 10px; }
+    .voucher__name { font-size: 15px; }
+    .voucher .chip { min-height: 0; flex: none; white-space: nowrap; padding: 4px 10px; }
+    /* o código nunca parte no meio: se não couber ao lado do botão, o botão
+       desce para a linha de baixo, alinhado à direita */
+    .voucher__code { flex-wrap: wrap; }
+    .voucher__code span { white-space: nowrap; overflow-wrap: normal; }
+    .voucher__code .btn { margin-left: auto; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Resgates","item":"https://blaxxpontos.com.br/resgates.html"}]}
@@ -81,9 +109,9 @@
   <header class="page-head" data-screen-label="Resgates">
     <div>
       <span class="eyebrow">RESGATES</span>
-      <h1 class="h-display">Troque por algo real.</h1>
+      <h1 class="h-display">Troque por benefícios e experiências.</h1>
     </div>
-    <div class="bal-pill"><div><div class="l">Seu saldo</div><div class="n" id="bal">—</div></div></div>
+    <div class="bal-pill"><div><div class="l">Seus pontos</div><div class="n" id="bal">—</div></div></div>
   </header>
 
   <div class="vtabs">

@@ -75,7 +75,7 @@
 <div class="page-head">
     <div class="crumbs"><a href="dashboard.html">Início</a><span class="sep">/</span> Enviar pontos</div>
     <h1 style="font-size:32px;">Enviar pontos</h1>
-    <p class="muted">Transfira pontos para outro usuário Blaxx. Sem taxa entre contas pessoais.</p>
+    <p class="muted">Envie pontos para outra conta BlaXx. Sem taxa entre contas pessoais.</p>
 </div>
 
 <section class="section">
@@ -107,7 +107,7 @@
 
                 <div class="alert info mt-2">
                     <div class="alert-icon">i</div>
-                    <div><p>Pontos enviados não podem ser cancelados após confirmação. Verifique o destinatário antes de continuar.</p></div>
+                    <div><p>Envios confirmados não podem ser cancelados. Confira o destinatário antes de continuar.</p></div>
                 </div>
 
                 <button class="button full lg mt-2">Continuar →</button>
@@ -115,7 +115,7 @@
         </div>
 
         <div class="summary-card">
-            <h3>Sua carteira</h3>
+            <h3>Seus pontos</h3>
             <div class="dl mt-2">
                 <div><span class="k">Saldo</span><span class="v" style="font-size:20px;">84.750 pts</span></div>
                 <div><span class="k">Plano</span><span class="v">Plus</span></div>
@@ -142,7 +142,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas. Acumule, compre, envie e troque pontos por benefícios e experiências em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -192,6 +192,19 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="enviar-pontos"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="enviar-pontos"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+
+  /* ---- Celular (≤ 880px): a página dentro do sistema "Embarque" ----
+     assets/styles.css trava o título da .page-head em 26px (!important) e o
+     tema pede 28-34px. O vazio sob a barra somava 74px (28px do .app-shell +
+     18px de padding da .page-head + margens); sobra só o respiro do <main>.
+     O rastro de navegação ganha 44px de toque sem virar caixa: o padding
+     invisível é anulado pela margem negativa. */
+  @media (max-width: 880px) {
+    .app-shell { padding-top: 0; }
+    .page-head { padding-top: 0 !important; margin-top: 0; }
+    .page-head h1 { font-size: clamp(28px, 8vw, 34px) !important; position: relative; } /* fica por cima da área de toque do rastro */
+    .crumbs a { display: inline-block; padding: 13px 0; margin: -13px 0; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

@@ -67,6 +67,27 @@
   .expire__tag { margin-left: auto; white-space: nowrap; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(122,90,0,.10); color: var(--warn); }
 
   @media (max-width: 900px){ .balance, .stat-row, .two { grid-template-columns: 1fr; } .balance__num{font-size:56px;} }
+
+  /* ── Celular (≤ 880px): a página dentro do sistema Embarque (15/10/2026)
+     Medido em 375 e 390px com a barra de abas inferior. ───────────────── */
+  @media (max-width: 880px) {
+    .page-head { margin-bottom: 22px; }
+    /* Saldo: respiro de 18px como os cartões do tema; o número desce de
+       56px para caber folgado na coluna de 343px sem brigar com o h1. */
+    .balance { padding: 22px 18px; gap: 18px; }
+    .balance__num { font-size: clamp(40px, 12vw, 48px); }
+    .balance__actions { min-width: 0; }
+    .stat-row { gap: 12px; margin: 16px 0; }
+    .scard { padding: 18px; }
+    .scard__val { font-size: 30px; }
+    .two { gap: 14px; }
+    .panel { padding: 18px; }
+    .panel__head { margin-bottom: 16px; }
+    .chart { height: 150px; gap: 8px; }
+    /* O selo "N DIAS" pintava o texto com --warn, que no tema Embarque é
+       cor de FUNDO (#F7EFD6): o texto sumia dentro da própria pílula. */
+    .expire__tag { color: var(--warn-text); }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Carteira","item":"https://blaxxpontos.com.br/carteira.html"}]}
@@ -84,7 +105,7 @@
     <div>
       <span class="wallet__eyebrow" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-on-dark-muted)">Saldo total</span>
       <div class="balance__num" data-count="32480">32.480</div>
-      <div class="balance__brl">≈ <b style="color:var(--fg-on-dark)">R$ 324,80</b> · Plano Plus · próximo nível em <b style="color:var(--lime)">67.520 pts</b></div>
+      <div class="balance__brl">Plano Plus · próximo nível em <b style="color:var(--lime)">67.520 pts</b></div>
     </div>
     <div class="balance__actions">
       <a href="comprar.html" class="btn btn--primary btn--block">+ Comprar pontos</a>
@@ -157,22 +178,20 @@
   requestAnimationFrame(() => document.querySelectorAll('.chart__bar[data-h]').forEach(b => { const h=b.getAttribute('data-h'); b.style.height='0%'; setTimeout(()=>b.style.height=h, 200); }));
 
   // Saldo real da carteira: sobrepõe os números de demonstração quando há
-  // sessão ativa (reflete pontos creditados após compra PIX / transferências).
+  // sessão ativa (reflete pontos creditados após compras / transferências).
   (function(){
     var DEFAULT_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
     function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
     function token(){ try { var _bt=localStorage.getItem('blaxx_token'); return _bt || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ return null; } }
     var tok = token(); if (!tok) return;
     var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
-    var brl = function(v){ return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
     fetch(apiBase() + '/wallet/', { headers: { Authorization: 'Bearer ' + tok } })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(w){
         if (!w) return;
         var num = document.querySelector('.balance__num');
         if (num){ num.removeAttribute('data-count'); num.textContent = fmt(w.balance_pts); }
-        var b = document.querySelector('.balance__brl b');
-        if (b){ b.textContent = brl(w.balance_brl_equiv); }
+        // A equivalência em reais não é exibida: o saldo é em pontos.
         var vals = document.querySelectorAll('.scard__val');
         if (vals[0]) vals[0].textContent = fmt(w.balance_pts);   // Disponíveis
         if (vals[1]) vals[1].textContent = fmt(w.pending_pts);   // Pendentes

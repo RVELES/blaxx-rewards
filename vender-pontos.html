@@ -25,7 +25,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlaXx · Vender pontos</title>
+<title>BlaXx · Resgate por transferência</title>
 <link rel="stylesheet" href="styles.css">
 <!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
      os tokens; o <style> abaixo só precisa não brigar com ele. -->
@@ -59,10 +59,25 @@
   .alert p { margin:0; font-size:13.5px; }
   @media (max-width: 900px){
     .grid { grid-template-columns: 1fr; }
-    /* Valor em dinheiro não parte no meio ("R$ 90" / ",00"): se a linha
+    /* O valor não parte no meio ("1.000" / "pts"): se a linha
        não couber, o valor inteiro desce pra linha de baixo. */
     .calc .l { flex-wrap:wrap; gap:2px 12px; }
     .calc .l b { white-space:nowrap; overflow-wrap:normal; }
+  }
+
+  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
+     respiro, cartões de 18px). Só o que esta página tem de próprio. */
+  @media (max-width: 880px){
+    main > .page-head { margin-bottom: 18px !important; }
+    .grid { gap: 14px; }
+    .sell, .side { padding: 18px; }
+    .calc { padding: 14px 16px; margin: 14px 0; }
+    .f { margin-bottom: 14px; }
+    /* Chave e senha tinham 14px no style="" inline: abaixo de 16px o Safari
+       do iPhone dá zoom ao focar. !important porque é inline. */
+    #pix, #pw { font-size: 16px !important; }
+    .grid > div { gap: 14px !important; }
+    .alert { padding: 16px; gap: 12px; }
   }
 </style>
 <script type="application/ld+json">
@@ -71,48 +86,48 @@
 </head>
 <body data-screen="vender">
 <main>
-  <header class="page-head" data-screen-label="Vender pontos" style="margin-bottom:32px">
-    <span class="eyebrow">CASHBACK · DIRETO NO PIX</span>
-    <h1 class="h-display">Transforme pontos em Pix.</h1>
-    <p class="lead">Resgate seus pontos em dinheiro, direto na chave cadastrada no seu perfil. Mínimo de 1.000 pontos.</p>
+  <header class="page-head" data-screen-label="Resgate por transferência" style="margin-bottom:32px">
+    <span class="eyebrow">RESGATE · TRANSFERÊNCIA</span>
+    <h1 class="h-display">Resgate por transferência.</h1>
+    <p class="lead">O resgate é enviado à chave cadastrada no seu perfil. Mínimo de 1.000 pontos.</p>
   </header>
 
   <div class="grid">
     <div class="card sell">
       <div class="f">
-        <label for="pts">Quantos pontos quer vender?</label>
+        <label for="pts">Pontos a resgatar</label>
         <input id="pts" type="number" min="1000" step="100" value="1000">
       </div>
       <div class="calc">
-        <div class="l"><span>Saldo disponível</span><b id="bal">—</b></div>
-        <div class="l tot"><span>Você recebe</span><b id="out">R$ 0,00</b></div>
+        <div class="l"><span>Pontos disponíveis</span><b id="bal">—</b></div>
+        <div class="l tot"><span>Resgate</span><b id="out">0 pts</b></div>
       </div>
       <div class="f">
-        <label>Chave Pix de destino</label>
+        <label>Chave de destino</label>
         <input id="pix" type="text" value="" disabled style="font-family:var(--font-body);font-weight:500;font-size:14px;color:var(--fg-muted)">
       </div>
       <div class="f" style="margin-bottom:8px">
         <label for="pw">Sua senha (confirmação)</label>
         <input id="pw" type="password" placeholder="••••••••" style="font-family:var(--font-body);font-weight:500;font-size:14px">
       </div>
-      <button id="btnSell" type="button" class="btn btn--dark btn--block">Vender pontos →</button>
+      <button id="btnSell" type="button" class="btn btn--dark btn--block">Solicitar resgate →</button>
       <div class="msgbox" id="msgBox"></div>
-      <p style="font-size:12px;color:var(--fg-subtle);margin:14px 0 0">Por segurança, o Pix é enviado apenas à chave cadastrada no <a href="perfil.html" style="text-decoration:underline">perfil</a>.</p>
+      <p style="font-size:12px;color:var(--fg-subtle);margin:14px 0 0">Por segurança, a transferência vai apenas para a chave cadastrada no <a href="perfil.html" style="text-decoration:underline">perfil</a>.</p>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:20px">
       <div class="card side">
         <h3>Como funciona</h3>
         <ul>
-          <li>Mínimo de <b>1.000 pontos</b> por operação.</li>
-          <li>Pagamento via Pix em até <b>1 dia útil</b>.</li>
-          <li>Operação confirmada é definitiva.</li>
+          <li>Mínimo de <b>1.000 pontos</b> por resgate.</li>
+          <li>Transferência concluída em até <b>1 dia útil</b>.</li>
+          <li>Resgate confirmado é definitivo.</li>
         </ul>
       </div>
       <div class="card card--lime side">
-        <h3>Vale mais usar?</h3>
-        <p>Em muitos resgates seus pontos rendem mais: vouchers e campanhas podem valer mais por ponto. Dê uma olhada antes de vender.</p>
-        <a href="resgates.html" class="btn btn--dark" style="margin-top:14px">Ver resgates →</a>
+        <h3>Vale mais trocar?</h3>
+        <p>Em muitos benefícios do catálogo, seus pontos rendem mais. Confira antes de resgatar.</p>
+        <a href="resgates.html" class="btn btn--dark" style="margin-top:14px">Ver catálogo →</a>
       </div>
     </div>
   </div>
@@ -148,7 +163,8 @@
   if (!token()) { location.href = 'login.html'; return; }
 
   var balance = 0, pixKey = '';
-  function calc(){ var v=Math.max(0, parseInt($('pts').value||0)); $('out').textContent = brl(v*0.09); }
+  // 15/10: sem equivalência em reais na tela, o valor do ponto não é exibido.
+  function calc(){ var v=Math.max(0, parseInt($('pts').value||0)); $('out').textContent = fmt(v)+' pts'; }
   $('pts').addEventListener('input', calc);
   // show() usa textContent (à prova de XSS), mensagens de erro vêm do
   // backend e nunca devem ser interpretadas como HTML. showHtml() é só pra
@@ -167,8 +183,8 @@
     var points = parseInt($('pts').value||0);
     var pw = $('pw').value;
     if (points < 1000){ show('err','Mínimo de 1.000 pontos.'); return; }
-    if (points > balance){ show('err','Saldo insuficiente.'); return; }
-    if (!pixKey){ show('err','Cadastre uma chave Pix no seu perfil antes de vender.'); return; }
+    if (points > balance){ show('err','Pontos insuficientes.'); return; }
+    if (!pixKey){ show('err','Cadastre a chave de destino no seu perfil antes de resgatar.'); return; }
     if (!pw){ show('err','Confirme com sua senha.'); return; }
     var btn=$('btnSell'); btn.disabled=true; var o=btn.textContent; btn.textContent='Enviando…';
     fetch(apiBase()+'/redeem/', {method:'POST', headers:H(), body: JSON.stringify({ points:points, pix_key:pixKey, password:pw })})
@@ -177,8 +193,8 @@
         btn.disabled=false; btn.textContent=o;
         if (res.s===401){ on401(); return; }
         if (res.s===201 || (res.j && res.j.id)){
-          // brl(points*...) é numérico/controlado, seguro em innerHTML.
-          showHtml('ok','<b>Resgate solicitado!</b> O Pix de '+brl(points*0.09)+' cai na sua conta em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.');
+          // fmt(points) é numérico/controlado, seguro em innerHTML.
+          showHtml('ok','<b>Resgate solicitado.</b> O resgate de '+fmt(points)+' pts será concluído em até 1 dia útil. Acompanhe no <a href="extrato.html" style="text-decoration:underline">extrato</a>.');
           $('pw').value='';
         } else { show('err', (res.j && res.j.error) || 'Não foi possível solicitar o resgate.'); }
       })

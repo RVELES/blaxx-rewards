@@ -115,7 +115,7 @@
       <div class="av">${esc(inicialSessao)}</div>
       <div>
         <div class="profile-card__name">${esc(nomeSessao)}</div>
-        <div class="profile-card__meta"><a href="carteira.html">Ver carteira →</a></div>
+        <div class="profile-card__meta"><a href="carteira.html">Ver saldo →</a></div>
       </div>
     </div>` : '';
   const sidebarInner = `
@@ -171,7 +171,7 @@
   const FCOLS = [
     ['Produto', [
       ['Como funciona', '#'], ['Parceiros', 'parceiros.html'], ['Resgates', 'resgates.html'],
-      ['Comprar pontos', 'comprar.html'], ['Vender pontos', '#'], ['Campanhas', 'campanhas.html'],
+      ['Comprar pontos', 'comprar.html'], ['Campanhas', 'campanhas.html'],
     ]],
     ['Conta', [
       ['Entrar', '#'], ['Cadastre-se', '#'], ['Painel', 'index.html'],
@@ -197,7 +197,7 @@
       <div class="footer-top">
         <div class="footer-brand">
           <div class="footer-logo" aria-label="BlaXx" style="display:flex;align-items:center;gap:10px">${brandMarkup()}</div>
-          <p class="footer-desc">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+          <p class="footer-desc">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios de verdade.</p>
           <a class="footer-social" href="${INSTAGRAM_URL}" target="_blank" rel="noopener" aria-label="Siga @blaxx.pontos no Instagram" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;color:inherit;text-decoration:none;font-size:13.5px;font-weight:600">
             <span class="ico" style="width:22px;height:22px;display:inline-flex">${I.instagram}</span>
             <span>@blaxx.pontos</span>

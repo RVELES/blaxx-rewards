@@ -142,7 +142,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -189,6 +189,28 @@
   [data-link="venda-pontos"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+
+  /* Celular (≤ 880px): o formulário dentro do sistema "Embarque" mobile
+     (assets/blaxx-embarque.css). Só o que a folha base deixava errado. */
+  @media (max-width: 880px) {
+    /* a folha base crava 26px; a escala do tema no celular é 28-34 */
+    .page-head h1 { font-size: clamp(28px, 8vw, 32px) !important; }
+    /* os pares (Nome/Cargo…) viram uma coluna, mas a folha base zera o vão e
+       o rótulo seguinte colava no campo anterior; mesmo ritmo das outras linhas */
+    .form-row.split { gap: 16px !important; }
+    /* aceite da LGPD: caixa de 22px alinhada à primeira linha da frase */
+    .checkbox-row { gap: 12px; }
+    .checkbox-row input[type="checkbox"] { width: 22px; height: 22px; margin-top: 0; flex: none; }
+    .checkbox-row label { font-size: 15px; }
+    /* o link "política de privacidade" é texto corrido dentro da frase: a
+       regra de alvo de 44px da folha base (.card a) o transformava em caixa
+       e jogava a frase para a linha de baixo */
+    .card .checkbox-row label a { display: inline; min-height: 0; }
+    /* "Falar no WhatsApp →" é uma ação própria (não texto corrido): no
+       cartão-resumo ele vinha com 16px de altura; sobe para o alvo de 44px
+       da regra de toque, ocupando a própria linha do par rótulo/valor */
+    .summary-card .dl .v > a#waLink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; margin-left: -2px; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

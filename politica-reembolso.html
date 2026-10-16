@@ -25,6 +25,24 @@
   .body b { color: var(--ink); }
   .note { background: var(--lime-06); border: 1px solid var(--lime-20); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13px; color: var(--fg-muted); margin: 16px 0; }
   @media (max-width: 900px){ .doc { grid-template-columns: 1fr; } .toc { position: static; } .body { padding: 24px; } }
+  @media (max-width: 880px){
+    .doc { gap: 16px; }
+    /* No celular o sumário vira trilho de fichas que rola dentro do próprio
+       cartão: a lista empilhada (8–10 links de 44px) empurrava o texto para
+       fora da primeira tela — o documento é o conteúdo, o sumário é atalho. */
+    .toc { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 12px 14px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc h4 { flex: none; margin: 0 6px 0 0; }
+    .toc a { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--bx-line); border-radius: 999px; background: var(--bx-surface-2); color: var(--bx-ink); font-size: 13px; white-space: nowrap; overflow-wrap: normal; word-break: normal; }
+    /* Corpo do documento no ritmo do tema (18px) e texto em corpo de leitura:
+       14px era letra miúda numa tela de 375px. */
+    .body { padding: 18px; }
+    .body p, .body li { font-size: 15px; }
+    .note { font-size: 14px; }
+    /* Os links da nota são texto corrido dentro de um <div>: a folha raiz os
+       transformava em caixas de 44px no meio da frase. */
+    .note a { min-height: 0; display: inline; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Reembolso","item":"https://blaxxpontos.com.br/politica-reembolso.html"}]}
@@ -43,7 +61,7 @@
       <h4>Sumário</h4>
       <a href="#principio">1. Princípio geral</a>
       <a href="#arrependimento">2. Direito de arrependimento</a>
-      <a href="#pix">3. Compra via Pix</a>
+      <a href="#pix">3. Compra de pontos</a>
       <a href="#resgates">4. Resgates</a>
       <a href="#duplicidade">5. Cobrança duplicada</a>
       <a href="#falhas">6. Falhas técnicas</a>
@@ -53,13 +71,13 @@
 
     <article class="card body">
       <h2 id="principio"><span class="n">01</span>Princípio geral</h2>
-      <p>A BlaXx respeita integralmente o Código de Defesa do Consumidor. Compras de pontos realizadas por meio eletrônico (Pix no app ou site) são contratações à distância e estão sujeitas ao <b>direito de arrependimento</b> previsto no art. 49 do CDC.</p>
+      <p>A BlaXx respeita integralmente o Código de Defesa do Consumidor. Compras de pontos realizadas por meio eletrônico, no app ou no site, são contratações à distância e estão sujeitas ao <b>direito de arrependimento</b> previsto no art. 49 do CDC.</p>
 
       <h2 id="arrependimento"><span class="n">02</span>Direito de arrependimento (CDC art. 49)</h2>
-      <p>Você pode desistir da compra em até <b>7 dias corridos</b> contados do pagamento, sem precisar justificar. Nesse caso, os pontos creditados são debitados da carteira e o valor pago é integralmente devolvido via Pix (mesma chave da compra, quando possível), em até <b>5 dias úteis</b> após a confirmação.</p>
+      <p>Você pode desistir da compra em até <b>7 dias corridos</b> contados do pagamento, sem precisar justificar. Nesse caso, os pontos creditados são debitados da sua conta e o valor pago é integralmente devolvido pelo mesmo meio de pagamento utilizado na compra, sempre que possível, em até <b>5 dias úteis</b> após a confirmação.</p>
       <div class="note"><b>Exceção:</b> se os pontos já foram utilizados (resgate confirmado, envio a outra conta ou consumo em campanha) dentro dos 7 dias, o valor proporcional dos pontos consumidos é descontado da devolução.</div>
 
-      <h2 id="pix"><span class="n">03</span>Compra de pontos via Pix</h2>
+      <h2 id="pix"><span class="n">03</span>Compra de pontos</h2>
       <p>Após o prazo de 7 dias do art. 49, compras de pontos são <b>definitivas</b> e não admitem reembolso, salvo nas hipóteses de cobrança em duplicidade ou falha técnica descritas abaixo.</p>
 
       <h2 id="resgates"><span class="n">04</span>Resgates de benefícios</h2>
@@ -75,7 +93,7 @@
       <p>Abra um chamado em <a href="abrir-chamado.html" style="text-decoration:underline">Suporte → Abrir chamado</a> informando a transação (disponível no seu <a href="extrato.html" style="text-decoration:underline">extrato</a>) e o motivo. Resposta em até 1 dia útil.</p>
 
       <h2 id="prazos"><span class="n">08</span>Prazos de devolução</h2>
-      <p>Devoluções via Pix são processadas em até <b>5 dias úteis</b> após a aprovação da solicitação. O acompanhamento fica disponível no próprio chamado.</p>
+      <p>As devoluções são processadas em até <b>5 dias úteis</b> após a aprovação da solicitação. O acompanhamento fica disponível no próprio chamado.</p>
 
       <div class="note">Documentos relacionados: <a href="termos.html" style="text-decoration:underline">Termos de uso</a> · <a href="regras-pontos.html" style="text-decoration:underline">Regras de pontos</a> · <a href="privacidade.html" style="text-decoration:underline">Privacidade / LGPD</a></div>
     </article>

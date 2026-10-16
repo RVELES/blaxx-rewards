@@ -24,6 +24,37 @@
   .body th { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
   .note { background: var(--lime-06); border: 1px solid var(--lime-20); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13px; color: var(--fg-muted); margin: 16px 0; }
   @media (max-width: 900px){ .doc { grid-template-columns: 1fr; } .toc { position: static; } .body { padding: 24px; } }
+  /* ── Celular (≤ 880px) ──────────────────────────────────────────────
+     O sumário virava uma pilha de 8 linhas de 44px antes do texto; aqui
+     ele é uma fita de atalhos que rola dentro da própria caixa, e o
+     documento começa na primeira dobra. A tabela de acúmulo vira cartões
+     com o rótulo da coluna em mono (os mesmos títulos do cabeçalho).
+     Parágrafos a 15px e respiro lateral de 16px, como o resto do tema. */
+  @media (max-width: 880px){
+    main { padding-left: 16px; padding-right: 16px; }
+    .doc { gap: 14px; }
+    .toc { display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+           overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc h4 { margin: 0 6px 0 0; flex: 0 0 auto; }
+    .toc a { flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 44px;
+             padding: 0 14px; white-space: nowrap; font-size: 13px; color: var(--bx-ink);
+             background: var(--bx-surface-2); border: 1px solid var(--bx-line); border-radius: 999px; }
+    .body { padding: 20px 18px 24px; }
+    .body h2 { font-size: 22px; margin: 28px 0 10px; }
+    .body p, .body li { font-size: 15px; line-height: 1.55; }
+    .note { font-size: 14px; padding: 12px 14px; }
+    /* tabela → lista de cartões; a primeira linha é o cabeçalho (th) */
+    .body table, .body tbody, .body tr, .body td { display: block; width: 100%; box-sizing: border-box; }
+    .body tr:first-child { display: none; }
+    .body tr { border: 1px solid var(--bx-line); border-radius: var(--bx-r-sm); margin-bottom: 12px; padding: 8px 14px; }
+    .body td { border: 0; padding: 6px 0; font-size: 15px; }
+    .body td::before { display: block; font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+    .body td:nth-child(1)::before { content: 'Mecanismo'; }
+    .body td:nth-child(2)::before { content: 'Como funciona'; }
+    .body td:nth-child(3)::before { content: 'Custo'; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Regras de pontos","item":"https://blaxxpontos.com.br/regras-pontos.html"}]}
@@ -52,7 +83,7 @@
 
     <article class="card body">
       <h2 id="natureza"><span class="n">01</span>Natureza dos pontos</h2>
-      <p>Os pontos BlaXx são <b>créditos promocionais de uso restrito</b> dentro do programa BlaXx. Não constituem moeda de curso forçado, depósito ou investimento financeiro, valor mobiliário, criptoativo, nem direito de crédito transferível por endosso, cessão ou penhora.</p>
+      <p>Os pontos BlaXx são <b>créditos promocionais de uso restrito</b> dentro do programa de recompensas BlaXx. Não constituem moeda de curso forçado, depósito ou investimento financeiro, valor mobiliário, criptoativo, nem direito de crédito transferível por endosso, cessão ou penhora.</p>
       <p>Os pontos são pessoais, intransferíveis fora dos fluxos previstos no programa e não podem ser objeto de garantia ou compensação contra dívidas do usuário.</p>
 
       <h2 id="acumulo"><span class="n">02</span>Acúmulo</h2>
@@ -61,8 +92,8 @@
         <tr><th>Mecanismo</th><th>Como funciona</th><th>Custo</th></tr>
         <tr><td><b>Rede de parceiros</b></td><td>Cada parceiro define a regra (ex.: 1 pt por R$ gasto).</td><td>Gratuito</td></tr>
         <tr><td><b>Campanhas patrocinadas</b></td><td>Bônus em ações específicas por tempo limitado.</td><td>Gratuito</td></tr>
-        <tr><td><b>Compra direta (Pix)</b></td><td>Pacotes ou valor livre.</td><td>Valor do pacote</td></tr>
-        <tr><td><b>Transferência</b></td><td>Outro usuário envia pontos pra você.</td><td>Gratuito</td></tr>
+        <tr><td><b>Compra direta</b></td><td>Pacotes ou valor livre, com cartão ou transferência.</td><td>Preço do pacote</td></tr>
+        <tr><td><b>Transferência</b></td><td>Outro participante envia pontos para você.</td><td>Gratuito</td></tr>
       </table>
 
       <h2 id="validade"><span class="n">03</span>Validade e expiração</h2>
@@ -76,7 +107,7 @@
       <p>Transferências entre contas pessoais BlaXx são gratuitas, respeitando os limites diários. <b>Transferências confirmadas não podem ser revertidas.</b> O destinatário deve possuir conta ativa identificada por e-mail ou CPF.</p>
 
       <h2 id="resgates"><span class="n">06</span>Resgates</h2>
-      <p>Resgates dependem de disponibilidade do parceiro. Após confirmação, o resgate é <b>definitivo e não cancelável</b>. Cashback via Pix é enviado exclusivamente à chave cadastrada no <a href="perfil.html" style="text-decoration:underline">perfil</a> do titular.</p>
+      <p>Resgates dependem da disponibilidade de cada parceiro. Após a confirmação, o resgate é <b>definitivo e não cancelável</b>. Resgates por transferência seguem exclusivamente para o destino cadastrado no <a href="perfil.html" style="text-decoration:underline">perfil</a> do titular.</p>
 
       <h2 id="fraude"><span class="n">07</span>Prevenção a fraude</h2>
       <p>Contas com indícios de fraude, duplicidade, automação ou uso indevido podem ser suspensas para verificação. Pontos obtidos de forma irregular podem ser estornados. Suspeitas podem ser reportadas em <a href="abrir-chamado.html" style="text-decoration:underline">Abrir chamado</a>.</p>

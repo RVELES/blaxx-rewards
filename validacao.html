@@ -123,6 +123,21 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* Celular (≤ 880px) — versão mobile do grupo A6 (15/10/2026).
+     O cartão de autenticação tinha 36px de borda interna + 22px de respiro:
+     sobravam 259px para o título, que quebrava em "e-/mail". */
+  @media (max-width:880px){
+    /* assets/styles.css (<=480px) trata o .auth-wrap como se fosse o cartão e
+       lhe dá margem 16px + padding 22px com !important; aqui ele volta a ser
+       só a coluna, e o respiro fica no .auth-card. */
+    .auth-wrap{ margin:20px auto 40px !important; padding:0 16px !important; max-width:100% !important; }
+    .auth-card{ padding:28px 20px; }
+    .auth-card h2{ font-size:clamp(24px,6.6vw,28px) !important; }
+    /* rótulo e campo alinhados à esquerda mesmo no cartão centralizado */
+    .auth-card .form-row{ text-align:left; }
+    .auth-card .form-row input{ font-size:16px; min-height:48px; }
+    .auth-foot{ line-height:2; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

@@ -127,7 +127,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -175,6 +175,27 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="extrato"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="extrato"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* === A5-MOBILE: início === */
+  /* Celular (≤ 880px): ajustes desta página dentro do sistema "Embarque". */
+  @media (max-width:880px){
+    /* A folha-base fixa o h1 em 26px !important; o tema pede 28-34. */
+    .page-head h1{ font-size:clamp(28px,8vw,32px) !important; }
+    /* Cartões com 18px de respiro, como no resto do celular. */
+    .card,.summary-card{ padding:18px !important; }
+    /* Status e ID da transação: lado a lado quando cabe, em duas linhas quando não. */
+    .card > .flex.between{ flex-wrap:wrap; gap:8px 12px; }
+    /* Voltar + Reportar: preenchem a linha e empilham quando não cabem. */
+    .card > .flex.mt-4{ flex-wrap:wrap; gap:8px; }
+    .card > .flex.mt-4 > .button{ flex:1 1 160px; justify-content:center; }
+    /* Migalhas: alvo de 44px sem virar caixa (a margem negativa anula o avanço). */
+    .crumbs a{ display:inline-block; padding:14px 0; margin:-14px 0; }
+    /* O menu em grade da folha-base (2 colunas, nowrap, overflow hidden) corta
+       "Resgatar por transferência" e "Comprar pontos" sem reticências em 375px.
+       Deixa o rótulo quebrar linha; o ícone não encolhe. */
+    .sidebar .side-nav > li > a{ white-space:normal; overflow:visible; line-height:1.25; }
+    .sidebar .side-nav .ic{ flex:none; }
+  }
+  /* === A5-MOBILE: fim === */
 </style>
 <script>
   if ('serviceWorker' in navigator) {

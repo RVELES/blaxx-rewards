@@ -18,6 +18,26 @@
   .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
   .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
   .alert.info p{ color:var(--bx-grey); opacity:1; }
+  /* BX-MOBILE-A3 inicio */
+  /* ---- Celular (≤ 880px): a página dentro do sistema mobile do tema ---- */
+  @media (max-width:880px){
+    /* A coluna do .app-shell tem min-width:auto: nada aqui pode empurrar o
+       <main> para fora da tela. */
+    .app-shell > main.shell{ min-width:0; max-width:100%; padding-top:0; padding-bottom:16px; }
+    /* o cartão de resultado vinha com 40px de margem e 56px de padding inline:
+       no celular o conteúdo começa logo abaixo da barra, com 18px de respiro */
+    .section > .card.center{ margin:8px auto 0 !important; padding:28px 18px !important; }
+    .section.center{ margin-top:16px; }
+    .dl > div{ flex-wrap:wrap; }
+    /* assets/styles.css põe flex-wrap:wrap em todo .card > div abaixo de 520px:
+       o aviso quebrava com o ícone numa linha e o texto noutra */
+    .card > .alert{ flex-wrap:nowrap; }
+    .alert > div:not(.alert-icon){ flex:1 1 0; min-width:0; }
+    /* botões empilhados com largura total */
+    .actions{ flex-direction:column; align-items:stretch; gap:8px; }
+    .actions .button{ width:100%; justify-content:center; }
+  }
+  /* BX-MOBILE-A3 fim */
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
@@ -53,7 +73,7 @@
     <div class="card center" style="padding:56px 32px;max-width:640px;margin:40px auto;">
         <div class="icon-badge" style="background:var(--bx-surface-2);color:var(--warn-text);">⏱</div>
         <h1 style="font-size:36px;">Pagamento em análise</h1>
-        <p class="lead" style="max-width:50ch;margin:8px auto 22px;">Seu pagamento foi recebido e está sendo processado. Você receberá uma confirmação por e-mail em até 30 minutos.</p>
+        <p class="lead" style="max-width:50ch;margin:8px auto 22px;">Recebemos seu pagamento e ele está em processamento. A confirmação chega por e-mail em até 30 minutos.</p>
 
         <div class="dl" style="text-align:left;max-width:420px;margin:0 auto 22px;">
             <div><span class="k">Pacote</span><span class="v">Plus</span></div>
@@ -65,7 +85,7 @@
 
         <div class="alert info" style="text-align:left;max-width:420px;margin:0 auto 22px;">
             <div class="alert-icon">i</div>
-            <div><p>Os pontos serão creditados automaticamente assim que o pagamento for confirmado pelo banco.</p></div>
+            <div><p>Os pontos serão creditados automaticamente assim que o pagamento for confirmado.</p></div>
         </div>
 
         <div class="actions" style="justify-content:center;">

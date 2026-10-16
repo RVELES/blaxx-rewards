@@ -105,7 +105,7 @@
                             <strong>Suporte Blaxx · Caroline</strong>
                             <span class="muted" style="font-size:12px;">28/04 · 21h05</span>
                         </div>
-                        <p style="margin:0;color:var(--ink-2);">Olá, Mariana! Recebemos sua nota fiscal. Vou validar com a Shell e te respondo em até 24h. Já criei o reembolso provisório dos pontos enquanto isso.</p>
+                        <p style="margin:0;color:var(--ink-2);">Olá, Mariana. Recebemos sua nota fiscal. Vamos validar com a Shell e retornamos em até 24h. Enquanto isso, lançamos um crédito provisório dos pontos.</p>
                     </div>
                 </div>
 
@@ -116,7 +116,7 @@
                             <strong>Suporte Blaxx · Caroline</strong>
                             <span class="muted" style="font-size:12px;">29/04 · 09h47</span>
                         </div>
-                        <p style="margin:0;color:var(--ink-2);">Estamos aguardando a confirmação da Shell, que respondem em até 48h. Te aviso aqui assim que tivermos novidade.</p>
+                        <p style="margin:0;color:var(--ink-2);">Aguardamos a confirmação da Shell, que responde em até 48h. Avisamos por aqui assim que houver retorno.</p>
                     </div>
                 </div>
             </div>
@@ -161,7 +161,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Um programa de recompensas: acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -209,6 +209,20 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="ajuda"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
   [data-side="ajuda"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* ---- Celular (A7) ---- */
+  @media (max-width:880px){
+    /* O main já dá o respiro; sem este corte os farelos ficavam 46px abaixo
+       da barra (a home fica a 20px). Título no tamanho de h1 do celular:
+       o styles.css o apertava para 26px. */
+    .page-head{ margin-top:0; padding-top:0 !important; }
+    .page-head h1{ font-size:28px !important; line-height:1.15; }
+    /* Cartões com os 18px do tema; a linha destacada do suporte sangra até
+       a borda exata (o margin:0 -24px inline vazava 3px de cada lado). */
+    .split-page .card{ padding:18px !important; }
+    .split-page .card > .flex[style*="margin:0 -24px"]{ margin:0 -18px !important; padding:18px !important; }
+    /* caixa de resposta com altura de polegar e sem zoom do iOS */
+    .split-page textarea{ min-height:110px; font-size:16px; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

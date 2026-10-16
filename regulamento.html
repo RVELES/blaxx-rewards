@@ -66,6 +66,31 @@
   }
   /* Link de pular conteúdo: alvo de toque acessível quando focado. */
   .skip-link, a[href="#conteudo"], a[href="#main"] { min-height: 44px; display: inline-flex; align-items: center; }
+  /* ── Celular (≤ 880px) ──────────────────────────────────────────────
+     Respiro lateral de 16px como o resto do tema, cartão do texto com
+     18px por dentro, parágrafos a 15px (14px é pequeno demais para ler
+     um regulamento no celular), subtítulos a 22px e avisos a 14px. */
+  @media (max-width: 880px){
+    main { padding-left: 16px; padding-right: 16px; }
+    .doc { gap: 14px; }
+    .toc > summary { padding: 12px 16px; }
+    .toc a { font-size: 14px; padding: 10px 14px; }
+    .body { padding: 20px 18px 24px; }
+    .body h2 { font-size: 22px; margin: 28px 0 10px; }
+    .body p, .body li { font-size: 15px; line-height: 1.55; }
+    .body ul { padding-left: 20px; }
+    .note, .warn { font-size: 14px; padding: 12px 14px; }
+    .body tr { padding: 8px 14px; border-radius: var(--bx-r-sm); }
+    .body td { font-size: 15px; }
+    .body td::before { font-size: 11px; }   /* rótulo mono no tamanho do tema */
+    /* O assets/blaxx-app.js injeta o "Pular para o conteúdo", mas o CSS
+       dele mora em assets/styles.css, que esta página não carrega: o link
+       aparecia como texto solto no topo. Some até receber foco. */
+    .bx-skip-link { position: absolute; top: -100px; left: 8px; z-index: 9999;
+      background: var(--bx-ink); color: var(--bx-neon); padding: 12px 18px;
+      border-radius: var(--bx-r-xxs); font-weight: 700; text-decoration: none; }
+    .bx-skip-link:focus, .bx-skip-link:focus-visible { top: 8px; outline: 3px solid var(--bx-neon); outline-offset: 2px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Regulamento","item":"https://blaxxpontos.com.br/regulamento.html"}]}
@@ -76,7 +101,7 @@
   <header class="page-head" data-screen-label="Regulamento" style="margin-bottom:28px">
     <span class="eyebrow" style="font-size:12px">DOCUMENTO · v1.0 · ATUALIZADO EM 01/08/2026</span>
     <h1 class="h-display">Regulamento do Programa.</h1>
-    <p class="lead">As regras do BlaXx Pontos: como os pontos entram, quanto valem, quando expiram e como saem.</p>
+    <p class="lead">As regras do BlaXx Pontos: como os pontos entram, quando expiram e como se transformam em benefícios.</p>
   </header>
 
   <div class="doc">
@@ -89,7 +114,7 @@
         <a href="#validade"><span class="num">04</span>Validade e expiração</a>
         <a href="#resgate"><span class="num">05</span>Resgate</a>
         <a href="#transferencia"><span class="num">06</span>Transferência</a>
-        <a href="#conversao"><span class="num">07</span>Tabela de conversão</a>
+        <a href="#conversao"><span class="num">07</span>Tabela de resgate</a>
         <a href="#encerramento"><span class="num">08</span>Encerramento</a>
         <a href="#fraude"><span class="num">09</span>Fraude e abuso</a>
         <a href="#atendimento"><span class="num">10</span>Atendimento</a>
@@ -100,12 +125,12 @@
       <h2 id="definicoes"><span class="n">01</span>Definições</h2>
       <p>Para os fins deste regulamento:</p>
       <ul>
-        <li><b>Programa</b>, o BlaXx Pontos, programa de fidelidade operado pela BlaXx.</li>
+        <li><b>Programa</b>, o BlaXx Pontos, programa de recompensas operado pela BlaXx.</li>
         <li><b>Participante</b>, pessoa física, maior de 18 anos, com CPF válido e conta ativa.</li>
-        <li><b>Pontos</b>, unidades do Programa, registradas na carteira do Participante.</li>
+        <li><b>Pontos</b>, unidades do Programa, registradas na conta do Participante.</li>
         <li><b>Pontos comprados</b>, adquiridos pelo Participante mediante pagamento.</li>
         <li><b>Pontos bonificados</b>, concedidos pela BlaXx em campanhas, sem pagamento.</li>
-        <li><b>Resgate</b>, troca de pontos por benefícios de parceiros ou, quando disponível, por dinheiro via PIX.</li>
+        <li><b>Resgate</b>, troca de pontos por benefícios e experiências em parceiros selecionados ou, quando disponível, por transferência ao próprio Participante.</li>
       </ul>
 
       <h2 id="natureza"><span class="n">02</span>Natureza dos pontos</h2>
@@ -113,20 +138,20 @@
       Participante. Eles <b>não são</b> moeda, depósito, investimento ou valor mobiliário, não
       rendem juros nem correção, e não constituem custódia de recursos do Participante.</p>
       <div class="note">A BlaXx não é instituição financeira e não mantém conta de pagamento em
-      nome do Participante. O saldo em pontos é um registro de direito a prêmio, e o pagamento do
-      resgate é feito com recursos próprios da BlaXx através de instituição autorizada pelo
-      Banco Central.</div>
+      nome do Participante. O saldo em pontos é um registro de direito a prêmio. Quando um resgate
+      envolve transferência, a liquidação é feita com recursos próprios da BlaXx por meio de
+      instituição autorizada pelo Banco Central.</div>
 
       <h2 id="acumulo"><span class="n">03</span>Acúmulo</h2>
-      <p>Os pontos entram na carteira por duas vias:</p>
+      <p>Os pontos entram na conta por duas vias:</p>
       <ul>
-        <li><b>Compra</b>, pacotes ou valor livre, pagos via PIX ou cartão. O crédito ocorre
+        <li><b>Compra</b>, pacotes ou valor livre, pagos com cartão ou transferência. O crédito ocorre
         após a confirmação do pagamento pela instituição processadora.</li>
         <li><b>Campanhas</b>, bonificações concedidas pela BlaXx, sempre com regras próprias
         divulgadas na campanha (prazo, condição e quantidade).</li>
       </ul>
       <p>O crédito por compra é automático. Em pagamentos sujeitos a análise antifraude, o
-      crédito ocorre somente após a liberação, o que pode levar até 72 horas no PIX.</p>
+      crédito ocorre somente após a liberação, o que pode levar até 72 horas, conforme o meio de pagamento.</p>
 
       <h2 id="validade"><span class="n">04</span>Validade e expiração</h2>
       <table>
@@ -150,39 +175,41 @@
 
       <h2 id="resgate"><span class="n">05</span>Resgate</h2>
       <ul>
-        <li><b>Em dinheiro (PIX)</b>, convertidos à taxa vigente e enviados para chave PIX de
-        titularidade do próprio Participante. Chave de terceiro não é aceita.</li>
-        <li><b>Em benefícios</b>, junto aos parceiros listados na plataforma, conforme
-        disponibilidade de cada parceiro.</li>
+        <li><b>Em benefícios e experiências</b>, junto aos parceiros selecionados listados na
+        plataforma, conforme disponibilidade de cada parceiro.</li>
+        <li><b>Por transferência</b>, quando disponível, com os pontos convertidos pela tabela
+        vigente e enviados a conta de titularidade do próprio Participante. Conta de terceiro
+        não é aceita.</li>
       </ul>
       <p>O resgate exige conta ativa, e-mail verificado e confirmação de senha. Pedidos são
-      processados em até 1 dia útil; o prazo de liquidação depende da instituição pagadora.</p>
+      processados em até 1 dia útil; o prazo de liquidação depende da instituição responsável.</p>
       <div class="warn">Pontos comprados com <b>cartão de crédito</b> podem ficar indisponíveis
-      para resgate em dinheiro até a liquidação da compra pela adquirente. Essa carência protege
+      para resgate por transferência até a liquidação da compra pela adquirente. Essa carência protege
       Participante e Programa contra estorno e contestação.</div>
 
       <h2 id="transferencia"><span class="n">06</span>Transferência entre Participantes</h2>
       <p>O Participante pode enviar pontos para outra conta BlaXx ativa. A transferência é
       gratuita, definitiva após a janela de cancelamento e sujeita a limites antifraude:</p>
       <ul>
-        <li>Valor mínimo por operação: 100 pontos.</li>
+        <li>Quantidade mínima por operação: 100 pontos.</li>
         <li>Limite diário: 50.000 pontos.</li>
         <li>Carência de 48 horas após a compra, antes de transferir os pontos adquiridos.</li>
       </ul>
       <p>A transferência é registrada no extrato de ambas as contas e não pode ser usada para
       revenda de pontos a terceiros.</p>
 
-      <h2 id="conversao"><span class="n">07</span>Tabela de conversão</h2>
-      <p>A relação entre pontos e reais é publicada na plataforma e pode ser alterada pela BlaXx,
-      com <b>aviso prévio de 30 dias</b> por e-mail e na própria plataforma.</p>
+      <h2 id="conversao"><span class="n">07</span>Tabela de resgate</h2>
+      <p>A tabela de resgate, que define a quantidade de pontos necessária para cada benefício ou
+      transferência, é publicada na plataforma e pode ser alterada pela BlaXx, com <b>aviso prévio
+      de 30 dias</b> por e-mail e na própria plataforma.</p>
       <p>Alterações não retroagem: resgates solicitados antes da vigência da nova tabela seguem
       a tabela anterior.</p>
 
       <h2 id="encerramento"><span class="n">08</span>Encerramento do Programa</h2>
       <p>A BlaXx pode encerrar o Programa mediante aviso prévio de <b>90 dias</b>. Nesse período
       o Participante mantém o direito de resgatar todo o saldo.</p>
-      <p>Encerrado o prazo, os <b>pontos comprados e não resgatados</b> são restituídos em
-      dinheiro, pelo valor pago, na chave PIX do Participante. Pontos bonificados não geram
+      <p>Encerrado o prazo, os <b>pontos comprados e não resgatados</b> são restituídos pelo
+      valor pago, por transferência ao próprio Participante. Pontos bonificados não geram
       direito a restituição.</p>
 
       <h2 id="fraude"><span class="n">09</span>Fraude e abuso</h2>

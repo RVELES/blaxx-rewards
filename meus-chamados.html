@@ -74,7 +74,7 @@
 <div class="page-head">
     <div class="crumbs"><a href="dashboard.html">Início</a><span class="sep">/</span> <a href="central-ajuda.html">Ajuda</a><span class="sep">/</span> Meus chamados</div>
     <h1 style="font-size:32px;">Meus chamados</h1>
-    <p class="muted">Acompanhe seus tickets de suporte.</p>
+    <p class="muted">Acompanhe o andamento das suas solicitações ao suporte.</p>
 </div>
 
 <section class="section">
@@ -144,7 +144,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Um programa de recompensas: acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -192,6 +192,29 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="ajuda"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
   [data-side="ajuda"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* ---- Celular (A7) ---- */
+  @media (max-width:880px){
+    /* O main já dá o respiro; sem este corte os farelos ficavam 46px abaixo
+       da barra (a home fica a 20px). Título no tamanho de h1 do celular:
+       o styles.css o apertava para 26px. */
+    .page-head{ margin-top:0; padding-top:0 !important; }
+    .page-head h1{ font-size:28px !important; line-height:1.15; }
+    /* filtros em cima, "Abrir chamado" em largura total embaixo */
+    .section > .flex.between{ flex-direction:column; align-items:stretch; gap:12px; }
+    .section > .flex.between > .button{ width:100%; }
+  }
+  @media (max-width:720px){
+    /* A tabela já vira cartões (styles.css). Aqui: rótulos em mono 11px como
+       no resto do tema, o assunto em linha própria (texto à direita quebrado
+       em duas linhas lia mal) e o "Ver →" com área de toque de 44px. */
+    .table td::before{ font-family:var(--bx-mono); font-size:11px; letter-spacing:.06em; font-weight:500; }
+    .table td[data-label="Assunto"]{ flex-direction:column; align-items:flex-start; gap:2px; font-weight:600; }
+    .table td:last-child{ padding-top:10px; }
+    .table td:last-child a{
+      display:flex; justify-content:center; align-items:center; width:100%; min-height:44px;
+      border:1px solid var(--bx-line); border-radius:var(--bx-r-xs); text-decoration:none;
+    }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

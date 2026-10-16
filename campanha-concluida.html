@@ -46,8 +46,8 @@
     <div class="card center" style="padding:56px 32px;max-width:720px;margin:40px auto;">
         <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M7 4h10v6a5 5 0 0 1-5 5 5 5 0 0 1-5-5Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/><path d="M12 15v3M9 21h6l-1-3h-4Z"/></svg></div>
         <span class="kicker" style="margin:0 auto;background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">Campanha concluída</span>
-        <h1 style="font-size:36px;margin-top:14px;">Parabéns, você ganhou 1.500 pts!</h1>
-        <p class="lead" style="max-width:50ch;margin:8px auto 22px;">Você completou todas as etapas da campanha <strong style="color:var(--ink);">Combo aniversário</strong>. Os pontos já estão na sua carteira.</p>
+        <h1 style="font-size:36px;margin-top:14px;">Parabéns, você ganhou 1.500 pts.</h1>
+        <p class="lead" style="max-width:50ch;margin:8px auto 22px;">Você completou todas as etapas da campanha <strong style="color:var(--ink);">Combo aniversário</strong>. Os pontos já foram creditados.</p>
 
         <div class="dl" style="text-align:left;max-width:420px;margin:0 auto 22px;">
             <div><span class="k">Campanha</span><span class="v">Combo aniversário</span></div>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="actions" style="justify-content:center;">
-            <a href="resgates.html" class="button">Resgatar agora</a>
+            <a href="resgates.html" class="button">Resgatar benefícios</a>
             <a href="campanhas.html" class="button secondary">Ver outras campanhas</a>
             <a href="dashboard.html" class="button ghost">Voltar ao painel</a>
         </div>
@@ -84,7 +84,7 @@
         <a href="detalhe-campanha.html" class="campaign-card">
             <div class="campaign-cover">
                 <span class="kicker">+100% bônus</span>
-                <h3 style="margin-top:10px;">Sua viagem rendendo</h3>
+                <h3 style="margin-top:10px;">Sua viagem em dobro</h3>
             </div>
             <div class="campaign-body"><p style="margin:0;">Ativa até 30/06</p></div>
         </a>
@@ -146,6 +146,18 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* Celular (≤ 880px) — versão mobile do grupo A6 (15/10/2026).
+     O cartão de parabéns nasce com padding:56px 32px, margem de 40px e h1 de
+     36px inline (medidas de desktop); aqui voltam à escala do tema e os três
+     botões empilham em vez de quebrar linha a esmo. */
+  @media (max-width:880px){
+    .card.center[style]{ padding:28px 20px !important; margin:8px auto 0 !important; }
+    .card.center h1[style]{ font-size:clamp(28px,8vw,34px) !important; }
+    .card.center .lead[style]{ margin:8px auto 18px !important; }
+    .card.center .dl[style]{ margin:0 0 18px !important; }
+    .card.center .actions{ flex-direction:column; align-items:stretch; gap:8px; }
+    .card.center .actions .button{ width:100%; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

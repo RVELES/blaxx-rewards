@@ -105,7 +105,7 @@
             <div style="position:absolute;inset:0;background:radial-gradient(700px 280px at 90% -20%,rgba(89,253,39,.14),transparent 55%);pointer-events:none;"></div>
             <div style="position:relative;z-index:1;">
                 <div class="flex between">
-                    <span class="label" style="font-family:var(--bx-mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--bx-ink-muted);">Carteira Blaxx</span>
+                    <span class="label" style="font-family:var(--bx-mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--bx-ink-muted);">Saldo de pontos</span>
                     <span class="pill" style="background:var(--lime);color:var(--black);padding:6px 12px;border-radius:999px;font-family:var(--bx-mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Plano Plus</span>
                 </div>
                 <div class="big-num" style="font-size:56px;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#F4F2EC;margin-top:14px;"><span id="dash-balance">—</span> <small style="font-size:16px;font-weight:600;color:var(--bx-ink-muted);margin-left:8px;">pontos</small></div>
@@ -237,8 +237,8 @@
                     <div class="pts" style="font-size:18px;">5.000 <small>pts</small></div>
                 </a>
                 <a href="detalhe-beneficio.html" class="market-card">
-                    <div class="tag-row"><span class="glyph-sm">⚡</span> Cashback</div>
-                    <h3 style="font-size:16px;">PIX R$ 50</h3>
+                    <div class="tag-row"><span class="glyph-sm">✳</span> Parceiros</div>
+                    <h3 style="font-size:16px;">Vale-compras R$ 50</h3>
                     <div class="pts" style="font-size:18px;">5.500 <small>pts</small></div>
                 </a>
             </div>
@@ -270,7 +270,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -322,6 +322,41 @@
      no celular: em 375px as duas caixas espremiam-se lado a lado. */
   .saldo-grid { grid-template-columns: 1.4fr 1fr; }
   @media (max-width: 880px) { .saldo-grid { grid-template-columns: 1fr; } }
+
+  /* Celular (≤ 880px): o painel dentro do sistema "Embarque" mobile
+     (assets/blaxx-embarque.css). Só ajustes que o inline style ou a folha
+     base impediam — por isso os !important. */
+  @media (max-width: 880px) {
+    /* 74px entre a barra e a saudação; o saldo precisa aparecer na 1ª tela */
+    .app-shell { padding-top: 8px !important; }
+    .page-head { padding-top: 10px !important; padding-bottom: 10px !important; }
+    /* a folha base cravava 26px; a escala do tema no celular é 28-34 */
+    .page-head h1 { font-size: clamp(28px, 8vw, 32px) !important; }
+    /* cartão de saldo: respiro de 20px e canto 18 como os outros cartões */
+    .stats-card { padding: 20px !important; border-radius: var(--bx-r-lg) !important; }
+    /* 56px não cabia em 303px com saldo de sete dígitos; "pontos" quebra
+       de linha em vez de empurrar o número para fora */
+    .big-num { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: clamp(36px, 11vw, 44px) !important; }
+    .big-num small { margin-left: 0 !important; }
+    /* três indicadores lado a lado só cabem com vão curto */
+    .grid-kpi { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 14px 12px !important; }
+    .grid-kpi > div { min-width: 0; }
+    .grid-kpi > div > div:last-child { font-size: 20px !important; letter-spacing: -0.02em; }
+    /* atalhos são curtos: duas colunas poupam uma tela de rolagem */
+    .grid.four { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+    .grid.four .card.compact { padding: 16px !important; }
+    .grid.four .card.compact h3 { font-size: 16px !important; margin-top: 10px; }
+    .grid.four .card.compact p { font-size: 13px !important; }
+    /* A linha única de aviso da tabela ("Carregando…", "Erro") não tem
+       data-label; a regra de celular (td em flex com rótulo à esquerda)
+       jogava o texto para a direita da caixa. Fica centrado, como no desktop. */
+    .table td[colspan] { justify-content: center !important; text-align: center !important; }
+    .table td[colspan]::before { display: none; }
+  }
+  /* telefones muito estreitos: os atalhos voltam a uma coluna */
+  @media (max-width: 340px) {
+    .grid.four { grid-template-columns: 1fr !important; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

@@ -141,11 +141,51 @@
   }
   /* Benefícios em coluna única no celular: em duas colunas o título de 15px
      partia no meio da palavra ("Parceir-os Exclusi-vos"). */
-  @media (max-width: 480px){ .pz-grid{grid-template-columns:1fr;} .pz-searchrow{flex-direction:column;} .pz-benefits{grid-template-columns:1fr;} }
+  @media (max-width: 480px){ .pz-searchrow{flex-direction:column;} .pz-benefits{grid-template-columns:1fr;} }
   /* O styles.css dá min-height:44px a todo <button> no celular (alvo de toque);
      nas bolinhas do carrossel isso virava barras de 8x44. O alvo de toque ali
      são as setas (38px); as bolinhas são indicador de posição. */
   @media (max-width: 900px){ .pz-banner__dots button { min-height:0; } }
+
+  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
+     respiro, cartões de 18px). Só o que esta página tem de próprio. */
+  @media (max-width: 880px){
+    .pz .page-head { margin-bottom: 18px; }
+    /* Métricas: cinco cartões de 136px empurravam os parceiros para baixo de
+       ~430px de saldo. Ficam compactos em duas colunas e o de progresso, que
+       tem barra, ocupa a linha inteira: dois andares em vez de três. */
+    .pz-metrics { gap: 10px; margin: 0 0 18px; }
+    .pz-metric { padding: 14px 14px 12px; gap: 4px; }
+    .pz-metric:last-child { grid-column: 1 / -1; }
+    .pz-metric__value { font-size: 22px; }
+    .pz-metric__cta { font-size: 13px; }
+    /* Carrossel: setas no mínimo de toque (44px); as bolinhas ganham 44px
+       de altura de toque mas só o miolo é pintado (background-clip), para o
+       ponto continuar com 8px. A ativa repete o clip porque sua regra base
+       usa o shorthand background, que o devolve a border-box — sem isso ela
+       virava uma pílula neon de 30x44. O corpo reserva a faixa dos controles. */
+    .pz-banner__arrow { width: 44px; height: 44px; }
+    .pz-banner__dots { gap: 4px; }
+    .pz-banner__dots button { width: 16px; height: 44px; min-height: 44px; padding: 18px 4px; background-clip: content-box; }
+    .pz-banner__dots button.on { width: 30px; background-clip: content-box; }
+    .pz-banner__ctrl { right: 12px; bottom: 10px; }
+    .pz-slide__body { padding: 20px 18px 72px; }
+    .pz-slide__prize { font-size: 20px; }
+    .pz-search input, .pz-favbtn { height: 52px; border-radius: var(--bx-r-md); }
+    .pz-pills { margin-bottom: 18px; }
+    /* Parceiros: item curto (logo, nome, regra de pontos), cabe em duas
+       colunas e a lista fica com metade da altura. */
+    .pz-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pz-card { padding: 16px; gap: 8px; }
+    .pz-card__logo { width: 48px; height: 48px; font-size: 24px; }
+    .pz-card__name { font-size: 15px; }
+    .pz-card__cat { font-size: 11px; margin-top: -4px; }
+    .pz-card__pts { font-size: 11px; white-space: nowrap; }
+    .pz-fav { width: 44px; height: 44px; top: 8px; right: 8px; font-size: 17px; }
+    .pz-benefits { gap: 12px; margin: 26px 0 0; }
+    .pz-benefit { padding: 18px; }
+    .pz-empty { padding: 32px 16px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Parceiros","item":"https://blaxxpontos.com.br/parceiros.html"}]}
@@ -154,15 +194,15 @@
 <body data-screen="parceiros">
 <main class="pz">
   <header class="page-head" data-screen-label="Parceiros">
-    <span class="eyebrow">PROGRAMA DE PONTOS</span>
-    <h1 class="h-display">Parceiros Blaxx</h1>
-    <p class="lead">Milhares de parceiros para você acumular ainda mais pontos.</p>
+    <span class="eyebrow">PROGRAMA DE RECOMPENSAS</span>
+    <h1 class="h-display">Parceiros BlaXx</h1>
+    <p class="lead">Parceiros selecionados para você acumular ainda mais pontos.</p>
   </header>
 
   <!-- Métricas -->
   <section class="pz-metrics" id="metrics">
-    <div class="card pz-metric"><span class="pz-metric__label">Saldo atual</span><span class="pz-metric__value" id="m-balance">—</span><a class="pz-metric__cta" href="carteira.html">Ver carteira →</a></div>
-    <div class="card pz-metric"><span class="pz-metric__label">Valor estimado</span><span class="pz-metric__value" id="m-brl">—</span><a class="pz-metric__cta" href="resgates.html">Resgatar agora →</a></div>
+    <div class="card pz-metric"><span class="pz-metric__label">Seus pontos</span><span class="pz-metric__value" id="m-balance">—</span><a class="pz-metric__cta" href="carteira.html">Ver carteira →</a></div>
+    <div class="card pz-metric"><span class="pz-metric__label">Resgate</span><span class="pz-metric__value" id="m-brl">—</span><a class="pz-metric__cta" href="resgates.html">Resgatar agora →</a></div>
     <div class="card pz-metric"><span class="pz-metric__label">Pontos pendentes</span><span class="pz-metric__value" id="m-pending">—</span><span class="pz-metric__hint" id="m-pending-hint">Em processamento</span></div>
     <div class="card pz-metric"><span class="pz-metric__label">Nível atual</span><span class="pz-badge-tier" id="m-tier">—</span><a class="pz-metric__cta" href="cartao.html">Ver benefícios →</a></div>
     <div class="card pz-metric"><span class="pz-metric__label">Progresso</span><span class="pz-metric__value" id="m-progress">—</span><div class="pz-track"><div class="pz-fill" id="m-fill"></div></div><span class="pz-metric__hint" id="m-next" style="color:var(--fg-muted)"></span></div>
@@ -195,9 +235,9 @@
 
   <!-- Benefícios -->
   <section class="pz-benefits">
-    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M4 18 10 11l4 3 6-8"/><path d="M14 6h6v6"/></svg></div><div class="pz-benefit__t">Acumule Mais</div><div class="pz-benefit__d">Compre nas melhores lojas e acumule até 12 pts por real.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg></div><div class="pz-benefit__t">Cashback</div><div class="pz-benefit__d">Receba parte do valor de volta em pontos ou saldo.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico">⭐</div><div class="pz-benefit__t">Parceiros Exclusivos</div><div class="pz-benefit__d">Benefícios reservados para clientes Black.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M4 18 10 11l4 3 6-8"/><path d="M14 6h6v6"/></svg></div><div class="pz-benefit__t">Acumule mais</div><div class="pz-benefit__d">Compre em parceiros selecionados e acumule pontos a cada compra.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg></div><div class="pz-benefit__t">Pontos de volta</div><div class="pz-benefit__d">Parte de cada compra retorna para você em pontos.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico">⭐</div><div class="pz-benefit__t">Parceiros exclusivos</div><div class="pz-benefit__d">Benefícios reservados ao nível Black.</div></div>
     <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M12 3 5 6v6c0 4.3 3 7.2 7 9 4-1.8 7-4.7 7-9V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></svg></div><div class="pz-benefit__t">Segurança</div><div class="pz-benefit__d">Ambiente protegido e monitorado de ponta a ponta.</div></div>
   </section>
 </main>
@@ -241,7 +281,8 @@
   // ---- métricas ----
   function renderMetrics(wallet, card){
     document.getElementById('m-balance').innerHTML = wallet ? (fmt(wallet.balance_pts)+' <small>pts</small>') : '—';
-    document.getElementById('m-brl').textContent = wallet ? brl(wallet.balance_brl_equiv) : '—';
+    // 15/10: sem equivalência em reais na tela, o valor do ponto não é exibido.
+    document.getElementById('m-brl').textContent = wallet ? 'Disponível' : '—';
     const pend = wallet ? Number(wallet.pending_pts||0) : 0;
     document.getElementById('m-pending').innerHTML = fmt(pend)+' <small>pts</small>';
     document.getElementById('m-pending-hint').textContent = pend>0 ? 'Em processamento' : 'Nada pendente';

@@ -197,6 +197,25 @@
   [data-link="campanhas"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="campanhas"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="campanhas"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* Celular (≤ 880px) — versão mobile do grupo A6 (15/10/2026).
+     O cartão neon nasce com padding:40px e h1 de 42px inline (medidas de
+     desktop); aqui voltam à escala do tema. O link de convite quebrava no
+     meio da palavra (word-break:break-all) e o "Copiar" caía embaixo dele. */
+  @media (max-width:880px){
+    .app-shell{ padding-top:8px; }
+    .page-head{ margin:0 0 18px; }
+    .card.lime[style]{ padding:24px 20px !important; }
+    .card.lime .grid.two[style]{ gap:18px !important; }
+    .card.lime h1[style]{ font-size:clamp(28px,8vw,34px) !important; }
+    .card.lime .card[style]{ padding:18px; }
+    .card.lime .card [style*="font-size:48px"]{ font-size:40px !important; }
+    .copy-box{ flex-wrap:wrap; font-size:12px; word-break:normal; overflow-wrap:anywhere; padding:12px 14px; }
+    /* a folha-base põe o .copy-box em coluna no celular: nada de flex-basis aqui */
+    .copy-box > span:first-child{ min-width:0; max-width:100%; }
+    .copy-box > span:last-child{ margin-left:auto; }
+    /* o "+" do convite vazio ficava à esquerda num cartão centralizado */
+    .card[style*="text-align:center"] .card-icon{ margin-left:auto; margin-right:auto; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

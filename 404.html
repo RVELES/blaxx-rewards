@@ -27,6 +27,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/blaxx-embarque.css">
+<style>
+  /* Celular: o corpo é uma grade centrada com 32px de margem em linha, e
+     essa margem espremia o rodapé-recibo (montado pelo nav.js) a 311px e
+     vencia o padding-bottom que a camada Embarque dá a quem tem a barra de
+     abas. Aqui o respiro vai para o <main> (16px) e o pé volta a ser livre. */
+  @media (max-width:880px){
+    body{ padding:24px 0 0 !important; }
+    .bx-com-tabbar body{ padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)) !important; }
+    main{ width:100%; padding:0 16px 40px; }
+    footer.footer{ width:100%; }
+    /* a marca é um link: área de toque de 44px sem crescer o desenho */
+    main > .brand{ min-height:44px; margin-bottom:20px !important; }
+    .grid{ margin-top:32px !important; }
+  }
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -47,7 +62,7 @@
         4<span style="background:var(--bx-neon);color:inherit;padding:0 .08em;">0</span>4
     </div>
     <h1 style="font-size:32px;margin-top:8px;">Página não encontrada</h1>
-    <p class="lead" style="max-width:48ch;margin:14px auto 26px;">A página que você procura pode ter sido movida ou não existe mais. Vamos te levar de volta para o caminho certo.</p>
+    <p class="lead" style="max-width:48ch;margin:14px auto 26px;">A página que você procura pode ter sido movida ou não existe mais. Siga por um dos caminhos abaixo.</p>
 
     <div class="actions" style="justify-content:center;">
         <a href="index.html" class="button">Voltar para o início</a>
@@ -56,8 +71,8 @@
     </div>
 
     <div class="grid" style="margin-top:48px;text-align:left;">
-        <a href="dashboard.html" class="card compact"><h3>Painel</h3><p style="margin:0;font-size:13px;">Sua carteira e movimentos.</p></a>
-        <a href="resgates.html" class="card compact"><h3>Resgates</h3><p style="margin:0;font-size:13px;">Vouchers, milhas e cashback.</p></a>
+        <a href="dashboard.html" class="card compact"><h3>Painel</h3><p style="margin:0;font-size:13px;">Seus pontos e movimentações.</p></a>
+        <a href="resgates.html" class="card compact"><h3>Resgates</h3><p style="margin:0;font-size:13px;">Benefícios e experiências em parceiros selecionados.</p></a>
         <a href="parceiros.html" class="card compact"><h3>Parceiros</h3><p style="margin:0;font-size:13px;">Onde acumular pontos.</p></a>
     </div>
 </main>

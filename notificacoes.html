@@ -88,7 +88,7 @@
                     <td data-label="SMS" class="center"><input type="checkbox"></td>
                 </tr>
                 <tr>
-                    <td data-label="Tipo"><strong>Resgates concluídos</strong><div class="muted" style="font-size:13px;">Confirmação de vouchers e PIX.</div></td>
+                    <td data-label="Tipo"><strong>Resgates concluídos</strong><div class="muted" style="font-size:13px;">Confirmação dos seus vouchers e benefícios.</div></td>
                     <td data-label="E-mail" class="center"><input type="checkbox" checked></td>
                     <td data-label="Push" class="center"><input type="checkbox" checked></td>
                     <td data-label="SMS" class="center"><input type="checkbox" checked></td>
@@ -136,7 +136,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -184,6 +184,49 @@
      assets/blaxx-embarque.css). */
   [data-side="perfil"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
   [data-side="perfil"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+
+  /* Celular (≤ 880px): as preferências dentro do sistema "Embarque" mobile
+     (assets/blaxx-embarque.css). A folha base já transforma a tabela em
+     cartões por linha; aqui cada cartão vira "título em cima, três linhas de
+     canal embaixo", com interruptor de 44px no lugar da caixa de 13px. */
+  @media (max-width: 880px) {
+    /* mesmo ritmo do painel: 46px entre a barra e o título, não 100 */
+    .app-shell { padding-top: 8px !important; }
+    .page-head { padding-top: 10px !important; padding-bottom: 10px !important; }
+    /* a folha base crava 26px; a escala do tema no celular é 28-34 */
+    .page-head h1 { font-size: clamp(28px, 8vw, 32px) !important; }
+    .table tr { padding: 14px 16px !important; }
+    /* célula do tipo: bloco à esquerda, sem o rótulo "TIPO" (o título já diz) */
+    .table td[data-label="Tipo"] { display: block !important; text-align: left !important; padding: 0 0 10px !important; margin-bottom: 4px; border-bottom: 1px solid var(--bx-line) !important; }
+    .table td[data-label="Tipo"]::before { display: none; }
+    .table td[data-label="Tipo"] strong { display: block; font-size: 15px; color: var(--bx-ink); }
+    .table td[data-label="Tipo"] .muted { font-size: 13px !important; margin-top: 2px; }
+    /* linhas de canal: rótulo mono à esquerda, interruptor à direita, 48px */
+    .table td.center { padding: 2px 0 !important; min-height: 48px; align-items: center; }
+    .table td.center::before { font-family: var(--bx-mono); font-weight: 400; letter-spacing: .08em; font-size: 12px; }
+    /* o interruptor: caixa invisível de 54×44 (alvo do toque), trilho e
+       botão desenhados nos pseudo-elementos; ligado = trilho neon, botão tinta */
+    .table td input[type="checkbox"] {
+      -webkit-appearance: none; appearance: none; cursor: pointer; flex: none;
+      width: 54px; height: 44px; margin: 0; padding: 0; border: 0; background: transparent;
+      position: relative; border-radius: 999px;
+    }
+    .table td input[type="checkbox"]::before {
+      content: ''; position: absolute; left: 4px; right: 4px; top: 8px; bottom: 8px;
+      border-radius: 999px; background: var(--bx-surface-2); border: 1px solid var(--bx-line);
+      transition: background .15s, border-color .15s;
+    }
+    .table td input[type="checkbox"]::after {
+      content: ''; position: absolute; top: 11px; left: 7px; width: 22px; height: 22px;
+      border-radius: 50%; background: var(--bx-surface); border: 1px solid var(--bx-line);
+      box-sizing: border-box; box-shadow: 0 1px 2px rgba(10,11,14,.12); transition: transform .15s, background .15s;
+    }
+    .table td input[type="checkbox"]:checked::before { background: var(--bx-neon); border-color: transparent; }
+    .table td input[type="checkbox"]:checked::after { transform: translateX(18px); background: var(--bx-ink); border-color: var(--bx-ink); }
+    .table td input[type="checkbox"]:focus-visible { outline: 3px solid var(--bx-ink); outline-offset: -3px; }
+    /* salvar: largura toda, ao alcance do polegar */
+    .card > .button { width: 100%; justify-content: center; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

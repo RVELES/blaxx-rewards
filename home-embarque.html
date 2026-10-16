@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0B0E">
 <title>Seus pontos, novos destinos | BlaXx Pontos</title>
-<meta name="description" content="Compre pontos, envie para quem você quiser e resgate em reais na sua conta, via PIX. Sem mensalidade, sem letra miúda.">
+<meta name="description" content="Compre pontos, envie para quem você quiser e troque por benefícios em parceiros selecionados. Sem mensalidade, sem letra miúda.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,6 +170,29 @@
   .quadro .lista{max-height:380px}
 }
 @media (max-width:900px){
+  /* celular: hero mais curto, rota vira linha do tempo vertical, bilhetes e
+     recibo de borda a borda */
+  .embarque{padding:16px 0 40px}
+  .cartao .miolo{padding:24px 18px;gap:22px}
+  .topo-linha{font-size:11px}
+  .cartao .lead{font-size:16px}
+  .cartao .canhoto{padding:22px 18px}
+  .rota{padding:0 0 44px}
+  .rota .bx-wrap{gap:22px}
+  .rota-grid{gap:0;padding-left:34px;position:relative}
+  .rota-grid::before{display:block;left:11px;right:auto;top:6px;bottom:14px;border-top:0;border-left:2px dashed var(--bx-ink)}
+  .escala{padding:0 0 26px}
+  .escala .ponto{position:absolute;left:-34px;top:2px}
+  .escala .t{font-size:30px}
+  .escala .d{font-size:15px}
+  .pacotes{padding:0 0 48px}
+  .pacotes .bx-wrap{gap:28px}
+  .lista-bilhetes{gap:14px}
+  .bilhete .miolo-b{padding:18px 16px;gap:10px}
+  .bilhete .pts{font-size:36px}
+  .recibo{margin-top:6px}
+  .mapa{padding:0 0 44px}
+  .painel{padding:20px 16px;gap:22px}
   .cartao{flex-direction:column}
   .cartao h1{font-size:clamp(40px,12.6vw,96px)}
   .so-celular{display:inline}
@@ -225,11 +248,11 @@
         </h1>
         <div class="grade">
           <div><span class="bx-rotulo">De</span><b>Pontos</b></div>
-          <div><span class="bx-rotulo">Para</span><b>Reais, via PIX</b></div>
-          <div><span class="bx-rotulo">Pagamento</span><b>PIX ou cartão</b></div>
+          <div><span class="bx-rotulo">Para</span><b>Benefícios</b></div>
+          <div><span class="bx-rotulo">Pagamento</span><b>Cartão ou transferência</b></div>
           <div><span class="bx-rotulo">Mensalidade</span><b>Nenhuma</b></div>
         </div>
-        <p class="lead">Compre pontos, mande para quem você quiser e resgate em reais na sua conta, via PIX. O que você vê é o que você paga.</p>
+        <p class="lead">Compre pontos, envie para quem você quiser e troque por benefícios em parceiros selecionados. O que você vê é o que você paga.</p>
       </div>
       <div class="bx-perf" aria-hidden="true"></div>
       <aside class="canhoto" aria-label="Começar">
@@ -257,7 +280,7 @@
         <span class="ponto" aria-hidden="true"></span>
         <span class="n">Escala 01 · Comprar</span>
         <span class="t">Compre</span>
-        <p class="d">Pacotes ou valor livre. Pagamento por PIX ou cartão.</p>
+        <p class="d">Pacotes ou valor livre. Pagamento com cartão ou transferência.</p>
       </div>
       <div class="escala">
         <span class="ponto" aria-hidden="true"></span>
@@ -269,7 +292,7 @@
         <span class="ponto" aria-hidden="true"></span>
         <span class="n">Escala 03 · Trocar</span>
         <span class="t">Troque</span>
-        <p class="d">Benefícios dos parceiros ou resgate em reais, via PIX.</p>
+        <p class="d">Benefícios e experiências em parceiros selecionados.</p>
       </div>
     </div>
   </div>
@@ -288,7 +311,7 @@
       <label class="bilhete" data-pkg="start">
         <input class="sr-only" type="radio" name="pacote" value="start">
         <div class="miolo-b">
-          <div class="cab"><span>BX · Start</span><span>PIX ou cartão</span></div>
+          <div class="cab"><span>BX · Start</span><span>cartão ou transferência</span></div>
           <span class="pts"><span data-pts>2.000</span><small> pts</small></span>
           <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 180,00</b></div>
         </div>
@@ -328,7 +351,7 @@
         <div class="bx-leader"><span>PACOTE</span><i></i><span id="rcNome">PLUS ★</span></div>
         <div class="bx-leader"><span>PONTOS</span><i></i><span id="rcPts">5.500</span></div>
         <div class="bx-leader"><span>BÔNUS</span><i></i><span id="rcBonus">cerca de 5%</span></div>
-        <div class="bx-leader"><span>PAGAMENTO</span><i></i><span>PIX ou cartão</span></div>
+        <div class="bx-leader"><span>PAGAMENTO</span><i></i><span>cartão ou transferência</span></div>
         <div class="bx-leader"><span>MENSALIDADE</span><i></i><span>nenhuma</span></div>
         <div class="bx-tracejo" aria-hidden="true"></div>
         <div class="total"><span>TOTAL</span><b id="rcPreco">R$ 470,00</b></div>

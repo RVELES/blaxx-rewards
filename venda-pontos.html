@@ -196,7 +196,7 @@
     <div class="sec-head">
         <div class="eyebrow">Cases</div>
         <h2>Resultados de quem já usa.</h2>
-        <p>Marcas que turbinaram recompra e ativação com pontos Blaxx.</p>
+        <p>Marcas que ampliaram recompra e ativação com pontos BlaXx.</p>
     </div>
     <div class="grid">
         <div class="card">
@@ -232,7 +232,7 @@
 <section class="section">
     <div class="card lime" style="padding:40px;text-align:center;">
         <h2>Pronto para vender pontos?</h2>
-        <p>Conte sobre seu negócio. Em até 1 dia útil te enviamos uma proposta sob medida.</p>
+        <p>Conte sobre o seu negócio. Em até 1 dia útil enviamos uma proposta sob medida.</p>
         <div class="actions" style="justify-content:center;margin-top:18px;">
             <a href="contato.html" class="button dark">Solicitar proposta comercial →</a>
         </div>
@@ -249,7 +249,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -297,6 +297,33 @@
   [data-link="venda-pontos"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* === A5-MOBILE: início === */
+  /* Celular (≤ 880px): ajustes desta página dentro do sistema "Embarque". */
+  @media (max-width:880px){
+    /* O <main class="shell"> mora dentro de .app-shell e os dois ganham 16px
+       de lateral da folha-base: 32px de calha e só 311px de coluna em 375.
+       Zera a lateral do de dentro; fica a calha de 16px do sistema. */
+    .app-shell > main.shell{ padding-left:0 !important; padding-right:0 !important; }
+    /* O painel "Dashboard parceiro" nascia com 28px de raio e de respiro
+       (valores de mesa); no celular vale o ritmo do tema: cantos 18, 18px dentro. */
+    .hero-v3 .partner-dash{ border-radius:var(--bx-r-lg) !important; padding:18px !important; }
+    /* KPIs em duas colunas com vão menor, para "Resgates concluídos" não espremer. */
+    .partner-dash .grid-kpi{ gap:14px 16px; }
+    .partner-dash .grid-kpi .v{ font-size:22px; }
+    /* Cartões com 18px de respiro, como no resto do celular. */
+    .card{ padding:18px !important; }
+    /* Faixa escura e cartão de chamada nasciam com 48px/40px (mesa). */
+    .band-dark{ padding:24px 18px !important; }
+    .card.lime{ padding:24px 18px !important; }
+    /* Migalhas: alvo de 44px sem virar caixa (a margem negativa anula o avanço). */
+    .crumbs a{ display:inline-block; padding:14px 0; margin:-14px 0; }
+    /* O menu em grade da folha-base (2 colunas, nowrap, overflow hidden) corta
+       "Resgatar por transferência" e "Comprar pontos" sem reticências em 375px.
+       Deixa o rótulo quebrar linha; o ícone não encolhe. */
+    .sidebar .side-nav > li > a{ white-space:normal; overflow:visible; line-height:1.25; }
+    .sidebar .side-nav .ic{ flex:none; }
+  }
+  /* === A5-MOBILE: fim === */
 </style>
 <!--
   blaxx-app.js eh OBRIGATORIO em paginas de "marketing" acessadas por

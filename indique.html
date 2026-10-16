@@ -98,6 +98,36 @@
     .code-box { flex-wrap:wrap; padding:14px 16px; }
     .code-box .code { white-space:nowrap; overflow-wrap:normal; }
   }
+
+  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
+     respiro, cartões de 18px). Só o que esta página tem de próprio. */
+  @media (max-width: 880px){
+    .page-head { margin-bottom: 18px; }
+    .ref-hero, .reward-big, .step, .milestones { padding: 18px; }
+    .ref-hero h2 { font-size: 26px; margin: 12px 0 6px; }
+    .ref-hero p { margin-bottom: 18px; }
+    /* Os dois selos ("5.000 PTS POR AMIGO", "3 / 10 AMIGOS") são informação,
+       não alvo de toque: o styles.css dá 44px a todo .chip no celular e eles
+       viravam pílulas gordas. Voltam à altura do texto. */
+    main .chip { min-height: 0; }
+    .ref-grid { gap: 14px; }
+    .steps { margin: 24px 0; }
+    .step h4 { margin-top: 10px; }
+    /* rótulos em mono nos 11px do tema (eram 10 e 10,5px); a legenda do
+       trilho alarga para "Embaixador" caber numa linha nesse corpo */
+    .stat__label, .ms-cap { font-size: 11px; }
+    .ms-cap { width: 70px; }
+    .ms-rail { margin: 60px 24px 60px; }
+    /* Lista de convidados: a coluna do nome encolhe e o status quebra em
+       duas linhas, assim o valor fica na mesma linha do nome em vez de cair
+       sozinho embaixo. O seletor repete main .card porque o styles.css manda
+       `main .card > div` quebrar (0,1,2) em ≤520px e um .fr solto (0,1,0)
+       perdia — o valor continuava caindo numa 3ª linha. */
+    main .card > .fr { flex-wrap: nowrap; gap: 12px; padding: 14px 18px; }
+    .fr > div { flex: 1 1 auto; min-width: 0; }
+    .fr__r { flex: none; }
+    .sec-head { margin: 32px 0 14px !important; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Indique","item":"https://blaxxpontos.com.br/indique.html"}]}
@@ -107,14 +137,14 @@
 <main>
   <header class="page-head" data-screen-label="Indique e ganhe">
     <span class="eyebrow">INDIQUE E GANHE</span>
-    <h1 class="h-display">Chame a galera.<br>Ganhem juntos.</h1>
+    <h1 class="h-display">Convide amigos.<br>Ganhem juntos.</h1>
   </header>
 
   <div class="ref-grid">
     <div class="card card--dark ref-hero">
       <span class="chip">5.000 PTS POR AMIGO</span>
       <h2>Seu código de convite</h2>
-      <p>Cada amigo que entrar e fizer a primeira compra rende <b>5.000 pts</b> pra você, e <b>2.500 pts</b> pra ele.</p>
+      <p>Cada amigo que entrar e fizer a primeira compra rende <b>5.000 pts</b> para você e <b>2.500 pts</b> para ele.</p>
       <div class="code-box">
         <span class="code" id="refCode">—</span>
         <button class="btn btn--primary btn--sm" id="copyBtn">Copiar</button>
@@ -198,7 +228,7 @@
       .catch(function(){});
   } else if (!sUser) { setCode('BLAXX'); }
 
-  var shareText = function(){ return 'Use meu código '+code+' no BlaXx e ganhe pontos de boas-vindas! '+link; };
+  var shareText = function(){ return 'Use meu código '+code+' no BlaXx e ganhe pontos de boas-vindas. '+link; };
 
   $('copyBtn').addEventListener('click', function(){
     navigator.clipboard.writeText(code + ' · ' + link).then(function(){ $('copyBtn').textContent='Copiado ✓'; setTimeout(function(){$('copyBtn').textContent='Copiar';},1600); });

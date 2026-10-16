@@ -96,7 +96,7 @@
 <section class="section">
     <div class="card">
         <h3>Seu link de convite</h3>
-        <p>Compartilhe com os amigos. Cada um que se cadastrar com seu link rende pontos para você.</p>
+        <p>Compartilhe com os amigos. Cada cadastro feito pelo seu link vale pontos para você.</p>
         <div class="copy-box mt-2">
             <span>blaxxpontos.com/convite?ref=mariana84</span>
             <span class="muted" style="font-size:12px;flex-shrink:0;">Copiar link</span>
@@ -126,7 +126,7 @@
         <div class="card">
             <div class="card-icon">3</div>
             <h3>Você ganha 5.000 pts</h3>
-            <p>Pontos creditados na sua carteira após a primeira compra do amigo.</p>
+            <p>Pontos creditados após a primeira compra do amigo.</p>
         </div>
     </div>
 </section>
@@ -139,8 +139,8 @@
             <tr><td data-label="Amigo">Lucas Andrade</td><td data-label="Status"><span class="status concluido">● Cadastro &amp; compra</span></td><td data-label="Data">15/04/2026</td><td data-label="Pontos" class="right amount-pos">+5.000</td></tr>
             <tr><td data-label="Amigo">Bianca Souza</td><td data-label="Status"><span class="status concluido">● Cadastro &amp; compra</span></td><td data-label="Data">22/02/2026</td><td data-label="Pontos" class="right amount-pos">+5.000</td></tr>
             <tr><td data-label="Amigo">Rafael Lima</td><td data-label="Status"><span class="status concluido">● Cadastro &amp; compra</span></td><td data-label="Data">10/01/2026</td><td data-label="Pontos" class="right amount-pos">+5.000</td></tr>
-            <tr><td data-label="Amigo">Pedro Silva</td><td data-label="Status"><span class="status pendente">● Aguardando cadastro</span></td><td data-label="Data">22/04/2026</td><td data-label="Pontos" class="right">, </td></tr>
-            <tr><td data-label="Amigo">Camila Rocha</td><td data-label="Status"><span class="status pendente">● Aguardando 1ª compra</span></td><td data-label="Data">25/04/2026</td><td data-label="Pontos" class="right">, </td></tr>
+            <tr><td data-label="Amigo">Pedro Silva</td><td data-label="Status"><span class="status pendente">● Aguardando cadastro</span></td><td data-label="Data">22/04/2026</td><td data-label="Pontos" class="right">—</td></tr>
+            <tr><td data-label="Amigo">Camila Rocha</td><td data-label="Status"><span class="status pendente">● Aguardando 1ª compra</span></td><td data-label="Data">25/04/2026</td><td data-label="Pontos" class="right">—</td></tr>
         </tbody>
     </table>
 </section>
@@ -201,6 +201,25 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="indique"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="indique"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* Celular (≤ 880px) — versão mobile do grupo A6 (15/10/2026).
+     O .band-dark nasce com padding:48px inline (medida de desktop): em 375px
+     sobravam 247px para o título. O link de convite quebrava no meio da
+     palavra (word-break:break-all) e os chips de compartilhar tinham 40px. */
+  @media (max-width:880px){
+    .app-shell{ padding-top:8px; }
+    .page-head{ margin:0 0 18px; }
+    .band-dark[style]{ padding:24px 20px !important; }
+    .band-dark .grid.two[style]{ gap:20px !important; }
+    .band-dark .card[style]{ padding:18px; }
+    /* "15.000 pts" em 48px encostava na borda do cartão interno */
+    .band-dark .card [style*="font-size:48px"]{ font-size:40px !important; }
+    .copy-box{ flex-wrap:wrap; font-size:12px; word-break:normal; overflow-wrap:anywhere; padding:12px 14px; }
+    /* a folha-base põe o .copy-box em coluna no celular: nada de flex-basis aqui */
+    .copy-box > span:first-child{ min-width:0; max-width:100%; }
+    .copy-box > span:last-child{ margin-left:auto; }
+    .flex.gap-sm{ flex-wrap:wrap; }
+    .chip{ min-height:44px; display:inline-flex; align-items:center; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

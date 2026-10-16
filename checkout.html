@@ -28,6 +28,39 @@
      continuam vindo do assets/styles.css. Remover quando o compartilhado
      restringir o seletor label{} aos rótulos de campo. */
   label.option-card,.checkbox-row label{ font-family:var(--bx-sans); letter-spacing:0; text-transform:none; }
+  /* BX-MOBILE-A3 inicio */
+  /* ---- Celular (≤ 880px): a página dentro do sistema mobile do tema ---- */
+  @media (max-width:880px){
+    /* A coluna do .app-shell tem min-width:auto: nada aqui pode empurrar o
+       <main> para fora da tela; o respiro acima do título cai para o do tema. */
+    .app-shell > main.shell{ min-width:0; max-width:100%; padding-top:0; padding-bottom:16px; }
+    .page-head{ margin-top:0; margin-bottom:0; }
+    .page-head + .section{ margin-top:12px !important; }
+    /* campos com 16px: o iOS não dá zoom ao focar */
+    .form-row input,.form-row select{ font-size:16px; }
+    .checkbox-row input[type="checkbox"]{ width:20px; height:20px; }
+    /* cupom: campo e botão lado a lado enquanto cabem (o campo tem flex:1 inline) */
+    .card .flex.gap-sm:not(.col){ flex-wrap:wrap; }
+    .card .flex.gap-sm:not(.col) > input{ flex:1 1 160px !important; min-width:0; }
+    .card .flex.gap-sm:not(.col) > .button{ flex:0 0 auto; min-height:48px; }
+    /* assets/styles.css põe flex-wrap:wrap em todo .card > div abaixo de 520px:
+       o aceite dos termos e o aviso quebravam com o ícone numa linha e o texto noutra */
+    .card > .checkbox-row,.card > .alert{ flex-wrap:nowrap; }
+    .checkbox-row label,.alert > div:not(.alert-icon){ flex:1 1 0; min-width:0; }
+    /* o link "termos de compra" é corrido dentro da frase: não vira caixa de 44px */
+    .checkbox-row label a{ min-height:0; display:inline; }
+    /* resumo deixa de ser fixo e vem depois do formulário, na coluna única */
+    .summary-card{ position:static; padding:18px; }
+    .dl > div{ flex-wrap:wrap; }
+  }
+  @media (max-width:520px){
+    /* cartão de opção: o selo "Recomendado" desce para a linha de baixo, alinhado
+       ao texto, em vez de espremer a descrição em três linhas */
+    .option-card{ flex-wrap:wrap; min-height:48px; }
+    .option-card::after{ content:''; flex-basis:100%; height:0; order:2; }
+    .option-card .status{ order:3; margin-left:28px; }
+  }
+  /* BX-MOBILE-A3 fim */
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
@@ -68,7 +101,7 @@
     <div class="split-page">
         <div>
             <div class="card mb-2">
-                <h3>Dados do cliente</h3>
+                <h3>Seus dados</h3>
                 <div class="form-row split mt-2">
                     <div class="form-row" style="margin:0;">
                         <label>Nome</label>
@@ -98,7 +131,7 @@
                         <input type="radio" name="pay" checked>
                         <div class="option-card-body">
                             <div class="ttl">PIX</div>
-                            <div class="sub">Aprovação imediata · sem taxas</div>
+                            <div class="sub">Confirmação imediata · sem taxas</div>
                         </div>
                         <span class="status ativo">Recomendado</span>
                     </label>

@@ -44,8 +44,8 @@
     <div class="hero">
         <div class="hero-box">
             <span class="kicker">★ Convite especial</span>
-            <h1>Mariana te chamou pro <span style="color:var(--lime);">Blaxx</span>.</h1>
-            <p>Cadastre-se com este convite e ganhe <strong style="color:var(--lime);">500 pontos de boas-vindas</strong> direto na sua carteira. É grátis e leva 2 minutos.</p>
+            <h1>Mariana convidou você para o <span style="color:var(--lime);">BlaXx</span>.</h1>
+            <p>Cadastre-se com este convite e receba <strong style="color:var(--lime);">500 pontos de boas-vindas</strong> na sua conta BlaXx. Gratuito, em dois minutos.</p>
             <div class="actions">
                 <a href="cadastro.html" class="button">Aceitar convite →</a>
                 <a href="como-funciona.html" class="button secondary">Como funciona</a>
@@ -54,29 +54,29 @@
         <div class="hero-side center" style="justify-content:center;">
             <div class="avatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 14px;">M</div>
             <h3 style="margin-bottom:6px;">Mariana Costa</h3>
-            <p class="muted" style="margin-bottom:14px;">"Comecei a usar e adorei. Já resgatei vários vouchers!"</p>
+            <p class="muted" style="margin-bottom:14px;">"Comecei a usar e gostei. Já resgatei vários vouchers."</p>
             <span class="kicker" style="background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">Você ganha 500 pts</span>
         </div>
     </div>
 </section>
 
 <section class="section">
-    <div class="section-head"><h2>O que você pode fazer no Blaxx</h2></div>
+    <div class="section-head"><h2>O que você pode fazer no BlaXx</h2></div>
     <div class="grid">
         <div class="card">
             <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
             <h3>Acumule comprando</h3>
-            <p>Em supermercados, farmácias, postos, viagens, moda e mais 80 redes parceiras.</p>
+            <p>Em supermercados, farmácias, postos, viagens, moda e outras redes parceiras.</p>
         </div>
         <div class="card">
             <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></div>
             <h3>Resgate o que quiser</h3>
-            <p>Vouchers, milhas, cashback no PIX, assinaturas e descontos exclusivos.</p>
+            <p>Vouchers, descontos e experiências em parceiros selecionados.</p>
         </div>
         <div class="card">
             <div class="card-icon">+</div>
             <h3>Compre pontos extras</h3>
-            <p>Falta pouco para o resgate? Complete seu saldo na hora com pacotes a partir de R$ 19,90.</p>
+            <p>Falta pouco para o resgate? Complete seus pontos na hora, em pacotes ou valor livre.</p>
         </div>
     </div>
 </section>
@@ -84,7 +84,7 @@
 <section class="section">
     <div class="card lime" style="padding:36px;text-align:center;">
         <h2>Pronto para começar?</h2>
-        <p>Cadastro grátis, sem cartão. Use o convite da Mariana e já entre com 500 pts.</p>
+        <p>Cadastro gratuito, sem cartão. Com o convite da Mariana, você começa com 500 pts.</p>
         <a href="cadastro.html" class="button dark">Criar minha conta →</a>
     </div>
 </section>
@@ -95,7 +95,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -140,6 +140,20 @@
   [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+
+  /* Celular (≤ 880px): o convite dentro do sistema "Embarque" mobile
+     (assets/blaxx-embarque.css). Só o que a folha base deixava errado. */
+  @media (max-width: 880px) {
+    /* a folha base dá 24px de moldura à grade do herói, por cima dos 16px da
+       página: a caixa preta ficava a 40px da borda com 231px de texto */
+    .hero { padding: 0 !important; gap: 14px !important; margin: 0; }
+    .hero-box { padding: 26px 22px !important; border-radius: var(--bx-r-lg); min-height: 0; }
+    .hero-box h1 { font-size: clamp(28px, 8.5vw, 34px) !important; }
+    .hero-box p { font-size: 16px; }
+    .hero-side { padding: 22px 18px !important; border-radius: var(--bx-r-lg); }
+    /* ação principal do pé ocupa a largura toda, ao alcance do polegar */
+    .card.lime .button { width: 100%; justify-content: center; }
+  }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

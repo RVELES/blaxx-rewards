@@ -42,7 +42,7 @@
 <section class="section">
     <div class="card center" style="padding:56px 32px;max-width:640px;margin:40px auto;">
         <div class="icon-badge" style="background:var(--ok);color:var(--ok-text);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
-        <h1 style="font-size:36px;">Pontos enviados!</h1>
+        <h1 style="font-size:36px;">Pontos enviados.</h1>
         <p class="lead" style="max-width:50ch;margin:8px auto 22px;">Lucas Andrade recebeu <strong style="color:var(--ink);">2.000 pts</strong> com sua mensagem. Avisamos por e-mail.</p>
 
         <div class="dl" style="text-align:left;max-width:420px;margin:0 auto 22px;">
@@ -71,7 +71,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de recompensas. Acumule, compre, envie e troque pontos por benefícios e experiências em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -121,6 +121,18 @@
   [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+
+  /* ---- Celular (≤ 880px): a página dentro do sistema "Embarque" ----
+     O assets/blaxx-app.js embrulha o <main> num .app-shell com sidebar e o
+     respiro lateral dobrava (16px do .app-shell + 16px do .shell): o cartão
+     ficava com 311px. Fica um só. O cartão de confirmação É o conteúdo da
+     tela: encosta no topo em vez de descer 40px (margem inline, por isso o
+     !important). */
+  @media (max-width: 880px) {
+    .app-shell { padding-top: 0; }
+    .app-shell > main.shell { padding-left: 0 !important; padding-right: 0 !important; } /* o !important de .shell em assets/styles.css */
+    main.shell > .section:first-child > .card.center { margin-top: 8px !important; margin-bottom: 24px !important; }
+  }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

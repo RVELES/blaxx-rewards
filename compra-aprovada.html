@@ -9,6 +9,28 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/blaxx-embarque.css">
+<style>
+  /* BX-MOBILE-A3 inicio */
+  /* ---- Celular (≤ 880px): a página dentro do sistema mobile do tema ---- */
+  @media (max-width:880px){
+    /* A coluna do .app-shell tem min-width:auto: nada aqui pode empurrar o
+       <main> para fora da tela. */
+    .app-shell > main.shell{ min-width:0; max-width:100%; padding-top:0; padding-bottom:16px; }
+    /* o cartão de resultado vinha com 40px de margem e 56px de padding inline:
+       no celular o conteúdo começa logo abaixo da barra, com 18px de respiro */
+    .section > .card.center{ margin:8px auto 0 !important; padding:28px 18px !important; }
+    .section.center{ margin-top:16px; }
+    .dl > div{ flex-wrap:wrap; }
+    /* assets/styles.css põe flex-wrap:wrap em todo .card > div abaixo de 520px:
+       o aviso quebrava com o ícone numa linha e o texto noutra */
+    .card > .alert{ flex-wrap:nowrap; }
+    .alert > div:not(.alert-icon){ flex:1 1 0; min-width:0; }
+    /* botões empilhados com largura total */
+    .actions{ flex-direction:column; align-items:stretch; gap:8px; }
+    .actions .button{ width:100%; justify-content:center; }
+  }
+  /* BX-MOBILE-A3 fim */
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,8 +64,8 @@
 <section class="section">
     <div class="card center" style="padding:56px 32px;max-width:640px;margin:40px auto;">
         <div class="icon-badge" style="background:var(--ok);color:var(--ok-text);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
-        <h1 style="font-size:36px;">Compra aprovada!</h1>
-        <p class="lead" style="max-width:48ch;margin:8px auto 22px;">5.500 pontos foram adicionados à sua carteira. Bons resgates!</p>
+        <h1 style="font-size:36px;">Compra aprovada</h1>
+        <p class="lead" style="max-width:48ch;margin:8px auto 22px;">5.500 pontos foram creditados na sua conta BlaXx e já estão disponíveis para resgate.</p>
 
         <div class="dl" style="text-align:left;max-width:420px;margin:0 auto 22px;">
             <div><span class="k">Pacote</span><span class="v">Plus</span></div>

@@ -41,7 +41,7 @@
     ['Pontos', [
       ['Comprar pontos', 'comprar.html'],
       ['Enviar pontos', 'enviar.html'],
-      ['Resgatar em dinheiro', 'resgates.html'],
+      ['Resgatar benefícios', 'resgates.html'],
       ['Indique e ganhe', 'indique.html'],
     ]],
     ['Descobrir', [
@@ -155,7 +155,7 @@
   // Pacotes: os literais são o fallback (iguais ao config.py do backend);
   // /pix/packages atualiza quando responde.
   var PACOTES = {
-    start: { nome: 'Start', pts: 2000,  preco: 180,  obs: 'PIX ou cartão' },
+    start: { nome: 'Start', pts: 2000,  preco: 180,  obs: 'cartão ou transferência' },
     plus:  { nome: 'Plus ★', pts: 5500, preco: 470,  obs: 'cerca de 5% de bônus' },
     prime: { nome: 'Prime', pts: 12000, preco: 972,  obs: 'cerca de 10% de bônus' }
   };
@@ -165,7 +165,7 @@
   var UTIL = {
     esq: [
       ['on', '● ' + CIDADES_NA_REDE + ' cidades na rede'],
-      ['',   '✳ Resgate em reais via PIX'],
+      ['',   '✳ Benefícios em parceiros selecionados'],
       ['',   'Sem mensalidade']
     ],
     dir: [
@@ -202,7 +202,7 @@
           ['OUTRAS FORMAS', [
             ['Valor livre', 'Escolha quanto quer comprar', 'comprar-livre.html'],
             ['Enviar pontos', 'Mande para quem quiser', u ? 'enviar.html' : 'como-funciona.html'],
-            ['Resgatar via PIX', 'Pontos em reais na sua conta', u ? 'resgates.html' : 'regras-pontos.html']
+            ['Resgatar benefícios', 'Troque pontos por vantagens', u ? 'resgates.html' : 'regras-pontos.html']
           ]]
         ],
         destaque: { tipo: 'neon', rotulo: 'MAIS ESCOLHIDO', num: fmtPts(p.plus.pts), un: 'pts',
@@ -255,7 +255,7 @@
       ['Comprar pontos', 'comprar-pontos.html'],
       ['Parceiros', 'parceiros.html'],
       ['Enviar pontos', 'enviar-pontos.html'],
-      ['Resgatar via PIX', 'resgates.html']
+      ['Resgatar benefícios', 'resgates.html']
     ]],
     ['AJUDA', [
       ['Como funciona', 'como-funciona.html'],
@@ -272,11 +272,21 @@
   ];
 
   function montarRodape() {
+    // O chrome.js monta o seu footer.site-footer DEPOIS de chamar iniciar();
+    // se este módulo criasse um footer antes, a página acabava com dois
+    // rodapés-recibo (medido em 7 páginas em 15/10). Onde o chrome.js existe,
+    // espera-se por ele; e um footer criado aqui que depois ganhe companhia é
+    // removido.
+    var temChrome = !!document.querySelector('script[src$="chrome.js"]');
+    var criado = document.querySelector('footer.footer[data-bx-criado]');
+    var doChrome = document.querySelector('footer.site-footer');
+    if (criado && doChrome) { criado.remove(); criado = null; }
     var pe = document.querySelector('footer.footer, footer.site-footer');
     // Página com barra e sem <footer> (comprar-livre, em-breve) ficava sem
     // rodapé; o rodapé é parte do chrome, então ele nasce aqui quando falta.
-    if (!pe && document.querySelector('.topbar')) {
+    if (!pe && !temChrome && document.querySelector('.topbar')) {
       pe = document.createElement('footer'); pe.className = 'footer';
+      pe.setAttribute('data-bx-criado', '1');
       document.body.appendChild(pe);
     }
     if (!pe || pe.getAttribute('data-bxnav')) return false;
@@ -284,8 +294,8 @@
     var html = '<div class="bx-foot"><div class="bx-zig"></div><div class="bx-foot-corpo">' +
       '<div class="bx-foot-marca">' +
         '<a href="index.html" aria-label="BlaXx Pontos"><img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards"></a>'   /* rodapé preto: "Bla" branco */ +
-        '<p>Compre pontos, envie para quem quiser e resgate em dinheiro de verdade, ' +
-        'direto na sua conta via PIX. Sem letra miúda.</p>' +
+        '<p>Um programa de recompensas simples: compre pontos, envie para quem quiser ' +
+        'e troque por benefícios em parceiros selecionados. Sem letra miúda.</p>' +
       '</div>';
     RODAPE.forEach(function (col) {
       html += '<div class="bx-foot-col"><h4>' + esc(col[0]) + '</h4>';
@@ -498,6 +508,47 @@
     }
   }
 
+  // ------------------------------------------------------------------ //
+  // Barra de abas inferior no celular (só para quem entrou)             //
+  // ------------------------------------------------------------------ //
+  // No desktop a navegação logada mora na sidebar; abaixo de 880px ela
+  // sumia dentro do hambúrguer. A barra de abas devolve os quatro destinos
+  // de todo dia ao polegar, e "Menu" abre a gaveta que já existe.
+  var ICONE = {
+    inicio:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/></svg>',
+    carteira: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 9h18"/><circle cx="17" cy="13.5" r="1.4" fill="currentColor" stroke="none"/></svg>',
+    comprar:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg>',
+    resgates: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg>',
+    menu:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
+  };
+  var ABAS = [
+    ['Início',   'dashboard.html',      'inicio',   ['dashboard.html', 'index.html']],
+    ['Carteira', 'carteira.html',       'carteira', ['carteira.html', 'extrato.html']],
+    ['Comprar',  'comprar-pontos.html', 'comprar',  ['comprar-pontos.html', 'comprar.html', 'comprar-livre.html', 'checkout.html']],
+    ['Resgates', 'resgates.html',       'resgates', ['resgates.html', 'meus-resgates.html', 'resgate-pix.html']]
+  ];
+  function montarTabBar(u) {
+    if (!u || document.querySelector('.bx-tabbar')) return;
+    var atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var nav = document.createElement('nav');
+    nav.className = 'bx-tabbar';
+    nav.setAttribute('aria-label', 'Navegação principal');
+    var html = '';
+    ABAS.forEach(function (a) {
+      var ativa = a[3].indexOf(atual) >= 0;
+      html += '<a href="' + a[1] + '"' + (ativa ? ' aria-current="page" class="ativa"' : '') + '>' +
+        ICONE[a[2]] + '<span>' + a[0] + '</span></a>';
+    });
+    html += '<button type="button" class="bx-tabbar-menu" aria-label="Abrir menu">' + ICONE.menu + '<span>Menu</span></button>';
+    nav.innerHTML = html;
+    document.body.appendChild(nav);
+    document.documentElement.classList.add('bx-com-tabbar');
+    nav.querySelector('.bx-tabbar-menu').addEventListener('click', function () {
+      var b = document.querySelector('.bxnav-burger, #menuBtn');
+      if (b) b.click();
+    });
+  }
+
   function montarChromeEmbarque(barra, u) {
     garantirFolha();
     var topo = envolverTopo(barra);
@@ -508,6 +559,7 @@
       montarBusca(topo);
       barra.setAttribute('data-bx-embarque', '1');
     }
+    montarTabBar(u);
     montarMega(barra, topo, u);
   }
 

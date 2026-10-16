@@ -13,7 +13,9 @@
   .buy-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
   .step-card { background: var(--bx-surface); border: 1px solid var(--bx-line); border-radius: 18px; padding: 28px; margin-bottom: 18px; box-shadow: var(--bx-sh); }
   .step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--bx-neon); color: var(--bx-ink); font-weight: 800; font-size: 13px; margin-right: 8px; }
-  .amount-input { font-size: 32px; font-weight: 800; padding: 14px 18px; border: 1px solid var(--bx-line); border-radius: 12px; width: 100%; text-align: center; }
+  /* O seletor leva input[type="text"] junto: só assim a regra ganha da base
+     de assets/styles.css (0,1,1), que impõe 14px/13px a todo campo de texto. */
+  input[type="text"].amount-input { font-size: 32px; font-weight: 800; padding: 14px 18px; border: 1px solid var(--bx-line); border-radius: 12px; width: 100%; text-align: center; }
   .amount-input:focus { outline: none; border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
   .points-preview { font-size: 18px; color: var(--bx-grey); text-align: center; margin: 12px 0; }
   .points-preview b { color: var(--bx-ink); font-size: 24px; }
@@ -45,6 +47,20 @@
   .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
   .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
   .alert.info p{ color:var(--bx-grey); opacity:1; }
+  /* BX-MOBILE-A3 inicio */
+  /* ---- Celular (≤ 880px): a página dentro do sistema mobile do tema ---- */
+  @media (max-width:880px){
+    /* 16px de respiro lateral, como o resto do site no celular */
+    .buy-wrap{ padding:20px 16px 24px; }
+    .step-card{ padding:18px; margin-bottom:14px; }
+    /* 28px precisa vencer o input[type="text"]{16px} do bloco ≤900px de
+       assets/styles.css (0,1,1); por isso o seletor repete o tipo do campo */
+    input[type="text"].amount-input{ font-size:28px; padding:12px 14px; }
+    /* PIX | Cartão lado a lado, cada um com altura de toque; o texto quebra */
+    .method-btn{ min-height:48px; padding:10px 8px; line-height:1.25; }
+    .qr-box{ padding:16px 12px; }
+  }
+  /* BX-MOBILE-A3 fim */
 </style>
 <!-- Stripe.js é carregado sob demanda pelo JS, tokenização NO NAVEGADOR (o número do
      cartão nunca chega ao backend BlaXx, só o token single-use). -->
@@ -66,14 +82,14 @@
 
 <div class="buy-wrap">
   <h1 style="font-size:32px;margin-bottom:4px;" id="page-title">Comprar pontos</h1>
-  <p style="color:var(--bx-grey);margin-bottom:24px;">Valor livre, você define quanto pagar.</p>
+  <p style="color:var(--bx-grey);margin-bottom:24px;">Valor livre: você define quanto comprar.</p>
 
   <!-- Etapa 1: Valor + método -->
   <div class="step-card" id="step-1">
     <h3 style="margin-bottom:12px;"><span class="step-num">1</span> Quanto você quer comprar?</h3>
     <input class="amount-input" id="amount-input" type="text" inputmode="decimal"
            placeholder="R$ 0,00" oninput="onAmountChange(this.value)">
-    <div class="points-preview">você vai receber <b><span id="points-preview">0</span> pts</b></div>
+    <div class="points-preview">Você recebe <b><span id="points-preview">0</span> pts</b></div>
     <!-- Seletor de método, só aparece quando o backend confirma que o
          cartão está habilitado (GET /payments/card/config). -->
     <div class="method-row" id="method-row" role="radiogroup" aria-label="Forma de pagamento">
@@ -103,13 +119,13 @@
       <div class="pix-amount-display" id="pix-amount-display">R$ 0,00</div>
       <img id="qr-img" src="" alt="QR Code PIX BlaXx">
       <div style="font-size:12px;color:var(--bx-grey);margin-top:8px;">
-        Abra o app do banco → PIX → Ler QR Code → escaneie a imagem acima
+        No app do seu banco, escolha PIX e leia o QR Code acima.
       </div>
     </div>
     <div style="text-align:center;margin-top:18px;">
       <span class="status-pill status-confirming">⏱ Aguardando pagamento…</span>
       <div style="font-size:13px;color:var(--bx-grey);margin-top:6px;">
-        Assim que o banco confirmar, os pontos aparecem automaticamente.
+        Assim que o pagamento for confirmado, os pontos são creditados automaticamente.
       </div>
     </div>
   </div>

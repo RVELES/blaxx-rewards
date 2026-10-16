@@ -48,6 +48,22 @@
   .nf__d { font-size:13.5px; color: var(--fg-muted); margin-top:4px; }
   .nf__dot { width:8px; height:8px; border-radius:50%; background: var(--lime); align-self:flex-start; margin-top:7px; flex-shrink:0; }
   .nf-empty { padding:48px; text-align:center; color: var(--fg-subtle); }
+
+  /* ── Celular (≤ 880px): a página dentro do sistema Embarque (15/10/2026)
+     Medido em 375 e 390px com a barra de abas inferior. ───────────────── */
+  @media (max-width: 880px) {
+    .page-head { margin-bottom: 20px; }
+    /* "Marcar todas como lidas" caía sozinho numa linha, encostado à
+       direita; vira botão de largura total abaixo dos filtros, como o
+       "Ver extrato completo" da carteira. */
+    .nf-readall { margin-left: 0; width: 100%; justify-content: center; }
+    /* Linhas da lista no respiro de 16px; o título e a hora quebram em
+       vez de espremer. */
+    .nf { padding: 14px 16px; gap: 12px; }
+    .nf__ico { width: 40px; height: 40px; }
+    .nf__top { flex-wrap: wrap; gap: 2px 10px; }
+    .nf-empty { padding: 32px 18px; }
+  }
 </style>
 </head>
 <body data-screen="central-notificacoes">

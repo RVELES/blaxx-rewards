@@ -96,7 +96,7 @@
             <div class="form-row">
                 <label for="email">E-mail para receber o voucher</label>
                 <input type="email" id="email" data-bx-prefill="email" placeholder="voce@email.com" autocomplete="email">
-                <span class="field-help">O código chega em até 5 minutos após confirmar.</span>
+                <span class="field-help">O código chega em até 5 minutos após a confirmação.</span>
             </div>
 
             <h3 class="mt-4">Termos</h3>
@@ -111,7 +111,7 @@
 
             <div class="alert info mt-2">
                 <div class="alert-icon">i</div>
-                <div><p>Os pontos Blaxx são créditos promocionais de uso restrito na plataforma e não geram reembolso em dinheiro.</p></div>
+                <div><p>Os pontos Blaxx são créditos promocionais de uso restrito na plataforma e não são reembolsáveis.</p></div>
             </div>
         </div>
 
@@ -136,7 +136,7 @@
             <div class="brand">
                 <span class="mark">BlaXx</span>
             </div>
-            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
         </div>
         <div>
             <h4>Produto</h4>
@@ -184,6 +184,30 @@
   [data-link="resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side="resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
   [data-side="resgates"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
+  /* === A5-MOBILE: início === */
+  /* Celular (≤ 880px): ajustes desta página dentro do sistema "Embarque". */
+  @media (max-width:880px){
+    /* A folha-base fixa o h1 em 26px !important; o tema pede 28-34. */
+    .page-head h1{ font-size:clamp(28px,8vw,32px) !important; }
+    /* Cartões com 18px de respiro, como no resto do celular. */
+    .card,.summary-card{ padding:18px !important; }
+    /* Cabeçalho do benefício: a imagem de 96px empurrava o texto para a linha
+       de baixo. Imagem menor ao lado, texto quebra dentro da própria coluna. */
+    .card > .flex:first-child{ flex-wrap:nowrap; align-items:center; gap:14px !important; }
+    .card > .flex:first-child > .reward-img{ width:72px !important; height:72px !important; font-size:32px !important; border-radius:var(--bx-r-md) !important; flex:none; }
+    .card > .flex:first-child > div:last-child{ flex:1 1 0; min-width:0; }
+    /* Aceites: linha com alvo de 44px e caixa de 20px alinhada à primeira linha do texto. */
+    .checkbox-row{ min-height:44px; }
+    .checkbox-row input[type="checkbox"]{ width:20px; height:20px; margin-top:1px; flex:none; }
+    /* Migalhas: alvo de 44px sem virar caixa (a margem negativa anula o avanço). */
+    .crumbs a{ display:inline-block; padding:14px 0; margin:-14px 0; }
+    /* O menu em grade da folha-base (2 colunas, nowrap, overflow hidden) corta
+       "Resgatar por transferência" e "Comprar pontos" sem reticências em 375px.
+       Deixa o rótulo quebrar linha; o ícone não encolhe. */
+    .sidebar .side-nav > li > a{ white-space:normal; overflow:visible; line-height:1.25; }
+    .sidebar .side-nav .ic{ flex:none; }
+  }
+  /* === A5-MOBILE: fim === */
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

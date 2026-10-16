@@ -61,6 +61,19 @@
   .switch::before { content: ''; position: absolute; inset: -9px 0; }
   .card .pref { flex-wrap: nowrap; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
+
+  /* ── Celular (≤ 880px): a página dentro do sistema Embarque (15/10/2026)
+     Medido em 375 e 390px com a barra de abas inferior. ───────────────── */
+  @media (max-width: 880px) {
+    .grid { gap: 14px; }
+    /* Cartões no respiro de 18px do tema. */
+    .me { padding: 20px 18px; }
+    .panel { padding: 18px; }
+    .panel__title { margin-bottom: 12px; }
+    /* Os rótulos das métricas estavam em 10px; sobem para os 11px dos
+       rótulos mono do tema. */
+    .me__stats .l { font-size: 11px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Perfil","item":"https://blaxxpontos.com.br/perfil.html"}]}
@@ -83,7 +96,7 @@
       <div class="me__stats">
         <div><div class="v" id="stPoints">—</div><div class="l">Pontos</div></div>
         <div><div class="v" id="stPending">—</div><div class="l">Pendentes</div></div>
-        <div><div class="v" id="stBrl">—</div><div class="l">Em R$</div></div>
+        <div><div class="v" id="stBrl">—</div><div class="l">Disponíveis</div></div>
       </div>
       <a href="seguranca.html" class="btn btn--outline btn--block" style="margin-top:22px">Configurações de segurança →</a>
     </div>
@@ -95,7 +108,7 @@
         <div class="field"><div><div class="k">E-mail</div><div class="v" id="fEmail">—</div></div><span class="chip" id="fEmailV">—</span></div>
         <div class="field"><div><div class="k">Celular</div><div class="v" id="fCel">—</div></div></div>
         <div class="field"><div><div class="k">CPF</div><div class="v" id="fCpf">—</div></div></div>
-        <div class="field"><div><div class="k">Chave Pix p/ resgates</div><div class="v" id="fPix">—</div></div></div>
+        <div class="field"><div><div class="k">Chave para resgates</div><div class="v" id="fPix">—</div></div></div>
       </div>
 
       <div class="card panel">
@@ -124,7 +137,6 @@
   function H(){ var t=token(); return t? {Authorization:'Bearer '+t} : {}; }
   var $ = function(id){ return document.getElementById(id); };
   var fmt = function(n){ return Number(n||0).toLocaleString('pt-BR'); };
-  var brl = function(v){ return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
 
   if (!token()) { location.href = 'login.html'; return; }
 
@@ -147,7 +159,8 @@
     if (w){
       $('stPoints').textContent = fmt(w.balance_pts);
       $('stPending').textContent = fmt(w.pending_pts);
-      $('stBrl').textContent = brl(w.balance_brl_equiv);
+      // Disponíveis = saldo menos pendentes (mesma regra do início); a equivalência em reais não é exibida.
+      $('stBrl').textContent = fmt(Math.max(0, Number(w.balance_pts||0) - Number(w.pending_pts||0)));
     }
   }
 

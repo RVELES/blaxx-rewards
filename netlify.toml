@@ -62,15 +62,25 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Home: landing neon (force = true obrigatório para shadowing do index.html existente)
+# Home: tema Embarque (15/10/2026). A landing neon continua no repositório em
+# /blaxx-neon.html; voltar atrás é trocar o "to" abaixo.
+# (force = true obrigatório para shadowing do index.html existente)
 [[redirects]]
   from = "/"
-  to = "/blaxx-neon.html"
+  to = "/home-embarque.html"
   status = 200
   force = true
 
 [[redirects]]
   from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+# home.html é a landing antiga, órfã, com "Pix na hora" e simulador de
+# conversão; deixa de ser servida (15/10).
+[[redirects]]
+  from = "/home.html"
   to = "/"
   status = 301
   force = true

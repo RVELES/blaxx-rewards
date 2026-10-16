@@ -62,6 +62,30 @@
   .empty { padding:48px; text-align:center; color: var(--fg-subtle); }
 
   @media (max-width: 900px){ .sum-row{grid-template-columns:1fr;} .search{margin-left:0; order:3; width:100%;} }
+
+  /* ── Celular (≤ 880px): a página dentro do sistema Embarque (15/10/2026)
+     Medido em 375 e 390px com a barra de abas inferior. ───────────────── */
+  @media (max-width: 880px) {
+    .page-head { margin-bottom: 20px; }
+    /* Resumo: valores curtos cabem em duas colunas e o saldo fecha a linha
+       inteira; três cartões empilhados empurravam o extrato para baixo. */
+    .sum-row { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .sum:last-child { grid-column: 1 / -1; }
+    .sum { padding: 14px 16px; }
+    .sum__val { font-size: 24px; margin-top: 6px; }
+    .toolbar { gap: 10px; margin-bottom: 14px; }
+    /* Abas viram controle segmentado de largura total. */
+    .tabs { width: 100%; }
+    .tabs button { flex: 1; padding: 8px 10px; }
+    /* Busca: 16px no campo evita o zoom do iOS (a regra da página vencia a
+       folha-base); a pílula fica em 48px em vez de inchar com os 44px do
+       campo somados ao padding. */
+    .search { padding: 2px 16px; min-height: 48px; min-width: 0; }
+    .search input { font-size: 16px; min-height: 44px; }
+    .row { padding: 14px 16px; gap: 12px; }
+    .row__ico { width: 40px; height: 40px; }
+    .empty { padding: 32px 18px; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Extrato","item":"https://blaxxpontos.com.br/extrato.html"}]}

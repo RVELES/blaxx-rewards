@@ -78,6 +78,17 @@
     .kpi .value { font-size: 24px; }
     .tbl th:nth-child(2), .tbl td:nth-child(2) { display: none; }
   }
+  /* Celular (≤ 880px): respiro de 16px como no resto da camada Embarque. As
+     tabelas de 4-5 colunas não espremem as células (data e valor quebravam em
+     duas linhas): crescem e rolam dentro da própria caixa, que já tem
+     overflow-x:auto. Datas do gráfico em 12px; campos em 16px para o iOS
+     não dar zoom ao focar. */
+  @media (max-width: 880px) {
+    .shell { padding: 20px 16px 48px; }
+    .field { font-size: 16px; }
+    .tbl th, .tbl td { white-space: nowrap; }
+    #grafico + .row { font-size: 12px !important; }
+  }
 </style>
 </head>
 <body>
