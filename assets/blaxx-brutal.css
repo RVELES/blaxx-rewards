@@ -1,0 +1,194 @@
+/* ============================================================================
+   BlaXx · núcleo do sistema "Brutal Grid"
+
+   O que mora aqui: a IDENTIDADE (tokens, tipografia, botão, rótulo) e o
+   CHROME INVARIANTE (barra, gaveta, marquee, mapa da rede, FAQ, chamada final,
+   rodapé). Isso é igual em toda variante de home, e por isso vive num arquivo
+   só em vez de ser recolado em cada página.
+
+   O que NÃO mora aqui: composição. Hero, grade de recursos, faixa de números e
+   pacotes são exatamente o que muda de uma variante para a outra, então cada
+   página escreve o seu.
+
+   Base do Brand Book v1.0: neon #59FD27 pontual, preto #0A0B0E, papel #E8E6DD,
+   Space Grotesk display + JetBrains Mono rótulo.
+   Regra dura do projeto: nenhuma variante pode rolar na horizontal no celular.
+   ============================================================================ */
+
+:root{
+  --neon:#59FD27; --black:#0A0B0E; --ink:#13161C; --grey:#6E7680;
+  --paper:#E8E6DD; --white:#F4F4F0; --cinza:#DEDCD3;
+  --azul:#8EC3EA; --ouro:#E7B24A; --rosa:#F3D3E6;
+  --bw:4px; --sh:6px 8px 0 var(--black);
+  --grotesk:'Space Grotesk','Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,'Courier New',monospace;
+  --pad:clamp(18px,5vw,40px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--white);color:var(--black);font-family:var(--grotesk);
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+img,svg,canvas{max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--neon);color:var(--black)}
+:focus-visible{outline:3px solid var(--black);outline-offset:3px}
+
+.wrap{max-width:1200px;margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.wrap.largo{max-width:1440px}
+.mut{color:var(--grey)}
+
+/* ---------- tipografia display ---------- */
+.d1,.d2,.d3{font-weight:700;text-transform:uppercase;line-height:.88;letter-spacing:-.035em}
+.d1{font-size:clamp(44px,8.2vw,100px)}
+.d2{font-size:clamp(32px,5.6vw,60px)}
+.d3{font-size:clamp(24px,3.4vw,38px);line-height:.95}
+.hl{background:var(--neon);box-shadow:0 0 0 var(--bw) var(--black);padding:0 .1em;
+  display:inline-block;margin:.06em .06em}
+.hl.vazado{background:transparent;color:var(--black);
+  -webkit-text-stroke:2px var(--black);box-shadow:none}
+.lead{font-size:clamp(16px,1.6vw,19px);line-height:1.55;max-width:46ch}
+
+/* ---------- rótulo mono em pílula ---------- */
+.tagline{display:inline-flex;align-items:center;gap:9px;border:3px solid var(--black);
+  background:var(--white);font-family:var(--mono);font-size:12px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;padding:7px 15px}
+.tagline i{font-style:normal;color:var(--neon);-webkit-text-stroke:.6px var(--black)}
+
+/* ---------- botões pílula com sombra dura ---------- */
+.pillbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:56px;padding:0 30px;border:3px solid var(--black);border-radius:999px;
+  background:var(--neon);color:var(--black);font-weight:700;font-size:17px;
+  box-shadow:var(--sh);transition:transform .08s,box-shadow .08s;cursor:pointer}
+.pillbtn:hover{transform:translate(3px,4px);box-shadow:3px 4px 0 var(--black)}
+.pillbtn.dark{background:var(--black);color:var(--white)}
+.pillbtn.ghost{background:var(--white)}
+.pillbtn.sm{min-height:44px;padding:0 20px;font-size:14px;box-shadow:4px 5px 0 var(--black)}
+.pillbtn.sm:hover{box-shadow:2px 3px 0 var(--black)}
+.pillbtn.reta{border-radius:0}
+
+/* ---------- barra de navegação + gaveta ---------- */
+.bar{position:sticky;top:0;z-index:60;background:var(--white);
+  border-bottom:var(--bw) solid var(--black)}
+.bar.escura{background:var(--black);border-bottom-color:var(--neon)}
+.bar.escura a{color:var(--white)}
+.bar .in{display:flex;align-items:center;gap:20px;min-height:74px}
+.bar .mark{height:30px;width:auto;display:block}
+.navd{display:none;gap:30px;margin:0 auto;font-size:15px;font-weight:500}
+.navd a{padding:6px 0;border-bottom:3px solid transparent}
+.navd a:hover{border-bottom-color:var(--neon)}
+.baract{display:flex;align-items:center;gap:10px;margin-left:auto}
+.burger{display:inline-flex;flex-direction:column;justify-content:center;gap:5px;
+  width:46px;height:46px;border:3px solid var(--black);background:var(--white);
+  cursor:pointer;padding:0 9px}
+.burger span{display:block;height:3px;background:var(--black)}
+.drawer{position:fixed;inset:74px 0 auto 0;z-index:55;background:var(--white);
+  border-bottom:var(--bw) solid var(--black);padding:10px var(--pad) 22px;display:none}
+.drawer.on{display:block}
+.drawer a{display:block;padding:14px 0;border-bottom:2px solid var(--cinza);
+  font-weight:600;font-size:17px;color:var(--black)}
+@media(min-width:1000px){
+  .navd{display:flex}
+  .burger{display:none}
+  .drawer{display:none!important}
+}
+
+/* ---------- marquee entre seções ---------- */
+.marq{background:var(--black);color:var(--white);border-top:var(--bw) solid var(--black);
+  border-bottom:var(--bw) solid var(--black);overflow:hidden;padding:14px 0}
+.marq div{display:flex;width:max-content;animation:slide 26s linear infinite;
+  font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+  font-size:clamp(18px,2.4vw,28px);white-space:nowrap}
+.marq span{padding-right:28px}
+.marq i{font-style:normal;color:var(--neon);padding-right:28px}
+@keyframes slide{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.marq div{animation:none}}
+
+/* ---------- seções ---------- */
+.sec{padding:clamp(52px,8vw,110px) 0}
+.sec.paper{background:var(--paper)}
+.sec.preta{background:var(--black);color:var(--white)}
+.sec.neon{background:var(--neon)}
+.sechead{margin-bottom:clamp(28px,4vw,52px)}
+.sechead .tagline{margin-bottom:18px}
+
+/* ---------- mapa da rede (globo) ----------
+   Geometria calibrada na home Editorial: 3:2 no desktop, 1:1 no telefone,
+   zoom 0.46, padding-bottom 35px para o marquee interno (16+8+8+3). */
+.globo .hint{font-family:var(--mono);font-size:12px;color:var(--grey);
+  letter-spacing:.04em;margin:0 0 22px;line-height:1.6}
+.globo .cinema-frame{position:relative;border:var(--bw) solid var(--black);
+  box-shadow:10px 12px 0 var(--black);aspect-ratio:3/2;background:var(--azul);
+  overflow:visible;padding-bottom:35px}
+.globo .cinema-frame canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.globo .cinema-card{position:absolute;left:22px;top:22px;background:var(--white);
+  border:3px solid var(--black);box-shadow:5px 6px 0 var(--black);padding:13px 17px;color:var(--black)}
+.globo .cinema-card small{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.globo .cinema-card b{display:block;font-weight:700;font-size:34px;line-height:1;
+  letter-spacing:-.03em;margin:4px 0 2px}
+.globo .cinema-card span{font-family:var(--mono);font-size:11px;color:var(--grey)}
+.globo .cinema-marq{position:absolute;left:0;right:0;bottom:0;background:var(--black);
+  color:var(--neon);font-family:var(--mono);font-size:12px;letter-spacing:.14em;padding:8px 0;
+  white-space:nowrap;overflow:hidden;border-top:3px solid var(--neon);line-height:16px}
+.globo .cinema-marq span{display:inline-block;animation:gv-mq 26s linear infinite}
+@keyframes gv-mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.globo .cinema-marq span{animation:none}}
+.globo .globe-tip{position:absolute;display:none;pointer-events:none;background:var(--black);
+  border:2px solid var(--neon);padding:7px 11px;font-family:var(--mono);font-size:11px;
+  white-space:nowrap;z-index:5;line-height:1.5;color:var(--white)}
+.globo .legenda{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:24px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.globo .legenda li{list-style:none;display:flex;align-items:center;gap:8px}
+.globo .legenda i{width:13px;height:13px;border:2px solid var(--black);flex:none}
+
+/* ---------- FAQ ---------- */
+.faq{border:var(--bw) solid var(--black);background:var(--white)}
+.faq details{border-bottom:3px solid var(--black)}
+.faq details:last-child{border-bottom:0}
+.faq summary{list-style:none;cursor:pointer;padding:clamp(18px,2.4vw,26px);
+  font-size:clamp(17px,2vw,21px);font-weight:700;letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--mono);font-size:26px;line-height:1;flex:none}
+.faq details[open] summary{background:var(--paper)}
+.faq details[open] summary::after{content:"\2013"}
+.faq .ans{padding:0 clamp(18px,2.4vw,26px) clamp(20px,2.4vw,26px);font-size:15.5px;
+  line-height:1.65;max-width:76ch}
+.faq .ans a{border-bottom:2px solid var(--neon);font-weight:600}
+
+/* ---------- chamada final full-bleed ---------- */
+.final{background:var(--neon);border-top:var(--bw) solid var(--black);
+  border-bottom:var(--bw) solid var(--black);position:relative;overflow:hidden}
+.final::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(to right,rgba(10,11,14,.18) 0 1px,transparent 1px 84px);
+  -webkit-mask-image:linear-gradient(to right,#000 0 9%,transparent 9% 91%,#000 91% 100%);
+          mask-image:linear-gradient(to right,#000 0 9%,transparent 9% 91%,#000 91% 100%)}
+.final .in{position:relative;text-align:center;padding:clamp(56px,9vw,120px) 0}
+.final p{margin:18px auto 0;font-size:clamp(16px,1.7vw,19px);max-width:52ch;font-weight:500}
+.final .pillbtn{margin-top:32px;background:var(--black);color:var(--white);
+  box-shadow:6px 8px 0 rgba(10,11,14,.35)}
+
+/* ---------- rodapé ---------- */
+.foot{background:var(--black);color:var(--white);padding-top:clamp(40px,6vw,70px)}
+.foot .cols{display:grid;grid-template-columns:1fr;gap:34px}
+@media(min-width:800px){.foot .cols{grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr))}}
+.foot h3,.foot h4{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:#9AA3AE;margin-bottom:14px;font-weight:500}
+.foot li{list-style:none;margin-bottom:10px;font-size:15px}
+.foot a:hover{color:var(--neon)}
+.foot .tag2{font-size:clamp(17px,2vw,21px);font-weight:500;max-width:34ch;line-height:1.45}
+.foot .legal{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;
+  margin-top:clamp(34px,5vw,56px);padding-top:22px;border-top:2px solid #262A31;
+  font-family:var(--mono);font-size:12px;color:#9AA3AE;letter-spacing:.06em}
+.foot .legal a{color:#9AA3AE}
+.bigmark{margin-top:clamp(24px,4vw,44px);padding:0 var(--pad) clamp(14px,2vw,26px)}
+.bigmark img{display:block;width:100%;height:auto}
+
+/* ---------- telefone ---------- */
+@media(max-width:560px){
+  .bar .in{gap:12px}
+  .baract .pillbtn.ghost{display:none}
+  .pillbtn.sm{white-space:nowrap}
+  .globo .cinema-frame{aspect-ratio:1/1;box-shadow:6px 8px 0 var(--black)}
+  .globo .cinema-card{display:none}
+}

@@ -5,9 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Perguntas frequentes</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal para vencer a
+     cascata. O <link> fica no HTML porque o blaxx-nav.js só injeta a folha
+     como rede de segurança, e injetar tarde faz a página piscar. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .sec-head { display:flex; align-items:center; gap:12px; margin: 40px 0 14px; }
-  .sec-head .n { font-family: var(--font-mono); font-weight: 700; font-size: 11px; color: var(--lime-deep); letter-spacing: .1em; }
+  /* Número da seção em pílula neon com texto preto: --lime-deep como cor de
+     texto dá 2,4:1 sobre o fundo claro, o verde só serve como preenchimento. */
+  .sec-head .n { display: inline-block; font-family: var(--bx-mono); font-weight: 700; font-size: 11px; letter-spacing: .1em; background: var(--bx-neon); color: var(--bx-ink); padding: 4px 9px; border-radius: 999px; }
   .qa { padding: 6px 0; }
   details { border-top: 1px solid var(--line); }
   details:first-of-type { border-top: 0; }
@@ -32,7 +38,7 @@
 
   <div class="sec-head"><span class="n">01</span><h2 class="h-section">Sobre o programa</h2></div>
   <div class="card qa">
-    <details open><summary>O que é o BlaXx?</summary><div class="a">Um programa de fidelidade brasileiro que conecta consumidores e marcas. Você acumula pontos consumindo na rede de parceiros, em campanhas patrocinadas ou comprando pacotes via Pix — e usa em benefícios, transferências ou resgates.</div></details>
+    <details open><summary>O que é o BlaXx?</summary><div class="a">Um programa de fidelidade brasileiro que conecta consumidores e marcas. Você acumula pontos consumindo na rede de parceiros, em campanhas patrocinadas ou comprando pacotes via Pix, e usa em benefícios, transferências ou resgates.</div></details>
     <details><summary>Os pontos valem dinheiro?</summary><div class="a">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro da plataforma. Não são moeda, depósito, investimento, valor mobiliário ou criptoativo. Veja as <a href="regras-pontos.html">regras de pontos</a>.</div></details>
     <details><summary>Quanto custa participar?</summary><div class="a">O cadastro e a manutenção da conta são gratuitos. Você só paga quando opta por <a href="comprar.html">comprar pacotes de pontos</a> via Pix.</div></details>
   </div>
@@ -53,7 +59,7 @@
   <div class="sec-head"><span class="n">04</span><h2 class="h-section">Envio e transferência</h2></div>
   <div class="card qa">
     <details><summary>Posso transferir pontos para qualquer pessoa?</summary><div class="a">Sim, desde que a pessoa tenha conta BlaXx. Basta informar o e-mail ou CPF em <a href="enviar.html">Enviar pontos</a>. Sem taxa entre contas pessoais.</div></details>
-    <details><summary>Transferência tem limite?</summary><div class="a">Sim, há limites diários por segurança. Transferências confirmadas não podem ser revertidas — confira sempre o destinatário antes de enviar.</div></details>
+    <details><summary>Transferência tem limite?</summary><div class="a">Sim, há limites diários por segurança. Transferências confirmadas não podem ser revertidas, confira sempre o destinatário antes de enviar.</div></details>
   </div>
 
   <div class="sec-head"><span class="n">05</span><h2 class="h-section">Resgates</h2></div>

@@ -108,7 +108,7 @@ A CSP (`netlify.toml` / `_headers`) só libera `connect-src` para
 
 ### PIX (compra de pontos)
 - `GET /pix/packages` → pacotes (ex.: `start`, `plus`, `prime`, `black`)
-- `GET /pix/provider` → `{is_mock, name}` (produção: `mercadopago`)
+- `GET /pix/provider` → `{is_mock, name}` (produção: `asaas`; MercadoPago removido do backend em `b774292`)
 - `POST /pix/charge`, `GET /pix/charge/:id`
 - `POST /pix/simulate-payment` (ambiente de teste)
 

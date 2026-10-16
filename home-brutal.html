@@ -81,10 +81,48 @@ a{color:inherit;text-decoration:none}
 .pillbtn.sm:hover{box-shadow:2px 3px 0 var(--black)}
 
 /* ---------- barra de navegação ---------- */
-.bar{position:sticky;top:0;z-index:60;background:var(--white);
-  border-bottom:var(--bw) solid var(--black)}
+/* ---------- BARRA PRETA ----------
+   Camada de COR, decidida por medição e não por gosto:
+   . fundo preto com fio neon de 3px embaixo. Borda preta sobre barra preta
+     seria invisível, e o fio marca a barra grudada quando ela passa por cima
+     do conteúdo claro.
+   . o logo TROCA de arquivo: o -claro.svg é preto com verde escuro e sumiria.
+   . o botão primário volta ao .pillbtn padrão (neon + texto preto, 14,53:1).
+     Texto branco sobre neon dá 1,23:1, que é o defeito que duas revisões
+     independentes já pegaram em outras variantes desta mesma página.
+   . sombra dura vira BRANCA dentro da barra: preta sobre preto não existe. */
+.bar{position:sticky;top:0;z-index:60;background:var(--black);
+  border-bottom:3px solid var(--neon)}
 .bar .in{display:flex;align-items:center;gap:20px;min-height:74px}
-.bar .mark{height:30px;width:auto;display:block}
+.bar .mark{height:40px;width:auto;display:block}
+.bar .burger{background:var(--white)}            /* quadrado branco sobre preto: o hambúrguer aprovado */
+
+/* MASTHEAD AGRUPADO: o logo e o menu formam UM bloco à esquerda, separados por
+   um fio, e as ações vão para a direita.
+   Por que não centrado: o hero logo abaixo é deliberadamente assimétrico, com o
+   canto superior direito vazio. Menu centrado puxa o olho de volta ao meio e
+   briga com isso. Além disso são só 4 itens: centrados num vão de 1120px eles
+   ficam boiando entre dois buracos. Agrupado, a barra lê como lombada de
+   documento, que é a linguagem do resto da página. */
+/* .bar .navd e não .navd: a declaração original vem DEPOIS nesta folha e, com a
+   mesma especificidade, venceria o margin. O menu continuava centralizado. */
+.bar .navd{margin:0 auto 0 0;gap:26px;padding-left:26px;
+  border-left:2px solid rgba(244,244,240,.22)}
+.bar .navd a{color:var(--white)}
+
+/* "Entrar" deixa de ser pílula: duas pílulas com sombra dura lado a lado viram
+   ruído e empatam a hierarquia. Vira rótulo em mono, que é o estilo da casa e
+   não se confunde com item de menu. Sobra UMA chamada para ação na barra. */
+.bar .entrar{font-family:var(--mono);font-size:12px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--white);
+  padding:6px 0;border-bottom:2px solid transparent;white-space:nowrap}
+.bar .entrar:hover{border-bottom-color:var(--neon)}
+@media(max-width:560px){.bar .entrar{display:none}} /* a gaveta já leva "Entrar na minha conta" */
+
+.bar .baract{gap:18px}   /* a sombra dura avança 4px: sem folga extra sobram 6px
+                            reais até o hambúrguer e a barra parece apertada */
+.bar .pillbtn{box-shadow:4px 5px 0 var(--white)} /* a sombra preta some no preto */
+.bar .pillbtn:hover{box-shadow:2px 3px 0 var(--white)}
 .navd{display:none;gap:30px;margin:0 auto;font-size:15px;font-weight:500}
 .navd a{padding:6px 0;border-bottom:3px solid transparent}
 .navd a:hover{border-bottom-color:var(--neon)}
@@ -92,7 +130,7 @@ a{color:inherit;text-decoration:none}
 .burger{display:inline-flex;flex-direction:column;justify-content:center;gap:5px;width:46px;height:46px;
   border:3px solid var(--black);background:var(--white);cursor:pointer;padding:0 9px}
 .burger span{display:block;height:3px;background:var(--black)}
-.drawer{position:fixed;inset:74px 0 auto 0;z-index:55;background:var(--white);
+.drawer{position:fixed;inset:77px 0 auto 0;z-index:55;background:var(--white);
   border-bottom:var(--bw) solid var(--black);padding:10px var(--pad) 22px;display:none}
 .drawer.on{display:block}
 .drawer a{display:block;padding:14px 0;border-bottom:2px solid var(--cinza);font-weight:600;font-size:17px}
@@ -102,24 +140,83 @@ a{color:inherit;text-decoration:none}
   .drawer{display:none!important}
 }
 
-/* ---------- HERO ---------- */
-.hero{position:relative;border-bottom:var(--bw) solid var(--black);overflow:hidden;
-  background:var(--white)}
-/* grade tracejada de fundo, igual à referência */
-.hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+/* ---------- HERO ASSIMÉTRICO ----------
+   A versão anterior era texto na esquerda e painel na direita, com as duas
+   colunas centradas: simétrica, e o arranjo mais repetido da web. Aqui o
+   letreiro toma a largura inteira, o texto desce para o TERÇO esquerdo, o canto
+   superior direito fica vazio de propósito (só o selo), e o painel sai da
+   coluna, encosta na direita e ATRAVESSA a borda inferior da seção, invadindo
+   o marquee. É a sobreposição que quebra a régua, não um enfeite a mais. */
+.hero{position:relative;border-bottom:var(--bw) solid var(--black);
+  background:var(--white);overflow:visible} /* era hidden: o painel precisa sangrar */
+/* grade tracejada só atrás do letreiro, não na seção inteira */
+.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:62%;
+  pointer-events:none;opacity:.5;
   background-image:
     repeating-linear-gradient(to right,rgba(10,11,14,.16) 0 1px,transparent 1px 84px),
     repeating-linear-gradient(to bottom,rgba(10,11,14,.16) 0 1px,transparent 1px 84px);
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 82%,transparent 100%);
-          mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 82%,transparent 100%)}
-.hero .in{position:relative;display:grid;grid-template-columns:1fr;gap:34px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%,#000 72%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0,#000 22%,#000 72%,transparent 100%)}
+.hero .in{position:relative;z-index:2;display:block;
   padding-top:clamp(34px,6vw,64px);padding-bottom:clamp(40px,6vw,74px)}
-@media(min-width:1000px){
-  .hero .in{grid-template-columns:minmax(0,1.16fr) minmax(0,.84fr);
-    align-items:center;gap:44px}
-}
 .hero h1{margin:20px 0 0}
-.hero .lead{margin-top:22px}
+.hero .lead{margin-top:26px}
+.hero-txt{max-width:46ch}
+
+@media(min-width:1000px){
+  /* espaço embaixo para o painel descer sem empurrar o conteúdo */
+  .hero .in{padding-bottom:clamp(120px,13vw,190px)}
+  .hero-txt{max-width:40ch}          /* o texto ocupa o terço esquerdo */
+  .hero .panel{position:absolute;z-index:6;
+    right:var(--pad);bottom:-54px;    /* negativo: cruza a borda da seção */
+    width:min(40vw,410px);min-height:0}
+}
+/* o marquee fica ABAIXO do painel na pilha, senão a sobreposição não aparece */
+.marq{position:relative;z-index:1}
+
+/* ---------- micro-interação 1: o letreiro monta linha a linha ----------
+   Cada linha é uma janela com overflow:hidden e o texto sobe de dentro dela.
+   O padding/margem negativa existe para a janela não decepar o anel preto de
+   4px do bloco neon (.hl usa box-shadow, que overflow:hidden corta). */
+.letreiro .ln{display:block;overflow:hidden;
+  padding:0 10px 12px;margin:0 -10px -12px}
+.letreiro .ln > i{display:block;font-style:normal;
+  /* o translate inicial mora no keyframe, NÃO aqui: sem animação, a regra base
+     deixa o texto visível. Com ele na base, um navegador que não anima
+     esconderia o letreiro para sempre. */
+  animation:sobeLinha .66s cubic-bezier(.2,.75,.2,1) both}
+.letreiro .ln:nth-child(1) > i{animation-delay:.06s}
+.letreiro .ln:nth-child(2) > i{animation-delay:.12s}
+.letreiro .ln:nth-child(3) > i{animation-delay:.18s}
+@keyframes sobeLinha{from{transform:translateY(112%)}to{transform:translateY(0)}}
+
+/* ---------- micro-interação 4: a palavra do letreiro troca ----------
+   coisas · destinos · sonhos · novas aventuras, em ciclo.
+
+   Dois movimentos acontecem AO MESMO TEMPO, com a mesma curva e a mesma
+   duração: a palavra desliza de baixo para cima e o bloco neon muda de largura
+   para caber nela. Com curvas ou tempos diferentes a troca parece dois efeitos
+   brigando; iguais, parece um só.
+
+   Só a primeira palavra fica no fluxo (é ela que dá altura ao bloco); as outras
+   empilham em cima, ancoradas embaixo para os três tamanhos de palavra caírem
+   na mesma linha de base. Sem JS, aparece só "coisas". */
+.troca{overflow:hidden;vertical-align:bottom;
+  transition:width .55s cubic-bezier(.2,.75,.2,1)}
+.troca .palavras{position:relative;display:block}
+.troca b{display:block;width:max-content;white-space:nowrap;font-weight:inherit;
+  opacity:0;transform:translateY(100%);
+  transition:transform .55s cubic-bezier(.2,.75,.2,1),opacity .28s linear}
+.troca b + b{position:absolute;left:0;bottom:0}
+.troca b.on{opacity:1;transform:none}
+.troca b.sai{opacity:0;transform:translateY(-100%)}
+@media(prefers-reduced-motion:reduce){
+  .troca{transition:none}
+  .troca b{transition:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .letreiro .ln > i{transform:none;animation:none}
+}
 .hero .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
 .proof{display:flex;align-items:center;gap:12px;margin-top:34px;font-size:14px;font-weight:500}
 .dots{display:flex}
@@ -199,8 +296,12 @@ a{color:inherit;text-decoration:none}
 .split{display:grid;grid-template-columns:1fr;gap:30px}
 @media(min-width:960px){.split{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:start}}
 .stack{display:grid;gap:22px}
+/* micro-interação 3: a sombra dura aponta para o lado OPOSTO ao da entrada
+   do cursor, como se o card fosse um objeto físico empurrado pela mão. */
 .scard{position:relative;border:var(--bw) solid var(--black);background:var(--white);
-  padding:clamp(20px,2.6vw,30px);box-shadow:var(--sh)}
+  padding:clamp(20px,2.6vw,30px);
+  box-shadow:var(--sx,6px) var(--sy,8px) 0 var(--black);
+  transition:box-shadow .2s cubic-bezier(.2,.7,.2,1)}
 .scard.on{background:var(--neon)}
 .scard .ico{width:44px;height:44px;border:3px solid var(--black);border-radius:50%;
   display:grid;place-items:center;font-size:20px;background:var(--white);margin-bottom:14px}
@@ -346,7 +447,7 @@ a{color:inherit;text-decoration:none}
 <header class="bar">
   <div class="wrap in">
     <a href="#topo" aria-label="BlaXx Pontos">
-      <img class="mark" src="assets/marca/blaxx-wordmark-claro.svg" alt="BlaXx Rewards">
+      <img class="mark" src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
     </a>
     <nav class="navd" aria-label="Principal">
       <a href="#recursos">O que dá pra fazer</a>
@@ -355,8 +456,8 @@ a{color:inherit;text-decoration:none}
       <a href="#perguntas">Perguntas</a>
     </nav>
     <div class="baract">
-      <a class="pillbtn sm ghost" href="login.html">Entrar</a>
-      <a class="pillbtn sm dark" href="cadastro.html">Criar conta</a>
+      <a class="entrar" href="login.html">Entrar</a>
+      <a class="pillbtn sm" href="cadastro.html">Criar conta</a>
       <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false"
               aria-controls="menuMob" onclick="bxMenu(this)"><span></span><span></span><span></span></button>
     </div>
@@ -389,11 +490,16 @@ a{color:inherit;text-decoration:none}
   </div>
 
   <div class="wrap in">
-    <div>
-      <span class="tagline"><i>✳</i> Programa de pontos · Brasil · 2026</span>
-      <h1 class="d1">Pontos<br>que viram<br><span class="hl">coisas</span>.</h1>
-      <p class="lead">Compre pontos, envie para quem você quiser e troque por benefícios
-        de verdade. Sem regra escondida, sem letra miúda, sem surpresa na hora de usar.</p>
+    <span class="tagline"><i>✳</i> Programa de pontos · Brasil · 2026</span>
+    <!-- aria-label fixa o que o leitor de tela anuncia: a palavra gira, a frase não. -->
+    <h1 class="d1 letreiro" aria-label="Pontos que viram coisas.">
+      <span class="ln"><i>Pontos</i></span>
+      <span class="ln"><i>que viram</i></span>
+      <span class="ln"><i><span class="hl troca" id="troca" aria-hidden="true"><span class="palavras"><b class="on">coisas</b><b>destinos</b><b>sonhos</b><b>novas aventuras</b></span></span>.</i></span>
+    </h1>
+    <div class="hero-txt">
+      <p class="lead">Compre, envie para quem você quiser e troque quando der vontade.
+        As regras estão todas nesta página, inclusive as chatas.</p>
       <div class="ctas">
         <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
         <a class="pillbtn ghost" href="#pacotes">Ver pacotes</a>
@@ -505,9 +611,9 @@ a{color:inherit;text-decoration:none}
 <!-- ====================== NÚMEROS ====================== -->
 <section class="stats">
   <div class="wrap in">
-    <div class="stat"><b><em>3</em></b><span>Categorias de rede parceira: postos, supermercados e farmácias</span></div>
-    <div class="stat"><b>12</b><span>Cidades já no mapa da rede</span></div>
-    <div class="stat"><b>24</b><span>Meses de validade de cada lote de pontos</span></div>
+    <div class="stat"><b><em data-conta="3">3</em></b><span>Categorias de rede parceira: postos, supermercados e farmácias</span></div>
+    <div class="stat"><b data-conta="12">12</b><span>Cidades já no mapa da rede</span></div>
+    <div class="stat"><b data-conta="24">24</b><span>Meses de validade de cada lote de pontos</span></div>
     <div class="stat"><b>R$&nbsp;<em>0</em></b><span>Para enviar pontos a outra conta pessoal</span></div>
   </div>
 </section>
@@ -671,6 +777,193 @@ a{color:inherit;text-decoration:none}
        <div class="bigmark"><img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards"></div>
        e a regra .bigmark, que continua em assets/blaxx-brutal.css. -->
 </footer>
+
+<script>
+// ---------- micro-interação 4: troca de palavra no letreiro ----------
+(function(){
+  var bloco = document.getElementById('troca');
+  if (!bloco) return;
+  var palavras = [].slice.call(bloco.querySelectorAll('b'));
+  if (palavras.length < 2) return;
+
+  // Movimento reduzido: fica em "coisas" e ponto. Conteúdo que se troca
+  // sozinho é justamente o que essa preferência pede para não acontecer.
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var DUR = 550, ESPERA = 2600;
+  var i = 0, timer = null;
+
+  // Três motivos para o letreiro parar, conferidos a cada volta em vez de
+  // guardados numa variável. A versão anterior guardava um booleano atualizado
+  // por visibilitychange, e isso tinha dois defeitos: o evento só dispara na
+  // TROCA de visibilidade, então uma página aberta em aba de fundo nascia com
+  // o booleano em false e girava o tempo todo para ninguém; e qualquer
+  // dessincronia deixava o letreiro parado para sempre. Lendo document.hidden
+  // na hora, nenhum dos dois é possível. O custo é acordar até 2,6s depois de
+  // o leitor voltar para a aba, o que ninguém percebe num ciclo de 2,6s.
+  var sobMouse = false, foraDaTela = false;
+  function pausado(){ return sobMouse || document.hidden || foraDaTela; }
+
+  function padH(){
+    var cs = getComputedStyle(bloco);
+    return parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  }
+  function larg(p){ return p.getBoundingClientRect().width; }
+
+  // Quanto mede o ponto final que vem depois do bloco. Ele é pequeno, mas foi
+  // exatamente ele que caiu para a linha de baixo na primeira versão.
+  function pontoW(){
+    var sonda = document.createElement('span');
+    sonda.textContent = '.';
+    sonda.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap';
+    bloco.parentNode.appendChild(sonda);
+    var w = sonda.getBoundingClientRect().width;
+    sonda.remove();
+    return w;
+  }
+
+  // "NOVAS AVENTURAS" tem 15 caracteres contra 6 de "SONHOS". No telefone ela
+  // não cabe na linha (medido: 371px para 338 disponíveis) e cada palavra que
+  // não couber encolhe só o necessário.
+  //
+  // A conta precisa descontar QUATRO coisas, e errar uma joga o ponto final
+  // para a linha de baixo: o padding da própria linha (.ln tem 10px de cada
+  // lado), o padding do bloco neon, a margem do bloco, e o ponto.
+  function ajustar(){
+    var linha = bloco.closest('.ln');
+    if (!linha) return;
+    var lcs = getComputedStyle(linha), bcs = getComputedStyle(bloco);
+    var conteudo = linha.clientWidth
+      - parseFloat(lcs.paddingLeft) - parseFloat(lcs.paddingRight);
+    var custo = parseFloat(bcs.paddingLeft) + parseFloat(bcs.paddingRight)
+      + parseFloat(bcs.marginLeft) + parseFloat(bcs.marginRight);
+    var util = conteudo - custo - pontoW() - 6;   // 6 de folga contra arredondamento
+
+    palavras.forEach(function(p){
+      p.style.fontSize = '';
+      var nat = larg(p);
+      if (util > 0 && nat > util) p.style.fontSize = Math.max(0.7, util / nat).toFixed(3) + 'em';
+    });
+    bloco.style.width = Math.ceil(larg(palavras[i]) + padH()) + 'px';
+  }
+
+  function trocar(){
+    var sai = palavras[i];
+    i = (i + 1) % palavras.length;
+    var entra = palavras[i];
+
+    sai.classList.remove('on');
+    sai.classList.add('sai');
+    entra.classList.add('on');
+    bloco.style.width = Math.ceil(larg(entra) + padH()) + 'px';
+
+    // depois de sair por cima, a palavra volta em silêncio para baixo, senão
+    // na próxima vez ela desceria em vez de subir.
+    setTimeout(function(){
+      sai.style.transition = 'none';
+      sai.classList.remove('sai');
+      void sai.offsetWidth;                        // força o reflow
+      sai.style.transition = '';
+    }, DUR + 40);
+  }
+
+  function ciclo(){
+    timer = setTimeout(function(){
+      if (!pausado()) trocar();
+      ciclo();
+    }, ESPERA);
+  }
+
+  bloco.addEventListener('pointerenter', function(){ sobMouse = true; });
+  bloco.addEventListener('pointerleave', function(){ sobMouse = false; });
+  // O hero sai da tela depois de poucos segundos de rolagem e o letreiro
+  // continuava girando atrás do leitor. Sem IntersectionObserver a flag fica
+  // false e o comportamento é o de antes.
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function(entradas){
+      foraDaTela = !entradas[0].isIntersecting;
+    }, { threshold: 0 }).observe(bloco);
+  }
+
+  var redim;
+  window.addEventListener('resize', function(){
+    clearTimeout(redim);
+    redim = setTimeout(ajustar, 150);
+  });
+
+  // as fontes mudam a medida depois que carregam; medir antes disso erra
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
+  ajustar();
+  ciclo();
+})();
+</script>
+
+<script>
+// ---------- micro-interação 2: os números contam quando entram na tela ----------
+// Por que contador e não fade: a seção inteira argumenta que "número é prova".
+// Ver o valor subir obriga o olho a ler o número, que é o ponto.
+(function(){
+  var alvos = document.querySelectorAll('[data-conta]');
+  if (!alvos.length) return;
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // sem IntersectionObserver (ou com movimento reduzido) o número já está no HTML:
+  // nada a fazer, e a página continua correta.
+  if (reduzir || !('IntersectionObserver' in window)) return;
+
+  // O valor verdadeiro fica no HTML e SÓ é zerado no instante em que a contagem
+  // começa. Zerar tudo na carga era um defeito real: se o requestAnimationFrame
+  // não roda (aba em segundo plano, navegador poupando bateria, painel sem
+  // pintar), a página ficava afirmando "0 cidades no mapa". Animação que não
+  // acontece é chato; número errado é mentira.
+  function contar(el){
+    var fim = parseInt(el.getAttribute('data-conta'), 10);
+    if (!isFinite(fim)) { return; }
+    // trava de segurança: aconteça o que acontecer, em 1,6s o valor certo está lá
+    var trava = setTimeout(function(){ el.textContent = fim; }, 1600);
+    var dur = 900, ini = null;
+    el.textContent = '0';
+    function passo(t){
+      if (ini === null) ini = t;
+      var k = Math.min((t - ini) / dur, 1);
+      var suave = 1 - Math.pow(1 - k, 3);          // desacelera no fim
+      el.textContent = Math.round(fim * suave);
+      if (k < 1) { requestAnimationFrame(passo); return; }
+      el.textContent = fim;                         // crava o valor exato
+      clearTimeout(trava);
+    }
+    requestAnimationFrame(passo);
+  }
+
+  var obs = new IntersectionObserver(function(entradas){
+    entradas.forEach(function(e){
+      if (!e.isIntersecting) return;
+      contar(e.target);
+      obs.unobserve(e.target);                      // conta uma vez só
+    });
+  }, { threshold: 0.6 });
+  alvos.forEach(function(el){ obs.observe(el); });
+})();
+
+// ---------- micro-interação 3: a sombra responde à direção do cursor ----------
+(function(){
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduzir) return;
+  document.querySelectorAll('.scard').forEach(function(card){
+    card.addEventListener('pointermove', function(e){
+      if (e.pointerType === 'touch') return;        // no dedo isso não existe
+      var r = card.getBoundingClientRect();
+      var dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+      var dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+      card.style.setProperty('--sx', (-dx * 9).toFixed(1) + 'px');
+      card.style.setProperty('--sy', (8 - dy * 6).toFixed(1) + 'px');
+    });
+    card.addEventListener('pointerleave', function(){
+      card.style.removeProperty('--sx');
+      card.style.removeProperty('--sy');
+    });
+  });
+})();
+</script>
 
 <script>
 // ---------- menu mobile ----------

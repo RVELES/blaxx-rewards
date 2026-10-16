@@ -1,4 +1,4 @@
-/* blaxx-google.js — Login com Google para as páginas de autenticação.
+/* blaxx-google.js, Login com Google para as páginas de autenticação.
  *
  * POR QUE ESTE ARQUIVO EXISTE
  * ---------------------------
@@ -11,12 +11,12 @@
  * CONTRATO
  * --------
  * Precisa de:
- *   - `window.BLAXX_GOOGLE_CLIENT_ID` (de `blaxx-config.js`) — público por design
+ *   - `window.BLAXX_GOOGLE_CLIENT_ID` (de `blaxx-config.js`), público por design
  *   - `window.BLAXX_API`             (de `blaxx-config.js`)
  *   - um `<div id="g-signin-btn">` na página
  *   - o SDK: <script src="https://accounts.google.com/gsi/client" async defer>
  *
- * Sem Client ID, esconde o botão e o divisor — melhor não oferecer do que
+ * Sem Client ID, esconde o botão e o divisor, melhor não oferecer do que
  * oferecer quebrado.
  *
  * SEGURANÇA
@@ -24,8 +24,7 @@
  * O Client ID é público (está no bundle do browser e no Info.plist do iOS). A
  * segurança vem do backend: `/auth/google` valida assinatura RSA contra o JWKS
  * do Google, expiração, issuer, audience e `email_verified`. Aqui geramos um
- * nonce de uso único que o backend confere contra o `nonce` do ID token —
- * é o que impede replay de um token capturado.
+ * nonce de uso único que o backend confere contra o `nonce` do ID token,  * é o que impede replay de um token capturado.
  */
 (function () {
   'use strict';
@@ -56,7 +55,7 @@
 
   // O dashboard lê `blaxx_token`/`blaxx_user`; o index/Command Center lê
   // `blaxx_session`. Gravar só um dos formatos manda o usuário de volta pro
-  // login em loop — por isso as quatro chaves, igual ao saveSession() do
+  // login em loop, por isso as quatro chaves, igual ao saveSession() do
   // login.html.
   function salvarSessao(j) {
     try {

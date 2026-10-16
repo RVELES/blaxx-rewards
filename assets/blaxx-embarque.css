@@ -1,0 +1,578 @@
+/* ==========================================================================
+   BlaXx — camada de tema "Embarque" (design 3a · "Embarque + Extrato", 14/10/2026)
+   ==========================================================================
+   O QUE É
+   -------
+   Uma folha que entra DEPOIS de `assets/styles.css` ou de `styles.css` (raiz)
+   e muda a cara de todas as páginas web para a linguagem do design 3a:
+   cartão de embarque, recibo, picote, código de barras, superfícies claras,
+   cantos macios, Archivo condensada no título e Space Mono nos rótulos.
+
+   POR QUE UMA CAMADA, E NÃO EDITAR AS DUAS FOLHAS
+   -----------------------------------------------
+   São dois sistemas de chrome (50 páginas com topbar inline + 23 montadas pelo
+   chrome.js) e duas folhas com vocabulário diferente (.card/.button de um lado,
+   .card/.btn/.chip do outro). As duas já têm, no fim, um bloco "NEO-BRUTAL
+   CLARO" que faz exatamente isto: remapeia tokens e sobrescreve componentes.
+   Esta folha é o bloco seguinte da mesma pilha, só que num arquivo só, para
+   os dois sistemas lerem a MESMA fonte. Como vem por último no <link>, vence
+   a cascata em especificidade igual; o que lá tem !important usa token, e o
+   token também é remapeado aqui.
+
+   REGRAS DE CONTEÚDO QUE ESTA FOLHA NÃO MUDA, MAS O CHROME QUE A USA RESPEITA
+   -------------------------------------------------------------------------
+   Commit b7b8dcd (15/09) tirou "R$ 0,09 por ponto" e as linhas "Taxa" da UI.
+   O mock 3a traz os dois de volta. Não voltam: os slots existem (barra
+   utilitária, grade do cartão, recibo), o texto é outro.
+
+   CORES: o mock usa o lima #C6FF3D. A marca é o neon #59FD27 (logo, Brand
+   Book, memória do projeto). Dois verdes na mesma barra brigam; fica o da marca.
+   O cinza do mock (#5F6168) dá 4,43:1 sobre o fundo #E4E1D9 — reprova AA para
+   texto corrido. --bx-grey é #555860 (5,45:1 no fundo, 6,76:1 no cartão).
+   #5F6168 fica como --bx-grey-soft, só para ícone e decoração.
+
+   FONTES: Archivo (variável, eixos wght 400-900 e wdth 62-125) + Space Mono.
+   O título do design é Archivo 900 com font-stretch 80%: é o eixo de largura
+   que dá o condensado. Space Grotesk, a fonte do Brand Book, não tem esse eixo.
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  /* ---- paleta do design ---- */
+  --bx-bg:#E4E1D9;        /* chão da página */
+  --bx-surface:#FBFAF7;   /* cartão, barra de navegação, rodapé */
+  --bx-surface-2:#F4F2EC; /* hover de item, campo de busca */
+  --bx-line:#D9D6CE;      /* contornos */
+  --bx-leader:#B9B6AE;    /* pontilhado do recibo */
+  --bx-grey:#555860;      /* texto secundário (AA sobre fundo e cartão) */
+  --bx-grey-soft:#5F6168; /* ícone e decoração, nunca texto corrido */
+  --bx-ink:#0A0B0E;
+  --bx-ink-2:#2A2D35;     /* linha sobre preto */
+  --bx-ink-3:#3A3D46;     /* tracejado sobre preto */
+  --bx-ink-muted:#8A8D96; /* texto secundário sobre preto (5,9:1) */
+  --bx-bar-fg:#C9CBD1;    /* texto da barra utilitária */
+  --bx-neon:#59FD27;
+  --bx-neon-deep:#5AB800; /* o verde do wordmark sobre claro; nunca texto */
+  --bx-azul:#8EC3EA;      /* esfera do globo */
+
+  --bx-sans:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --bx-mono:'Space Mono',ui-monospace,Menlo,'Courier New',monospace;
+
+  --bx-r-xl:28px; --bx-r-lg:18px; --bx-r-md:14px; --bx-r-sm:12px; --bx-r-xs:10px; --bx-r-xxs:8px;
+  --bx-sh:0 18px 40px rgba(10,11,14,.08);
+  --bx-sh-lg:0 24px 48px rgba(10,11,14,.12);
+  --bx-ease:cubic-bezier(.2,.75,.2,1);
+
+  /* Picote (linha tracejada com recortes redondos) e código de barras são
+     desenhados só com CSS, para qualquer página usar sem imagem. */
+  --bx-barcode:repeating-linear-gradient(90deg,var(--bx-ink) 0 2px,transparent 2px 4px,var(--bx-ink) 4px 7px,transparent 7px 9px,var(--bx-ink) 9px 10px,transparent 10px 14px);
+
+  /* ---- remapa o vocabulário de assets/styles.css ---- */
+  --black:var(--bx-ink); --ink:var(--bx-ink); --ink-2:var(--bx-ink-2);
+  --muted:var(--bx-grey); --muted-2:var(--bx-grey);
+  --line:var(--bx-line); --line-soft:var(--bx-line);
+  --bg:var(--bx-bg); --bg-warm:var(--bx-surface-2); --card:var(--bx-surface); --paper:var(--bx-bg);
+  --lime:var(--bx-neon); --lime-2:var(--bx-neon); --lime-soft:#EEF7E2; --lime-bg:#EEF7E2; --lime-dark:var(--bx-neon-deep);
+  --ok:#E4F5DA; --ok-text:#1f6b14; --warn:#F7EFD6; --warn-text:#7a5a00;
+  --danger:#F6DFD6; --danger-text:#9a2f15; --info:#DCE8F3; --info-text:#1b4a80;
+  --shadow-sm:0 6px 16px rgba(10,11,14,.05); --shadow:var(--bx-sh); --shadow-lg:var(--bx-sh-lg);
+  --r-xs:var(--bx-r-xxs); --r-sm:var(--bx-r-sm); --r-md:var(--bx-r-md); --r-lg:var(--bx-r-lg); --r-xl:var(--bx-r-xl); --r-pill:999px;
+  --grotesk:var(--bx-sans); --mono:var(--bx-mono); --font-grotesk:var(--bx-sans);
+
+  /* ---- remapa o vocabulário de styles.css (raiz) ---- */
+  --ink-soft:var(--bx-ink-2); --carbon:var(--bx-ink-2);
+  --lime-bright:var(--bx-neon); --lime-deep:var(--bx-neon-deep);
+  --paper-2:var(--bx-surface-2); --white:var(--bx-surface); --cream:var(--bx-surface);
+  --fg:var(--bx-ink); --fg-muted:var(--bx-grey); --fg-subtle:var(--bx-grey);
+  --fg-on-dark:#F4F2EC; --fg-on-dark-muted:var(--bx-ink-muted);
+  --line-strong:var(--bx-line); --line-dark:var(--bx-ink-2);
+  /* "chrome" era o cabeçalho PRETO. No design o cabeçalho é claro; o que
+     continua preto é a barra utilitária e os painéis escuros, que usam
+     --bx-ink direto. */
+  --chrome:var(--bx-surface); --chrome-2:var(--bx-surface-2);
+  --chrome-line:var(--bx-line); --chrome-line-strong:var(--bx-line);
+  --chrome-fg:var(--bx-ink); --chrome-fg-muted:var(--bx-grey); --chrome-surface:var(--bx-surface-2);
+  --lime-06:rgba(89,253,39,.06); --lime-12:rgba(89,253,39,.14); --lime-20:rgba(89,253,39,.22); --lime-40:rgba(89,253,39,.45);
+  /* --warn e --info NÃO entram aqui: a família A os usa como FUNDO (.alert.warn,
+     .status.pendente); redeclará-los como cor de texto no mesmo :root deixava
+     fundo = texto nessas 50 páginas (medido pelos verificadores). */
+  --pos:#1f6b14; --neg:#9a2f15;
+  --font-display:var(--bx-sans); --font-body:var(--bx-sans); --font-mono:var(--bx-mono);
+  --sh-1:0 6px 16px rgba(10,11,14,.05); --sh-2:var(--bx-sh); --sh-3:var(--bx-sh-lg);
+  --glow-lime:0 0 0 1px rgba(89,253,39,.35), var(--bx-sh);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+html{ background:var(--bx-bg); }
+body{
+  margin:0;                             /* páginas sem folha-base (a home) ficavam com os 8px do navegador */
+  background:var(--bx-bg) !important;   /* as duas folhas usam !important aqui */
+  color:var(--bx-ink);
+  font-family:var(--bx-sans);
+  -webkit-font-smoothing:antialiased;
+}
+/* O chrome.js pinta o <main> com --paper; o design não tem segundo chão. */
+/* animation-fill-mode:none — com `both`, o transform de `rise` ficava
+   aplicado depois da animação e o <main> virava containing block de qualquer
+   position:fixed dentro dele (overlay de segurança preso ao main). */
+main{ background:transparent; animation-fill-mode:none; }
+::selection{ background:var(--bx-neon); color:var(--bx-ink); }
+:focus-visible{ outline:3px solid var(--bx-ink); outline-offset:2px; border-radius:4px; }
+
+h1,h2,h3,h4,h5,h6,.h-display,.h-section{ font-family:var(--bx-sans); color:var(--bx-ink); }
+h1,.h-display{
+  font-size:clamp(34px,4.6vw,56px); font-weight:800; line-height:1;
+  letter-spacing:-.03em; font-stretch:88%;
+}
+h2,.h-section{ font-size:clamp(26px,3.2vw,40px); font-weight:800; line-height:1.02; letter-spacing:-.03em; }
+h3{ font-size:21px; font-weight:700; letter-spacing:-.015em; }
+h4{ font-family:var(--bx-mono); font-size:12px; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:var(--bx-grey); }
+p{ color:var(--bx-grey); line-height:1.55; }
+p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
+.lead b{ color:var(--bx-ink); }
+.mono,.stat__label,.stat__val,.eyebrow,.step__n,.kicker,label,.crumbs,.tiny{ font-family:var(--bx-mono); }
+
+/* Rótulo em mono, a assinatura dos cartões do design (DE · PARA · PASSAGEIRO). */
+.bx-rotulo{
+  display:block; font-family:var(--bx-mono); font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--bx-grey);
+}
+.bx-rotulo + b,.bx-rotulo + strong{ display:block; font-size:22px; font-weight:700; letter-spacing:-.01em; line-height:1.1; color:var(--bx-ink); }
+.bx-wrap{ max-width:1280px; margin:0 auto; padding:0 clamp(16px,4.4vw,56px); }
+
+/* ==========================================================================
+   Barra utilitária (preta, Space Mono) — montada pelo assets/blaxx-nav.js
+   ========================================================================== */
+.bx-util{
+  background:var(--bx-ink); color:var(--bx-bar-fg);
+  font-family:var(--bx-mono); font-size:12px; line-height:1.3;
+}
+.bx-util-in{
+  max-width:1280px; margin:0 auto; padding:9px clamp(16px,4.4vw,56px);
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
+}
+.bx-util-grupo{ display:flex; gap:28px; align-items:center; min-width:0; }
+.bx-util-grupo + .bx-util-grupo{ gap:24px; }
+.bx-util span,.bx-util a{ white-space:nowrap; color:inherit; text-decoration:none; }
+.bx-util a:hover,.bx-util a:focus-visible{ color:#fff; text-decoration:underline; text-underline-offset:3px; }
+.bx-util .on{ color:var(--bx-neon); }
+/* No celular só cabe o que cabe inteiro: nada de item cortado no meio. */
+@media (max-width:880px){
+  .bx-util-grupo + .bx-util-grupo{ display:none; }
+  .bx-util-grupo{ gap:16px; }
+  .bx-util-grupo span:nth-child(n+3){ display:none; }
+}
+@media (max-width:600px){ .bx-util-grupo span:nth-child(n+2){ display:none; } }
+
+/* ==========================================================================
+   Topbar clara — cobre as duas famílias:
+     A) <header class="topbar"><nav class="nav"> .brand .links .cta-row  (inline)
+     B) <div class="topbar"> .menu-btn .brand .topnav .topbar__right      (chrome.js)
+   ========================================================================== */
+.topbar{
+  position:sticky; top:0; z-index:60;
+  /* Barra PRETA (pedido de 15/10): texto papel, item ativo e "Criar conta" em
+     neon com texto tinta, logo na variante de fundo escuro. A barra utilitária
+     acima também é preta; uma linha #2A2D35 separa as duas. */
+  background:var(--bx-ink) !important; color:#F4F2EC;
+  border-top:1px solid var(--bx-ink-2);
+  border-bottom:1px solid var(--bx-ink-2) !important;
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+  box-shadow:none;
+}
+/* família B: a própria .topbar é o flex; família A: é o .nav de dentro */
+.topbar{ height:auto; padding:0; gap:0; display:block; }
+.topbar .nav,.topbar > .bx-topo{
+  max-width:1280px; margin:0 auto; padding:14px clamp(16px,4.4vw,56px);
+  display:flex; align-items:center; gap:22px;
+  grid-template-columns:none;
+}
+.topbar .nav > .brand,.topbar .nav > .links,.topbar .nav > .cta-row{ grid-column:auto; justify-self:auto; }
+.topbar .nav > .cta-row,.topbar .topbar__right{ margin-left:auto; }
+
+/* Marca oficial, variante para fundo ESCURO ("Bla" branco, "Xx" neon). */
+.brand{ display:flex; align-items:center; gap:0; font-size:0; color:transparent; }
+.brand .mark,.mark{
+  display:block; width:132px; height:40px; min-width:0; padding:0;
+  background:transparent url('marca/blaxx-wordmark.svg') left center / contain no-repeat;
+  border:0; border-radius:0; box-shadow:none; font-size:0; color:transparent;
+}
+.brand__img{ height:34px !important; width:auto; }
+.brand-sub{ display:none; }
+
+/* Itens de navegação: pílula 8px, hover em superfície-2 (como o mock). */
+.links,.topnav{ display:flex; align-items:center; gap:2px; margin:0; justify-content:flex-start; }
+.links a,.topnav a{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 14px; border-radius:var(--bx-r-xxs);
+  font-family:var(--bx-sans); font-size:15px; font-weight:500; color:#F4F2EC;
+  white-space:nowrap; transition:background .15s;
+}
+.links a:hover,.topnav a:hover,.links a[aria-expanded="true"],.topnav a[aria-expanded="true"]{ background:rgba(244,242,236,.10); color:#fff; }
+.topnav a.is-active,.links a.active,.links a[aria-current="page"],
+.topbar .links a.active,.topbar .links a[aria-current="page"]{ background:var(--bx-neon) !important; color:var(--bx-ink) !important; font-weight:600; }
+.topnav a.is-active::after{ display:none; }
+.bx-caret{
+  display:inline-block; width:6px; height:6px; flex:none;
+  border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg) translateY(-2px); transition:transform .2s var(--bx-ease);
+}
+a[aria-expanded="true"] .bx-caret{ transform:rotate(225deg) translateY(-1px); }
+
+/* Busca (pílula), entre os links e as ações. */
+.bx-busca{
+  flex:1 1 180px; min-width:0; max-width:420px;
+  display:flex; align-items:center; gap:10px;
+  background:#15171C; border:1px solid var(--bx-ink-2); border-radius:999px;
+  padding:0 16px; height:42px; color:var(--bx-ink-muted);
+}
+.bx-busca:focus-within{ border-color:var(--bx-neon); }
+.bx-busca .lupa{ width:12px; height:12px; flex:none; border:2px solid var(--bx-ink-muted); border-radius:50%; position:relative; }
+.bx-busca .lupa::after{ content:''; position:absolute; width:2px; height:6px; background:var(--bx-ink-muted); right:-3px; bottom:-5px; transform:rotate(-45deg); }
+.bx-busca input{
+  flex:1; min-width:0; border:0; background:transparent; font:inherit; font-size:14px; color:#F4F2EC;
+  padding:0; outline:none; box-shadow:none; min-height:0;
+}
+.bx-busca input::placeholder{ color:var(--bx-ink-muted); }
+.bx-busca kbd{
+  font-family:var(--bx-mono); font-size:11px; color:var(--bx-ink-muted);
+  border:1px solid var(--bx-ink-2); border-radius:4px; padding:1px 6px; background:var(--bx-ink);
+}
+@media (max-width:1180px){ .bx-busca{ display:none; } }
+
+/* Ações da direita: "Entrar" em texto, "Criar conta" em pílula preta 8px. */
+.cta-row,.topbar__right{ display:flex; align-items:center; gap:10px; }
+.bx-entrar,.cta-row > a.button.ghost:not(.nav-bell){
+  background:transparent; border:0; box-shadow:none; padding:10px 8px;
+  font-family:var(--bx-sans); font-size:15px; font-weight:500; color:#F4F2EC; text-transform:none; letter-spacing:0;
+}
+.bx-entrar:hover{ text-decoration:underline; text-underline-offset:4px; }
+.bx-criar,.cta-row > a.button:not(.ghost):not(.secondary):not(.nav-user){
+  background:var(--bx-neon); color:var(--bx-ink); border:0; border-radius:var(--bx-r-xxs);
+  padding:11px 18px; font-family:var(--bx-sans); font-size:15px; font-weight:600; letter-spacing:0; text-transform:none;
+  box-shadow:none;
+}
+.bx-criar:hover,.cta-row > a.button:not(.ghost):not(.secondary):not(.nav-user):hover{ background:#4FE81F; transform:none; box-shadow:none; }
+/* sino e chip do usuário (preenchidos pelo blaxx-nav-user.js) */
+.cta-row .button.ghost.nav-bell{ width:42px; height:42px; padding:0; border-radius:999px; border:1px solid var(--bx-ink-2); background:transparent; color:#F4F2EC; box-shadow:none; }
+.cta-row .button.secondary.nav-user,.user-pill{
+  background:transparent; border:1px solid var(--bx-ink-2); border-radius:999px; box-shadow:none;
+  padding:5px 14px 5px 5px; color:#F4F2EC; font-weight:600; text-transform:none; letter-spacing:0;
+}
+.user-pill:hover,.cta-row .button.secondary.nav-user:hover{ border-color:var(--bx-neon); background:transparent; transform:none; }
+.nav-av,.user-pill .av,.profile-card .av,.avatar{ background:var(--bx-neon); color:var(--bx-ink); border:0; }
+.icon-btn{ border:1px solid var(--bx-line); background:var(--bx-surface); color:var(--bx-ink); }
+.icon-btn:hover{ background:var(--bx-surface-2); transform:none; }
+.topbar .icon-btn,.topbar .menu-btn{ border:1px solid var(--bx-ink-2); background:transparent; color:#F4F2EC; }
+
+/* ==========================================================================
+   Mega-menu — painel absoluto sob a barra, três colunas (2 listas + destaque)
+   Markup em assets/blaxx-nav.js (montarMega).
+   ========================================================================== */
+.bx-mega{
+  position:absolute; left:0; right:0; top:100%; z-index:70;
+  padding:0 clamp(16px,4.4vw,56px);
+}
+.bx-mega[hidden]{ display:none; }
+.bx-mega-in{
+  max-width:1168px; margin:0 auto;
+  background:var(--bx-surface); border:1px solid var(--bx-line); border-top:0;
+  border-radius:0 0 20px 20px; box-shadow:var(--bx-sh-lg);
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)) 340px; gap:8px; padding:20px;
+  /* Só o deslocamento é animado, nunca a opacidade: a visibilidade do painel
+     não pode depender do relógio da animação. Medido com a aba em segundo
+     plano, o keyframe fica parado no "from" — com opacity:0 ali, o painel
+     abria invisível e roubava os cliques. Um translate parado é inofensivo. */
+  animation:bxMegaEntra .22s var(--bx-ease);
+}
+@keyframes bxMegaEntra{ from{ transform:translateY(-6px);} to{ transform:none;} }
+@media (prefers-reduced-motion:reduce){ .bx-mega-in{ animation:none; } }
+.bx-mega-col{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.bx-mega-rotulo{ font-family:var(--bx-mono); font-size:11px; color:var(--bx-grey); letter-spacing:.1em; padding:8px 14px; text-transform:uppercase; }
+.bx-mega-item{
+  display:flex; flex-direction:column; gap:3px; padding:12px 14px; border-radius:var(--bx-r-xs);
+  color:var(--bx-ink); text-decoration:none; min-height:0;
+}
+.bx-mega-item:hover,.bx-mega-item:focus-visible{ background:var(--bx-surface-2); }
+.bx-mega-item b{ font-weight:700; font-size:15px; line-height:1.2; }
+.bx-mega-item span{ font-size:13px; color:var(--bx-grey); line-height:1.4; }
+
+/* destaque 1: bilhete neon com canhoto vertical */
+.bx-mega-neon{ display:flex; background:var(--bx-neon); border-radius:var(--bx-r-md); overflow:hidden; color:var(--bx-ink); text-decoration:none; min-height:0; }
+.bx-mega-neon .miolo{ flex:1; padding:20px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.bx-mega-neon .miolo .bx-rotulo{ color:var(--bx-ink); }
+.bx-mega-neon .num{ font-size:40px; font-weight:800; line-height:1; letter-spacing:-.02em; }
+.bx-mega-neon .num small{ font-size:15px; font-weight:600; }
+.bx-mega-neon .ir{ margin-top:auto; font-weight:700; font-size:14px; }
+.bx-mega-neon:hover .ir{ text-decoration:underline; text-underline-offset:3px; }
+.bx-vert{ font-family:var(--bx-mono); font-size:10px; writing-mode:vertical-rl; letter-spacing:.2em; text-transform:uppercase; }
+.bx-canhoto{ width:56px; flex:none; display:flex; align-items:center; justify-content:center; border-left:2px dashed rgba(10,11,14,.35); }
+
+/* destaque 2: painel de partidas (preto) */
+.bx-mega-painel{ background:var(--bx-ink); color:#F4F2EC; border-radius:var(--bx-r-md); padding:20px; display:flex; flex-direction:column; gap:10px; font-family:var(--bx-mono); font-size:13px; min-width:0; }
+.bx-mega-painel .bx-rotulo{ color:var(--bx-neon); }
+.bx-mega-painel .linha{ display:flex; justify-content:space-between; border-top:1px solid var(--bx-ink-2); padding-top:8px; }
+.bx-mega-painel .linha i{ font-style:normal; color:var(--bx-neon); }
+.bx-mega-painel .ir{ margin-top:auto; font-family:var(--bx-sans); font-weight:700; color:#F4F2EC; text-decoration:none; }
+.bx-mega-painel .ir:hover{ text-decoration:underline; text-underline-offset:3px; }
+
+/* destaque 3: recibo */
+.bx-mega-recibo{ background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-md); overflow:hidden; min-width:0; }
+.bx-mega-recibo .corpo{ padding:18px 20px; font-family:var(--bx-mono); font-size:13px; display:flex; flex-direction:column; gap:10px; }
+.bx-mega-recibo .ir{ background:var(--bx-ink); color:var(--bx-surface); text-align:center; padding:12px; font-family:var(--bx-sans); font-weight:700; text-decoration:none; border-radius:var(--bx-r-xxs); }
+
+@media (max-width:1100px){ .bx-mega-in{ grid-template-columns:1fr 1fr; } .bx-mega-neon,.bx-mega-painel,.bx-mega-recibo{ grid-column:1 / -1; } }
+@media (max-width:880px){ .bx-mega{ display:none !important; } }
+
+/* ==========================================================================
+   Motivos do design: picote, pontilhado, zigue-zague, código de barras
+   ========================================================================== */
+/* linha de recibo: rótulo … valor */
+.bx-leader{ display:flex; gap:8px; align-items:baseline; font-family:var(--bx-mono); }
+.bx-leader > span:first-child,.bx-leader > span:last-child{ white-space:nowrap; }
+.bx-leader > i{ flex:1; border-bottom:2px dotted var(--bx-leader); transform:translateY(-4px); min-width:12px; }
+/* picote vertical entre o miolo e o canhoto de um bilhete */
+.bx-perf{ position:relative; width:0; border-left:2px dashed var(--bx-line); align-self:stretch; flex:none; }
+.bx-perf::before,.bx-perf::after{
+  content:''; position:absolute; left:-15px; width:28px; height:28px; border-radius:50%;
+  background:var(--bx-perf-fundo,var(--bx-bg));
+}
+.bx-perf::before{ top:-14px; } .bx-perf::after{ bottom:-14px; }
+/* borda serrilhada de recibo (em cima e embaixo) */
+.bx-zig{ height:12px; background:
+  linear-gradient(135deg,transparent 6px,var(--bx-zig-cor,var(--bx-surface)) 0) 0 0/12px 12px repeat-x,
+  linear-gradient(-135deg,transparent 6px,var(--bx-zig-cor,var(--bx-surface)) 0) 0 0/12px 12px repeat-x; }
+.bx-zig--baixo{ background:
+  linear-gradient(45deg,transparent 6px,var(--bx-zig-cor,var(--bx-surface)) 0) 0 0/12px 12px repeat-x,
+  linear-gradient(-45deg,transparent 6px,var(--bx-zig-cor,var(--bx-surface)) 0) 0 0/12px 12px repeat-x; }
+.bx-barcode{ height:36px; background:var(--bx-barcode); }
+.bx-tracejo{ border-top:2px dashed var(--bx-ink); }
+
+/* ==========================================================================
+   Componentes — vocabulário de assets/styles.css (família A)
+   Cantos macios, contorno fino, sombra suave: o oposto do bloco brutal que
+   vem antes nas folhas, por isso cada propriedade é reposta aqui.
+   ========================================================================== */
+.card,.panel,.wallet,.summary-card,.stat,.table,.auth-card,.market-card,.partner-card,
+.campaign-card,.step-card,.cat-card,.price-card,.reward-card,.alert,.empty,details.faq,.copy-box,.mini{
+  background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-lg);
+  box-shadow:var(--bx-sh);
+}
+.card.compact,.stat,.mini,.alert,.market-card,.partner-card,.step-card,.cat-card,.reward-card{ box-shadow:none; }
+.card:hover,.market-card:hover,.partner-card:hover,.step-card:hover,.cat-card:hover,.price-card:hover,.reward-card:hover{
+  transform:none; box-shadow:var(--bx-sh); border-color:var(--bx-line);
+}
+.card.lime,.mini{ background:var(--bx-neon); border-color:transparent; color:var(--bx-ink); }
+.card.lime h1,.card.lime h2,.card.lime h3,.card.lime h4,.card.lime p{ color:var(--bx-ink); }
+.card.featured,.wallet.dark,.price-card.featured,.band-dark,.hero-box{
+  background:var(--bx-ink); color:#F4F2EC; border-color:var(--bx-ink); border-radius:var(--bx-r-xl);
+}
+.hero-box::after{ display:none; }
+.card.featured p,.wallet.dark .equiv,.band-dark p,.hero-box p{ color:var(--bx-ink-muted); }
+.wallet.dark .label{ color:var(--bx-neon); }
+.empty,.copy-box{ border-style:dashed; }
+.table th{ background:transparent; border-bottom:1px solid var(--bx-line); color:var(--bx-grey); font-family:var(--bx-mono); font-size:11px; letter-spacing:.08em; }
+.table td{ border-bottom:1px solid var(--bx-line); }
+.table tr:hover td{ background:var(--bx-surface-2); }
+@media (max-width:720px){ .table tr{ border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); } }
+
+.kicker,.tag,.status,.chip{
+  font-family:var(--bx-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  background:var(--bx-surface-2); color:var(--bx-ink); border:1px solid var(--bx-line); border-radius:999px;
+}
+.chip.active,.chip--live,.kicker{ background:var(--bx-neon); border-color:transparent; }
+.card-icon,.icon-badge,.mark-glyph,.glyph,.tile{ border:0; border-radius:var(--bx-r-sm); background:var(--bx-neon); color:var(--bx-ink); }
+.glyph.dark,.icon-badge.dark,.tile--ink{ background:var(--bx-ink); color:var(--bx-neon); }
+.tile:hover{ transform:none; box-shadow:none; }
+.progress,.bar:has(> .bar__fill){ background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:999px; height:12px; }
+.progress > span,.bar__fill{ background:var(--bx-neon); border-radius:999px; }
+
+/* Rótulo de CAMPO em mono caixa alta. Um <label> que embrulha um controle
+   (checkbox "Lembrar de mim", cartão de opção, aceite de termos) é frase, e
+   frase fica em Archivo. */
+label:not(:has(input,select,textarea)):not(.option-card):not(.legal):not(.switch):not(.checkbox-row label):not(.radio-row label){
+  font-family:var(--bx-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--bx-grey);
+}
+.checkbox-row label,.radio-row label,label.legal,label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){
+  font-family:var(--bx-sans); font-size:14px; letter-spacing:0; text-transform:none; color:var(--bx-ink);
+}
+input[type="text"],input[type="email"],input[type="password"],input[type="tel"],input[type="number"],
+input[type="search"],input[type="date"],select,textarea{
+  background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-sm);
+  color:var(--bx-ink); font-family:var(--bx-sans); font-weight:500;
+}
+input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--bx-ink); box-shadow:0 0 0 3px rgba(89,253,39,.35); }
+
+/* seletores do bloco brutal de assets/styles.css que ainda escapavam */
+.reward-img{ border-bottom:1px solid var(--bx-line); border-radius:var(--bx-r-md) var(--bx-r-md) 0 0; background:var(--bx-surface-2); }
+.partner-logo,.market-card .market-logo,.partner-hero-logo{ border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); }
+.empty .icon{ border:0; border-radius:50%; background:var(--bx-surface-2); }
+input[type="range"]{ border:0; background:transparent; box-shadow:none; }
+/* títulos dentro de superfície preta: a regra global de h1-h4 os pintava de tinta */
+.card--dark h1,.card--dark h2,.card--dark h3,.card--dark h4,
+.card.featured h1,.card.featured h2,.card.featured h3,.card.featured h4,
+.wallet.dark h1,.wallet.dark h2,.wallet.dark h3,.wallet.dark h4,
+.band-dark h1,.band-dark h2,.band-dark h3,.band-dark h4,
+.hero-box h1,.hero-box h2,.hero-box h3,.price-card.featured h1,.price-card.featured h2,.price-card.featured h3{ color:#F4F2EC; }
+/* verde-oliva #6f8a18 da paleta antiga como cor de texto (3,1:1): vira tinta,
+   e o destaque do hero vira preenchimento neon */
+.hero-v3 h1 .accent{ color:var(--bx-ink); background:var(--bx-neon); padding:0 .08em; }
+.price-card .bonus{ color:var(--bx-ink); }
+.sec-head .eyebrow{ display:inline-flex; width:auto; color:var(--bx-ink); }
+.button:disabled,button.button:disabled,.btn:disabled,.button[aria-disabled="true"]{ opacity:.45; cursor:not-allowed; }
+
+/* ---- botões (família A: .button) ---- */
+.button,button.button{
+  background:var(--bx-neon); color:var(--bx-ink);
+  border:0; border-radius:var(--bx-r-sm); box-shadow:none;
+  padding:13px 20px; font-family:var(--bx-sans); font-size:15px; font-weight:700;
+  text-transform:none; letter-spacing:0; transition:background .15s, transform .15s;
+}
+.button:hover,button.button:hover{ transform:none; box-shadow:none; background:#4FE81F; }
+.button.secondary{ background:var(--bx-surface); color:var(--bx-ink); border:1px solid var(--bx-line); box-shadow:none; }
+.button.secondary:hover{ background:var(--bx-surface-2); }
+.button.dark{ background:var(--bx-ink); color:var(--bx-surface); border:0; box-shadow:none; }
+.button.dark:hover{ background:var(--bx-ink-2); }
+.button.ghost{ background:transparent; color:var(--bx-ink); border:0; box-shadow:none; }
+.button.ghost:hover{ background:var(--bx-surface-2); }
+.button.danger{ background:var(--danger); color:var(--danger-text); border:0; box-shadow:none; }
+.button.sm{ padding:9px 14px; font-size:13px; }
+.button.lg{ padding:17px 26px; font-size:17px; }
+
+/* ==========================================================================
+   Componentes — vocabulário de styles.css raiz (família B)
+   ========================================================================== */
+.btn{
+  border:0; border-radius:var(--bx-r-xxs); box-shadow:none;
+  font-family:var(--bx-sans); font-size:15px; font-weight:700; text-transform:none; letter-spacing:0;
+  transition:background .15s;
+}
+.btn:hover{ transform:none; box-shadow:none; }
+.btn--primary{ background:var(--bx-neon); color:var(--bx-ink); }
+.btn--primary:hover{ background:#4FE81F; }
+.btn--primary:active{ background:var(--bx-neon-deep); }
+.btn--dark{ background:var(--bx-ink); color:var(--bx-surface); }
+.btn--dark:hover{ background:var(--bx-ink-2); }
+.btn--white,.btn--outline{ background:var(--bx-surface); color:var(--bx-ink); border:1px solid var(--bx-line); }
+.btn--white:hover,.btn--outline:hover{ background:var(--bx-surface-2); }
+.btn--ghost-dark{ background:transparent; color:#F4F2EC; border:1px solid rgba(244,242,236,.35); }
+.eyebrow{ background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:999px; color:var(--bx-ink); font-weight:400; }
+.card--dark{ background:var(--bx-ink); color:#F4F2EC; border-color:var(--bx-ink); border-radius:var(--bx-r-xl); }
+.card--dark p{ color:var(--bx-ink-muted); }
+.card--lime{ background:var(--bx-neon); border-color:transparent; color:var(--bx-ink); }
+.chip--ink{ background:var(--bx-ink); color:var(--bx-neon); border-color:transparent; }
+.chip--ghost{ background:rgba(244,242,236,.10); color:#F4F2EC; border-color:rgba(244,242,236,.25); }
+.rule{ background:var(--bx-line); }
+
+/* sidebar (chrome.js e família A): clara, item ativo em preto */
+.sidebar{ background:var(--bx-surface); border:1px solid var(--bx-line); border-right:1px solid var(--bx-line); border-radius:var(--bx-r-lg); box-shadow:none; }
+.sidebar__sticky{ top:120px; max-height:calc(100vh - 120px); }
+.profile-card{ background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:var(--bx-r-md); }
+.profile-card__name,.side-user-name{ color:var(--bx-ink); }
+.profile-card__meta,.side-user-tier{ color:var(--bx-grey); font-family:var(--bx-mono); }
+.profile-card__meta b{ color:var(--bx-ink); }
+.nav-section{ color:var(--bx-grey); }
+.nav-item,.side-nav a{ color:var(--bx-grey); border-radius:var(--bx-r-xs); font-weight:600; }
+.nav-item .ico{ color:var(--bx-grey); }
+.nav-item:hover,.side-nav a:hover{ background:var(--bx-surface-2); color:var(--bx-ink); }
+.nav-item:hover .ico{ color:var(--bx-ink); }
+.nav-item.is-active,.side-nav a.active{ background:var(--bx-ink); color:var(--bx-surface); border:0; box-shadow:none; }
+.nav-item.is-active .ico,.side-nav a.active .ic{ background:transparent; color:var(--bx-neon); }
+.nav-item .badge{ background:var(--bx-neon); color:var(--bx-ink); }
+.nav-divider{ background:var(--bx-line); }
+.side-user,.side-foot{ border-color:var(--bx-line); }
+.shell{ grid-template-columns:268px minmax(0,1fr); gap:24px; }
+.shell--sem-sidebar{ grid-template-columns:minmax(0,1fr); }
+/* Abaixo de 900px a sidebar some (styles.css raiz), mas esta regra vinha
+   depois e mantinha a trilha de 268px: o <main> ficava com um terço da tela. */
+@media (max-width:900px){ .shell{ grid-template-columns:minmax(0,1fr); gap:0; } }
+/* Sem sidebar (visitante) o conteúdo não pode ir de borda a borda: mesma
+   coluna de 1280px da barra e do rodapé. */
+.shell--sem-sidebar > main{ max-width:1280px; margin:0 auto; width:100%; padding:36px clamp(16px,4.4vw,56px) 80px; }
+@media (max-width:880px){ .sidebar .side-nav a{ border:1px solid var(--bx-line); box-shadow:none; } }
+
+/* ==========================================================================
+   Gaveta do mobile (as três implementações), clara como a barra
+   ========================================================================== */
+.bxnav-drawer,.drawer,.bx-drawer{ background:var(--bx-surface); border-left:1px solid var(--bx-line); border-right:1px solid var(--bx-line); }
+.bx-gaveta-esq .bxnav-drawer{ border-right:1px solid var(--bx-line); }
+.bxnav-drawer a,.drawer .nav-item,.bx-drawer nav a{ color:var(--bx-ink); border-bottom:1px solid var(--bx-line); font-family:var(--bx-sans); font-weight:600; }
+.bxnav-drawer a:hover,.bxnav-drawer a:focus-visible,.drawer .nav-item:hover{ background:var(--bx-surface-2); }
+.bxnav-drawer a[aria-current="page"],.drawer .nav-item.is-active{ background:var(--bx-ink); color:var(--bx-surface); }
+.bxnav-grupo{ color:var(--bx-grey); font-family:var(--bx-mono); }
+.bxnav-cta{ background:var(--bx-ink); color:var(--bx-surface) !important; border:0; border-radius:var(--bx-r-xxs); }
+.bxnav-cta--vazado{ background:transparent; color:var(--bx-ink) !important; border:1px solid var(--bx-line); }
+.bxnav-fechar{ border:1px solid var(--bx-line); color:var(--bx-ink); background:var(--bx-surface); }
+/* O hambúrguer nasce como primeiro filho do .cta-row (assets/blaxx-nav.js);
+   no design ele é a última coisa à direita, depois de "Criar conta". */
+.bxnav-burger{ background:transparent; border:1px solid var(--bx-ink-2); order:9; }
+.bxnav-burger span{ background:#F4F2EC; }
+.bxnav-scrim,.drawer-scrim,.bx-drawer-backdrop{ background:rgba(10,11,14,.45); }
+
+/* ==========================================================================
+   Rodapé-recibo — montado pelo assets/blaxx-nav.js (montarRodape) nos dois
+   sistemas (footer.footer e footer.site-footer)
+   ========================================================================== */
+/* Mesma largura da barra de navegação (pedido de 15/10): preto de borda a
+   borda, conteúdo na coluna de 1280px com o mesmo respiro lateral da barra. */
+footer.footer,footer.site-footer{
+  background:transparent; border:0; color:#F4F2EC; margin:72px 0 0; padding:0;
+}
+.bx-foot{ max-width:none; margin:0; filter:none; }
+.bx-foot .bx-zig--baixo{ display:none; }
+/* Rodapé PRETO, cores invertidas (pedido de 15/10): recibo escuro, texto
+   papel, cinza #8A8D96 (5,9:1 sobre preto), serrilhado e barras na cor da
+   superfície, logo na variante de fundo escuro ("Bla" branco). */
+.bx-foot .bx-zig{ --bx-zig-cor:var(--bx-ink); }
+.bx-foot .bx-barcode{ background:repeating-linear-gradient(90deg,#F4F2EC 0 2px,transparent 2px 4px,#F4F2EC 4px 7px,transparent 7px 9px,#F4F2EC 9px 10px,transparent 10px 14px); }
+.bx-foot-corpo{
+  background:var(--bx-ink); color:#F4F2EC; padding:48px clamp(16px,4.4vw,56px) 32px; font-size:15px;
+  max-width:1280px; margin:0 auto;
+  display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:32px;
+}
+.bx-foot-marca{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
+.bx-foot-marca img{ height:36px; width:auto; display:block; }
+.bx-foot-marca p{ color:var(--bx-ink-muted); line-height:1.5; max-width:320px; margin:0; }
+.bx-foot-col{ display:flex; flex-direction:column; gap:12px; }
+.bx-foot-col h4{ margin:0; color:#F4F2EC; font-family:var(--bx-mono); font-size:12px; letter-spacing:.08em; font-weight:400; }
+.bx-foot-col a{ color:var(--bx-ink-muted); text-decoration:none; width:max-content; max-width:100%; }
+.bx-foot-col a:hover{ color:var(--bx-neon); text-decoration:underline; text-underline-offset:3px; }
+.bx-foot-base{
+  background:var(--bx-ink); padding:0 clamp(16px,4.4vw,56px) 36px; max-width:1280px; margin:0 auto;
+  display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;
+  font-family:var(--bx-mono); font-size:12px; color:var(--bx-ink-muted);
+}
+.bx-foot-base .bx-barcode{ height:28px; width:200px; flex:none; }
+.bx-foot-aviso{ flex:1 1 100%; font-size:12px; color:var(--bx-ink-muted); line-height:1.55; max-width:72ch; font-family:var(--bx-sans); }
+@media (max-width:900px){
+  .bx-foot-corpo{ grid-template-columns:1fr 1fr; padding:32px 16px 24px; gap:28px 20px; }
+  .bx-foot-marca{ grid-column:1 / -1; }
+  .bx-foot-base{ padding:0 16px 28px; }
+}
+@media (max-width:540px){ .bx-foot-corpo{ grid-template-columns:1fr; } }
+
+/* ==========================================================================
+   Responsivo da barra
+   ========================================================================== */
+@media (max-width:880px){
+  .topbar .nav,.topbar > .bx-topo{ padding:10px 16px; gap:10px; }
+  .links,.topnav{ display:none; }
+  .brand .mark,.mark{ width:112px; height:34px; }
+  /* assets/styles.css esconde TODO .button.ghost do .cta-row no celular; a
+     intenção era o "Entrar" do visitante, mas levava junto o "Voltar" de
+     comprar-livre. Só o "Entrar" some. */
+  .cta-row > a.button.ghost:not(.nav-bell):not([href="login.html"]){ display:inline-flex; }
+  .cta-row > a.button.ghost[href="login.html"],.cta-row > .bx-entrar{ display:none; }
+  .bx-criar,.cta-row > a.button:not(.ghost):not(.secondary):not(.nav-user){ padding:10px 14px; font-size:14px; }
+}
+/* Ancora os mega-menus: a .topbar precisa ser o contexto do absolute. */
+.topbar{ position:sticky; }
+.topbar.bx-com-mega{ position:sticky; }
+
+/* assets/styles.css força `.card{border-radius:16px !important}` abaixo de
+   480px; só outro !important traz a escala do tema de volta. E os links
+   corridos dentro de cards não podem virar caixas de 44px no meio da frase. */
+@media (max-width:480px){ .card{ border-radius:var(--bx-r-lg) !important; } }
+@media (max-width:900px){ .card p a,.card li a,.card td a,p > a{ min-height:0; display:inline; } }

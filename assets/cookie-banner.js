@@ -3,14 +3,14 @@
  * ==========================================================================
  * Atende a obrigacao LGPD (art. 8) de consentimento livre, informado e
  * inequivoco para tracking/analytics. Categorias separadas:
- *   - essencial: sempre on (login, seguranca) — nao precisa de aceite
+ *   - essencial: sempre on (login, seguranca), nao precisa de aceite
  *   - analytics: aceite explicito (GA, PostHog, Mixpanel)
  *   - marketing: aceite explicito (Meta Pixel, ads remarketing)
  *
  * Preferencias salvas em localStorage como blaxx_cookie_consent_v1.
  * Para revogar: link no footer "Configuracoes de cookies".
  *
- * Trigger: o site nao chama analytics direto — outros scripts checam
+ * Trigger: o site nao chama analytics direto, outros scripts checam
  * window.blaxxConsent({category}) antes de carregar tags.
  * ========================================================================== */
 (function () {
@@ -37,7 +37,7 @@
         } catch (_) {}
     }
 
-    // API publica — outros scripts chamam pra checar consentimento
+    // API publica, outros scripts chamam pra checar consentimento
     window.blaxxConsent = function (category) {
         var prefs = load() || DEFAULT;
         return !!prefs[category];
@@ -77,10 +77,10 @@
             'aria-modal': 'false',
             'aria-label': 'Configuracoes de cookies',
             style: 'position:fixed;bottom:0;left:0;right:0;z-index:9500;'
-                 + 'background:#0A0A0A;color:#fff;padding:18px 24px;'
+                 + 'background:#0A0B0E;color:#F4F2EC;padding:18px 24px;'
                  + 'box-shadow:0 -8px 24px rgba(0,0,0,0.25);'
                  + 'display:flex;flex-wrap:wrap;align-items:center;gap:16px;'
-                 + 'font-family:-apple-system,Inter,Segoe UI,system-ui,sans-serif;font-size:14px;'
+                 + 'font-family:var(--bx-sans,system-ui,sans-serif);font-size:14px;'
         });
 
         if (simpleMode) {
@@ -105,7 +105,7 @@
             }, ['Apenas essenciais']);
             var btnAccept = el('button', {
                 type: 'button',
-                style: 'background:#59FD27;color:#0A0A0A;border:none;'
+                style: 'background:#59FD27;color:#0A0B0E;border:none;'
                      + 'padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;'
             }, ['Aceitar todos']);
 
@@ -163,7 +163,7 @@
 
             var bsave = el('button', {
                 type: 'button',
-                style: 'background:#59FD27;color:#0A0A0A;border:none;'
+                style: 'background:#59FD27;color:#0A0B0E;border:none;'
                      + 'padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;'
             }, ['Salvar preferencias']);
             bsave.addEventListener('click', function () {

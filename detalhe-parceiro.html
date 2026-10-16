@@ -3,12 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Mercado Bom Preço · Parceiro | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> da página só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,7 +50,7 @@
     <div class="band-dark" style="padding:40px;">
         <div class="grid two" style="gap:40px;align-items:center;">
             <div>
-                <!-- Logo grande do parceiro (Clearbit) — escala automatica
+                <!-- Logo grande do parceiro (Clearbit), escala automatica
                      se ?id= na URL retornar partner valido. Cai pra emoji. -->
                 <div data-bx-partner-logo class="partner-hero-logo" aria-hidden="true">
                   <span class="partner-logo-fallback">◯</span>
@@ -61,10 +63,10 @@
                     <a href="#" class="button secondary">Encontrar loja</a>
                 </div>
             </div>
-            <div class="card" style="background:#1c1f19;border-color:#2a2d28;color:white;">
+            <div class="card" style="background:var(--bx-ink-2);border-color:var(--bx-ink-3);color:#F4F2EC;box-shadow:none;">
                 <h3 style="color:white;">Você ganha</h3>
-                <div data-bx-partner-rule style="font-size:32px;font-weight:900;letter-spacing:-0.04em;color:var(--lime);line-height:1.1;">—</div>
-                <p style="color:#b8bdaf;">crédito em até 24h após a compra</p>
+                <div data-bx-partner-rule style="font-size:32px;font-weight:900;letter-spacing:-0.04em;color:var(--lime);line-height:1.1;">, </div>
+                <p style="color:var(--bx-ink-muted);">crédito em até 24h após a compra</p>
                 <span class="status ativo" style="margin-top:8px;">● Parceiro ativo</span>
             </div>
         </div>
@@ -79,12 +81,12 @@
             <p>Pontos confirmados em até 1 dia útil após a compra.</p>
         </div>
         <div class="card">
-            <div class="card-icon">🛒</div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
             <h3>Sem valor mínimo</h3>
             <p>Acumule pontos a partir de qualquer valor de compra.</p>
         </div>
         <div class="card">
-            <div class="card-icon">📱</div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 19h2"/></svg></div>
             <h3>Online &amp; loja</h3>
             <p>Funciona no app, no site e em todas as lojas físicas.</p>
         </div>
@@ -190,9 +192,12 @@
     </div>
 </footer>
 <style>
-  [data-link="parceiros"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo no tema "Embarque": pílula preta com texto claro, sem borda nem
+     sombra dura (mesma leitura de .links a[aria-current] e .side-nav a.active
+     em assets/blaxx-embarque.css). O ícone fica neon, que sobre preto passa. */
+  [data-link="parceiros"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
+  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
+  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

@@ -6,8 +6,10 @@
 <title>Resgate concluído | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia tokens e componentes.
+     Fica no HTML, e não só injetado pelo assets/blaxx-nav.js, para a página não piscar no tema antigo. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -40,7 +42,7 @@
 <main class="shell">
 <section class="section">
     <div class="card center" style="padding:56px 32px;max-width:640px;margin:40px auto;">
-        <div class="icon-badge" style="background:var(--ok);color:var(--ok-text);">✓</div>
+        <div class="icon-badge" style="background:var(--ok);color:var(--ok-text);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
         <h1 style="font-size:36px;">Resgate concluído!</h1>
         <p class="lead" style="max-width:48ch;margin:8px auto 22px;">Seu voucher Netflix 30 dias foi enviado para <strong style="color:var(--ink);">mariana@email.com</strong>. Confira a caixa de entrada.</p>
 
@@ -62,8 +64,8 @@
     <div class="section-head"><h2>Continue ganhando pontos</h2></div>
     <div class="grid">
         <a href="parceiros.html" class="card"><div class="card-icon">⊙</div><h3>Ver parceiros</h3><p>Acumule pontos onde você já compra.</p></a>
-        <a href="campanhas.html" class="card"><div class="card-icon">▲</div><h3>Campanhas ativas</h3><p>Bônus por tempo limitado.</p></a>
-        <a href="indique.html" class="card"><div class="card-icon">♥</div><h3>Indique e ganhe</h3><p>5.000 pts a cada amigo cadastrado.</p></a>
+        <a href="campanhas.html" class="card"><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div><h3>Campanhas ativas</h3><p>Bônus por tempo limitado.</p></a>
+        <a href="indique.html" class="card"><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M12 20S4 14.5 4 9.2A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 8 2.2C20 14.5 12 20 12 20Z"/></svg></div><h3>Indique e ganhe</h3><p>5.000 pts a cada amigo cadastrado.</p></a>
     </div>
 </section>
 </main>
@@ -115,9 +117,12 @@
     </div>
 </footer>
 <style>
-  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo na linguagem do tema "Embarque" (mesmos valores de .links a.active e
+     .side-nav a.active em assets/blaxx-embarque.css): pílula preta, texto claro e só o
+     ícone em neon. Antes era texto neon sobre preto, a assinatura do bloco Neo-Brutal. */
+  [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
+  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
+  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

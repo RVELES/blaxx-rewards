@@ -2,7 +2,7 @@
  * Sprint 4 (S4-5) · TOTP UI (App autenticador)
  * ==========================================================================
  * Expoe a UI minima do MFA TOTP que o backend ja tinha implementado (e
- * estava sem frontend — "dead code" pela avaliacao CTO). Auto-instala em
+ * estava sem frontend, "dead code" pela avaliacao CTO). Auto-instala em
  * qualquer pagina que tenha `#bx-totp-status`.
  *
  * Endpoints usados:

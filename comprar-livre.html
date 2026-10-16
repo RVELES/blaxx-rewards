@@ -5,30 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Comprar pontos · valor livre | BlaXx</title>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
+  /* Tema Embarque: superfícies claras, contorno 1px, cantos 18/14/12 e rótulos
+     em Space Mono. As cores vêm dos tokens --bx-* de assets/blaxx-embarque.css;
+     nenhum hexadecimal da paleta antiga fica aqui. */
   .buy-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
-  .step-card { background: #fff; border: 1px solid #e6eadf; border-radius: 14px; padding: 28px; margin-bottom: 18px; }
-  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #59FD27; color: #080907; font-weight: 800; font-size: 13px; margin-right: 8px; }
-  .amount-input { font-size: 32px; font-weight: 800; padding: 14px 18px; border: 2px solid #e6eadf; border-radius: 12px; width: 100%; text-align: center; }
-  .amount-input:focus { outline: none; border-color: #59FD27; }
-  .points-preview { font-size: 18px; color: #5f665e; text-align: center; margin: 12px 0; }
-  .points-preview b { color: #080907; font-size: 24px; }
-  .qr-box { background: #fff; border: 2px dashed #59FD27; border-radius: 14px; padding: 20px; text-align: center; }
+  .step-card { background: var(--bx-surface); border: 1px solid var(--bx-line); border-radius: 18px; padding: 28px; margin-bottom: 18px; box-shadow: var(--bx-sh); }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--bx-neon); color: var(--bx-ink); font-weight: 800; font-size: 13px; margin-right: 8px; }
+  .amount-input { font-size: 32px; font-weight: 800; padding: 14px 18px; border: 1px solid var(--bx-line); border-radius: 12px; width: 100%; text-align: center; }
+  .amount-input:focus { outline: none; border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
+  .points-preview { font-size: 18px; color: var(--bx-grey); text-align: center; margin: 12px 0; }
+  .points-preview b { color: var(--bx-ink); font-size: 24px; }
+  /* O QR fica num canhoto tracejado, como o bilhete do design. */
+  .qr-box { background: var(--bx-surface-2); border: 1px dashed var(--bx-leader); border-radius: 14px; padding: 20px; text-align: center; }
   .qr-box img { max-width: 280px; width: 100%; height: auto; display: block; margin: 0 auto; }
-  .pix-amount-display { font-size: 36px; font-weight: 900; color: #080907; margin: 8px 0; }
-  .pix-amount-note { font-size: 13px; color: #a83417; font-weight: 700; }
-  .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f3eb; font-size: 14px; }
+  .pix-amount-display { font-size: 36px; font-weight: 900; color: var(--bx-ink); margin: 8px 0; }
+  .pix-amount-note { font-size: 13px; color: var(--danger-text); font-weight: 700; }
+  .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--bx-line); font-size: 14px; }
   .info-row:last-child { border-bottom: none; }
-  .status-pill { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-  .status-pending { background: #fff7df; color: #8a6500; }
-  .status-confirming { background: #e8f3ff; color: #1c4f87; }
-  .status-paid { background: #efffe6; color: #2d651b; }
-  .status-rejected { background: #ffede8; color: #a83417; }
-  /* Seletor de método de pagamento (PIX | Cartão) */
+  /* Pílulas de status: rótulo mono, como .status/.chip do tema. --warn e --info
+     do tema são cores de TEXTO (família B), por isso o fundo é a superfície-2. */
+  .status-pill { display: inline-block; padding: 4px 12px; border: 1px solid var(--bx-line); border-radius: 999px; font-family: var(--bx-mono); font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: .08em; }
+  .status-pending { background: var(--bx-surface-2); color: var(--warn-text); }
+  .status-confirming { background: var(--bx-surface-2); color: var(--info-text); }
+  .status-paid { background: var(--bx-neon); color: var(--bx-ink); border-color: transparent; }
+  .status-rejected { background: var(--danger); color: var(--danger-text); border-color: transparent; }
+  /* Seletor de método de pagamento (PIX | Cartão): o escolhido vira neon com
+     texto preto, como o canhoto marcado de um bilhete. */
   .method-row { display: none; gap: 10px; margin: 14px 0 4px; }
   .method-row.on { display: flex; }
-  .method-btn { flex: 1; padding: 12px 10px; border: 2px solid #e6eadf; border-radius: 12px; background: #fff; font-weight: 700; font-size: 14px; cursor: pointer; }
-  .method-btn.sel { border-color: #59FD27; background: #f6ffe9; }
+  .method-btn { flex: 1; padding: 12px 10px; border: 1px solid var(--bx-line); border-radius: 12px; background: var(--bx-surface); color: var(--bx-ink); font-family: var(--bx-sans); font-weight: 700; font-size: 14px; cursor: pointer; }
+  .method-btn.sel { border-color: var(--bx-ink); background: var(--bx-neon); }
+  /* Aviso informativo no tema Embarque. Em assets/styles.css o .alert.info
+     pinta fundo e texto com --info/--info-text; o :root do tema redefine
+     --info como cor de TEXTO (vocabulário da família B) e o aviso ficava azul
+     sobre azul. Até o tema separar os dois tokens, o aviso usa a superfície-2
+     do design, com o "i" num selo preto. Remover quando o compartilhado mudar. */
+  .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
+  .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
+  .alert.info p{ color:var(--bx-grey); opacity:1; }
 </style>
 <!-- Stripe.js é carregado sob demanda pelo JS, tokenização NO NAVEGADOR (o número do
      cartão nunca chega ao backend BlaXx, só o token single-use). -->
@@ -50,7 +66,7 @@
 
 <div class="buy-wrap">
   <h1 style="font-size:32px;margin-bottom:4px;" id="page-title">Comprar pontos</h1>
-  <p style="color:#5f665e;margin-bottom:24px;">Valor livre, você define quanto pagar.</p>
+  <p style="color:var(--bx-grey);margin-bottom:24px;">Valor livre, você define quanto pagar.</p>
 
   <!-- Etapa 1: Valor + método -->
   <div class="step-card" id="step-1">
@@ -72,7 +88,7 @@
   <!-- Etapa 2 (cartão): formulário do Stripe Elements -->
   <div class="step-card" id="step-2-card" style="display:none;">
     <h3 style="margin-bottom:12px;"><span class="step-num">2</span> Dados do cartão</h3>
-    <div style="font-size:13px;color:#5f665e;margin-bottom:10px;" id="bx-card-psp-note">
+    <div style="font-size:13px;color:var(--bx-grey);margin-bottom:10px;" id="bx-card-psp-note">
       Os dados do cartão são criptografados no seu navegador e não passam
       pelos servidores BlaXx.
     </div>
@@ -83,16 +99,16 @@
   <div class="step-card" id="step-2" style="display:none;">
     <h3 style="margin-bottom:12px;"><span class="step-num">2</span> Pague pelo app do seu banco</h3>
     <div class="qr-box">
-      <div style="font-size:13px;color:#5f665e;margin-bottom:6px;">Valor:</div>
+      <div style="font-size:13px;color:var(--bx-grey);margin-bottom:6px;">Valor:</div>
       <div class="pix-amount-display" id="pix-amount-display">R$ 0,00</div>
       <img id="qr-img" src="" alt="QR Code PIX BlaXx">
-      <div style="font-size:12px;color:#5f665e;margin-top:8px;">
+      <div style="font-size:12px;color:var(--bx-grey);margin-top:8px;">
         Abra o app do banco → PIX → Ler QR Code → escaneie a imagem acima
       </div>
     </div>
     <div style="text-align:center;margin-top:18px;">
       <span class="status-pill status-confirming">⏱ Aguardando pagamento…</span>
-      <div style="font-size:13px;color:#5f665e;margin-top:6px;">
+      <div style="font-size:13px;color:var(--bx-grey);margin-top:6px;">
         Assim que o banco confirmar, os pontos aparecem automaticamente.
       </div>
     </div>

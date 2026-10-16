@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Ponto sem letra miúda | BlaXx Pontos</title>
+<meta name="description" content="Compre pontos por PIX ou cartão, envie para outra conta BlaXx e troque por benefício. Cada regra escrita na ordem em que acontece.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/blaxx-brutal.css">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="assets/blaxx-globo.js"></script>
+<style>
+/* =========================================================================
+   VARIANTE "TERMINAL" · a única das homes que nasce no escuro.
+
+   A aposta: as outras variantes usam o preto como moldura e o papel como
+   superfície. Aqui é o contrário, o preto É a superfície e o neon deixa de
+   ser tinta para ser LUZ. Isso resolve de graça o problema de tom que o
+   conteúdo tem: a página passa metade do tempo explicando regra dura
+   (validade, transferência que não volta, ponto que não é dinheiro) e no
+   escuro esse texto soa como registro de sistema, não como letra miúda
+   escondida no rodapé de um contrato.
+
+   Por isso o herói é uma sessão de comando: cada regra entra como uma linha
+   de saída, na ordem em que acontece na vida do usuário. Quem lê de cima a
+   baixo já leu o regulamento sem perceber.
+
+   O que muda em relação ao núcleo: no escuro a borda preta de 4px e a sombra
+   dura preta desaparecem, então a espinha dorsal neo-brutalista é remontada
+   com os mesmos gestos em outro material: canto reto continua reto, a borda
+   vira um fio neon, e a sombra dura continua dura (blur zero) mas em neon
+   translúcido, o que lê como deslocamento e como brilho ao mesmo tempo.
+   Nada de sombra suave, nada de canto arredondado, nada de gradiente.
+
+   Contraste: corpo de texto em #C9CFD6, rótulo mono em #9AA3AE. O cinza
+   médio --grey do núcleo (#6E7680) foi feito para papel e aqui seria
+   ilegível, então ele é neutralizado no começo do arquivo.
+   Regra dura do projeto: nada rola na horizontal a 375px.
+   ========================================================================= */
+
+/* ---------- o escuro, e as correções que ele obriga ---------- */
+/* Dois tokens locais, em vez de repetir o mesmo hex em vinte regras: --txt é o
+   corpo de texto desta variante e --grey (o cinza de papel do núcleo) é
+   neutralizado aqui, o que já acerta de uma vez .mut, .globo .hint e
+   .globo .cinema-card span sem redeclarar nenhuma dessas classes. */
+:root{--txt:#C9CFD6;--grey:#9AA3AE}
+body{background:var(--black);color:var(--txt)}
+/* o foco do núcleo é preto: no escuro seria um foco invisível */
+:focus-visible{outline:3px solid var(--neon);outline-offset:3px}
+.d1,.d2,.d3{color:var(--white)}
+/* neon como palavra, não como bloco preenchido: no preto o texto já tem
+   contraste de sobra e o bloco cheio viraria área grande de neon */
+.nw{color:var(--neon)}
+
+/* rótulo mono: mesma pílula do núcleo, trocando papel por fio neon */
+.tagline{background:transparent;border-width:2px;border-color:rgba(89,253,39,.6);color:#E6ECF2}
+/* o ✳ do núcleo é neon contornado de preto, um recurso de papel: sobre a
+   superfície quase preta o contorno come o glifo de 12px e sobra um borrão.
+   Sem contorno o neon volta a aparecer inteiro. */
+.tagline i{-webkit-text-stroke:0}
+
+/* botões: canto reto (.reta) em toda a variante, porque o tom é terminal,
+   e a sombra dura preta do núcleo virou neon translúcido para aparecer */
+.pillbtn{box-shadow:6px 8px 0 rgba(89,253,39,.22)}
+.pillbtn:hover{box-shadow:3px 4px 0 rgba(89,253,39,.22)}
+.pillbtn.sm{box-shadow:4px 5px 0 rgba(89,253,39,.22)}
+.pillbtn.sm:hover{box-shadow:2px 3px 0 rgba(89,253,39,.22)}
+/* variante vazada: a secundária não pode ser branca aqui, ela abriria um
+   buraco claro no meio da página escura */
+.pillbtn.linha{background:transparent;border-color:rgba(89,253,39,.7);color:var(--neon)}
+.pillbtn.linha:hover{background:rgba(89,253,39,.08)}
+/* .bar.escura pinta TODO <a> de branco e essa regra (0-2-1) vence .pillbtn
+   (0-1-0): sem devolver a cor aqui, "Criar conta" sai branco sobre neon, que
+   é 1,2:1 de contraste, e "Entrar" perde o neon. A v1 faz o mesmo gesto para
+   .ghost; nesta variante a secundária é .linha. */
+.bar.escura .baract .pillbtn{color:var(--black)}
+.bar.escura .baract .pillbtn.linha{color:var(--neon)}
+
+/* barra e gaveta no escuro */
+.bar .in{gap:18px}
+.burger{background:transparent;border-color:rgba(89,253,39,.7)}
+.burger span{background:var(--neon)}
+.drawer{background:#0D1014;border-bottom-color:var(--neon)}
+.drawer a{color:var(--white);border-bottom-color:#1F242B;font-family:var(--mono);
+  font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+.drawer a:hover{color:var(--neon)}
+
+/* marquee: no preto sobre preto a borda precisa virar fio neon */
+.marq{border-top:2px solid rgba(89,253,39,.45);border-bottom:2px solid rgba(89,253,39,.45)}
+
+/* ---------- desenhos da variante ----------
+   Três camadas, todas decorativas e todas de baixíssima intensidade:
+   linhas de varredura fixas na viewport (dão o ar de tubo), malha ao fundo do
+   herói e cantoneiras em L nos blocos principais. A varredura fica em
+   position:fixed de propósito: ela não acompanha o scroll, então parece vidro
+   na frente da página em vez de textura colada no conteúdo. */
+.scan{position:fixed;inset:0;z-index:90;pointer-events:none;
+  background-image:repeating-linear-gradient(to bottom,rgba(89,253,39,.045) 0 1px,transparent 1px 4px)}
+@media(max-width:560px){.scan{background-image:repeating-linear-gradient(to bottom,rgba(89,253,39,.03) 0 1px,transparent 1px 5px)}}
+
+/* cantoneiras: quatro Ls neon marcando o retângulo sem fechar a borda.
+   ::before e ::after cobrem dois cantos, o .c4 interno cobre os outros dois. */
+.cantos{position:relative}
+.cantos::before,.cantos::after,.c4::before,.c4::after{content:"";position:absolute;
+  width:16px;height:16px;pointer-events:none}
+.cantos::before{top:-3px;left:-3px;border-top:3px solid var(--neon);border-left:3px solid var(--neon)}
+.cantos::after{bottom:-3px;right:-3px;border-bottom:3px solid var(--neon);border-right:3px solid var(--neon)}
+.c4{position:absolute;inset:0;pointer-events:none}
+.c4::before{top:-3px;right:-3px;border-top:3px solid var(--neon);border-right:3px solid var(--neon)}
+.c4::after{bottom:-3px;left:-3px;border-bottom:3px solid var(--neon);border-left:3px solid var(--neon)}
+
+/* ---------- HERÓI ----------
+   Empilhado, não em duas colunas: título em cima ocupando a largura toda e a
+   sessão de comando embaixo, larga. As outras variantes colocam texto de um
+   lado e um painel de produto do outro; aqui o painel É o argumento, então ele
+   não pode ficar apertado numa coluna lateral. */
+.hero{position:relative;overflow:hidden;border-bottom:2px solid rgba(89,253,39,.35);
+  padding:clamp(30px,5vw,58px) 0 clamp(40px,6vw,72px)}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(to right,rgba(89,253,39,.09) 0 1px,transparent 1px 72px),
+    repeating-linear-gradient(to bottom,rgba(89,253,39,.09) 0 1px,transparent 1px 72px);
+  -webkit-mask-image:radial-gradient(120% 90% at 18% 0,#000 0,transparent 72%);
+          mask-image:radial-gradient(120% 90% at 18% 0,#000 0,transparent 72%)}
+.hero .in{position:relative}
+.prompt{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grey);display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px}
+.prompt b{color:var(--neon);font-weight:500}
+.hero h1{max-width:20ch}
+.hero .lead{margin-top:22px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
+
+/* ---------- a sessão de comando ----------
+   Barra de título falsa com três quadradinhos VAZADOS. Círculo colorido
+   entregaria a janela do macOS; quadrado de borda é a gramática da marca. */
+.term{margin-top:clamp(34px,5vw,56px);border:2px solid rgba(89,253,39,.5);
+  background:#0C0F13;box-shadow:10px 12px 0 rgba(89,253,39,.14)}
+.tbar{display:flex;align-items:center;gap:14px;padding:11px 14px;
+  border-bottom:2px solid rgba(89,253,39,.28);background:#111519}
+.sqs{display:flex;gap:7px;flex:none}
+.sqs i{width:11px;height:11px;border:2px solid rgba(89,253,39,.75);display:block}
+.tpath,.tstat{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--grey);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tstat{margin-left:auto;color:rgba(89,253,39,.85)}
+.tbody{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:900px){.tbody{grid-template-columns:minmax(0,1.55fr) minmax(0,.9fr)}}
+/* a sessão é o único bloco com risco real de estourar a largura no telefone:
+   as linhas quebram, e o container ainda ganha rolagem própria por segurança */
+.tsess{padding:clamp(16px,2.4vw,26px);overflow-x:auto}
+.ln,.out{font-family:var(--mono);font-size:13px;line-height:1.75;overflow-wrap:anywhere}
+.ln{color:var(--white);margin-top:16px}
+.ln:first-child{margin-top:0}
+.ln .pr{color:var(--neon);font-weight:700;margin-right:8px}
+.out{padding-left:20px;position:relative}
+.out::before{content:"›";position:absolute;left:0;color:rgba(89,253,39,.7)}
+.out.sub{color:var(--grey)}
+/* o cursor: 1,05s é rápido o bastante para ler como cursor e lento o
+   bastante para não virar pisca-pisca */
+.cur{display:inline-block;width:10px;height:17px;background:var(--neon);
+  vertical-align:-3px;animation:blx-cur 1.05s steps(1,end) infinite}
+@keyframes blx-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.cur{animation:none}}
+/* painel de saída: o que é fato fixo da conta, fora da narrativa em linhas */
+.tside{padding:clamp(16px,2.4vw,26px);border-top:2px solid rgba(89,253,39,.22)}
+@media(min-width:900px){.tside{border-top:0;border-left:2px solid rgba(89,253,39,.22)}}
+.tside .cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(89,253,39,.85);margin-bottom:14px}
+.tside dl{display:grid;gap:12px;margin:0}
+.tside .row{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:space-between;
+  align-items:baseline;border-bottom:1px dashed #23282F;padding-bottom:10px}
+.tside dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+.tside dd{margin:0;font-size:14px;font-weight:500;color:var(--white)}
+
+/* ---------- O QUE DÁ PARA FAZER ----------
+   Painéis com fio neon e rótulo mono montado SOBRE a borda, como legenda de
+   painel de equipamento. O rótulo tem fundo preto para abrir o vão na linha. */
+.paineis{display:grid;grid-template-columns:1fr;gap:clamp(22px,3vw,30px)}
+@media(min-width:760px){.paineis{grid-template-columns:1fr 1fr}}
+.pan{position:relative;border:2px solid rgba(89,253,39,.4);background:#0C0F13;
+  padding:clamp(26px,3vw,34px) clamp(20px,2.6vw,28px) clamp(22px,2.6vw,30px)}
+.pan .cap{position:absolute;top:-9px;left:16px;background:var(--black);padding:0 9px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--neon);white-space:nowrap}
+.pan h3{font-size:clamp(20px,2.3vw,26px);font-weight:700;letter-spacing:-.02em;
+  color:var(--white);margin-bottom:10px}
+.pan p{font-size:15.5px;line-height:1.65;max-width:46ch}
+.pan .lk{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--neon);
+  border-bottom:2px solid rgba(89,253,39,.5);padding-bottom:2px}
+
+/* ---------- NÚMEROS ----------
+   Enormes em neon, rótulo mono cinza embaixo, separados por régua vertical de
+   1px. No telefone vira 2x2 e as réguas se reorganizam por nth-child, em vez
+   de a faixa ganhar rolagem: número grande atrás de rolagem ninguém lê. */
+.nums{border-top:2px solid rgba(89,253,39,.35);border-bottom:2px solid rgba(89,253,39,.35);
+  background:#0C0F13}
+.nums .in{display:grid;grid-template-columns:1fr 1fr}
+@media(min-width:900px){.nums .in{grid-template-columns:repeat(4,1fr)}}
+.num{padding:clamp(24px,3.2vw,38px) clamp(14px,2vw,24px);border-left:1px solid rgba(89,253,39,.24)}
+@media(max-width:899px){
+  .num:nth-child(2n+1){border-left:0}
+  .num:nth-child(n+3){border-top:1px solid rgba(89,253,39,.24)}
+}
+@media(min-width:900px){.num:first-child{border-left:0}}
+.num b{display:block;font-family:var(--mono);font-weight:700;color:var(--neon);
+  font-size:clamp(46px,6.6vw,78px);line-height:.92;letter-spacing:-.05em}
+.num b i{font-style:normal;font-size:.42em;letter-spacing:0;color:rgba(89,253,39,.7)}
+.num span{display:block;margin-top:12px;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--grey);line-height:1.6}
+
+/* ---------- MAPA DA REDE ----------
+   O globo é a única coisa colorida da página, então aqui ele ganha halo em vez
+   de moldura preta: fundo quase preto dentro da moldura, fio neon na borda e um
+   brilho neon de raio largo atrás. No claro isso seria sujeira; no escuro é a
+   fonte de luz da seção. */
+.mapa{display:grid;grid-template-columns:1fr;gap:clamp(28px,4vw,44px);align-items:center}
+@media(min-width:1000px){.mapa{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)}}
+.globo .cinema-frame{background:#05070A;border-width:2px;border-color:rgba(89,253,39,.55);
+  box-shadow:10px 12px 0 rgba(89,253,39,.12), 0 0 70px rgba(89,253,39,.16)}
+.globo .cinema-card{background:#0C0F13;border-width:2px;border-color:rgba(89,253,39,.6);
+  box-shadow:5px 6px 0 rgba(89,253,39,.16);color:var(--white)}
+.globo .cinema-card small{color:rgba(89,253,39,.85)}
+.globo .cinema-card b{font-family:var(--mono);color:var(--neon)}
+.globo .hint{margin:0 0 20px}
+.globo .legenda{margin-top:22px}
+.globo .legenda i{border-color:rgba(255,255,255,.5)}
+
+/* ---------- PACOTES ----------
+   Três painéis escuros lado a lado. O do meio não fica maior nem colorido: só
+   troca o fio cinza pelo fio neon e recebe o rótulo montado em cima da borda,
+   o mesmo gesto dos painéis de recursos. Hierarquia sem barulho. */
+.pacotes{display:grid;grid-template-columns:1fr;gap:clamp(20px,2.6vw,26px)}
+@media(min-width:900px){.pacotes{grid-template-columns:repeat(3,1fr);align-items:stretch}}
+.pk{position:relative;display:flex;flex-direction:column;background:#0C0F13;
+  border:2px solid #262C33;padding:clamp(24px,3vw,32px)}
+.pk.fav{border-color:var(--neon);box-shadow:8px 10px 0 rgba(89,253,39,.14)}
+.pk .flag{position:absolute;top:-11px;left:18px;background:var(--neon);color:var(--black);
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;padding:3px 10px;white-space:nowrap}
+.pk .rot{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--grey)}
+.pk .pv{font-family:var(--mono);font-weight:700;font-size:clamp(36px,4.4vw,50px);
+  line-height:1;letter-spacing:-.04em;color:var(--white);margin:16px 0 6px}
+.pk .pv small{font-family:var(--grotesk);font-size:.34em;font-weight:500;letter-spacing:0;
+  color:var(--grey);margin-left:6px}
+.pk .pp{font-size:17px;font-weight:600;color:var(--neon)}
+.pk .pn{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--grey);
+  margin:8px 0 26px;line-height:1.6}
+.pk .pillbtn{margin-top:auto}
+.pkfoot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;
+  margin-top:24px;font-size:14.5px}
+.pkfoot a{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--neon);border-bottom:2px solid rgba(89,253,39,.5);padding-bottom:2px}
+
+/* ---------- FAQ no escuro ----------
+   O núcleo desenha o FAQ para papel (fundo branco, aberto em --paper). Aqui
+   só o material muda: fio neon, superfície quase preta, aberto um degrau mais
+   claro para marcar qual pergunta está no ar. */
+.faq{background:#0C0F13;border-width:2px;border-color:rgba(89,253,39,.45)}
+.faq details{border-bottom-width:1px;border-bottom-color:#23282F}
+.faq summary{color:var(--white)}
+.faq summary::after{color:var(--neon)}
+.faq details[open] summary{background:#12171C;color:var(--neon)}
+.faq .ans a{color:var(--white)}
+
+/* ---------- seções ---------- */
+.sec.piso{background:#0C0F13;border-top:1px solid #1B2027;border-bottom:1px solid #1B2027}
+.sechead .d2{max-width:24ch}
+.sechead .sub{margin-top:16px;font-size:clamp(16px,1.6vw,18px);
+  line-height:1.6;max-width:52ch}
+/* a chamada final é neon inteira (única exceção prevista no sistema), então
+   ali o texto volta a ser preto e nada precisa ser clareado */
+.final .in .d2{color:var(--black)}
+.final p{color:var(--black)}
+
+/* ---------- telefone ---------- */
+@media(max-width:560px){
+  /* o núcleo esconde a secundária .ghost no telefone; aqui a secundária é a
+     .linha, então a regra precisa valer para ela ou o wordmark fica espremido */
+  .baract .pillbtn.linha{display:none}
+  .tstat{display:none}
+  .term{box-shadow:6px 8px 0 rgba(89,253,39,.14)}
+  .ln,.out{font-size:12.5px}
+  .pk.fav{box-shadow:5px 7px 0 rgba(89,253,39,.14)}
+}
+</style>
+</head>
+<body>
+
+<div class="scan" aria-hidden="true"></div>
+
+<!-- ====================== BARRA ====================== -->
+<header class="bar escura">
+  <div class="wrap in">
+    <a href="#topo" aria-label="BlaXx Pontos">
+      <img class="mark" src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
+    </a>
+    <nav class="navd" aria-label="Principal">
+      <a href="#fazer">O que dá para fazer</a>
+      <a href="#mapa">Rede</a>
+      <a href="#pacotes">Pacotes</a>
+      <a href="#perguntas">Perguntas</a>
+    </nav>
+    <div class="baract">
+      <a class="pillbtn sm reta linha" href="login.html">Entrar</a>
+      <a class="pillbtn sm reta" href="cadastro.html">Criar conta</a>
+      <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false"
+              aria-controls="menuMob" onclick="bxMenu(this)"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<div class="drawer" id="menuMob">
+  <a href="#fazer">O que dá para fazer</a>
+  <a href="#mapa">Mapa da rede</a>
+  <a href="#pacotes">Pacotes</a>
+  <a href="como-funciona.html">Como funciona</a>
+  <a href="parceiros.html">Parceiros</a>
+  <a href="central-ajuda.html">Ajuda</a>
+  <a href="#perguntas">Perguntas</a>
+  <a href="login.html">Entrar na minha conta</a>
+</div>
+
+<!-- ====================== HERÓI: SESSÃO DE COMANDO ====================== -->
+<section class="hero" id="topo">
+  <div class="wrap in">
+    <p class="prompt"><b>blaxx</b> · programa de pontos · Brasil · 2026</p>
+    <h1 class="d1">Ponto sem <span class="nw">letra miúda</span>.</h1>
+    <p class="lead">Compre por PIX ou cartão, envie para outra conta BlaXx e troque por
+      benefício. Toda regra que vale para você está aqui embaixo, na ordem em que acontece.</p>
+    <div class="ctas">
+      <a class="pillbtn reta" href="cadastro.html">Criar conta</a>
+      <a class="pillbtn reta linha" href="#pacotes">Ver pacotes</a>
+    </div>
+
+    <div class="term cantos">
+      <span class="c4" aria-hidden="true"></span>
+      <div class="tbar">
+        <span class="sqs" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="tpath">blaxx ~/pontos</span>
+        <span class="tstat">leitura de 40 segundos</span>
+      </div>
+      <div class="tbody">
+        <div class="tsess">
+          <p class="ln"><span class="pr">$</span>blaxx o-que-é</p>
+          <p class="out">Pontos são créditos promocionais de uso restrito na plataforma.</p>
+          <p class="out sub">Não são moeda, depósito, investimento, valor mobiliário nem criptoativo.</p>
+
+          <p class="ln"><span class="pr">$</span>blaxx comprar --pix --cartão</p>
+          <p class="out">Pacote pronto ou valor livre. O crédito entra na carteira assim que o pagamento é confirmado.</p>
+
+          <p class="ln"><span class="pr">$</span>blaxx enviar --para "e-mail ou CPF"</p>
+          <p class="out">Entre contas pessoais BlaXx o envio é gratuito, dentro de limites diários.</p>
+          <p class="out sub">Confira o destinatário: transferência confirmada não pode ser revertida.</p>
+
+          <p class="ln"><span class="pr">$</span>blaxx resgatar</p>
+          <p class="out">Vouchers, vantagens em rede parceira e cashback via PIX na chave do seu perfil.</p>
+
+          <p class="ln"><span class="pr">$</span>blaxx validade</p>
+          <p class="out">Cada lote vale 24 meses. Aviso 30 dias antes de vencer, por e-mail e push.</p>
+          <p class="out sub">No vencimento o lote é debitado e não volta.</p>
+
+          <p class="ln"><span class="pr">$</span><span class="cur" aria-hidden="true"></span></p>
+        </div>
+        <aside class="tside">
+          <p class="cap">fatos da conta</p>
+          <dl>
+            <div class="row"><dt>Cadastro</dt><dd>Gratuito</dd></div>
+            <div class="row"><dt>Manutenção</dt><dd>Gratuita</dd></div>
+            <div class="row"><dt>Extrato</dt><dd>Data e origem de cada ponto</dd></div>
+            <div class="row"><dt>Arrependimento</dt><dd>7 dias, art. 49 do CDC</dd></div>
+            <div class="row"><dt>Dados</dt><dd>LGPD, Lei 13.709/2018</dd></div>
+            <div class="row" style="border-bottom:0;padding-bottom:0">
+              <dt>Duas etapas</dt><dd>Disponível na conta</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== MARQUEE ====================== -->
+<div class="marq" aria-hidden="true">
+  <div>
+    <span>PIX</span><i>✳</i><span>Cartão</span><i>✳</i><span>Extrato aberto</span><i>✳</i>
+    <span>24 meses</span><i>✳</i><span>Aviso em 30 dias</span><i>✳</i>
+    <span>PIX</span><i>✳</i><span>Cartão</span><i>✳</i><span>Extrato aberto</span><i>✳</i>
+    <span>24 meses</span><i>✳</i><span>Aviso em 30 dias</span><i>✳</i>
+  </div>
+</div>
+
+<!-- ====================== O QUE DÁ PARA FAZER ====================== -->
+<section class="sec" id="fazer">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> O que dá para fazer</span>
+      <h2 class="d2" style="margin-top:18px">Quatro <span class="nw">comandos</span>, e nada além disso.</h2>
+      <p class="sub">A plataforma inteira cabe em quatro ações. Cada painel abaixo é uma delas,
+        com a condição real que vale no momento de usar.</p>
+    </div>
+    <div class="paineis">
+      <article class="pan">
+        <span class="cap">01 · comprar</span>
+        <h3>Comprar pontos</h3>
+        <p>Pacote pronto ou valor livre, do jeito que couber no mês. Pagamento por PIX ou
+          cartão, com o crédito na carteira assim que o pagamento é confirmado.</p>
+        <a class="lk" href="comprar-pontos.html">Ver pacotes →</a>
+      </article>
+      <article class="pan">
+        <span class="cap">02 · enviar</span>
+        <h3>Enviar para alguém</h3>
+        <p>Mande pontos para outra conta BlaXx informando e-mail ou CPF. Entre contas pessoais
+          o envio é gratuito, dentro de limites diários, e quem recebe usa como quiser.</p>
+        <a class="lk" href="como-funciona.html">Como funciona →</a>
+      </article>
+      <article class="pan">
+        <span class="cap">03 · resgatar</span>
+        <h3>Trocar por benefício</h3>
+        <p>Vouchers, vantagens na rede parceira das categorias do dia a dia e cashback via PIX
+          na chave cadastrada no seu perfil. Você escolhe quando usar.</p>
+        <a class="lk" href="parceiros.html">Ver a rede →</a>
+      </article>
+      <article class="pan">
+        <span class="cap">04 · acompanhar</span>
+        <h3>Ver tudo que entrou e saiu</h3>
+        <p>Extrato aberto com data e origem de cada ponto. Lotes perto de vencer aparecem em
+          destaque e você é avisado 30 dias antes, por e-mail e push.</p>
+        <a class="lk" href="regras-pontos.html">Ler as regras →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== NÚMEROS ====================== -->
+<section class="nums" aria-label="Números da plataforma">
+  <div class="wrap in">
+    <div class="num"><b>03</b><span>Categorias de rede parceira: postos, supermercados e farmácias</span></div>
+    <div class="num"><b>12</b><span>Cidades já no mapa da rede</span></div>
+    <div class="num"><b>24</b><span>Meses de validade por lote de pontos</span></div>
+    <div class="num"><b>07</b><span>Dias de arrependimento na compra a distância</span></div>
+  </div>
+</section>
+
+<!-- ====================== MAPA DA REDE ====================== -->
+<section class="sec globo" id="mapa">
+  <div class="wrap mapa">
+    <div>
+      <div class="sechead" style="margin-bottom:0">
+        <span class="tagline"><i>✳</i> Mapa da rede</span>
+        <h2 class="d2" style="margin-top:18px">A rede <span class="nw">acende</span> no mapa.</h2>
+        <p class="sub">Postos, supermercados e farmácias, as três categorias parceiras, em
+          12 cidades e em expansão.</p>
+      </div>
+      <p class="hint" style="margin-top:22px">Arraste para girar o globo. Toque ou passe o cursor
+        num alfinete para ver a cidade, e clique para abrir a página de parceiros.</p>
+      <ul class="legenda" style="margin-top:0">
+        <li><i style="background:rgb(231,178,74)"></i>Postos</li>
+        <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+        <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+      </ul>
+    </div>
+    <div class="cinema-frame">
+      <canvas id="gvCanvas" aria-label="Globo com as cidades da rede parceira" role="img"></canvas>
+      <div id="globoTip" class="globe-tip"></div>
+      <div class="cinema-card"><small>Rede em expansão</small><b id="netCount">12</b><span>cidades no mapa</span></div>
+      <div class="cinema-marq" aria-hidden="true"><span>SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PACOTES ====================== -->
+<section class="sec piso" id="pacotes">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Pacotes</span>
+      <h2 class="d2" style="margin-top:18px">Escolha o <span class="nw">lote</span>.</h2>
+      <p class="sub">Pagamento por PIX ou cartão. Cada lote comprado tem validade de 24 meses,
+        contada a partir do crédito na carteira.</p>
+    </div>
+    <div class="pacotes">
+      <div class="pk" data-pkg="start">
+        <span class="rot">start</span>
+        <div class="pv"><span data-pts>2.000</span><small>pts</small></div>
+        <div class="pp"><span data-price>R$ 180,00</span></div>
+        <p class="pn">PIX ou cartão</p>
+        <a class="pillbtn reta linha" href="comprar-pontos.html">Comprar Start</a>
+      </div>
+      <div class="pk fav" data-pkg="plus">
+        <span class="flag">Mais escolhido</span>
+        <span class="rot">plus</span>
+        <div class="pv"><span data-pts>5.500</span><small>pts</small></div>
+        <div class="pp"><span data-price>R$ 470,00</span></div>
+        <p class="pn">PIX ou cartão · cerca de 5% de bônus</p>
+        <a class="pillbtn reta" href="comprar-pontos.html">Comprar Plus</a>
+      </div>
+      <div class="pk" data-pkg="prime">
+        <span class="rot">prime</span>
+        <div class="pv"><span data-pts>12.000</span><small>pts</small></div>
+        <div class="pp"><span data-price>R$ 972,00</span></div>
+        <p class="pn">PIX ou cartão · cerca de 10% de bônus</p>
+        <a class="pillbtn reta linha" href="comprar-pontos.html">Comprar Prime</a>
+      </div>
+    </div>
+    <div class="pkfoot">
+      <span class="mut">Prefere outro valor? Dá para comprar exatamente o que você quiser.</span>
+      <a href="comprar-livre.html">Comprar valor livre →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PERGUNTAS ====================== -->
+<section class="sec" id="perguntas">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Perguntas</span>
+      <h2 class="d2" style="margin-top:18px">Antes que você <span class="nw">pergunte</span>.</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Os pontos valem dinheiro?</summary>
+        <div class="ans">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro da
+          plataforma. Não são moeda, depósito, investimento, valor mobiliário nem criptoativo.
+          Está tudo escrito nas <a href="regras-pontos.html">regras de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Quanto custa participar?</summary>
+        <div class="ans">O cadastro e a manutenção da conta são gratuitos. Você só paga quando
+          decide <a href="comprar-pontos.html">comprar um pacote de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Qual é a validade dos pontos?</summary>
+        <div class="ans">Cada lote vale 24 meses a partir do acúmulo, salvo regra específica avisada
+          na campanha. Lotes perto de vencer aparecem em destaque no extrato e você é avisado
+          30 dias antes, por e-mail e push. No vencimento eles são debitados e não podem ser
+          restaurados.</div>
+      </details>
+      <details>
+        <summary>Posso mandar pontos para outra pessoa?</summary>
+        <div class="ans">Para qualquer pessoa que tenha conta BlaXx, informando e-mail ou CPF. Entre
+          contas pessoais o envio é gratuito, dentro dos limites diários. Confira sempre o
+          destinatário: transferência confirmada não pode ser revertida.</div>
+      </details>
+      <details>
+        <summary>Como eu pago e quando o crédito entra?</summary>
+        <div class="ans">Por PIX ou cartão, em <a href="comprar-pontos.html">pacote pronto</a> ou em
+          <a href="comprar-livre.html">valor livre</a>. O crédito entra na carteira assim que o
+          pagamento é confirmado.</div>
+      </details>
+      <details>
+        <summary>E se eu me arrepender da compra?</summary>
+        <div class="ans">Compras a distância têm direito de arrependimento de 7 dias, conforme o
+          artigo 49 do Código de Defesa do Consumidor. Depois desse prazo a compra é definitiva,
+          salvo as exceções descritas na
+          <a href="politica-reembolso.html">política de reembolso</a>.</div>
+      </details>
+      <details>
+        <summary>Meus dados estão protegidos?</summary>
+        <div class="ans">O tratamento segue a LGPD (Lei 13.709/2018) e você pode ativar verificação
+          em duas etapas na sua conta. Os detalhes estão na
+          <a href="privacidade.html">política de privacidade</a>.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== CHAMADA FINAL ====================== -->
+<section class="final">
+  <div class="wrap in">
+    <h2 class="d2">Abrir conta é de graça.</h2>
+    <p>Cadastro e manutenção da conta são gratuitos. Você paga só quando decide comprar
+      um pacote de pontos, e as regras você já leu ali em cima.</p>
+    <a class="pillbtn reta" href="cadastro.html">Criar conta</a>
+  </div>
+</section>
+
+<!-- ====================== RODAPÉ ====================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <p class="tag2">Ponto sem letra miúda. Você compra, envia e troca quando quiser.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+          <li><a href="comprar-livre.html">Valor livre</a></li>
+          <li><a href="parceiros.html">Parceiros</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Ajuda e regras</h4>
+        <ul>
+          <li><a href="central-ajuda.html">Central de ajuda</a></li>
+          <li><a href="regras-pontos.html">Regras de pontos</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+          <li><a href="privacidade.html">Privacidade e LGPD</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>BlaXx Pontos © 2026</span>
+      <span><a href="politica-reembolso.html">Política de reembolso</a></span>
+      <span><a href="privacidade.html#direitos">Seus direitos LGPD</a></span>
+    </div>
+  </div>
+  <div class="bigmark">
+    <img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
+  </div>
+</footer>
+
+<script>
+function bxMenu(btn){
+  var d = document.getElementById('menuMob');
+  var open = !d.classList.contains('on');
+  d.classList.toggle('on', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.querySelectorAll('#menuMob a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.getElementById('menuMob').classList.remove('on');
+    var b = document.querySelector('.burger');
+    if (b) b.setAttribute('aria-expanded','false');
+  });
+});
+</script>
+
+<script>
+(function(){
+  var canvas = document.getElementById('gvCanvas');
+  if (!canvas || typeof blaxxCreateGlobe !== 'function') return;
+  var contador = document.getElementById('netCount');
+  if (contador && typeof BLAXX_POINTS !== 'undefined') contador.textContent = BLAXX_POINTS.length;
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json')
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(world){
+      blaxxCreateGlobe(canvas, {
+        world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.46,
+        autoRotate: !reduzir,
+        tooltip: document.getElementById('globoTip'),
+        onPointClick: function(){ location.href = 'parceiros.html'; },
+        sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+        landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)',
+        borderColor:'rgba(8,32,60,0.28)', gratColor:'rgba(8,32,60,0.10)',
+        ringAlpha:0.5, atmAlpha:0
+      });
+    })
+    .catch(function(e){ console.error('globo:', e); });
+})();
+</script>
+
+<script>
+(function(){
+  function resolveApi(){
+    var host = location.hostname;
+    var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
+    if (isLocal) return location.protocol + '//' + host + ':5050';
+    return 'https://blaxx-pontos-exe.onrender.com';
+  }
+  var API = resolveApi();
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fill(key, pkg){
+    if (!pkg) return;
+    var card = document.querySelector('[data-pkg="' + key + '"]');
+    if (!card) return;
+    var p = card.querySelector('[data-pts]'), pr = card.querySelector('[data-price]');
+    if (p && pkg.points != null) p.textContent = fmtPts(pkg.points);
+    if (pr && pkg.price_brl != null) pr.textContent = fmtBrl(pkg.price_brl);
+  }
+  fetch(API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){ fill('start', d.start); fill('plus', d.plus); fill('prime', d.prime); })
+    .catch(function(){});
+})();
+</script>
+
+</body>
+</html>

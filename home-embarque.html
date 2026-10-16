@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Seus pontos, novos destinos | BlaXx Pontos</title>
+<meta name="description" content="Compre pontos, envie para quem você quiser e resgate em reais na sua conta, via PIX. Sem mensalidade, sem letra miúda.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- A folha do tema traz as fontes (Archivo + Space Mono) e todo o chrome;
+     esta página não usa assets/styles.css, como as outras homes. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
+<!-- Globo da rede: d3 + topojson vendorizados (sem CDN) e o motor compartilhado -->
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="assets/blaxx-globo.js"></script>
+<style>
+/* =========================================================================
+   HOME "EMBARQUE" — o design 3a ("Embarque + Extrato", 14/10/2026) aplicado
+   à BlaXx: cartão de embarque como hero, rota em três escalas, bilhetes de
+   pacote com recibo, painel de partidas com o globo da rede, rodapé-recibo.
+
+   O que ficou do mock: a anatomia, as medidas, o picote, o código de barras,
+   o serrilhado, os rótulos em Space Mono e o título Archivo 900 condensado.
+   O que mudou: o verde é o da marca (#59FD27), o logo é o wordmark oficial,
+   o globo é o da rede (12 cidades reais) e nenhum número que o projeto já
+   removeu da UI volta (R$ 0,09/ponto, "taxa R$ 0,00").
+   ========================================================================= */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ---------- hero: cartão de embarque ---------- */
+.embarque{padding:clamp(28px,4vw,48px) 0 clamp(48px,6vw,80px)}
+.cartao{display:flex;background:var(--bx-surface);border-radius:var(--bx-r-xl);overflow:hidden;box-shadow:var(--bx-sh)}
+.cartao .miolo{flex:1;min-width:0;padding:clamp(28px,4vw,48px) clamp(22px,4.4vw,56px);display:flex;flex-direction:column;gap:32px}
+.topo-linha{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.08em;text-transform:uppercase}
+/* O tamanho acompanha a LARGURA DO MIOLO, não da janela: o canhoto tira 300px
+   fixos, então a terceira linha ("Sem letra miúda.", a mais longa, ~6,8em)
+   quebrava em 116px. 12vw-44px é a reta que cabe de 900 a 1440px; abaixo de
+   900 o cartão empilha e o miolo volta a ser a janela inteira. */
+.cartao h1{margin:0;font-size:clamp(44px,calc(12vw - 44px),104px);line-height:.88;font-weight:900;font-stretch:80%;letter-spacing:-.035em}
+/* O slogan em neon é menor que o resto do título (pedido de 15/10): 0,6em cabe
+   numa linha só no desktop; no celular quebra em duas pelo <br class="so-celular">. */
+.cartao h1 mark{display:inline-block;font-size:.6em;line-height:1.08;margin-top:.14em;background:var(--bx-neon);color:inherit;padding:0 .14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.so-celular{display:none}
+.grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-top:24px;border-top:1px solid var(--bx-line)}
+.grade > div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cartao .lead{margin:0;font-size:19px;line-height:1.5;color:var(--bx-grey);max-width:640px}
+.cartao .canhoto{width:300px;flex:none;padding:48px 32px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+.canhoto .dados{display:flex;flex-direction:column;gap:20px}
+.canhoto .dados > div{display:flex;flex-direction:column;gap:4px}
+.canhoto .acoes{display:flex;flex-direction:column;gap:12px}
+.canhoto .cta{display:block;background:var(--bx-neon);color:var(--bx-ink);text-align:center;padding:18px;border-radius:var(--bx-r-sm);font-weight:700;font-size:17px;text-decoration:none}
+.canhoto .cta:hover{background:#4FE81F}
+.canhoto .ja{text-align:center;font-size:15px;color:var(--bx-ink)}
+.canhoto .ja a{color:inherit;text-decoration:none}
+.canhoto .ja a:hover{text-decoration:underline;text-underline-offset:3px}
+.canhoto .bx-barcode{height:56px}
+
+/* o letreiro monta linha a linha, e a segunda linha troca de palavra
+   (portado de home-brutal.html, que o usuário aprovou em 27/09) */
+.letreiro .ln{display:block;overflow:hidden;padding:0 10px 12px;margin:0 -10px -12px}
+.letreiro .ln > i{display:block;font-style:normal;animation:sobeLinha .66s cubic-bezier(.2,.75,.2,1) both}
+.letreiro .ln:nth-child(1) > i{animation-delay:.06s}
+.letreiro .ln:nth-child(2) > i{animation-delay:.12s}
+.letreiro .ln:nth-child(3) > i{animation-delay:.18s}
+@keyframes sobeLinha{from{transform:translateY(112%)}to{transform:translateY(0)}}
+.troca{display:inline-block;overflow:hidden;vertical-align:bottom;transition:width .55s cubic-bezier(.2,.75,.2,1)}
+.troca .palavras{position:relative;display:block}
+.troca b{display:block;width:max-content;white-space:nowrap;font-weight:inherit;opacity:0;transform:translateY(100%);
+  transition:transform .55s cubic-bezier(.2,.75,.2,1),opacity .28s linear}
+.troca b + b{position:absolute;left:0;bottom:0}
+.troca b.on{opacity:1;transform:none}
+.troca b.sai{opacity:0;transform:translateY(-100%)}
+@media(prefers-reduced-motion:reduce){
+  .troca,.troca b{transition:none}
+  .letreiro .ln > i{transform:none;animation:none}
+}
+
+/* ---------- rota: como funciona ---------- */
+.rota{padding:0 0 clamp(56px,7vw,88px)}
+.rota .bx-wrap{display:flex;flex-direction:column;gap:40px}
+.rota .secao-rotulo{font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.08em;text-transform:uppercase}
+.rota-grid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+.rota-grid::before{content:'';position:absolute;left:12px;right:12px;top:11px;border-top:2px dashed var(--bx-ink)}
+.escala{position:relative;display:flex;flex-direction:column;gap:14px;min-width:0}
+.escala .ponto{width:24px;height:24px;border-radius:50%;background:var(--bx-ink);border:2px solid var(--bx-ink);box-sizing:border-box}
+.escala:last-child .ponto{background:var(--bx-neon)}
+.escala .n{font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.04em;text-transform:uppercase}
+.escala .t{font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--bx-ink)}
+.escala .d{font-size:17px;color:var(--bx-grey);line-height:1.5;max-width:300px;margin:0}
+
+/* ---------- pacotes + recibo ---------- */
+.pacotes{padding:0 0 clamp(64px,8vw,96px)}
+.pacotes .bx-wrap{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:48px;align-items:start}
+.lista-bilhetes{display:flex;flex-direction:column;gap:24px;min-width:0}
+.pacotes-cab{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.pacotes-cab h2{margin:0;font-size:clamp(34px,4vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.pacotes-cab a{font-size:16px;color:var(--bx-ink);text-decoration:none;border-bottom:2px solid var(--bx-ink);white-space:nowrap}
+.bilhete{position:relative;display:flex;background:var(--bx-surface);border-radius:var(--bx-r-lg);overflow:hidden;border:2px solid transparent;cursor:pointer;transition:border-color .15s}
+.bilhete:has(:checked){border-color:var(--bx-ink)}
+.bilhete:focus-within{outline:3px solid var(--bx-ink);outline-offset:2px}
+.bilhete .miolo-b{flex:1;min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px}
+.bilhete .cab{display:flex;justify-content:space-between;gap:12px;font-family:var(--bx-mono);font-size:12px;color:var(--bx-grey);text-transform:uppercase}
+.bilhete .pts{font-size:clamp(40px,4vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--bx-ink)}
+.bilhete .pts small{font-size:18px;font-weight:600;color:var(--bx-grey)}
+.bilhete .canhoto-b{width:96px;flex:none;background:var(--bx-surface);display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:20px 0;transition:background .15s}
+.bilhete:has(:checked) .canhoto-b{background:var(--bx-neon)}
+.bilhete .canhoto-b .bx-barcode{height:36px;width:52px}
+.bilhete .bx-perf{--bx-perf-fundo:var(--bx-bg)}
+
+.recibo{filter:drop-shadow(0 18px 30px rgba(10,11,14,.12));transform:rotate(1deg);margin-top:24px;min-width:0}
+.recibo .corpo{background:var(--bx-surface);padding:32px 36px;font-family:var(--bx-mono);font-size:15px;display:flex;flex-direction:column;gap:16px}
+.recibo .cabeca{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.recibo .cabeca img{height:26px;width:auto}
+.recibo .cabeca span{font-size:12px;color:var(--bx-grey);letter-spacing:.04em}
+.recibo .total{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.recibo .total b{font-family:var(--bx-sans);font-size:48px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.recibo .faixa{background:var(--bx-neon);margin:0 -12px;padding:10px 12px}
+.recibo .faixa .bx-leader > i{border-color:rgba(10,11,14,.35)}
+.recibo .nota{font-size:12px;color:var(--bx-grey);line-height:1.5}
+.recibo .bx-barcode{height:52px}
+.recibo .comprar{display:block;background:var(--bx-ink);color:var(--bx-surface);text-align:center;padding:18px;font-family:var(--bx-sans);font-weight:700;font-size:17px;text-decoration:none;text-transform:uppercase}
+.recibo .comprar:hover{background:var(--bx-ink-2)}
+
+/* ---------- painel de partidas: mapa (fundo claro, 15/10) ----------
+   O globo ganha a coluna maior e proporção quadrada; o quadro lista cidade e
+   país e só mostra os serviços ao clicar (na linha ou no alfinete). */
+.mapa{padding:0 0 clamp(56px,7vw,88px)}
+.painel{background:var(--bx-surface);color:var(--bx-ink);border:1px solid var(--bx-line);border-radius:var(--bx-r-xl);padding:clamp(24px,4vw,48px);display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;box-shadow:var(--bx-sh)}
+.painel .lado{display:flex;flex-direction:column;gap:20px;min-width:0}
+.painel .secao-rotulo{font-family:var(--bx-mono);font-size:13px;color:var(--bx-grey);letter-spacing:.08em;text-transform:uppercase}
+.painel h2{margin:0;font-size:clamp(34px,4vw,52px);line-height:1;font-weight:800;letter-spacing:-.03em;color:var(--bx-ink)}
+.cinema-frame{position:relative;border-radius:var(--bx-r-lg);border:1px solid var(--bx-line);overflow:hidden;aspect-ratio:1/1;background:var(--bx-surface-2)}
+.cinema-frame canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.cinema-frame .hint{position:absolute;left:14px;right:14px;bottom:12px;font-family:var(--bx-mono);font-size:11px;color:var(--bx-grey);pointer-events:none}
+/* o motor escreve o nome da cidade em branco (inline), por isso a dica é escura;
+   os chips de serviço que ele monta ficam escondidos: serviço só no clique */
+.globe-tip{position:absolute;display:none;pointer-events:none;background:var(--bx-ink);color:#F4F2EC;border-radius:var(--bx-r-xxs);padding:7px 10px;font-family:var(--bx-mono);font-size:12px;line-height:1.3;white-space:nowrap;box-shadow:var(--bx-sh)}
+.globe-tip > div{display:none}
+.grande{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.grande b{font-size:clamp(56px,7vw,80px);font-weight:900;color:var(--bx-ink);line-height:1;letter-spacing:-.03em;background:var(--bx-neon);padding:0 .08em}
+.grande span{font-size:15px;color:var(--bx-ink)}
+.legenda{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0;padding:0;list-style:none;font-family:var(--bx-mono);font-size:12px;color:var(--bx-grey)}
+.legenda li{display:flex;align-items:center;gap:8px}
+.legenda i{width:12px;height:12px;border-radius:3px;flex:none}
+.quadro{font-family:var(--bx-mono);font-size:14px;min-width:0;display:flex;flex-direction:column}
+.quadro .cab{display:grid;grid-template-columns:1.6fr 1fr;gap:10px;padding:10px 0;color:var(--bx-grey);font-size:12px;border-bottom:1px solid var(--bx-line);text-transform:uppercase}
+.quadro .lista{overflow:auto;max-height:560px;scrollbar-width:thin}
+.quadro .linha{display:grid;grid-template-columns:1.6fr 1fr;gap:10px;width:100%;padding:13px 6px;border:0;border-bottom:1px solid var(--bx-line);background:transparent;color:var(--bx-ink);font:inherit;text-align:left;cursor:pointer;text-transform:uppercase;border-radius:0}
+.quadro .linha:hover{background:var(--bx-surface-2)}
+.quadro .linha.ativa{background:var(--bx-ink);color:var(--bx-surface)}
+.quadro .linha .pais{color:var(--bx-grey);text-transform:none}
+.quadro .linha.ativa .pais{color:var(--bx-ink-muted)}
+/* detalhe da cidade escolhida: recibo curto */
+.cidade-info{border:1px solid var(--bx-line);border-radius:var(--bx-r-md);padding:16px 18px;margin-top:14px;display:flex;flex-direction:column;gap:8px;font-family:var(--bx-mono);font-size:13px;background:var(--bx-surface-2)}
+.cidade-info b{font-family:var(--bx-sans);font-size:20px;font-weight:800;letter-spacing:-.02em;text-transform:none}
+.cidade-info .chips{display:flex;flex-wrap:wrap;gap:8px}
+.cidade-info .chips span{display:inline-flex;align-items:center;gap:6px;background:var(--bx-surface);border:1px solid var(--bx-line);border-radius:999px;padding:4px 10px;font-size:12px}
+.cidade-info .chips i{width:9px;height:9px;border-radius:50%;flex:none}
+.cidade-info .vazio{color:var(--bx-grey)}
+.cidade-info a{color:var(--bx-ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--bx-ink);width:max-content}
+
+/* ---------- responsivo ---------- */
+@media (max-width:1000px){
+  .pacotes .bx-wrap{grid-template-columns:1fr}
+  .recibo{transform:none;max-width:520px}
+  .painel{grid-template-columns:1fr;gap:32px}
+  .quadro .lista{max-height:380px}
+}
+@media (max-width:900px){
+  .cartao{flex-direction:column}
+  .cartao h1{font-size:clamp(40px,12.6vw,96px)}
+  .so-celular{display:inline}
+  .cartao .canhoto{width:auto;padding:28px 22px}
+  .cartao .bx-perf{width:auto;height:0;border-left:0;border-top:2px dashed var(--bx-line);align-self:auto;margin:0 -1px}
+  .cartao .bx-perf::before{top:-14px;left:-14px}
+  .cartao .bx-perf::after{top:-14px;bottom:auto;left:auto;right:-14px}
+  .grade{grid-template-columns:1fr 1fr;gap:16px}
+  .rota-grid{grid-template-columns:1fr;gap:28px}
+  .rota-grid::before{display:none}
+  .escala .t{font-size:32px}
+  .quadro .linha,.quadro .cab{grid-template-columns:1.4fr 1fr;font-size:13px}
+}
+@media (max-width:520px){
+  .bilhete .miolo-b{padding:18px 16px}
+  .bilhete .canhoto-b{width:72px}
+  .recibo .corpo{padding:24px 18px;font-size:13px}
+  .recibo .total b{font-size:38px}
+  .grade{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <nav class="nav" aria-label="Principal">
+    <a href="home-embarque.html" class="brand" aria-label="BlaXx Pontos"><span class="mark">BlaXx</span></a>
+    <div class="links">
+      <a href="comprar-pontos.html">Comprar pontos</a>
+      <a href="parceiros.html">Parceiros</a>
+      <a href="como-funciona.html">Como funciona</a>
+      <a href="central-ajuda.html">Ajuda</a>
+    </div>
+    <div class="cta-row">
+      <a class="bx-entrar" href="login.html">Entrar</a>
+      <a class="bx-criar" href="cadastro.html">Criar conta</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+<!-- ====================== HERO: CARTÃO DE EMBARQUE ====================== -->
+<section class="embarque" id="topo">
+  <div class="bx-wrap">
+    <div class="cartao">
+      <div class="miolo">
+        <div class="topo-linha"><span>Cartão de embarque · BlaXx Pontos</span><span>Brasil · 2026</span></div>
+        <h1 class="letreiro" aria-label="Seus pontos. Novos destinos. Compre. Ganhe. Envie. Troque.">
+          <span class="ln"><i>Seus pontos.</i></span>
+          <span class="ln"><i><span class="troca" id="troca" aria-hidden="true"><span class="palavras"><b class="on">Novos destinos</b><b>Novos sonhos</b><b>Novas aventuras</b></span></span>.</i></span>
+          <span class="ln"><i><mark>Compre. Ganhe.<br class="so-celular">Envie. Troque.</mark></i></span>
+        </h1>
+        <div class="grade">
+          <div><span class="bx-rotulo">De</span><b>Pontos</b></div>
+          <div><span class="bx-rotulo">Para</span><b>Reais, via PIX</b></div>
+          <div><span class="bx-rotulo">Pagamento</span><b>PIX ou cartão</b></div>
+          <div><span class="bx-rotulo">Mensalidade</span><b>Nenhuma</b></div>
+        </div>
+        <p class="lead">Compre pontos, mande para quem você quiser e resgate em reais na sua conta, via PIX. O que você vê é o que você paga.</p>
+      </div>
+      <div class="bx-perf" aria-hidden="true"></div>
+      <aside class="canhoto" aria-label="Começar">
+        <div class="dados">
+          <div><span class="bx-rotulo">Passageiro</span><b>Você</b></div>
+          <div><span class="bx-rotulo">Portão</span><b>Cadastro</b></div>
+          <div><span class="bx-rotulo">Assento</span><b>Livre</b></div>
+        </div>
+        <div class="acoes">
+          <a class="cta" href="cadastro.html">Começar agora</a>
+          <span class="ja">Já tenho conta · <a href="login.html"><b>Entrar →</b></a></span>
+          <div class="bx-barcode" aria-hidden="true"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== ROTA: COMO FUNCIONA ====================== -->
+<section class="rota" id="rota" aria-labelledby="rotaTitulo">
+  <div class="bx-wrap">
+    <span class="secao-rotulo" id="rotaTitulo">Rota · Como funciona</span>
+    <div class="rota-grid">
+      <div class="escala">
+        <span class="ponto" aria-hidden="true"></span>
+        <span class="n">Escala 01 · Comprar</span>
+        <span class="t">Compre</span>
+        <p class="d">Pacotes ou valor livre. Pagamento por PIX ou cartão.</p>
+      </div>
+      <div class="escala">
+        <span class="ponto" aria-hidden="true"></span>
+        <span class="n">Escala 02 · Enviar</span>
+        <span class="t">Envie</span>
+        <p class="d">Mande pontos para quem você quiser, entre contas BlaXx.</p>
+      </div>
+      <div class="escala">
+        <span class="ponto" aria-hidden="true"></span>
+        <span class="n">Escala 03 · Trocar</span>
+        <span class="t">Troque</span>
+        <p class="d">Benefícios dos parceiros ou resgate em reais, via PIX.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PACOTES + RECIBO ====================== -->
+<section class="pacotes" id="pacotes" aria-labelledby="pacotesTitulo">
+  <div class="bx-wrap">
+    <div class="lista-bilhetes">
+      <div class="pacotes-cab">
+        <h2 id="pacotesTitulo">Escolha o seu<br>ponto de partida.</h2>
+        <a href="comprar-livre.html">Valor livre →</a>
+      </div>
+      <!-- Os valores no HTML são o fallback (iguais ao config.py do backend);
+           /pix/packages atualiza quando responde. -->
+      <label class="bilhete" data-pkg="start">
+        <input class="sr-only" type="radio" name="pacote" value="start">
+        <div class="miolo-b">
+          <div class="cab"><span>BX · Start</span><span>PIX ou cartão</span></div>
+          <span class="pts"><span data-pts>2.000</span><small> pts</small></span>
+          <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 180,00</b></div>
+        </div>
+        <div class="bx-perf" aria-hidden="true"></div>
+        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><div class="bx-barcode"></div></div>
+      </label>
+      <label class="bilhete" data-pkg="plus">
+        <input class="sr-only" type="radio" name="pacote" value="plus" checked>
+        <div class="miolo-b">
+          <div class="cab"><span>BX · Plus ★</span><span>cerca de 5% de bônus</span></div>
+          <span class="pts"><span data-pts>5.500</span><small> pts</small></span>
+          <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 470,00</b></div>
+        </div>
+        <div class="bx-perf" aria-hidden="true"></div>
+        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><div class="bx-barcode"></div></div>
+      </label>
+      <label class="bilhete" data-pkg="prime">
+        <input class="sr-only" type="radio" name="pacote" value="prime">
+        <div class="miolo-b">
+          <div class="cab"><span>BX · Prime</span><span>cerca de 10% de bônus</span></div>
+          <span class="pts"><span data-pts>12.000</span><small> pts</small></span>
+          <div><span class="bx-rotulo">Tarifa</span><b data-price>R$ 972,00</b></div>
+        </div>
+        <div class="bx-perf" aria-hidden="true"></div>
+        <div class="canhoto-b" aria-hidden="true"><span class="bx-vert">Selecionar</span><div class="bx-barcode"></div></div>
+      </label>
+    </div>
+
+    <div class="recibo" aria-live="polite">
+      <div class="bx-zig" aria-hidden="true"></div>
+      <div class="corpo">
+        <div class="cabeca">
+          <img src="assets/marca/blaxx-wordmark-claro-neon.svg" alt="BlaXx Rewards">
+          <span>EXTRATO DA SUA COMPRA</span>
+        </div>
+        <div class="bx-tracejo" aria-hidden="true"></div>
+        <div class="bx-leader"><span>PACOTE</span><i></i><span id="rcNome">PLUS ★</span></div>
+        <div class="bx-leader"><span>PONTOS</span><i></i><span id="rcPts">5.500</span></div>
+        <div class="bx-leader"><span>BÔNUS</span><i></i><span id="rcBonus">cerca de 5%</span></div>
+        <div class="bx-leader"><span>PAGAMENTO</span><i></i><span>PIX ou cartão</span></div>
+        <div class="bx-leader"><span>MENSALIDADE</span><i></i><span>nenhuma</span></div>
+        <div class="bx-tracejo" aria-hidden="true"></div>
+        <div class="total"><span>TOTAL</span><b id="rcPreco">R$ 470,00</b></div>
+        <div class="faixa"><div class="bx-leader"><span>PONTOS NA CONTA</span><i></i><span id="rcConta">5.500</span></div></div>
+        <span class="nota">Os pontos do pacote já incluem o bônus. Pontos são créditos promocionais de uso restrito na plataforma.</span>
+        <div class="bx-barcode" aria-hidden="true"></div>
+        <a class="comprar" id="rcComprar" href="comprar-pontos.html">Comprar 5.500 pts →</a>
+      </div>
+      <div class="bx-zig bx-zig--baixo" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PAINEL DE PARTIDAS: MAPA ====================== -->
+<section class="mapa" id="mapa" aria-labelledby="mapaTitulo">
+  <div class="bx-wrap">
+    <div class="painel">
+      <div class="lado">
+        <span class="secao-rotulo">Painel de partidas · Mapa</span>
+        <h2 id="mapaTitulo">Seus pontos, o mundo inteiro.</h2>
+        <div class="cinema-frame">
+          <canvas id="gvCanvas" aria-label="Globo com as principais cidades do mundo e as cidades da rede parceira" role="img"></canvas>
+          <div id="globoTip" class="globe-tip"></div>
+          <span class="hint">Arraste para girar · clique numa cidade para ver os serviços</span>
+        </div>
+        <div class="grande"><b id="netCount">27</b><span>cidades no mapa</span></div>
+        <ul class="legenda" aria-label="Legenda">
+          <li><i style="background:rgb(231,178,74)"></i>Postos</li>
+          <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+          <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+          <li><i style="background:rgb(10,11,14)"></i>Rede em expansão</li>
+        </ul>
+      </div>
+      <div class="quadro" id="quadro">
+        <div class="cab" aria-hidden="true"><span>Destino</span><span>País</span></div>
+        <!-- As cidades do Brasil vêm de BLAXX_POINTS (assets/blaxx-globo.js); as
+             outras, da lista CIDADES_MUNDO abaixo. O JS reescreve esta lista. -->
+        <div class="lista" role="list" aria-label="Cidades no mapa">
+          <button type="button" class="linha" role="listitem"><span>São Paulo</span><span class="pais">Brasil</span></button>
+          <button type="button" class="linha" role="listitem"><span>Rio de Janeiro</span><span class="pais">Brasil</span></button>
+        </div>
+        <div class="cidade-info" id="cidadeInfo" aria-live="polite">
+          <span class="vazio">Clique numa cidade, na lista ou no globo, para ver os serviços disponíveis.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer"></footer>
+
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-nav-user.js"></script>
+<script src="assets/blaxx-nav.js"></script>
+
+<script>
+// ---------- micro-interação 4: troca de palavra no letreiro ----------
+(function(){
+  var bloco = document.getElementById('troca');
+  if (!bloco) return;
+  var palavras = [].slice.call(bloco.querySelectorAll('b'));
+  if (palavras.length < 2) return;
+
+  // Movimento reduzido: fica em "Novos destinos" e ponto. Conteúdo que se troca
+  // sozinho é justamente o que essa preferência pede para não acontecer.
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var DUR = 550, ESPERA = 2600;
+  var i = 0, timer = null;
+
+  // Três motivos para o letreiro parar, conferidos a cada volta em vez de
+  // guardados numa variável. A versão anterior guardava um booleano atualizado
+  // por visibilitychange, e isso tinha dois defeitos: o evento só dispara na
+  // TROCA de visibilidade, então uma página aberta em aba de fundo nascia com
+  // o booleano em false e girava o tempo todo para ninguém; e qualquer
+  // dessincronia deixava o letreiro parado para sempre. Lendo document.hidden
+  // na hora, nenhum dos dois é possível. O custo é acordar até 2,6s depois de
+  // o leitor voltar para a aba, o que ninguém percebe num ciclo de 2,6s.
+  var sobMouse = false, foraDaTela = false;
+  function pausado(){ return sobMouse || document.hidden || foraDaTela; }
+
+  function padH(){
+    var cs = getComputedStyle(bloco);
+    return parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  }
+  function larg(p){ return p.getBoundingClientRect().width; }
+
+  // Quanto mede o ponto final que vem depois do bloco. Ele é pequeno, mas foi
+  // exatamente ele que caiu para a linha de baixo na primeira versão.
+  function pontoW(){
+    var sonda = document.createElement('span');
+    sonda.textContent = '.';
+    sonda.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap';
+    bloco.parentNode.appendChild(sonda);
+    var w = sonda.getBoundingClientRect().width;
+    sonda.remove();
+    return w;
+  }
+
+  // "NOVAS AVENTURAS" tem 15 caracteres contra 6 de "SONHOS". No telefone ela
+  // não cabe na linha (medido: 371px para 338 disponíveis) e cada palavra que
+  // não couber encolhe só o necessário.
+  //
+  // A conta precisa descontar QUATRO coisas, e errar uma joga o ponto final
+  // para a linha de baixo: o padding da própria linha (.ln tem 10px de cada
+  // lado), o padding do bloco neon, a margem do bloco, e o ponto.
+  function ajustar(){
+    var linha = bloco.closest('.ln');
+    if (!linha) return;
+    var lcs = getComputedStyle(linha), bcs = getComputedStyle(bloco);
+    var conteudo = linha.clientWidth
+      - parseFloat(lcs.paddingLeft) - parseFloat(lcs.paddingRight);
+    var custo = parseFloat(bcs.paddingLeft) + parseFloat(bcs.paddingRight)
+      + parseFloat(bcs.marginLeft) + parseFloat(bcs.marginRight);
+    var util = conteudo - custo - pontoW() - 6;   // 6 de folga contra arredondamento
+
+    palavras.forEach(function(p){
+      p.style.fontSize = '';
+      var nat = larg(p);
+      if (util > 0 && nat > util) p.style.fontSize = Math.max(0.7, util / nat).toFixed(3) + 'em';
+    });
+    bloco.style.width = Math.ceil(larg(palavras[i]) + padH()) + 'px';
+  }
+
+  function trocar(){
+    var sai = palavras[i];
+    i = (i + 1) % palavras.length;
+    var entra = palavras[i];
+
+    sai.classList.remove('on');
+    sai.classList.add('sai');
+    entra.classList.add('on');
+    bloco.style.width = Math.ceil(larg(entra) + padH()) + 'px';
+
+    // depois de sair por cima, a palavra volta em silêncio para baixo, senão
+    // na próxima vez ela desceria em vez de subir.
+    setTimeout(function(){
+      sai.style.transition = 'none';
+      sai.classList.remove('sai');
+      void sai.offsetWidth;                        // força o reflow
+      sai.style.transition = '';
+    }, DUR + 40);
+  }
+
+  function ciclo(){
+    timer = setTimeout(function(){
+      if (!pausado()) trocar();
+      ciclo();
+    }, ESPERA);
+  }
+
+  bloco.addEventListener('pointerenter', function(){ sobMouse = true; });
+  bloco.addEventListener('pointerleave', function(){ sobMouse = false; });
+  // O hero sai da tela depois de poucos segundos de rolagem e o letreiro
+  // continuava girando atrás do leitor. Sem IntersectionObserver a flag fica
+  // false e o comportamento é o de antes.
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function(entradas){
+      foraDaTela = !entradas[0].isIntersecting;
+    }, { threshold: 0 }).observe(bloco);
+  }
+
+  var redim;
+  window.addEventListener('resize', function(){
+    clearTimeout(redim);
+    redim = setTimeout(ajustar, 150);
+  });
+
+  // as fontes mudam a medida depois que carregam; medir antes disso erra
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
+  ajustar();
+  ciclo();
+})();
+</script>
+
+<script>
+// ---------- globo: cidades da rede (Brasil) + principais cidades do mundo ----------
+// Motor em assets/blaxx-globo.js. As 12 cidades da rede vêm de BLAXX_POINTS,
+// com as verticais reais; as do mundo são marcadas como "rede em expansão" e
+// NÃO ganham serviços inventados: ao clicar, a página diz que ainda não há
+// parceiros ali. Preencher serviços de uma cidade = acrescentar pontos com a
+// chave da vertical (postos/mercado/farmacia) em CIDADES_MUNDO.
+(function(){
+  var canvas = document.getElementById('gvCanvas');
+  if (!canvas || typeof blaxxCreateGlobe !== 'function' || typeof BLAXX_POINTS === 'undefined') return;
+
+  var CIDADES_MUNDO = [
+    ['Nova York','Estados Unidos',40.71,-74.01],['Los Angeles','Estados Unidos',34.05,-118.24],['Miami','Estados Unidos',25.76,-80.19],
+    ['Toronto','Canadá',43.65,-79.38],['Cidade do México','México',19.43,-99.13],['Bogotá','Colômbia',4.71,-74.07],
+    ['Lima','Peru',-12.05,-77.04],['Santiago','Chile',-33.45,-70.67],['Buenos Aires','Argentina',-34.6,-58.38],
+    ['Lisboa','Portugal',38.72,-9.14],['Madrid','Espanha',40.42,-3.7],['Paris','França',48.86,2.35],
+    ['Londres','Reino Unido',51.51,-0.13],['Berlim','Alemanha',52.52,13.4],['Roma','Itália',41.9,12.5],
+    ['Istambul','Turquia',41.01,28.98],['Cairo','Egito',30.04,31.24],['Joanesburgo','África do Sul',-26.2,28.05],
+    ['Dubai','Emirados Árabes',25.2,55.27],['Mumbai','Índia',19.08,72.88],['Singapura','Singapura',1.35,103.82],
+    ['Xangai','China',31.23,121.47],['Tóquio','Japão',35.68,139.69],['Seul','Coreia do Sul',37.57,126.98],
+    ['Sydney','Austrália',-33.87,151.21]
+  ];
+  var SUP = {};
+  Object.keys(BLAXX_SUPPLIERS).forEach(function(k){ SUP[k] = BLAXX_SUPPLIERS[k]; });
+  // o motor escreve um monograma no alfinete (2 letras do nome); espaço = nada
+  SUP.cidade = { name: '\u00a0', cat: 'Rede em expansão', rgb: '10,11,14' };
+
+  // No Brasil só São Paulo e Rio de Janeiro entram no mapa (pedido de 15/10);
+  // as demais cidades de BLAXX_POINTS continuam disponíveis para as outras homes.
+  var BRASIL_NO_MAPA = ['São Paulo', 'Rio de Janeiro'];
+  var PONTOS = BLAXX_POINTS.filter(function(p){ return BRASIL_NO_MAPA.indexOf(p.c) >= 0; })
+    .map(function(p){ return { s: p.s, c: p.c, p: 'Brasil', lat: p.lat, lon: p.lon, i: p.i }; })
+    .concat(CIDADES_MUNDO.map(function(c){ return { s: 'cidade', c: c[0], p: c[1], lat: c[2], lon: c[3], i: 0.55 }; }));
+
+  // cidade → país e verticais, para a lista e o detalhe
+  var CIDADES = [], porNome = {};
+  PONTOS.forEach(function(p){
+    var k = p.c;
+    if (!porNome[k]){ porNome[k] = { c: p.c, p: p.p, lat: p.lat, lon: p.lon, verticais: [] }; CIDADES.push(porNome[k]); }
+    if (p.s !== 'cidade' && porNome[k].verticais.indexOf(p.s) < 0) porNome[k].verticais.push(p.s);
+  });
+
+  document.getElementById('netCount').textContent = CIDADES.length;
+  var legenda = document.querySelector('.legenda'), presentes = [];
+  CIDADES.forEach(function(c){ c.verticais.forEach(function(v){ if (presentes.indexOf(v) < 0) presentes.push(v); }); });
+  legenda.innerHTML = presentes.map(function(v){ return '<li><i style="background:rgb(' + SUP[v].rgb + ')"></i>' + SUP[v].name + '</li>'; }).join('') +
+    '<li><i style="background:rgb(10,11,14)"></i>Rede em expansão</li>';
+
+  var lista = document.querySelector('#quadro .lista'), info = document.getElementById('cidadeInfo');
+  lista.innerHTML = CIDADES.map(function(c, i){
+    return '<button type="button" class="linha" role="listitem" data-i="' + i + '"><span>' + c.c + '</span><span class="pais">' + c.p + '</span></button>';
+  }).join('');
+
+  function mostrar(c){
+    lista.querySelectorAll('.linha').forEach(function(b){ b.classList.toggle('ativa', CIDADES[+b.dataset.i] === c); });
+    var html = '<b>' + c.c + ' · ' + c.p + '</b>';
+    if (c.verticais.length){
+      html += '<div class="chips">' + c.verticais.map(function(v){
+        return '<span><i style="background:rgb(' + SUP[v].rgb + ')"></i>' + SUP[v].name + '</span>';
+      }).join('') + '</div><a href="parceiros.html?q=' + encodeURIComponent(c.c) + '">Ver parceiros em ' + c.c + ' →</a>';
+    } else {
+      html += '<span class="vazio">Rede em expansão: ainda não há parceiros nesta cidade.</span>';
+    }
+    info.innerHTML = html;
+  }
+  lista.addEventListener('click', function(ev){
+    var b = ev.target.closest('.linha'); if (!b) return;
+    var c = CIDADES[+b.dataset.i]; mostrar(c);
+    if (globo) globo.verCidade ? globo.verCidade(c) : null;
+  });
+
+  var globo = null;
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json')
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(world){
+      globo = blaxxCreateGlobe(canvas, {
+        world: world, points: PONTOS, suppliers: SUP,
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.5,   // abre no Brasil, como a home anterior
+        autoRotate: !reduzir, rotateSpeed: 0.12,
+        tooltip: document.getElementById('globoTip'),
+        onPointClick: function(ponto){ var c = porNome[ponto.c]; if (c){ mostrar(c); var b = lista.querySelector('.linha.ativa'); if (b) b.scrollIntoView({ block: 'nearest' }); } },
+        sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+        landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)',
+        borderColor:'rgba(8,32,60,0.28)', gratColor:'rgba(8,32,60,0.10)',
+        ringAlpha:0.5, atmAlpha:0
+      });
+    })
+    .catch(function(e){ console.error('globo:', e); });
+})();
+</script>
+
+<script>
+// ---------- bilhetes de pacote e recibo ----------
+// Escolher um bilhete reescreve o recibo. Os valores do HTML são o fallback;
+// /pix/packages (mesmo contrato das outras páginas) atualiza quando responde.
+(function(){
+  var DADOS = {
+    start: { nome: 'START',  pts: 2000,  preco: 180, bonus: '—' },
+    plus:  { nome: 'PLUS ★', pts: 5500,  preco: 470, bonus: 'cerca de 5%' },
+    prime: { nome: 'PRIME',  pts: 12000, preco: 972, bonus: 'cerca de 10%' }
+  };
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function $(id){ return document.getElementById(id); }
+
+  function recibo(k){
+    var d = DADOS[k]; if (!d) return;
+    $('rcNome').textContent = d.nome;
+    $('rcPts').textContent = fmtPts(d.pts);
+    $('rcBonus').textContent = d.bonus;
+    $('rcPreco').textContent = fmtBrl(d.preco);
+    $('rcConta').textContent = fmtPts(d.pts);
+    $('rcComprar').textContent = 'Comprar ' + fmtPts(d.pts) + ' pts →';
+    $('rcComprar').href = 'comprar-pontos.html?pkg=' + k;
+  }
+  document.querySelectorAll('.bilhete input[name="pacote"]').forEach(function(r){
+    r.addEventListener('change', function(){ if (r.checked) recibo(r.value); });
+  });
+  var marcado = document.querySelector('.bilhete input[name="pacote"]:checked');
+  if (marcado) recibo(marcado.value);
+
+  if (!window.BLAXX_API) return;
+  fetch(window.BLAXX_API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){
+      Object.keys(DADOS).forEach(function(k){
+        var pk = d[k]; if (!pk) return;
+        if (pk.points != null) DADOS[k].pts = pk.points;
+        if (pk.price_brl != null) DADOS[k].preco = pk.price_brl;
+        var card = document.querySelector('.bilhete[data-pkg="' + k + '"]');
+        if (!card) return;
+        var p = card.querySelector('[data-pts]'), pr = card.querySelector('[data-price]');
+        if (p && pk.points != null) p.textContent = fmtPts(pk.points);
+        if (pr && pk.price_brl != null) pr.textContent = fmtBrl(pk.price_brl);
+      });
+      var atual = document.querySelector('.bilhete input[name="pacote"]:checked');
+      if (atual) recibo(atual.value);
+    })
+    .catch(function(){ /* silencioso: o fallback do HTML continua valendo */ });
+})();
+</script>
+
+</body>
+</html>

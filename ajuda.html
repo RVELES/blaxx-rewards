@@ -5,12 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Central de ajuda</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal para vencer a
+     cascata. O <link> fica no HTML porque o blaxx-nav.js só injeta a folha
+     como rede de segurança, e injetar tarde faz a página piscar. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .cats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
-  .cat { padding: 22px; transition: transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease); }
-  .cat:hover { transform: translateY(-4px); box-shadow: var(--sh-2); border-color: var(--line-strong); }
-  .cat .ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--lime-12); font-size: 19px; }
-  .cat h4 { font-family: var(--font-display); font-weight: 900; font-size: 17px; margin: 14px 0 2px; }
+  .cat { padding: 22px; transition: background .22s var(--ease), box-shadow .22s var(--ease); }
+  /* O tema não levanta cartão no hover (transform: none); o retorno é o
+     da superfície-2, como o item de menu do design. */
+  .cat:hover { transform: none; background: var(--bx-surface-2); box-shadow: var(--bx-sh); border-color: var(--bx-line); }
+  /* Ícone como os glifos do tema: preenchimento neon, traço preto. */
+  .cat .ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--bx-neon); color: var(--bx-ink); font-size: 19px; }
+  /* O tema trata <h4> cru como rótulo mono em caixa alta e cinza; aqui o h4 é
+     título de categoria, então repõe caixa, cor e espaçamento de título. */
+  .cat h4 { font-family: var(--bx-sans); font-weight: 900; font-size: 17px; margin: 14px 0 2px; text-transform: none; letter-spacing: -0.01em; color: var(--bx-ink); }
   .cat p { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); margin: 0; }
 
   .sec-head { display:flex; align-items:center; justify-content:space-between; margin: 44px 0 18px; }
@@ -43,14 +52,14 @@
   </header>
 
   <section class="cats">
-    <a class="card cat" href="faq.html"><span class="ico">★</span><h4>Acúmulo de pontos</h4><p>12 ARTIGOS</p></a>
-    <a class="card cat" href="faq.html"><span class="ico">🎁</span><h4>Resgates</h4><p>8 ARTIGOS</p></a>
+    <a class="card cat" href="faq.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></span><h4>Acúmulo de pontos</h4><p>12 ARTIGOS</p></a>
+    <a class="card cat" href="faq.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></span><h4>Resgates</h4><p>8 ARTIGOS</p></a>
     <a class="card cat" href="faq.html"><span class="ico">＋</span><h4>Comprar pontos</h4><p>6 ARTIGOS</p></a>
     <a class="card cat" href="faq.html"><span class="ico">→</span><h4>Enviar pontos</h4><p>5 ARTIGOS</p></a>
-    <a class="card cat" href="perfil.html"><span class="ico">⚙</span><h4>Conta &amp; perfil</h4><p>9 ARTIGOS</p></a>
-    <a class="card cat" href="seguranca.html"><span class="ico">🔒</span><h4>Segurança</h4><p>7 ARTIGOS</p></a>
+    <a class="card cat" href="perfil.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5"/></svg></span><h4>Conta &amp; perfil</h4><p>9 ARTIGOS</p></a>
+    <a class="card cat" href="seguranca.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M12 3 5 6v6c0 4.3 3 7.2 7 9 4-1.8 7-4.7 7-9V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></svg></span><h4>Segurança</h4><p>7 ARTIGOS</p></a>
     <a class="card cat" href="campanhas.html"><span class="ico">▲</span><h4>Campanhas</h4><p>4 ARTIGOS</p></a>
-    <a class="card cat" href="termos.html"><span class="ico">📄</span><h4>Termos &amp; documentos</h4><p>3 ARTIGOS</p></a>
+    <a class="card cat" href="termos.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M6 3h9l5 5v13H6Z"/><path d="M14 3v6h6"/><path d="M9 13h6M9 17h6"/></svg></span><h4>Termos &amp; documentos</h4><p>3 ARTIGOS</p></a>
   </section>
 
   <div class="sec-head">
@@ -95,7 +104,7 @@
     </div>
     <div class="card">
       <h3>📄 Documentos e regras</h3>
-      <p>Termos de uso, regras de pontos, reembolso e privacidade — tudo em um lugar.</p>
+      <p>Termos de uso, regras de pontos, reembolso e privacidade, tudo em um lugar.</p>
       <a href="mapa-do-site.html" class="btn btn--outline">Ver documentos →</a>
     </div>
   </div>

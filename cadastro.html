@@ -6,28 +6,35 @@
 <title>BlaXx · Criar conta</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e vence a cascata. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   body { background: var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
   /* Barra preta: a marca oficial tem "Bla" BRANCO e não sobrevive sobre o
-     papel — medido aqui: 1,25:1 no "Bla" e 1,08:1 no "Xx", ou seja, a logo
+     papel, medido aqui: 1,25:1 no "Bla" e 1,08:1 no "Xx", ou seja, a logo
      inteira era invisível nesta tela. O link auxiliar também estava em neon
-     sobre claro (1,08:1). Sobre preto, ambos passam com folga. */
+     sobre claro (1,08:1). Sobre preto, ambos passam com folga.
+     No tema Embarque esta barra faz o papel da barra utilitária (.bx-util):
+     preta, texto no cinza da barra, sem a borda grossa do brutalismo. */
   .auth-top { display: flex; align-items: center; justify-content: space-between;
               gap: 16px; flex-wrap: wrap; padding: 18px 28px;
-              background: var(--ink); border-bottom: 4px solid var(--ink); }
+              background: var(--bx-ink); border-bottom: 0; }
   .auth-top img { height: 30px; width: auto; display: block; }
-  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: #cfd2cb; }
-  .auth-top a.alt b { color: var(--lime); }   /* neon sobre preto: 14,5:1 */
+  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: var(--bx-bar-fg); }
+  .auth-top a.alt b { color: var(--bx-neon); }   /* neon sobre preto: 14,5:1 */
   .auth-wrap { flex: 1; display: grid; place-items: center; padding: 24px; }
   .auth { width: 100%; max-width: 440px; padding: 36px; animation: rise .5s var(--ease-out) both; }
   .auth h1 { font-family: var(--font-display); font-weight: 900; font-size: 26px; letter-spacing: -0.02em; margin: 0 0 4px; }
   .auth .sub { font-size: 14px; color: var(--fg-muted); margin: 0 0 20px; }
-  .welcome { display: inline-flex; align-items: center; gap: 8px; background: var(--lime-12); border: 1px solid var(--lime-40); border-radius: var(--r-pill); padding: 7px 14px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--lime-deep); margin-bottom: 16px; }
+  /* Neon só como preenchimento, com texto preto: #5AB800 como cor de texto
+     sobre o tinte claro dava 2,3:1 e reprovava AA. */
+  .welcome { display: inline-flex; align-items: center; gap: 8px; background: var(--bx-neon); border: 0; border-radius: 999px; padding: 7px 14px; font-family: var(--bx-mono); font-weight: 700; font-size: 12px; color: var(--bx-ink); margin-bottom: 16px; }
   .f { margin-bottom: 15px; }
   .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
   .f input { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 13px 14px; font-family: var(--font-body); font-size: 14.5px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
-  .f input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
-  .legal { font-size: 12px; color: var(--fg-subtle); margin: 4px 0 18px; }
+  /* Foco como na folha do tema: contorno tinta + anel neon translúcido. */
+  .f input:focus { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
+  .legal { font-size: 12px; color: var(--bx-grey); margin: 4px 0 18px; font-family: var(--bx-sans); text-transform: none; letter-spacing: 0; }
   .legal a { text-decoration: underline; }
   .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
   .auth-foot a { text-decoration: underline; }
@@ -72,7 +79,7 @@
 
       <div id="regErr" style="display:none;background:rgba(224,72,61,.08);border:1px solid rgba(224,72,61,.3);color:#c0392b;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin:0 0 16px"></div>
 
-      <!-- Passo 1 — Identificação -->
+      <!-- Passo 1, Identificação -->
       <section class="step on" data-step="0">
         <span class="welcome">🎁 GANHE PONTOS DE BOAS-VINDAS</span>
         <div class="step-count">Passo 1 de 3</div>
@@ -97,7 +104,7 @@
         <div id="g-signin-btn" data-erro-id="regErr" data-texto="signup_with"></div>
       </section>
 
-      <!-- Passo 2 — Contato -->
+      <!-- Passo 2, Contato -->
       <section class="step" data-step="1">
         <div class="step-count">Passo 2 de 3</div>
         <h1>Como te encontramos?</h1>
@@ -116,7 +123,7 @@
         </div>
       </section>
 
-      <!-- Passo 3 — Acesso -->
+      <!-- Passo 3, Acesso -->
       <section class="step" data-step="2">
         <div class="step-count">Passo 3 de 3</div>
         <h1>Crie seu acesso.</h1>
@@ -240,7 +247,7 @@
             saveSession(res.j);
             location.href = 'dashboard.html'; return;
           }
-          // erro de e-mail/CPF normalmente é do passo 1/2 — volta e mostra
+          // erro de e-mail/CPF normalmente é do passo 1/2, volta e mostra
           var msg = (res.j && res.j.error) || 'Não foi possível criar a conta.';
           if (/cpf/i.test(msg)) show(0);
           else if (/mail/i.test(msg)) show(1);

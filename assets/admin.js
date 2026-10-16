@@ -1,7 +1,7 @@
 /* Admin · script da página /admin
  *
  * Liga a tabela e os toggles VIP ao backend /admin/* (precisa user.role==='admin').
- * Sem framework, sem dependências — só fetch + DOM puro.
+ * Sem framework, sem dependências, só fetch + DOM puro.
  */
 (function () {
   'use strict';
@@ -204,7 +204,7 @@
           var prefix = t.amount_pts > 0 ? '+' : '';
           return '<tr>' +
             '<td>' + shortDate(t.created_at) + '</td>' +
-            '<td>' + escapeHtml(t.user_name || '—') + '<br><small style="color:#8a918a;">' + escapeHtml(t.user_email || '') + '</small></td>' +
+            '<td>' + escapeHtml(t.user_name || '—') + '<br><small style="color:var(--bx-grey);">' + escapeHtml(t.user_email || '') + '</small></td>' +
             '<td>' + escapeHtml(t.type) + '</td>' +
             '<td>' + escapeHtml(t.description || '—') + '</td>' +
             '<td style="text-align:right;" class="tx-amount ' + sign + '">' + prefix + fmt(t.amount_pts) + '</td>' +
@@ -238,12 +238,12 @@
           var brl = Number(c.amount_brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           return '<tr>' +
             '<td>' + when + '</td>' +
-            '<td>' + escapeHtml(c.user_name || '—') + '<br><small style="color:#8a918a;">' + escapeHtml(c.user_email || '') + '</small></td>' +
+            '<td>' + escapeHtml(c.user_name || '—') + '<br><small style="color:var(--bx-grey);">' + escapeHtml(c.user_email || '') + '</small></td>' +
             '<td>R$ ' + brl + '</td>' +
             '<td>' + fmt(c.points_to_credit) + ' pts</td>' +
             '<td style="text-align:center;">' +
               '<button class="button" onclick="confirmCharge(\'' + c.id + '\')" style="font-size:12px;padding:6px 12px;margin-right:4px;">Confirmar</button>' +
-              '<button class="button ghost" onclick="rejectCharge(\'' + c.id + '\')" style="font-size:12px;padding:6px 12px;color:#a83417;">Rejeitar</button>' +
+              '<button class="button ghost" onclick="rejectCharge(\'' + c.id + '\')" style="font-size:12px;padding:6px 12px;color:var(--danger-text);">Rejeitar</button>' +
             '</td>' +
             '</tr>';
         }).join('');
@@ -288,13 +288,13 @@
           var brl = Number(p.amount_brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           return '<tr>' +
             '<td>' + when + '</td>' +
-            '<td>' + escapeHtml(p.user_name || '—') + '<br><small style="color:#8a918a;">' + escapeHtml(p.user_email || '') + '</small></td>' +
+            '<td>' + escapeHtml(p.user_name || '—') + '<br><small style="color:var(--bx-grey);">' + escapeHtml(p.user_email || '') + '</small></td>' +
             '<td><code>' + escapeHtml(p.pix_key || '—') + '</code></td>' +
             '<td>R$ ' + brl + '</td>' +
             '<td>' + fmt(p.points_debited) + ' pts</td>' +
             '<td style="text-align:center;">' +
               '<button class="button" onclick="confirmPayout(\'' + p.id + '\')" style="font-size:12px;padding:6px 12px;margin-right:4px;">Confirmar</button>' +
-              '<button class="button ghost" onclick="failPayout(\'' + p.id + '\')" style="font-size:12px;padding:6px 12px;color:#a83417;">Falhou</button>' +
+              '<button class="button ghost" onclick="failPayout(\'' + p.id + '\')" style="font-size:12px;padding:6px 12px;color:var(--danger-text);">Falhou</button>' +
             '</td>' +
             '</tr>';
         }).join('');
@@ -333,7 +333,7 @@
   };
 
   // ── Packages tab (preços editáveis: rascunho → Publicar) ───────────────
-  var _pkgInput = 'width:110px;padding:8px 10px;border:1px solid #e6eadf;border-radius:8px;background:#0c110c;font-size:14px;text-align:right;';
+  var _pkgInput = 'width:110px;padding:8px 10px;border:1px solid var(--bx-line);border-radius:8px;background:var(--bx-surface);font-size:14px;text-align:right;';
 
   function loadPackages() {
     var tbody = document.getElementById('packages-tbody');
@@ -360,7 +360,7 @@
     var info = document.getElementById('pkg-pending');
     if (pub) { pub.disabled = pending === 0; pub.textContent = pending ? 'Publicar alterações (' + pending + ')' : 'Publicar alterações'; }
     if (disc) disc.disabled = pending === 0;
-    if (info) info.textContent = pending ? '● ' + pending + ' alteração(ões) não publicada(s) — o site ainda mostra o preço publicado' : 'Tudo publicado.';
+    if (info) info.textContent = pending ? '● ' + pending + ' alteração(ões) não publicada(s), o site ainda mostra o preço publicado' : 'Tudo publicado.';
   }
 
   function renderPackageRow(p) {
@@ -372,14 +372,14 @@
     var priceBrl = Number(eff.price_brl != null ? eff.price_brl : (eff.price_cents || 0) / 100);
     var active = eff.active != null ? eff.active : p.active;
     var draftTag = p.has_draft
-      ? '<div style="font-size:11px;color:#c89a2a;font-weight:600;margin-top:4px;">● rascunho · publicado: R$ ' +
+      ? '<div style="font-size:11px;color:var(--warn-text);font-weight:600;margin-top:4px;">● rascunho · publicado: R$ ' +
           Number(p.price_brl).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
           ' / ' + Number(p.points).toLocaleString('pt-BR') + ' pts</div>'
       : '';
     return '<tr data-key="' + key + '"' + (p.has_draft ? ' style="background:#14100633;"' : '') + '>' +
       '<td><code>' + key + '</code>' + draftTag + '</td>' +
       '<td><input type="text" class="pkg-label" value="' + escapeHtml(label || '') +
-        '" style="width:100%;padding:8px 10px;border:1px solid #e6eadf;border-radius:8px;background:#0c110c;font-size:14px;"></td>' +
+        '" style="width:100%;padding:8px 10px;border:1px solid var(--bx-line);border-radius:8px;background:var(--bx-surface);font-size:14px;"></td>' +
       '<td style="text-align:right;"><input type="number" class="pkg-points" min="1" step="1" value="' + points + '" style="' + _pkgInput + '"></td>' +
       '<td style="text-align:right;"><input type="number" class="pkg-price" min="1" step="0.01" value="' + priceBrl.toFixed(2) + '" style="' + _pkgInput + '"></td>' +
       '<td style="text-align:center;">' +
@@ -400,18 +400,18 @@
     var priceBrl = parseFloat(row.querySelector('.pkg-price').value);
     var active = row.querySelector('.pkg-active').checked;
 
-    if (isNaN(priceBrl) || priceBrl <= 0) { status.textContent = 'Preço inválido'; status.style.color = '#a83417'; return; }
-    if (isNaN(points) || points < 1) { status.textContent = 'Pontos inválidos'; status.style.color = '#a83417'; return; }
+    if (isNaN(priceBrl) || priceBrl <= 0) { status.textContent = 'Preço inválido'; status.style.color = 'var(--danger-text)'; return; }
+    if (isNaN(points) || points < 1) { status.textContent = 'Pontos inválidos'; status.style.color = 'var(--danger-text)'; return; }
 
     btn.disabled = true;
-    status.textContent = 'Salvando rascunho...'; status.style.color = '#8a918a';
+    status.textContent = 'Salvando rascunho...'; status.style.color = 'var(--bx-grey)';
     api('/admin/packages/' + encodeURIComponent(key), {
       method: 'PUT',
       body: JSON.stringify({ price_brl: priceBrl, points: points, label: label, active: active }),
     }).then(function () {
       loadPackages();  // recarrega → mostra selo de rascunho + habilita Publicar
     }).catch(function (e) {
-      status.textContent = '✗ ' + e.message; status.style.color = '#a83417';
+      status.textContent = '✗ ' + e.message; status.style.color = 'var(--danger-text)';
       alert('Falha ao salvar rascunho: ' + e.message);
       btn.disabled = false;
     });
@@ -443,7 +443,7 @@
   //
   // O número que importa aqui é "A receber": pontos já emitidos que a rede deve
   // pagar. E o selo "insolvente" marca contrato que paga por ponto menos do que
-  // custa resgatá-lo — essas redes param de emitir sozinhas (o backend recusa),
+  // custa resgatá-lo, essas redes param de emitir sozinhas (o backend recusa),
   // e sem o aviso o operador só veria o caixa em silêncio, sem saber por quê.
   var CUSTO_RESGATE = null;
 

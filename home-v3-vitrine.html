@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Ponto na vitrine, coisa na mão | BlaXx Pontos</title>
+<meta name="description" content="Compre pontos por PIX ou cartão, envie para outra conta BlaXx e troque por voucher, vantagem em rede parceira ou cashback via PIX.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/blaxx-brutal.css">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="assets/blaxx-globo.js"></script>
+<style>
+/* =========================================================================
+   VARIANTE "VITRINE"
+
+   A ideia: uma vitrine de rua montada à mão. O oposto da ficha técnica.
+   Nada no eixo, nada perfeitamente alinhado, adesivo colado por cima de
+   adesivo, seta apontando de um bloco para o outro. A energia vem do
+   desalinho, não de cor nova: a paleta continua preto e neon pontual.
+
+   Identidade, barra, marquee, moldura do globo, FAQ, chamada final e rodapé
+   vêm de assets/blaxx-brutal.css. Aqui mora SÓ a composição desta variante.
+
+   Decisão que comanda todo o resto do arquivo: rotação e sobreposição são o
+   inimigo número um do scroll horizontal no celular. Então a base é reta,
+   empilhada e sem deslocamento, e a bagunça só entra a partir de 640px (leve)
+   e 1000px (cheia), onde existe folga de largura para ela caber. No fim do
+   arquivo ainda há um bloco explícito de reset em 560px, cinto e suspensório,
+   porque é mais fácil dormir sabendo que a regra dura está escrita duas vezes.
+   ========================================================================= */
+
+/* ---------- peças de desenho: setas, estrelas de 4 pontas, asterisco -------
+   Tudo decorativo, tudo pointer-events:none, para nunca roubar um clique.
+   Os desenhos são SVG inline porque precisam da mesma borda grossa do
+   sistema: 4 a 5px de traço, canto redondo só na ponta do traço. */
+.seta,.estrela{position:absolute;pointer-events:none;color:var(--black);z-index:4}
+.seta{fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.estrela path{fill:currentColor}
+.estrela.neon path{fill:var(--neon);stroke:var(--black);stroke-width:5}
+.ast{font-family:var(--mono);color:var(--black);line-height:1}
+
+/* ---------- adesivo: o rótulo mono do sistema, mas girado ------------------
+   Reusa .tagline inteira (borda 3px, mono caixa-alta, letter-spacing largo).
+   O que .ades acrescenta é só o giro e o direito de sair da linha de base, e
+   as duas coisas só existem dentro de media query: na base ele é .tagline e
+   nada mais, então aqui não há regra a escrever. */
+.colar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px}
+
+/* =========================== HERO / PALCO ================================
+   Título deslocado do eixo, cada linha com recuo diferente. O fundo é papel
+   com retícula de pontos (e não a grade tracejada de linhas de outra
+   variante) para o hero já se anunciar como outra página.
+   overflow:hidden no palco é o que permite forma vazada sangrando na borda
+   sem risco nenhum de barra de rolagem horizontal. */
+.palco{position:relative;overflow:hidden;background:var(--paper);
+  border-bottom:var(--bw) solid var(--black)}
+.palco::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(10,11,14,.22) 1.6px,transparent 1.7px);
+  background-size:26px 26px;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0 62%,transparent 100%);
+          mask-image:linear-gradient(to bottom,#000 0 62%,transparent 100%)}
+.palco .in{position:relative;z-index:2;
+  padding-top:clamp(30px,6vw,74px);padding-bottom:clamp(40px,7vw,104px)}
+
+/* quadrados e círculos vazados: alguns atrás do texto (z-index 0), outros
+   à frente (z-index 5). É o truque que dá profundidade de colagem. */
+.fig{position:absolute;border:var(--bw) solid var(--black);pointer-events:none;display:none}
+.fig.red{border-radius:50%}
+@media(min-width:760px){.fig{display:block}}
+.fig.f1{width:132px;height:132px;top:11%;left:3%;transform:rotate(11deg);z-index:0}
+.fig.f2{width:196px;height:196px;right:4%;bottom:6%;z-index:0}
+.fig.f3{width:52px;height:52px;background:var(--neon);top:18%;right:24%;
+  transform:rotate(-14deg);z-index:5}
+.fig.f4{width:36px;height:36px;left:34%;bottom:16%;z-index:5}
+.fig.f5{width:78px;height:78px;left:19%;bottom:-26px;transform:rotate(9deg);z-index:0}
+
+.palco .tagline{transform:rotate(-2deg)}
+/* O título: cada linha é bloco próprio, com recuo próprio, e no celular os
+   recuos vão a zero, senão a terceira linha empurra a página para o lado.
+   No celular o display também cai de 44px para ~39px: a linha mais longa
+   encostava na calha quando a fonte do sistema entra no lugar da Space
+   Grotesk, e título que quebra sozinho estraga o recuo escalonado. */
+.tit{margin:22px 0 0;font-size:clamp(38px,10.4vw,46px)}
+@media(min-width:560px){.tit{font-size:clamp(46px,8.2vw,100px)}}
+.tit > span{display:block}
+/* .nb segura o bloco neon e a vírgula na mesma linha: o navegador pode
+   quebrar depois de um inline-block, e vírgula órfã no início da linha é
+   o tipo de detalhe que denuncia composição feita no automático. */
+.tit .nb{white-space:nowrap}
+@media(min-width:760px){
+  .tit{transform:rotate(-1.1deg)}
+  .tit .ln1{margin-left:2%}
+  .tit .ln2{margin-left:13%}
+  .tit .ln3{margin-left:5.5%}
+}
+.tit .estrela{position:static;display:inline-block;width:.42em;height:.42em;
+  margin-left:.12em;vertical-align:.34em;color:var(--black)}
+.palco .lead{margin-top:24px}
+.palco .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+/* Mono miúdo sobre papel não aguenta o cinza do sistema: 12px em --grey
+   sobre --paper fica em 3,5:1. Aqui o texto é informação real (o que é
+   gratuito, quando o crédito entra), então ele vai de tinta. */
+.palco .nota{margin-top:22px;font-family:var(--mono);font-size:12.5px;
+  letter-spacing:.06em;line-height:1.7;color:var(--ink);max-width:44ch}
+
+/* selo circular com texto correndo na borda. No celular ele não desaparece:
+   vira um bloco centrado menor, porque é o desenho mais BlaXx do hero. */
+.selo{position:relative;z-index:5;width:112px;height:112px;margin:30px auto 0}
+.selo svg{width:100%;height:100%;animation:selogira 20s linear infinite}
+.selo em{position:absolute;inset:0;display:grid;place-items:center;
+  font-style:normal;font-size:24px}
+/* a tinta do selo sai do token, não de um hex recopiado dentro do SVG */
+.selo circle{stroke:var(--black)}
+.selo text{fill:var(--black)}
+@keyframes selogira{to{transform:rotate(-360deg)}}
+@media(prefers-reduced-motion:reduce){.selo svg{animation:none}}
+
+@media(min-width:1000px){
+  .palco .in{padding-bottom:clamp(64px,8vw,126px)}
+  /* no desktop o selo sai do fluxo e vai encostar no canto do título */
+  .selo{position:absolute;right:calc(var(--pad) + 6px);top:clamp(34px,5vw,62px);
+    width:168px;height:168px;margin:0}
+  .selo em{font-size:34px}
+  /* a colagem de adesivos deixa de ser linha e passa a ser camada solta */
+  .palco .colar{position:absolute;inset:0;margin:0;display:block;pointer-events:none}
+  .palco .colar .ades{position:absolute;background:var(--white)}
+  .palco .colar .a1{left:2%;top:40%;transform:rotate(-7deg)}
+  .palco .colar .a2{right:3%;top:46%;transform:rotate(6deg)}
+  .palco .colar .a3{left:47%;bottom:11%;transform:rotate(-4deg)}
+  .palco .colar .a4{right:16%;bottom:20%;transform:rotate(8deg)}
+  .palco .colar .a5{left:9%;bottom:6%;transform:rotate(3deg)}
+  .palco .seta-cta{width:126px;height:88px;left:39%;bottom:26%;transform:rotate(6deg)}
+  .palco .estrela-a{width:40px;height:40px;left:63%;top:16%;transform:rotate(12deg)}
+}
+@media(max-width:999px){.palco .seta-cta,.palco .estrela-a{display:none}}
+
+/* ======================= O QUE DÁ PARA FAZER / ESCADA ====================
+   Cards escalonados em degrau. O segundo desce, o terceiro sobe, o quarto
+   desce menos, e as sombras duras apontam para lados diferentes de
+   propósito: é o que faz a fileira parecer colada à mão e não gerada.
+   A sobreposição é feita com margin-left negativa dentro do grid, nunca com
+   position absolute, para a altura da fileira continuar sendo calculada. */
+.escada{position:relative}
+.degraus{display:grid;gap:20px}
+.degrau{position:relative;background:var(--white);border:var(--bw) solid var(--black);
+  box-shadow:var(--sh);padding:clamp(22px,2.8vw,30px)}
+.degrau .ico{width:52px;height:52px;border:var(--bw) solid var(--black);
+  background:var(--white);display:grid;place-items:center;margin-bottom:18px}
+.degrau .ico b{font-weight:700;font-size:22px;line-height:1}
+.degrau h3{font-size:clamp(20px,2.2vw,25px);font-weight:700;letter-spacing:-.025em;
+  text-transform:uppercase;line-height:1;margin-bottom:11px}
+.degrau p{font-size:15.5px;line-height:1.62}
+.degrau .n{position:absolute;top:-14px;right:-14px;width:38px;height:38px;
+  border:3px solid var(--black);border-radius:50%;background:var(--neon);
+  display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
+@media(min-width:640px){
+  .degraus{grid-template-columns:1fr 1fr;gap:26px 22px}
+  .degrau{transform:rotate(var(--rot,0deg))}
+  .d-a{--rot:-1.4deg}.d-b{--rot:1.2deg}.d-c{--rot:1.6deg}.d-d{--rot:-1deg}
+}
+@media(min-width:1000px){
+  /* quatro colunas encostadas: o degrau vertical e o giro fazem o resto */
+  .degraus{grid-template-columns:repeat(4,1fr);gap:0;
+    padding:44px 0 46px;align-items:start}
+  .degrau{transform:rotate(var(--rot)) translateY(var(--dy));box-shadow:var(--shd)}
+  .d-a{--rot:-2.2deg;--dy:0px;--shd:12px 14px 0 var(--black);z-index:4}
+  .d-b{--rot:1.6deg;--dy:40px;--shd:-12px 14px 0 var(--black);z-index:3;margin-left:-20px}
+  .d-c{--rot:-1.4deg;--dy:-26px;--shd:12px -12px 0 var(--black);z-index:5;margin-left:-20px}
+  .d-d{--rot:2.4deg;--dy:22px;--shd:-12px 14px 0 var(--black);z-index:2;margin-left:-20px}
+  .degrau:hover{z-index:9}
+  .escada .seta-esc{width:140px;height:96px;left:30%;top:-6px;transform:rotate(-10deg)}
+  .escada .estrela-b{width:44px;height:44px;right:6%;top:2px}
+}
+@media(max-width:999px){.escada .seta-esc,.escada .estrela-b{display:none}}
+
+/* ============================ FAIXA DE NÚMEROS ===========================
+   Cada número dentro de um círculo ou de um losango de borda grossa, jogados
+   numa faixa com alturas diferentes. Nada de quatro colunas iguais: a
+   irregularidade é o conteúdo visual aqui.
+   O losango é um quadrado girado 45 graus com o texto girado de volta. Isso
+   infla a caixa de colisão em ~41%, então ele ganha margem lateral extra no
+   desktop. No celular o giro é zero e a margem extra some junto. */
+.numeros{display:flex;flex-wrap:wrap;justify-content:center;
+  gap:18px;align-items:flex-start}
+/* O teto de 172px não é estético, é aritmética: três círculos, dois
+   losangos com a margem que o giro exige e quatro vãos precisam caber nos
+   1120px do .wrap, senão o quinto número cai sozinho numa segunda linha e
+   a faixa espalhada vira uma grade tímida de 4+1. */
+.num{border:var(--bw) solid var(--black);background:var(--white);
+  display:grid;place-items:center;text-align:center;padding:16px 14px;
+  width:clamp(140px,42vw,172px);aspect-ratio:1/1}
+.num.red{border-radius:50%}
+.num b{display:block;font-weight:700;letter-spacing:-.04em;line-height:.9;
+  font-size:clamp(38px,5.2vw,56px)}
+/* O rótulo é o que dá sentido ao número, então ele é conteúdo e não
+   legenda decorativa: 12px em tinta, não 11px em cinza. */
+.num span{display:block;margin-top:8px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;line-height:1.45;color:var(--ink)}
+.num.acesa{background:var(--neon)}
+.num.acesa span{color:var(--black)}
+.num.los > div{display:block}
+@media(min-width:640px){
+  .num{box-shadow:5px 6px 0 var(--black)}
+  .num.los{transform:rotate(45deg);margin:26px 27px}
+  .num.los > div{transform:rotate(-45deg)}
+  .n1{transform:translateY(0)}
+  .n3{transform:translateY(34px)}
+  .n5{transform:translateY(-22px)}
+}
+@media(min-width:1000px){
+  .numeros{gap:26px}
+  .n1{transform:translateY(8px) rotate(-2deg)}
+  .n3{transform:translateY(40px) rotate(2deg)}
+  .n5{transform:translateY(-24px) rotate(-3deg)}
+  .num.los.n2{transform:rotate(45deg) translateY(0)}
+  .num.los.n4{transform:rotate(45deg) translateY(18px)}
+}
+
+/* ============================ MAPA DA REDE ===============================
+   Aqui a variante se separa mais das outras: o globo é recortado em CÍRCULO.
+   A moldura do sistema ganha border-radius 50%, e o canvas recebe o mesmo
+   raio (em vez de overflow:hidden na moldura) para a etiqueta de cidade
+   poder escapar da borda sem ser cortada.
+   O marquee de cidades sai de dentro da moldura e vira tira reta embaixo:
+   faixa reta cortando círculo fica torta, e círculo com faixa curva fica
+   ilegível. Então a faixa desce. */
+.mapa .orbe{display:grid;gap:22px;justify-items:center;position:relative}
+.mapa .bola{position:relative;order:-1;width:100%;max-width:440px}
+.mapa .lado{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.globo .cinema-frame{aspect-ratio:1/1;border-radius:50%;padding-bottom:0;
+  box-shadow:14px 16px 0 var(--black);max-width:none;margin:0}
+.globo .cinema-frame canvas{border-radius:50%}
+/* o contador deixa de ser card no canto e passa a ser adesivo do círculo.
+   No celular a folha compartilhada o esconde; aqui ele volta, porque sem a
+   faixa interna sobrou lugar para ele embaixo da bola. */
+.globo .cinema-card{display:block;position:static;transform:rotate(-3deg)}
+.globo .cinema-marq{position:static;margin-top:clamp(20px,3vw,30px);
+  border:3px solid var(--neon);border-left:0;border-right:0}
+.globo .hint{margin:0 0 clamp(22px,3vw,30px)}
+@media(min-width:900px){
+  .mapa .orbe{grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);
+    align-items:center;gap:0}
+  .mapa .bola{order:0;width:min(470px,44vw);max-width:none}
+  .mapa .lado{display:block}
+  .mapa .lado .ades{position:relative;display:inline-flex;background:var(--white)}
+  .mapa .l-esq{padding-right:22px}
+  .mapa .l-dir{padding-left:22px}
+  .mapa .g1{transform:rotate(-6deg);margin-bottom:76px}
+  .mapa .g2{transform:rotate(4deg);margin-left:12%}
+  .mapa .g3{transform:rotate(7deg);margin-bottom:84px;margin-left:16%}
+  .mapa .g4{transform:rotate(-5deg)}
+  .mapa .sg1{width:118px;height:80px;left:58%;top:38%;transform:rotate(4deg)}
+  .mapa .sg2{width:118px;height:80px;right:58%;top:46%;transform:scaleX(-1) rotate(10deg)}
+  /* O contador volta a encostar no círculo, agora por fora da curva. O
+     left/top da folha compartilhada precisa ser desligado na unha: com os
+     quatro lados presos o card estica e vira uma placa do tamanho da bola. */
+  .globo .cinema-card{position:absolute;left:auto;top:auto;right:-6%;bottom:2%;
+    z-index:6;transform:rotate(5deg)}
+}
+@media(max-width:899px){.mapa .sg1,.mapa .sg2{display:none}}
+.globo .legenda{justify-content:flex-start}
+
+/* ============================== PACOTES EM LEQUE =========================
+   Três cards abertos como leque: os das pontas giram para lados opostos, o
+   do meio fica reto, maior e por cima. A mão que segura o leque é o
+   z-index; a margem negativa é só o quanto um encobre o outro. */
+.leque{position:relative;display:grid;gap:20px}
+.pac{position:relative;background:var(--white);border:var(--bw) solid var(--black);
+  box-shadow:var(--sh);padding:clamp(22px,2.8vw,30px);display:flex;flex-direction:column}
+.pac .nm{font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+  text-transform:uppercase;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pac .nm i{font-style:normal;background:var(--neon);border:2px solid var(--black);
+  padding:1px 7px;font-size:10px;letter-spacing:.1em}
+.pac .pts{font-size:clamp(36px,4.4vw,50px);font-weight:700;letter-spacing:-.04em;
+  line-height:1;margin:18px 0 4px}
+.pac .pts small{font-size:.38em;font-weight:500;letter-spacing:0}
+.pac .prc{font-size:17px;font-weight:600}
+.pac .obs{font-family:var(--mono);font-size:12px;color:var(--ink);
+  letter-spacing:.06em;margin:8px 0 26px;line-height:1.6}
+.pac .pillbtn{margin-top:auto}
+.pac.meio{background:var(--paper)}
+.leque-pe{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;
+  justify-content:space-between;margin-top:clamp(26px,4vw,46px);font-size:15px}
+.leque-pe a{border-bottom:3px solid var(--neon);font-weight:700}
+@media(min-width:820px){
+  .leque{display:flex;align-items:center;justify-content:center;gap:0;
+    padding:34px 0 30px}
+  .pac{flex:1 1 0;max-width:330px}
+  .pac.esq{transform:rotate(-5deg);z-index:1;margin-right:-26px}
+  .pac.dir{transform:rotate(5deg);z-index:1;margin-left:-26px}
+  .pac.meio{z-index:4;max-width:376px;padding:clamp(28px,3.2vw,38px);
+    box-shadow:14px 16px 0 var(--black)}
+  .pac:hover{z-index:6}
+  .leque .seta-pac{width:120px;height:86px;left:50%;top:-14px;
+    transform:translateX(-50%) rotate(-3deg)}
+}
+@media(max-width:819px){.leque .seta-pac{display:none}}
+.pacotes{position:relative}
+
+/* ========================= FAQ, com um grau de torto =====================
+   O bloco inteiro ganha meio grau de inclinação só no desktop largo. Meio
+   grau num bloco de 1120px cresce ~7px de cada lado, e a calha do .wrap tem
+   40px: cabe sem encostar em nada. */
+@media(min-width:1000px){
+  .perguntas .faq{transform:rotate(-.55deg);box-shadow:12px 14px 0 var(--black)}
+  .perguntas .ast{position:absolute;font-size:44px;left:2%;top:18%}
+}
+/* fora do desktop o asterisco não tem canto para ocupar e cairia como um
+   caractere solto em cima do rotulo da secao. Mesmo tratamento das setas. */
+@media(max-width:999px){.perguntas .ast{display:none}}
+.perguntas{position:relative}
+
+/* ======================= RESET DURO DO CELULAR ===========================
+   A base já é reta, mas a regra do projeto é dura demais para depender só
+   disso: aqui qualquer giro, deslocamento ou sobreposição que tenha
+   escapado morre, e tudo empilha em coluna. */
+@media(max-width:560px){
+  .tit,.palco .tagline,.ades,.degrau,.num,.num.los,.num.los > div,
+  .pac,.pac.esq,.pac.dir,.pac.meio,.globo .cinema-card,
+  .perguntas .faq,.n1,.n3,.n5{transform:none}
+  .num.los{margin:0}
+  .degraus,.leque{display:grid;grid-template-columns:1fr;gap:18px}
+  .degrau,.pac{margin-left:0;margin-right:0}
+  /* duas regras simples em vez de .estrela:not(.tit .estrela): um :not() com
+     seletor composto invalida a LISTA inteira em motor que não o suporta, e
+     levaria .fig e .seta junto. A estrela do título volta na regra seguinte. */
+  .fig,.seta,.estrela{display:none}
+  .tit .estrela{display:inline-block}
+  .num{width:100%;max-width:220px}
+  .globo .cinema-frame{box-shadow:8px 10px 0 var(--black)}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== BARRA ============================== -->
+<header class="bar">
+  <div class="wrap in">
+    <a href="#topo" aria-label="BlaXx Pontos, ir para o início">
+      <img class="mark" src="assets/marca/blaxx-wordmark-claro.svg" alt="BlaXx Rewards">
+    </a>
+    <nav class="navd" aria-label="Principal">
+      <a href="#recursos">O que dá para fazer</a>
+      <a href="#mapa">Mapa da rede</a>
+      <a href="#pacotes">Pacotes</a>
+      <a href="parceiros.html">Parceiros</a>
+      <a href="#perguntas">Perguntas</a>
+    </nav>
+    <div class="baract">
+      <a class="pillbtn sm ghost" href="login.html">Entrar</a>
+      <a class="pillbtn sm dark" href="cadastro.html">Criar conta</a>
+      <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false"
+              aria-controls="menuMob" onclick="bxMenu(this)"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<div class="drawer" id="menuMob">
+  <a href="#recursos">O que dá para fazer</a>
+  <a href="#mapa">Mapa da rede</a>
+  <a href="#pacotes">Pacotes</a>
+  <a href="parceiros.html">Parceiros</a>
+  <a href="como-funciona.html">Como funciona</a>
+  <a href="regras-pontos.html">Regras de pontos</a>
+  <a href="central-ajuda.html">Central de ajuda</a>
+  <a href="login.html">Entrar na minha conta</a>
+</div>
+
+<!-- =============================== HERO =============================== -->
+<section class="palco" id="topo">
+  <span class="fig f1" aria-hidden="true"></span>
+  <span class="fig f2 red" aria-hidden="true"></span>
+  <span class="fig f3" aria-hidden="true"></span>
+  <span class="fig f4 red" aria-hidden="true"></span>
+  <span class="fig f5" aria-hidden="true"></span>
+
+  <svg class="estrela neon estrela-a" viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M50 2 L59 41 L98 50 L59 59 L50 98 L41 59 L2 50 L41 41 Z"></path>
+  </svg>
+
+  <div class="wrap in">
+    <span class="tagline"><i>✳</i> Programa de pontos · Brasil</span>
+
+    <h1 class="d1 tit">
+      <span class="ln1">Ponto na</span>
+      <span class="ln2"><span class="nb"><span class="hl">vitrine</span>,</span></span>
+      <span class="ln3">coisa na mão.<svg class="estrela" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2 L59 41 L98 50 L59 59 L50 98 L41 59 L2 50 L41 41 Z"></path></svg></span>
+    </h1>
+
+    <p class="lead">Compre pontos por PIX ou cartão, envie para outra conta BlaXx
+      informando e-mail ou CPF e troque por voucher, vantagem em rede parceira ou
+      cashback via PIX na chave do seu perfil.</p>
+
+    <div class="ctas">
+      <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+      <a class="pillbtn ghost" href="#pacotes">Ver pacotes</a>
+    </div>
+
+    <p class="nota">Cadastro e manutenção da conta são gratuitos. Você paga quando
+      decide comprar pontos, e o crédito entra assim que o pagamento é confirmado.</p>
+
+    <!-- selo circular: texto correndo na borda, asterisco no miolo -->
+    <div class="selo" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <defs><path id="beiradaVitrine" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"></path></defs>
+        <circle cx="50" cy="50" r="24" fill="none" stroke-width="4"></circle>
+        <text font-family="JetBrains Mono, monospace" font-size="9.4" letter-spacing="2.1">
+          <textPath href="#beiradaVitrine" startOffset="0">COMPRE · ENVIE · TROQUE · REPITA ·</textPath>
+        </text>
+      </svg>
+      <em>✳</em>
+    </div>
+
+    <!-- colagem de adesivos: linha no celular, camada solta no desktop -->
+    <div class="colar">
+      <span class="tagline ades a1"><i>✳</i> PIX ou cartão</span>
+      <span class="tagline ades a2"><i>✳</i> Envio grátis entre contas pessoais</span>
+      <span class="tagline ades a3"><i>✳</i> 12 cidades no mapa</span>
+      <span class="tagline ades a4"><i>✳</i> Extrato aberto</span>
+      <span class="tagline ades a5"><i>✳</i> Validade de 24 meses</span>
+    </div>
+
+    <svg class="seta seta-cta" viewBox="0 0 130 90" aria-hidden="true">
+      <path d="M8 76 C 22 30, 62 10, 116 18"></path>
+      <path d="M116 18 L 96 10 M116 18 L 100 32"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- ============================= MARQUEE ============================= -->
+<div class="marq" aria-hidden="true">
+  <div>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i><span>Repita</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i><span>Repita</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i><span>Repita</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i><span>Repita</span><i>✳</i>
+  </div>
+</div>
+
+<!-- =================== O QUE DÁ PARA FAZER (ESCADA) =================== -->
+<section class="sec escada" id="recursos">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> O que dá para fazer</span>
+      <h2 class="d2">Quatro coisas,<br>nenhuma escondida.</h2>
+    </div>
+
+    <svg class="seta seta-esc" viewBox="0 0 150 100" aria-hidden="true">
+      <path d="M6 12 C 52 6, 104 26, 132 82"></path>
+      <path d="M132 82 L 122 58 M132 82 L 108 82"></path>
+    </svg>
+    <svg class="estrela estrela-b" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M50 2 L59 41 L98 50 L59 59 L50 98 L41 59 L2 50 L41 41 Z"></path>
+    </svg>
+
+    <div class="degraus">
+      <article class="degrau d-a">
+        <span class="n" aria-hidden="true">01</span>
+        <div class="ico" aria-hidden="true"><b>＋</b></div>
+        <h3>Comprar pontos</h3>
+        <p>Pacote pronto ou valor livre, do jeito que couber no mês. Pagamento por PIX
+          ou cartão, com o crédito entrando na carteira assim que o pagamento é confirmado.</p>
+      </article>
+      <article class="degrau d-b">
+        <span class="n" aria-hidden="true">02</span>
+        <div class="ico" aria-hidden="true"><b>↗</b></div>
+        <h3>Enviar para alguém</h3>
+        <p>Informe o e-mail ou o CPF de outra conta BlaXx pessoal. Entre contas pessoais
+          o envio é gratuito, dentro dos limites diários. Confira o destinatário: envio
+          confirmado não pode ser revertido.</p>
+      </article>
+      <article class="degrau d-c">
+        <span class="n" aria-hidden="true">03</span>
+        <div class="ico" aria-hidden="true"><b>◆</b></div>
+        <h3>Trocar por benefício</h3>
+        <p>Voucher, vantagem nas redes parceiras ou cashback via PIX na chave cadastrada
+          no seu perfil. Você escolhe a hora de usar.</p>
+      </article>
+      <article class="degrau d-d">
+        <span class="n" aria-hidden="true">04</span>
+        <div class="ico" aria-hidden="true"><b>≡</b></div>
+        <h3>Acompanhar no extrato</h3>
+        <p>Extrato aberto com data e origem de cada ponto. Antes de qualquer vencimento
+          você é avisado 30 dias antes, por e-mail e push.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= FAIXA DE NÚMEROS ========================= -->
+<section class="sec paper">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Os números da regra</span>
+      <h2 class="d2">O que está<br>escrito, escrito.</h2>
+    </div>
+
+    <div class="numeros">
+      <div class="num red n1">
+        <div><b>12</b><span>Cidades no mapa da rede</span></div>
+      </div>
+      <div class="num los n2">
+        <div><b>3</b><span>Categorias parceiras</span></div>
+      </div>
+      <div class="num red acesa n3">
+        <div><b>24</b><span>Meses de validade de cada lote</span></div>
+      </div>
+      <div class="num los n4">
+        <div><b>30</b><span>Dias de aviso</span></div>
+      </div>
+      <div class="num red n5">
+        <div><b>7</b><span>Dias para desistir da compra</span></div>
+      </div>
+    </div>
+
+    <p class="lead mut" style="margin-top:clamp(28px,4vw,46px)">Categorias parceiras são
+      postos, supermercados e farmácias. O aviso de vencimento chega por e-mail e push,
+      e o prazo de 7 dias é o arrependimento previsto no artigo 49 do Código de Defesa
+      do Consumidor. Tudo detalhado em <a href="regras-pontos.html"
+      style="border-bottom:3px solid var(--neon);font-weight:700;color:var(--black)">regras de pontos</a>.</p>
+  </div>
+</section>
+
+<!-- ============================ MAPA DA REDE ============================ -->
+<section class="sec globo mapa" id="mapa">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Mapa da rede</span>
+      <h2 class="d2">A rede gira,<br>você olha de perto.</h2>
+    </div>
+    <p class="hint">Arraste para girar o globo. Toque ou passe o cursor num alfinete
+      para ver a cidade, e clique para abrir a página de parceiros.</p>
+
+    <div class="orbe">
+      <div class="lado l-esq">
+        <span class="tagline ades g1"><i>✳</i> Postos</span>
+        <span class="tagline ades g2"><i>✳</i> Supermercados</span>
+        <svg class="seta sg1" viewBox="0 0 130 90" aria-hidden="true">
+          <path d="M6 20 C 48 12, 92 34, 120 72"></path>
+          <path d="M120 72 L 112 48 M120 72 L 96 72"></path>
+        </svg>
+      </div>
+
+      <div class="bola">
+        <div class="cinema-frame">
+          <canvas id="gvCanvas" aria-label="Globo com as cidades da rede parceira" role="img"></canvas>
+          <div id="globoTip" class="globe-tip"></div>
+        </div>
+        <div class="cinema-card"><small>Rede em expansão</small><b id="netCount">12</b><span>cidades no mapa</span></div>
+      </div>
+
+      <div class="lado l-dir">
+        <span class="tagline ades g3"><i>✳</i> Farmácias</span>
+        <span class="tagline ades g4"><i>✳</i> Clique no alfinete</span>
+        <svg class="seta sg2" viewBox="0 0 130 90" aria-hidden="true">
+          <path d="M6 20 C 48 12, 92 34, 120 72"></path>
+          <path d="M120 72 L 112 48 M120 72 L 96 72"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="cinema-marq" aria-hidden="true"><span>SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;</span></div>
+
+    <ul class="legenda">
+      <li><i style="background:rgb(231,178,74)"></i>Postos</li>
+      <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+      <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ========================== PACOTES EM LEQUE ========================== -->
+<section class="sec pacotes" id="pacotes">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Pacotes</span>
+      <h2 class="d2">Escolha uma<br>carta do leque.</h2>
+    </div>
+
+    <div class="leque">
+      <!-- a seta mora DENTRO do leque: é dele que ela tira left/top, e é o
+           seletor .leque .seta-pac que a dimensiona e a esconde no celular -->
+      <svg class="seta seta-pac" viewBox="0 0 130 90" aria-hidden="true">
+        <path d="M10 8 C 34 46, 80 62, 120 44"></path>
+        <path d="M10 8 L 8 32 M10 8 L 32 14"></path>
+      </svg>
+
+      <article class="pac esq" data-pkg="start">
+        <span class="nm">Start</span>
+        <div class="pts"><span data-pts>2.000</span><small> pts</small></div>
+        <div class="prc"><span data-price>R$ 180,00</span></div>
+        <div class="obs">PIX ou cartão</div>
+        <a class="pillbtn ghost" href="comprar-pontos.html">Comprar Start</a>
+      </article>
+
+      <article class="pac meio" data-pkg="plus">
+        <span class="nm">Plus <i>Mais escolhido</i></span>
+        <div class="pts"><span data-pts>5.500</span><small> pts</small></div>
+        <div class="prc"><span data-price>R$ 470,00</span></div>
+        <div class="obs">PIX ou cartão · cerca de 5% de bônus</div>
+        <a class="pillbtn" href="comprar-pontos.html">Comprar Plus</a>
+      </article>
+
+      <article class="pac dir" data-pkg="prime">
+        <span class="nm">Prime</span>
+        <div class="pts"><span data-pts>12.000</span><small> pts</small></div>
+        <div class="prc"><span data-price>R$ 972,00</span></div>
+        <div class="obs">PIX ou cartão · cerca de 10% de bônus</div>
+        <a class="pillbtn ghost" href="comprar-pontos.html">Comprar Prime</a>
+      </article>
+    </div>
+
+    <div class="leque-pe">
+      <span class="mut">Prefere outro valor? Dá para comprar exatamente o que você quiser.</span>
+      <a href="comprar-livre.html">Comprar valor livre&nbsp;→</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== PERGUNTAS ============================== -->
+<section class="sec paper perguntas" id="perguntas">
+  <div class="wrap">
+    <span class="ast" aria-hidden="true">✳</span>
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Perguntas</span>
+      <h2 class="d2">Antes que<br>você pergunte.</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Os pontos valem dinheiro?</summary>
+        <div class="ans">Não. Os pontos BlaXx são créditos promocionais de uso restrito
+          dentro da plataforma. Não são moeda, depósito, investimento, valor mobiliário
+          nem criptoativo. Está escrito assim em
+          <a href="regras-pontos.html">regras de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Quanto custa participar?</summary>
+        <div class="ans">O cadastro e a manutenção da conta são gratuitos. Você só paga
+          quando decide <a href="comprar-pontos.html">comprar pontos</a>, por PIX ou
+          cartão, e o crédito entra assim que o pagamento é confirmado.</div>
+      </details>
+      <details>
+        <summary>Qual é a validade dos pontos?</summary>
+        <div class="ans">Cada lote vale 24 meses. Você é avisado 30 dias antes do
+          vencimento, por e-mail e push. No vencimento o lote é debitado e não volta,
+          então vale a pena olhar o extrato de vez em quando.</div>
+      </details>
+      <details>
+        <summary>Posso mandar pontos para outra pessoa?</summary>
+        <div class="ans">Para qualquer pessoa com conta BlaXx pessoal, informando e-mail
+          ou CPF. O envio é gratuito, dentro dos limites diários. Confira o destinatário
+          antes de confirmar: transferência confirmada não pode ser revertida.</div>
+      </details>
+      <details>
+        <summary>Onde eu uso os pontos?</summary>
+        <div class="ans">Em voucher, em vantagem nas
+          <a href="parceiros.html">redes parceiras</a> das três categorias do dia a dia
+          (postos, supermercados e farmácias) ou em cashback via PIX na chave cadastrada
+          no seu perfil.</div>
+      </details>
+      <details>
+        <summary>E se eu me arrepender da compra?</summary>
+        <div class="ans">Compra a distância tem direito de arrependimento de 7 dias,
+          conforme o artigo 49 do Código de Defesa do Consumidor. Depois desse prazo a
+          compra é definitiva, salvo as exceções descritas na
+          <a href="politica-reembolso.html">política de reembolso</a>.</div>
+      </details>
+      <details>
+        <summary>Meus dados estão protegidos?</summary>
+        <div class="ans">O tratamento segue a LGPD (Lei 13.709/2018) e você pode ativar
+          verificação em duas etapas na sua conta. Os detalhes estão na
+          <a href="privacidade.html">política de privacidade</a>.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CHAMADA FINAL ============================ -->
+<section class="final">
+  <div class="wrap in">
+    <h2 class="d2">A vitrine<br>está aberta.</h2>
+    <p>Criar conta é grátis e leva menos tempo do que ler as regras de qualquer outro
+      programa de pontos. As regras daqui você já leu ali em cima.</p>
+    <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+  </div>
+</section>
+
+<!-- ================================ RODAPÉ ================================ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <p class="tag2">Ponto na vitrine, coisa na mão. Você compra, envia e troca
+          na hora que quiser.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+          <li><a href="comprar-livre.html">Comprar valor livre</a></li>
+          <li><a href="parceiros.html">Parceiros</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Ajuda e regras</h4>
+        <ul>
+          <li><a href="central-ajuda.html">Central de ajuda</a></li>
+          <li><a href="regras-pontos.html">Regras de pontos</a></li>
+          <li><a href="politica-reembolso.html">Política de reembolso</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+          <li><a href="privacidade.html">Privacidade e LGPD</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>BlaXx Pontos © 2026</span>
+      <span><a href="privacidade.html#direitos">Seus direitos LGPD</a></span>
+    </div>
+  </div>
+  <div class="bigmark">
+    <img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
+  </div>
+</footer>
+
+<script>
+function bxMenu(btn){
+  var d = document.getElementById('menuMob');
+  var open = !d.classList.contains('on');
+  d.classList.toggle('on', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.querySelectorAll('#menuMob a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.getElementById('menuMob').classList.remove('on');
+    var b = document.querySelector('.burger');
+    if (b) b.setAttribute('aria-expanded','false');
+  });
+});
+</script>
+
+<script>
+(function(){
+  var canvas = document.getElementById('gvCanvas');
+  if (!canvas || typeof blaxxCreateGlobe !== 'function') return;
+  var contador = document.getElementById('netCount');
+  if (contador && typeof BLAXX_POINTS !== 'undefined') contador.textContent = BLAXX_POINTS.length;
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json')
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(world){
+      blaxxCreateGlobe(canvas, {
+        world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.46,
+        autoRotate: !reduzir,
+        tooltip: document.getElementById('globoTip'),
+        onPointClick: function(){ location.href = 'parceiros.html'; },
+        sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+        landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)',
+        borderColor:'rgba(8,32,60,0.28)', gratColor:'rgba(8,32,60,0.10)',
+        ringAlpha:0.5, atmAlpha:0
+      });
+    })
+    .catch(function(e){ console.error('globo:', e); });
+})();
+</script>
+
+<script>
+(function(){
+  function resolveApi(){
+    var host = location.hostname;
+    var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
+    if (isLocal) return location.protocol + '//' + host + ':5050';
+    return 'https://blaxx-pontos-exe.onrender.com';
+  }
+  var API = resolveApi();
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fill(key, pkg){
+    if (!pkg) return;
+    var card = document.querySelector('[data-pkg="' + key + '"]');
+    if (!card) return;
+    var p = card.querySelector('[data-pts]'), pr = card.querySelector('[data-price]');
+    if (p && pkg.points != null) p.textContent = fmtPts(pkg.points);
+    if (pr && pkg.price_brl != null) pr.textContent = fmtBrl(pkg.price_brl);
+  }
+  fetch(API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){ fill('start', d.start); fill('plus', d.plus); fill('prime', d.prime); })
+    .catch(function(){});
+})();
+</script>
+
+</body>
+</html>

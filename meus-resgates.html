@@ -3,12 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Meus resgates | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia tokens e componentes.
+     Fica no HTML, e não só injetado pelo assets/blaxx-nav.js, para a página não piscar no tema antigo. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,23 +50,23 @@
         </div>
     </div>
     <ul class="side-nav">
-        <li><a href="dashboard.html" data-side="dashboard"><span class="ic">●</span> Início</a></li>
-        <li><a href="carteira.html" data-side="carteira"><span class="ic">◆</span> Carteira</a></li>
-        <li><a href="extrato.html" data-side="extrato"><span class="ic">≡</span> Extrato</a></li>
-        <li><a href="parceiros.html" data-side="parceiros"><span class="ic">⊙</span> Parceiros</a></li>
-        <li><a href="resgates.html" data-side="resgates"><span class="ic">★</span> Resgates</a></li>
-        <li><a href="meus-resgates.html" data-side="meus-resgates"><span class="ic">✓</span> Meus resgates</a></li>
-        <li><a href="campanhas.html" data-side="campanhas"><span class="ic">▲</span> Campanhas</a></li>
-        <li><a href="comprar-pontos.html" data-side="comprar-pontos"><span class="ic">+</span> Comprar pontos</a></li>
-        <li><a href="enviar-pontos.html" data-side="enviar-pontos"><span class="ic">→</span> Enviar pontos</a></li>
-        <li><a href="indique-ganhe.html" data-side="indique"><span class="ic">♥</span> Indique e ganhe</a></li>
+        <li><a href="dashboard.html" data-side="dashboard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/></svg></span> Início</a></li>
+        <li><a href="carteira.html" data-side="carteira"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 9h18"/><circle cx="17" cy="13.5" r="1.4" fill="currentColor" stroke="none"/></svg></span> Carteira</a></li>
+        <li><a href="extrato.html" data-side="extrato"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="12" width="3" height="5"/><rect x="12" y="8" width="3" height="9"/><rect x="17" y="5" width="3" height="12"/></svg></span> Extrato</a></li>
+        <li><a href="parceiros.html" data-side="parceiros"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5"/><path d="M13.5 14.8c2.4-.4 4.5 1.2 4.5 4.2"/></svg></span> Parceiros</a></li>
+        <li><a href="resgates.html" data-side="resgates"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></span> Resgates</a></li>
+        <li><a href="meus-resgates.html" data-side="meus-resgates"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4Z"/><path d="M14 7v10" stroke-dasharray="2 2.4"/></svg></span> Meus resgates</a></li>
+        <li><a href="campanhas.html" data-side="campanhas"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span> Campanhas</a></li>
+        <li><a href="comprar-pontos.html" data-side="comprar-pontos"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg></span> Comprar pontos</a></li>
+        <li><a href="enviar-pontos.html" data-side="enviar-pontos"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/></svg></span> Enviar pontos</a></li>
+        <li><a href="indique-ganhe.html" data-side="indique"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20S4 14.5 4 9.2A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 8 2.2C20 14.5 12 20 12 20Z"/></svg></span> Indique e ganhe</a></li>
     </ul>
     <div class="side-foot">
         <ul class="side-nav">
-            <li><a href="perfil.html" data-side="perfil"><span class="ic">⚙</span> Perfil</a></li>
-            <li><a href="seguranca.html" data-side="seguranca"><span class="ic">🔒</span> Segurança</a></li>
-            <li><a href="central-ajuda.html" data-side="ajuda"><span class="ic">?</span> Ajuda</a></li>
-            <li><a href="login.html"><span class="ic">↩</span> Sair</a></li>
+            <li><a href="perfil.html" data-side="perfil"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5"/></svg></span> Perfil</a></li>
+            <li><a href="seguranca.html" data-side="seguranca"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4.3 3 7.2 7 9 4-1.8 7-4.7 7-9V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></svg></span> Segurança</a></li>
+            <li><a href="central-ajuda.html" data-side="ajuda"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.2 1.8-2.2 3.3"/><circle cx="12" cy="16.6" r="0.6" fill="currentColor" stroke="none"/></svg></span> Ajuda</a></li>
+            <li><a href="login.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9"/><path d="M10 12h11m0 0-3.5-3.5M21 12l-3.5 3.5"/></svg></span> Sair</a></li>
         </ul>
     </div>
 </aside>
@@ -91,7 +93,7 @@
                 <span class="status concluido">● Ativo</span>
                 <span class="muted" style="font-size:12px;">28/04/2026</span>
             </div>
-            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;">🎬</div>
+            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="m3 10 2.5-4h3L6 10Z" fill="currentColor" stroke="none"/><path d="m8.5 10 2.5-4h3l-2.5 4Z" fill="currentColor" stroke="none"/><path d="m14 10 2.5-4h3l-2.5 4Z" fill="currentColor" stroke="none"/></svg></div>
             <h3>Netflix 30 dias</h3>
             <p style="font-size:13px;">Voucher digital · expira em 28/07/2026</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver voucher</a>
@@ -101,7 +103,7 @@
                 <span class="status concluido">● Utilizado</span>
                 <span class="muted" style="font-size:12px;">12/04/2026</span>
             </div>
-            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;">💸</div>
+            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/><path d="M16 15l5 5m0-5-5 5"/></svg></div>
             <h3>PIX R$ 20</h3>
             <p style="font-size:13px;">Transferido em 12/04/2026 às 14h32</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver detalhes</a>
@@ -111,7 +113,7 @@
                 <span class="status ativo">● Ativo</span>
                 <span class="muted" style="font-size:12px;">26/04/2026</span>
             </div>
-            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;">🍔</div>
+            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 10h16a1 1 0 0 1 1 1v1H3v-1a1 1 0 0 1 1-1Z"/><path d="M4 14h16"/><path d="M5 17h14a1 1 0 0 1-1 1.5H6A1 1 0 0 1 5 17Z"/><path d="M5 10c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
             <h3>iFood R$ 50</h3>
             <p style="font-size:13px;">Voucher digital · expira em 26/07/2026</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver voucher</a>
@@ -121,7 +123,7 @@
                 <span class="status concluido">● Utilizado</span>
                 <span class="muted" style="font-size:12px;">02/03/2026</span>
             </div>
-            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;">☕</div>
+            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3c-.8.9-.8 1.6 0 2.5M12 3c-.8.9-.8 1.6 0 2.5"/></svg></div>
             <h3>Starbucks R$ 30</h3>
             <p style="font-size:13px;">Utilizado em 05/03/2026</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver detalhes</a>
@@ -131,7 +133,7 @@
                 <span class="status estornado">● Expirado</span>
                 <span class="muted" style="font-size:12px;">10/01/2026</span>
             </div>
-            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;opacity:.5;">🛒</div>
+            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;opacity:.5;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
             <h3>Carrefour R$ 50</h3>
             <p style="font-size:13px;">Expirou em 10/04/2026 sem uso</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver detalhes</a>
@@ -141,7 +143,7 @@
                 <span class="status concluido">● Utilizado</span>
                 <span class="muted" style="font-size:12px;">15/02/2026</span>
             </div>
-            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;">🎵</div>
+            <div class="reward-img" style="height:120px;font-size:48px;border-radius:14px;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="16" r="2.5"/><path d="M9.5 18V5.5L19.5 4v11.5"/></svg></div>
             <h3>Spotify Premium</h3>
             <p style="font-size:13px;">Resgatado em 15/02/2026</p>
             <a href="detalhe-voucher.html" class="button secondary full">Ver detalhes</a>
@@ -198,9 +200,12 @@
     </div>
 </footer>
 <style>
-  [data-link="resgates"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side="meus-resgates"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side="meus-resgates"] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo na linguagem do tema "Embarque" (mesmos valores de .links a.active e
+     .side-nav a.active em assets/blaxx-embarque.css): pílula preta, texto claro e só o
+     ícone em neon. Antes era texto neon sobre preto, a assinatura do bloco Neo-Brutal. */
+  [data-link="resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
+  [data-side="meus-resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
+  [data-side="meus-resgates"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

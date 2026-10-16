@@ -2,37 +2,68 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Enviar pontos</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { margin-bottom: 24px; }
   .send-grid { display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:start; }
   .form-card { padding: 28px 30px; }
   .field { margin-bottom: 22px; }
   .field label { display:block; font-family: var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color: var(--fg-muted); margin-bottom:10px; }
-  .input { width:100%; border:1.5px solid var(--line); background: var(--cream); border-radius: var(--r-md); padding: 14px 16px; font-family: var(--font-body); font-size:15px; color: var(--fg); outline:none; transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
-  .input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  /* Campos no padrão do tema: contorno 1px, foco = contorno tinta + anel neon */
+  .input { width:100%; border:1px solid var(--bx-line); background: var(--bx-surface); border-radius: var(--bx-r-sm); padding: 14px 16px; font-family: var(--bx-sans); font-size:15px; color: var(--bx-ink); outline:none; transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
+  .input:focus { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
 
   .amount-wrap { position:relative; }
-  .amount-input { width:100%; border:1.5px solid var(--line); background: var(--cream); border-radius: var(--r-md); padding: 20px 16px; font-family: var(--font-mono); font-weight:700; font-size: 36px; letter-spacing:-.02em; color: var(--fg); outline:none; transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
-  .amount-input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  /* Valor grande em Archivo 800, como os números dos bilhetes da home.
+     O seletor leva o elemento de propósito: o tema pinta todo
+     input[type="text"] com peso 500 (especificidade 0,1,1) e vencia o
+     .amount-input puro (0,1,0); com input.amount-input empata e esta folha,
+     que vem depois, ganha. */
+  input.amount-input { width:100%; border:1px solid var(--bx-line); background: var(--bx-surface); border-radius: var(--bx-r-md); padding: 20px 16px; font-family: var(--bx-sans); font-weight:800; font-size: 36px; letter-spacing:-.02em; color: var(--bx-ink); outline:none; transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
+  input.amount-input:focus { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
   .quick { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
   .quick button { font-family: var(--font-mono); font-weight:700; font-size:12px; border:1px solid var(--line); background: var(--white); color: var(--fg-muted); padding:8px 14px; border-radius: var(--r-pill); cursor:pointer; transition: all .16s var(--ease); }
-  .quick button:hover { border-color: var(--lime-deep); color: var(--ink); }
+  .quick button:hover { border-color: var(--bx-ink); color: var(--bx-ink); }
 
   .recap { padding: 26px; position:sticky; top:96px; }
   .recap__eyebrow { font-family: var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color: var(--fg-on-dark-muted); }
   .recap__to { display:flex; align-items:center; gap:12px; margin:18px 0; }
   .recap__to .av { width:44px; height:44px; border-radius:50%; background: var(--lime); color: var(--ink); display:grid; place-items:center; font-weight:800; font-size:17px; }
-  .recap__amt { font-family: var(--font-mono); font-weight:700; font-size: 44px; color: var(--lime); letter-spacing:-.03em; }
+  .recap__amt { font-family: var(--bx-sans); font-weight:800; font-size: 44px; color: var(--lime); letter-spacing:-.03em; }
   .rline { display:flex; justify-content:space-between; padding:11px 0; font-size:14px; }
-  .rline + .rline { border-top:1px solid rgba(244,246,238,.1); }
+  .rline + .rline { border-top:1px solid var(--bx-ink-2); }
   .rline .k { color: var(--fg-on-dark-muted); } .rline .v { font-family: var(--font-mono); font-weight:700; }
   .free-tag { display:inline-flex; align-items:center; gap:6px; font-family: var(--font-mono); font-size:11px; font-weight:700; color: var(--lime); }
   .msgbox { font-size:13px; padding:11px 13px; border-radius: var(--r-sm); margin-top:14px; }
   .msgbox.err { background: rgba(224,72,61,.1); border:1px solid rgba(224,72,61,.4); color:#ffd9d4; }
-  .msgbox.ok { background: rgba(174,230,58,.12); border:1px solid var(--lime-40); color: var(--lime); }
+  .msgbox.ok { background: rgba(89,253,39,.12); border:1px solid var(--lime-40); color: var(--lime); }
 
   @media (max-width: 900px){ .send-grid{grid-template-columns:1fr;} .recap{position:static;} }
 </style>
@@ -89,7 +120,7 @@
       <div class="recap__amt" id="recapAmt">0</div>
       <div style="font-family:var(--font-mono);font-size:12px;color:var(--fg-on-dark-muted);margin-bottom:18px">pontos</div>
 
-      <div class="rline"><span class="k">Taxa de envio</span><span class="free-tag">✓ GRÁTIS</span></div>
+      <div class="rline"><span class="k">Taxa de envio</span><span class="free-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M4 12.5 9.5 18 20 6"/></svg> GRÁTIS</span></div>
       <div class="rline"><span class="k">Saldo atual</span><span class="v" id="balNow">—</span></div>
       <div class="rline"><span class="k">Saldo após envio</span><span class="v" id="after">—</span></div>
 

@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Ficha técnica dos pontos | BlaXx Pontos</title>
+<meta name="description" content="A especificação completa dos pontos BlaXx em uma folha: o que são, como se usam, quanto custam, quanto tempo valem e onde a rede parceira já chega.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/blaxx-brutal.css">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="assets/blaxx-globo.js"></script>
+<style>
+/* =========================================================================
+   HOME VARIANTE "FICHA TÉCNICA"
+
+   A ideia: a home não argumenta, ela especifica. O visitante lê a página como
+   leria a primeira folha de um manual: tudo rotulado, tudo medido, nada solto.
+   Isso resolve o problema real do produto, que é a desconfiança com programa
+   de pontos. Se cada afirmação aparece dentro de uma célula com rótulo e
+   unidade, ela fica conferível em vez de publicitária.
+
+   Por que célula e não card: card flutua e sugere hierarquia por sombra.
+   Célula encaixa numa malha e sugere hierarquia por posição, que é o que
+   um datasheet faz. Daí a malha de réguas pretas de 4px como estrutura.
+
+   O neon fica ainda mais raro aqui do que nas outras variantes: uma palavra
+   no título, o alfinete do mapa e a chamada final. Numa folha de especificação
+   o destaque é a régua, não a cor.
+
+   Tokens, botão, rótulo, barra, gaveta, globo, FAQ, chamada final e rodapé
+   vêm de assets/blaxx-brutal.css. Aqui mora só a composição.
+   ========================================================================= */
+
+/* ---------- linha de documento: abre a página identificando a folha ----------
+   Vem antes do hero de propósito: primeiro o leitor sabe QUE documento é,
+   depois lê o produto. Ordem de manual, não de anúncio. */
+.docbar{background:var(--paper);border-bottom:var(--bw) solid var(--black)}
+.docbar .in{display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;
+  padding-top:10px;padding-bottom:10px;font-family:var(--mono);font-size:11px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase}
+.docbar b{font-weight:700}
+
+/* ---------- régua: o único "desenho" da página ----------
+   Faixa de traços regulares que separa blocos. Substitui qualquer ornamento
+   orgânico: é escala, não enfeite. Full-bleed, sem wrap, então nunca vaza. */
+.regua{height:18px;background-color:var(--paper);
+  border-top:var(--bw) solid var(--black);border-bottom:2px solid var(--black);
+  background-image:
+    repeating-linear-gradient(to right,var(--black) 0 1px,transparent 1px 24px),
+    repeating-linear-gradient(to right,var(--black) 0 2px,transparent 2px 120px);
+  background-size:100% 6px,100% 12px;background-repeat:no-repeat;background-position:0 0,0 0}
+
+/* ---------- a malha de células ----------
+   As linhas internas são o GAP preto da grade, não borda de cada célula.
+   Assim nunca aparece linha dupla no encontro de duas células, e a malha
+   continua perfeita quando tudo empilha no telefone. */
+.malha{display:grid;gap:var(--bw);background:var(--black);
+  border:var(--bw) solid var(--black);box-shadow:var(--sh);grid-template-columns:1fr}
+.cel{position:relative;background:var(--white);padding:clamp(20px,3vw,34px)}
+.cel.papel{background:var(--paper)}
+
+/* rótulo mono de cada célula, com régua embaixo: é o que transforma
+   um parágrafo comum em campo de ficha */
+.rot{display:block;font-family:var(--mono);font-size:11px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--grey);
+  padding-bottom:9px;margin-bottom:14px;border-bottom:2px solid var(--black)}
+/* a exceção mora no seletor, não numa regra repetida: assim .lead continua
+   valendo o que já está no CSS compartilhado e .cod o que está logo abaixo */
+.cel p:not(.lead):not(.cod){font-size:15.5px;line-height:1.6}
+.cel p+p{margin-top:10px}
+.cel a.inl{border-bottom:2px solid var(--neon);font-weight:600}
+.cod{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--grey);
+  text-transform:uppercase;margin-top:18px;line-height:1.7}
+
+/* marcas de registro nos cantos da célula: cruzetas finas de impressão.
+   Feitas com gradiente para não pedir imagem nem elemento extra no HTML. */
+.reg::before,.reg::after{content:"";position:absolute;width:11px;height:11px;
+  pointer-events:none;opacity:.5;
+  background-image:
+    linear-gradient(var(--black),var(--black)),
+    linear-gradient(var(--black),var(--black));
+  background-size:1px 100%,100% 1px;background-position:center,center;
+  background-repeat:no-repeat}
+.reg::before{right:9px;top:9px}
+.reg::after{left:9px;bottom:9px}
+
+/* ---------- HERO: a primeira folha do manual ----------
+   Seis campos. O nome do produto ocupa a célula grande (2 colunas por 2
+   linhas) porque numa ficha o título também é um campo, só que o maior. */
+.hero{padding:clamp(28px,4.5vw,52px) 0 clamp(34px,5vw,66px)}
+.hero h1{margin:4px 0 0}
+.hero .lead{margin-top:20px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+@media(min-width:900px){
+  .malha.ficha{grid-template-columns:repeat(3,minmax(0,1fr));
+    box-shadow:10px 12px 0 var(--black)}
+  .cel.produto{grid-column:1 / 3;grid-row:1 / 3;display:flex;flex-direction:column;
+    justify-content:center}
+}
+
+/* ---------- TABELA DE FUNÇÕES ----------
+   Tabela de verdade, com cabeçalho preto e zebra em papel. A coluna "como"
+   fica em mono porque ali a informação é código de operação, não prosa.
+   min-width + wrapper com overflow-x: a tabela rola dentro da moldura,
+   a página nunca rola na horizontal. */
+.tabtop,.figtop{display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:space-between;
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--grey)}
+.tabtop{margin-bottom:12px}
+.tabwrap{border:var(--bw) solid var(--black);box-shadow:var(--sh);background:var(--white);
+  overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{width:100%;min-width:680px;border-collapse:collapse;text-align:left}
+.tab th{background:var(--black);color:var(--white);font-family:var(--mono);font-size:11px;
+  font-weight:500;letter-spacing:.16em;text-transform:uppercase;padding:13px 16px;
+  white-space:nowrap}
+.tab td{padding:15px 16px;border-top:2px solid var(--black);font-size:15px;
+  line-height:1.55;vertical-align:top}
+.tab tbody tr:nth-child(odd) td{background:var(--paper)}
+.tab .n{font-family:var(--mono);font-size:12px;color:var(--grey);white-space:nowrap;width:1%}
+.tab .fn{font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.tab .como{font-family:var(--mono);font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;white-space:nowrap}
+.rolar{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--grey);margin-top:12px}
+@media(min-width:760px){.rolar{display:none}}
+
+/* ---------- LINHA DE ESPECIFICAÇÃO ----------
+   Rótulo à esquerda, valor à direita, pontilhado puxando o olho de um ao
+   outro e régua fina fechando cada linha. Número em tabular-nums para as
+   casas alinharem de cima a baixo, que é o ponto de uma tabela de valores. */
+.spec{display:grid;grid-template-columns:1fr;gap:0 clamp(28px,5vw,64px)}
+@media(min-width:820px){.spec{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.spec li{list-style:none;display:flex;align-items:baseline;gap:9px;
+  font-family:var(--mono);font-size:12px;padding:13px 0;
+  border-bottom:1px solid rgba(10,11,14,.3)}
+@media(min-width:600px){.spec li{font-size:13px}}
+.spec .k{letter-spacing:.07em;text-transform:uppercase}
+.spec .pt{flex:1 1 14px;min-width:14px;border-bottom:1px dotted rgba(10,11,14,.5);
+  transform:translateY(-4px)}
+.spec .v{font-weight:700;text-align:right;white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.specnota{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--grey);
+  margin-top:22px;line-height:1.7;text-transform:uppercase}
+.specnota a{border-bottom:2px solid var(--neon)}
+
+/* ---------- FIGURA 01: o mapa da rede ----------
+   O globo entra como figura de manual: rótulo numerado acima, legenda
+   numerada abaixo, tudo dentro de uma célula. A moldura do globo perde a
+   sombra própria porque a sombra aqui é da célula, não da figura. */
+.figbox{position:relative;border:var(--bw) solid var(--black);background:var(--white);
+  padding:clamp(16px,2.4vw,26px);box-shadow:10px 12px 0 var(--black)}
+.figtop{border-bottom:2px solid var(--black);padding-bottom:10px;
+  margin-bottom:clamp(14px,2vw,22px)}
+.globo .figbox .cinema-frame{box-shadow:none;border-width:3px}
+.figleg{border-top:2px solid var(--black);margin-top:clamp(14px,2vw,22px);padding-top:14px;
+  display:grid;gap:9px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.05em}
+@media(min-width:700px){.figleg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.figleg li{list-style:none;display:flex;align-items:center;gap:10px;line-height:1.5}
+.figleg b{font-weight:500;color:var(--grey);flex:none}
+.figleg i{width:12px;height:12px;border:2px solid var(--black);flex:none}
+.figcap{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--grey);
+  text-transform:uppercase;margin-top:16px;line-height:1.7}
+/* no telefone o sistema encolhe a sombra dura (bloco final do CSS compartilhado);
+   a malha e a tabela de pacotes já caem para var(--sh), a moldura da figura também */
+@media(max-width:560px){.figbox{box-shadow:var(--sh)}}
+
+/* ---------- TABELA 02: pacotes ----------
+   Três colunas, uma por pacote, e linhas de atributo que se alinham porque
+   todas as células vivem na MESMA grade: os invólucros de pacote usam
+   display:contents só para carregar o data-pkg que o script de preço procura.
+   No telefone a grade vira uma coluna e cada célula já traz o próprio rótulo,
+   então a leitura continua fazendo sentido sem nenhuma rolagem lateral. */
+.packs{display:grid;gap:var(--bw);background:var(--black);
+  border:var(--bw) solid var(--black);box-shadow:var(--sh);grid-template-columns:1fr}
+@media(min-width:880px){
+  .packs{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:column;
+    grid-template-rows:repeat(7,auto);box-shadow:10px 12px 0 var(--black)}
+}
+.pgroup{display:contents}
+.pcell{background:var(--white);color:var(--black);padding:15px clamp(16px,2vw,24px)}
+.pgroup.destaque .pcell{background:var(--paper)}
+.pcell.cab{background:var(--black);color:var(--white);display:flex;align-items:baseline;
+  justify-content:space-between;gap:10px;padding-top:17px;padding-bottom:17px}
+.pgroup.destaque .pcell.cab{background:var(--black)}
+.pcell.cab h3{font-size:clamp(22px,2.6vw,28px);font-weight:700;letter-spacing:-.03em;
+  text-transform:uppercase;line-height:1}
+.pcell.cab span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#9AA3AE}
+.pl{display:block;font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--grey);margin-bottom:5px}
+.pv{font-weight:700;font-size:19px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pv.grande{font-size:clamp(28px,3.4vw,38px);line-height:1}
+.pv.pequeno{font-size:15.5px;font-weight:500;letter-spacing:0}
+.pcell.acao{padding-top:18px;padding-bottom:20px}
+.pcell.acao .pillbtn{width:100%}
+.pfoot{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:baseline;
+  justify-content:space-between;margin-top:26px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:#9AA3AE}
+.pfoot a{color:var(--white);border-bottom:2px solid var(--neon);font-weight:700}
+
+/* ---------- FAQ numerado ----------
+   Mesma caixa do sistema, só com a pergunta ganhando número de item, para
+   ela também parecer campo de documento. */
+.faq .qt{display:block;font-weight:700}
+.faq .qt i{display:block;font-style:normal;font-family:var(--mono);font-size:11px;
+  font-weight:500;letter-spacing:.16em;color:var(--grey);margin-bottom:6px}
+
+/* ---------- rodapé: acrescenta a linha de revisão do documento ---------- */
+.foot .rev{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:#9AA3AE;margin-top:16px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<!-- ====================== BARRA ====================== -->
+<header class="bar">
+  <div class="wrap in">
+    <a href="#topo" aria-label="BlaXx Pontos, início">
+      <img class="mark" src="assets/marca/blaxx-wordmark-claro.svg" alt="BlaXx Rewards">
+    </a>
+    <nav class="navd" aria-label="Principal">
+      <a href="#funcoes">Funções</a>
+      <a href="#numeros">Números</a>
+      <a href="#mapa">Cobertura</a>
+      <a href="#pacotes">Pacotes</a>
+      <a href="parceiros.html">Parceiros</a>
+    </nav>
+    <div class="baract">
+      <a class="pillbtn sm ghost" href="login.html">Entrar</a>
+      <a class="pillbtn sm dark" href="cadastro.html">Criar conta</a>
+      <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false"
+              aria-controls="menuMob" onclick="bxMenu(this)"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<div class="drawer" id="menuMob">
+  <a href="#funcoes">Funções</a>
+  <a href="#numeros">Números</a>
+  <a href="#mapa">Cobertura da rede</a>
+  <a href="#pacotes">Pacotes</a>
+  <a href="parceiros.html">Parceiros</a>
+  <a href="como-funciona.html">Como funciona</a>
+  <a href="central-ajuda.html">Ajuda</a>
+  <a href="#duvidas">Dúvidas</a>
+  <a href="login.html">Entrar na minha conta</a>
+</div>
+
+<!-- ====================== LINHA DE DOCUMENTO ====================== -->
+<div class="docbar" id="topo">
+  <div class="wrap in">
+    <span><b>Ficha técnica</b> · Pontos BlaXx</span>
+    <span>Rev. 2026.09 · Folha 1/1</span>
+  </div>
+</div>
+
+<!-- ====================== HERO: A PRIMEIRA FOLHA ====================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="malha ficha">
+
+      <div class="cel produto reg">
+        <span class="rot">Produto</span>
+        <h1 class="d1">Pontos<br><span class="hl">BlaXx</span></h1>
+        <p class="lead">Programa de pontos para comprar, enviar e resgatar. Esta página é a
+          ficha técnica do produto: cada campo abaixo é um fato que você confere nas regras,
+          sem letra miúda e sem promessa fora do papel.</p>
+        <p class="cod">Cód. BLX-PTS · Doc. 01 · Folha 1/1 · Rev. 2026.09</p>
+      </div>
+
+      <div class="cel papel reg">
+        <span class="rot">O que é</span>
+        <p>Créditos promocionais de uso restrito dentro da plataforma. Não são moeda,
+          depósito, investimento, valor mobiliário nem criptoativo.</p>
+        <p><a class="inl" href="regras-pontos.html">Ler as regras de pontos</a></p>
+      </div>
+
+      <div class="cel reg">
+        <span class="rot">Como se usa</span>
+        <p>Compre por PIX ou cartão, envie para outra conta BlaXx informando e-mail ou CPF,
+          resgate em voucher, vantagem na rede parceira ou cashback via PIX na chave do
+          seu perfil.</p>
+      </div>
+
+      <div class="cel reg">
+        <span class="rot">Quanto custa</span>
+        <p>Cadastro e manutenção da conta: R$ 0,00. Envio entre contas pessoais: gratuito,
+          dentro dos limites diários. Você paga apenas o pacote ou o valor livre que escolher.</p>
+      </div>
+
+      <div class="cel papel reg">
+        <span class="rot">Desde</span>
+        <p>A partir de 2.000 pontos, que é o pacote de entrada. Quem precisa de outro número
+          compra <a class="inl" href="comprar-livre.html">valor livre</a>.</p>
+      </div>
+
+      <div class="cel reg">
+        <span class="rot">Próximo passo</span>
+        <div class="ctas">
+          <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+          <a class="pillbtn ghost" href="#pacotes">Ver a tabela</a>
+        </div>
+        <p class="cod">Crédito na carteira assim que o pagamento é confirmado.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ====================== MARQUEE ====================== -->
+<div class="marq" aria-hidden="true">
+  <div>
+    <span>24 meses de validade</span><i>✳</i><span>Aviso 30 dias antes</span><i>✳</i>
+    <span>Envio gratuito entre contas pessoais</span><i>✳</i><span>PIX ou cartão</span><i>✳</i>
+    <span>24 meses de validade</span><i>✳</i><span>Aviso 30 dias antes</span><i>✳</i>
+    <span>Envio gratuito entre contas pessoais</span><i>✳</i><span>PIX ou cartão</span><i>✳</i>
+  </div>
+</div>
+
+<!-- ====================== TAB. 01 · FUNÇÕES ====================== -->
+<section class="sec" id="funcoes">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Tab. 01 · Funções</span>
+      <h2 class="d2">O que a conta<br>faz, por linha.</h2>
+    </div>
+    <div class="tabtop">
+      <span>Tab. 01 · Funções e forma de operação</span>
+      <span>4 colunas · 7 linhas</span>
+    </div>
+    <div class="tabwrap" tabindex="0" role="region"
+         aria-label="Tab. 01, funções e forma de operação">
+      <table class="tab">
+        <thead>
+          <tr><th scope="col">#</th><th scope="col">Função</th><th scope="col">O que acontece</th><th scope="col">Como</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="n">01</td><td class="fn">Comprar pontos</td>
+            <td>Pacote pronto ou valor livre. O crédito entra na carteira assim que o pagamento
+              é confirmado.</td>
+            <td class="como">PIX / cartão</td>
+          </tr>
+          <tr>
+            <td class="n">02</td><td class="fn">Enviar pontos</td>
+            <td>Para outra conta BlaXx pessoal, informando e-mail ou CPF. É gratuito, dentro
+              dos limites diários. Confira o destinatário: envio confirmado não pode ser revertido.</td>
+            <td class="como">E-mail / CPF</td>
+          </tr>
+          <tr>
+            <td class="n">03</td><td class="fn">Resgatar</td>
+            <td>Vouchers, vantagens na rede parceira e cashback via PIX na chave cadastrada
+              no seu perfil.</td>
+            <td class="como">Voucher / PIX</td>
+          </tr>
+          <tr>
+            <td class="n">04</td><td class="fn">Acompanhar</td>
+            <td>Extrato aberto, com data e origem de cada ponto que entrou e de cada ponto
+              que saiu.</td>
+            <td class="como">Extrato</td>
+          </tr>
+          <tr>
+            <td class="n">05</td><td class="fn">Vencer</td>
+            <td>Cada lote vale 24 meses. O aviso chega 30 dias antes; no vencimento o saldo
+              é debitado e não volta.</td>
+            <td class="como">E-mail / push</td>
+          </tr>
+          <tr>
+            <td class="n">06</td><td class="fn">Proteger</td>
+            <td>Tratamento de dados sob a LGPD, Lei 13.709/2018, com verificação em duas
+              etapas disponível na conta.</td>
+            <td class="como">2 etapas</td>
+          </tr>
+          <tr>
+            <td class="n">07</td><td class="fn">Desistir</td>
+            <td>Compra a distância tem 7 dias de arrependimento, conforme o artigo 49 do
+              Código de Defesa do Consumidor.</td>
+            <td class="como">CDC art. 49</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="rolar">Tabela larga: arraste para o lado.</p>
+  </div>
+</section>
+
+<div class="regua" aria-hidden="true"></div>
+
+<!-- ====================== ESP. 01 · NÚMEROS ====================== -->
+<section class="sec paper" id="numeros">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Esp. 01 · Números</span>
+      <h2 class="d2">Os valores<br>da folha.</h2>
+    </div>
+    <ul class="spec">
+      <li><span class="k">Categorias de rede parceira</span><span class="pt" aria-hidden="true"></span><span class="v">03</span></li>
+      <li><span class="k">Cidades no mapa da rede</span><span class="pt" aria-hidden="true"></span><span class="v">12</span></li>
+      <li><span class="k">Validade de cada lote</span><span class="pt" aria-hidden="true"></span><span class="v">24 meses</span></li>
+      <li><span class="k">Aviso antes de vencer</span><span class="pt" aria-hidden="true"></span><span class="v">30 dias</span></li>
+      <li><span class="k">Arrependimento, CDC art. 49</span><span class="pt" aria-hidden="true"></span><span class="v">7 dias</span></li>
+      <li><span class="k">Cadastro e manutenção</span><span class="pt" aria-hidden="true"></span><span class="v">R$ 0,00</span></li>
+      <li><span class="k">Envio entre contas pessoais</span><span class="pt" aria-hidden="true"></span><span class="v">R$ 0,00</span></li>
+      <li><span class="k">Pacote de entrada</span><span class="pt" aria-hidden="true"></span><span class="v">2.000 pts</span></li>
+      <li><span class="k">Meios de pagamento</span><span class="pt" aria-hidden="true"></span><span class="v">PIX, cartão</span></li>
+      <li><span class="k">Envio confirmado tem volta</span><span class="pt" aria-hidden="true"></span><span class="v">Não</span></li>
+    </ul>
+    <p class="specnota">Todos os valores desta folha saem de
+      <a href="regras-pontos.html">regras de pontos</a> e da
+      <a href="central-ajuda.html">central de ajuda</a>.</p>
+  </div>
+</section>
+
+<!-- ====================== FIG. 01 · COBERTURA ====================== -->
+<section class="sec globo" id="mapa">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Fig. 01 · Cobertura</span>
+      <h2 class="d2">Onde a rede<br>já chega.</h2>
+    </div>
+    <div class="figbox">
+      <div class="figtop">
+        <span>Fig. 01 · Cobertura da rede parceira</span>
+        <span>Projeção ortográfica · 12 pontos</span>
+      </div>
+      <div class="cinema-frame">
+        <canvas id="gvCanvas" aria-label="Globo com as cidades da rede parceira" role="img"></canvas>
+        <div id="globoTip" class="globe-tip"></div>
+        <div class="cinema-card"><small>Rede em expansão</small><b id="netCount">12</b><span>cidades no mapa</span></div>
+        <div class="cinema-marq" aria-hidden="true"><span>SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;</span></div>
+      </div>
+      <ol class="figleg">
+        <li><b>01</b><i style="background:rgb(231,178,74)"></i>Postos</li>
+        <li><b>02</b><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+        <li><b>03</b><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+        <li><b>04</b><i style="background:var(--neon)"></i>Cidade da rede, 12 no mapa</li>
+      </ol>
+    </div>
+    <p class="figcap">Arraste para girar. Toque num alfinete para ver a cidade, ou clique para
+      abrir a <a class="inl" href="parceiros.html">página de parceiros</a>.</p>
+  </div>
+</section>
+
+<div class="regua" aria-hidden="true"></div>
+
+<!-- ====================== TAB. 02 · PACOTES ====================== -->
+<section class="sec preta" id="pacotes">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Tab. 02 · Pacotes</span>
+      <h2 class="d2">Compare<br>coluna a coluna.</h2>
+    </div>
+    <div class="packs">
+
+      <div class="pgroup" data-pkg="start">
+        <div class="pcell cab"><h3>Start</h3><span>01</span></div>
+        <div class="pcell"><span class="pl">Pontos</span><span class="pv grande" data-pts>2.000</span></div>
+        <div class="pcell"><span class="pl">Preço</span><span class="pv" data-price>R$ 180,00</span></div>
+        <div class="pcell"><span class="pl">Bônus</span><span class="pv pequeno">Não se aplica</span></div>
+        <div class="pcell"><span class="pl">Forma de pagamento</span><span class="pv pequeno">PIX ou cartão</span></div>
+        <div class="pcell"><span class="pl">Validade</span><span class="pv pequeno">24 meses por lote</span></div>
+        <div class="pcell acao"><a class="pillbtn reta" href="comprar-pontos.html">Comprar Start</a></div>
+      </div>
+
+      <div class="pgroup destaque" data-pkg="plus">
+        <div class="pcell cab"><h3>Plus</h3><span>02</span></div>
+        <div class="pcell"><span class="pl">Pontos</span><span class="pv grande" data-pts>5.500</span></div>
+        <div class="pcell"><span class="pl">Preço</span><span class="pv" data-price>R$ 470,00</span></div>
+        <div class="pcell"><span class="pl">Bônus</span><span class="pv pequeno">Cerca de 5%</span></div>
+        <div class="pcell"><span class="pl">Forma de pagamento</span><span class="pv pequeno">PIX ou cartão</span></div>
+        <div class="pcell"><span class="pl">Validade</span><span class="pv pequeno">24 meses por lote</span></div>
+        <div class="pcell acao"><a class="pillbtn reta" href="comprar-pontos.html">Comprar Plus</a></div>
+      </div>
+
+      <div class="pgroup" data-pkg="prime">
+        <div class="pcell cab"><h3>Prime</h3><span>03</span></div>
+        <div class="pcell"><span class="pl">Pontos</span><span class="pv grande" data-pts>12.000</span></div>
+        <div class="pcell"><span class="pl">Preço</span><span class="pv" data-price>R$ 972,00</span></div>
+        <div class="pcell"><span class="pl">Bônus</span><span class="pv pequeno">Cerca de 10%</span></div>
+        <div class="pcell"><span class="pl">Forma de pagamento</span><span class="pv pequeno">PIX ou cartão</span></div>
+        <div class="pcell"><span class="pl">Validade</span><span class="pv pequeno">24 meses por lote</span></div>
+        <div class="pcell acao"><a class="pillbtn reta" href="comprar-pontos.html">Comprar Prime</a></div>
+      </div>
+
+    </div>
+    <div class="pfoot">
+      <span>Precisa de outro número? <a href="comprar-livre.html">Comprar valor livre</a></span>
+      <span>Valores conferidos com a plataforma no carregamento da página</span>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== DÚVIDAS ====================== -->
+<section class="sec paper" id="duvidas">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Notas · Dúvidas</span>
+      <h2 class="d2">As notas<br>de rodapé.</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary><b class="qt"><i>Q.01</i>Os pontos valem dinheiro?</b></summary>
+        <div class="ans">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro
+          da plataforma. Não são moeda, depósito, investimento, valor mobiliário nem criptoativo.
+          Está escrito nas <a href="regras-pontos.html">regras de pontos</a>.</div>
+      </details>
+      <details>
+        <summary><b class="qt"><i>Q.02</i>Quanto custa participar?</b></summary>
+        <div class="ans">O cadastro e a manutenção da conta são gratuitos. Você paga apenas
+          quando decide <a href="comprar-pontos.html">comprar um pacote</a> ou
+          <a href="comprar-livre.html">um valor livre</a>.</div>
+      </details>
+      <details>
+        <summary><b class="qt"><i>Q.03</i>Qual é a validade dos pontos?</b></summary>
+        <div class="ans">Cada lote vale 24 meses. Você é avisado 30 dias antes do vencimento,
+          por e-mail e push. No vencimento o saldo é debitado e não pode ser restaurado.</div>
+      </details>
+      <details>
+        <summary><b class="qt"><i>Q.04</i>Posso enviar pontos para outra pessoa?</b></summary>
+        <div class="ans">Para qualquer pessoa com conta BlaXx, informando e-mail ou CPF. Entre
+          contas pessoais o envio é gratuito, dentro dos limites diários. Confira o destinatário:
+          transferência confirmada não pode ser revertida.</div>
+      </details>
+      <details>
+        <summary><b class="qt"><i>Q.05</i>E se eu me arrepender da compra?</b></summary>
+        <div class="ans">Compras a distância têm direito de arrependimento de 7 dias, conforme o
+          artigo 49 do Código de Defesa do Consumidor. Depois desse prazo a compra é definitiva,
+          salvo as exceções da <a href="politica-reembolso.html">política de reembolso</a>.</div>
+      </details>
+      <details>
+        <summary><b class="qt"><i>Q.06</i>Meus dados estão protegidos?</b></summary>
+        <div class="ans">O tratamento segue a LGPD, Lei 13.709/2018, e você pode ativar
+          verificação em duas etapas na sua conta. Os detalhes estão na
+          <a href="privacidade.html">política de privacidade</a> e nos
+          <a href="termos.html">termos de uso</a>.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== CHAMADA FINAL ====================== -->
+<section class="final">
+  <div class="wrap in">
+    <h2 class="d2">Ficha lida?<br>Abra a conta.</h2>
+    <p>Criar conta é gratuito e leva menos tempo do que ler esta folha inteira. O que está
+      especificado aqui é o que você encontra lá dentro.</p>
+    <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+  </div>
+</section>
+
+<!-- ====================== RODAPÉ ====================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <p class="tag2">Pontos que viram coisas. Você compra, envia e troca quando quiser.</p>
+        <p class="rev">Doc. 01 · Ficha técnica · Rev. 2026.09</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+          <li><a href="comprar-livre.html">Valor livre</a></li>
+          <li><a href="parceiros.html">Parceiros</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Ajuda e regras</h4>
+        <ul>
+          <li><a href="central-ajuda.html">Central de ajuda</a></li>
+          <li><a href="regras-pontos.html">Regras de pontos</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+          <li><a href="privacidade.html">Privacidade e LGPD</a></li>
+          <li><a href="politica-reembolso.html">Política de reembolso</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>BlaXx Pontos © 2026</span>
+      <span><a href="privacidade.html#direitos">Seus direitos LGPD</a></span>
+    </div>
+  </div>
+  <div class="bigmark">
+    <img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
+  </div>
+</footer>
+
+<script>
+function bxMenu(btn){
+  var d = document.getElementById('menuMob');
+  var open = !d.classList.contains('on');
+  d.classList.toggle('on', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.querySelectorAll('#menuMob a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.getElementById('menuMob').classList.remove('on');
+    var b = document.querySelector('.burger');
+    if (b) b.setAttribute('aria-expanded','false');
+  });
+});
+</script>
+
+<script>
+(function(){
+  var canvas = document.getElementById('gvCanvas');
+  if (!canvas || typeof blaxxCreateGlobe !== 'function') return;
+  var contador = document.getElementById('netCount');
+  if (contador && typeof BLAXX_POINTS !== 'undefined') contador.textContent = BLAXX_POINTS.length;
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json')
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(world){
+      blaxxCreateGlobe(canvas, {
+        world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.46,
+        autoRotate: !reduzir,
+        tooltip: document.getElementById('globoTip'),
+        onPointClick: function(){ location.href = 'parceiros.html'; },
+        sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+        landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)',
+        borderColor:'rgba(8,32,60,0.28)', gratColor:'rgba(8,32,60,0.10)',
+        ringAlpha:0.5, atmAlpha:0
+      });
+    })
+    .catch(function(e){ console.error('globo:', e); });
+})();
+</script>
+
+<script>
+(function(){
+  function resolveApi(){
+    var host = location.hostname;
+    var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
+    if (isLocal) return location.protocol + '//' + host + ':5050';
+    return 'https://blaxx-pontos-exe.onrender.com';
+  }
+  var API = resolveApi();
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fill(key, pkg){
+    if (!pkg) return;
+    var card = document.querySelector('[data-pkg="' + key + '"]');
+    if (!card) return;
+    var p = card.querySelector('[data-pts]'), pr = card.querySelector('[data-price]');
+    if (p && pkg.points != null) p.textContent = fmtPts(pkg.points);
+    if (pr && pkg.price_brl != null) pr.textContent = fmtBrl(pkg.price_brl);
+  }
+  fetch(API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){ fill('start', d.start); fill('plus', d.plus); fill('prime', d.prime); })
+    .catch(function(){});
+})();
+</script>
+
+</body>
+</html>

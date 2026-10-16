@@ -2,30 +2,58 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Indique e ganhe</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { margin-bottom: 24px; }
   .ref-grid { display:grid; grid-template-columns: 1.1fr 1fr; gap:24px; align-items:start; }
   .ref-hero { padding: 30px 32px; }
-  .ref-hero h2 { font-family: var(--font-display); font-weight:900; font-size: 30px; letter-spacing:-.02em; margin: 14px 0 6px; }
+  /* color explícito: o tema pinta todo h2 de tinta, e este fica num cartão preto */
+  .ref-hero h2 { font-family: var(--font-display); font-weight:900; font-size: 30px; letter-spacing:-.02em; margin: 14px 0 6px; color: #F4F2EC; }
   .ref-hero p { color: var(--fg-on-dark-muted); margin:0 0 22px; font-size:15px; }
   .ref-hero p b { color: var(--lime); }
-  .code-box { display:flex; align-items:center; gap:12px; background: rgba(244,246,238,.07); border:1.5px dashed rgba(244,246,238,.28); border-radius: var(--r-md); padding: 16px 20px; }
+  .code-box { display:flex; align-items:center; gap:12px; background: rgba(244,246,238,.07); border:1px dashed rgba(244,242,236,.3); border-radius: var(--r-md); padding: 16px 20px; }
   .code-box .code { font-family: var(--font-mono); font-weight:700; font-size: 22px; letter-spacing:.1em; color: var(--lime); flex:1; }
   .share { display:flex; gap:10px; margin-top:16px; }
   .share .btn { flex:1; }
 
   .reward-big { padding: 26px; text-align:center; }
-  .reward-big .amt { font-family: var(--font-mono); font-weight:700; font-size: 56px; color: var(--ink); letter-spacing:-.03em; line-height:1; }
+  .reward-big .amt { font-family: var(--bx-sans); font-weight:800; font-size: 56px; color: var(--ink); letter-spacing:-.03em; line-height:1; }
   .reward-big .amt small { font-size: 18px; color: var(--fg-muted); }
   .reward-big p { color: var(--fg-muted); margin:8px 0 0; }
 
   .steps { display:grid; grid-template-columns: repeat(3,1fr); gap:16px; margin: 36px 0; }
   .step { padding: 24px; }
-  .step__n { font-family: var(--font-mono); font-weight:700; font-size: 13px; color: var(--lime-deep); }
-  .step h4 { font-family: var(--font-display); font-weight:900; font-size:18px; margin:14px 0 6px; }
+  /* Numeração como rótulo mono cinza (o verde escuro como texto reprovava
+     contraste); o h4 desfaz o estilo de rótulo que o tema dá a todo h4. */
+  .step__n { font-family: var(--bx-mono); font-weight:400; font-size: 13px; letter-spacing:.08em; color: var(--bx-grey); }
+  .step h4 { font-family: var(--bx-sans); font-weight:800; font-size:18px; margin:14px 0 6px; text-transform:none; letter-spacing:-.015em; color: var(--bx-ink); }
   .step p { font-size:13.5px; color: var(--fg-muted); margin:0; }
 
   .friends { padding: 8px 0; }
@@ -39,15 +67,37 @@
   .fr__r.done { color: var(--pos); }
 
   .milestones { padding: 26px; }
-  .ms-rail { position:relative; height:4px; background: rgba(14,15,11,.1); border-radius:99px; margin: 40px 14px 18px; }
-  .ms-fill { position:absolute; left:0; top:0; height:100%; border-radius:99px; background: linear-gradient(90deg,var(--lime-deep),var(--lime-bright)); }
+  .ms-rail { position:relative; height:4px; background: var(--bx-line); border-radius:99px; margin: 40px 14px 18px; }
+  .ms-fill { position:absolute; left:0; top:0; height:100%; border-radius:99px; background: var(--bx-neon); }
   .ms-node { position:absolute; top:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; }
-  .ms-dot { width:32px; height:32px; border-radius:50%; background: var(--white); border:3px solid rgba(14,15,11,.15); display:grid; place-items:center; font-family:var(--font-mono); font-weight:700; font-size:11px; color: var(--fg-muted); }
+  .ms-dot { width:32px; height:32px; border-radius:50%; background: var(--bx-surface); border:2px solid var(--bx-line); display:grid; place-items:center; font-family:var(--font-mono); font-weight:700; font-size:11px; color: var(--fg-muted); }
   .ms-node.done .ms-dot { background: var(--lime); border-color: var(--ink); color: var(--ink); }
   .ms-node.current .ms-dot { background: var(--ink); border-color: var(--lime); color: var(--lime); box-shadow:0 0 0 5px var(--lime-20); }
   .ms-cap { position:absolute; top:42px; font-family: var(--font-mono); font-size:10px; color: var(--fg-muted); white-space:nowrap; text-align:center; }
 
   @media (max-width: 900px){ .ref-grid, .steps{grid-template-columns:1fr;} .steps{gap:12px;} }
+  @media (max-width: 600px){
+    /* Cinco legendas absolutas em nowrap num trilho de ~290px se atropelavam
+       ("+2k bônus" por cima de "Plano Plus grátis"). Numa coluna estreita
+       elas quebram em linhas e o trilho reserva espaço em cima e embaixo
+       (as legendas alternam de lado, ver abaixo). */
+    .ms-rail { margin: 64px 20px 64px; }
+    /* overflow-wrap:normal desfaz o `anywhere` que o styles.css dá a todo
+       .card no celular: "Embaixador" transborda 4px em vez de quebrar no meio. */
+    .ms-cap { white-space:normal; overflow-wrap:normal; width:56px; line-height:1.25; }
+    /* Mesmo em linhas, cinco legendas de 56px num trilho de ~250px (ou de
+       ~176px quando o .shell do tema ainda reserva 268px pra sidebar oculta)
+       se encostavam. Alternando lado, as vizinhas (22% e 72%) sobem pra
+       cima do trilho e as do mesmo lado ficam a 44% uma da outra. O filho 1
+       do trilho é o .ms-fill, por isso nth-child(odd) pega o 2º e o 4º nó. */
+    .ms-node:nth-child(odd) .ms-cap { top:auto; bottom:42px; }
+    /* Número grande e código não podem partir no meio ("15.00 / 0 pts",
+       "T E S T E"): nowrap desfaz a quebra que o styles.css dá no celular,
+       e o tamanho menor garante que caibam sem rolagem horizontal. */
+    .reward-big .amt { font-size:44px; white-space:nowrap; overflow-wrap:normal; }
+    .code-box { flex-wrap:wrap; padding:14px 16px; }
+    .code-box .code { white-space:nowrap; overflow-wrap:normal; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Indique","item":"https://blaxxpontos.com.br/indique.html"}]}
@@ -64,7 +114,7 @@
     <div class="card card--dark ref-hero">
       <span class="chip">5.000 PTS POR AMIGO</span>
       <h2>Seu código de convite</h2>
-      <p>Cada amigo que entrar e fizer a primeira compra rende <b>5.000 pts</b> pra você — e <b>2.500 pts</b> pra ele.</p>
+      <p>Cada amigo que entrar e fizer a primeira compra rende <b>5.000 pts</b> pra você, e <b>2.500 pts</b> pra ele.</p>
       <div class="code-box">
         <span class="code" id="refCode">—</span>
         <button class="btn btn--primary btn--sm" id="copyBtn">Copiar</button>
@@ -81,7 +131,7 @@
       <div style="display:flex;justify-content:space-around;text-align:center">
         <div><div class="stat__val">5</div><div class="stat__label">Convidados</div></div>
         <div><div class="stat__val">3</div><div class="stat__label">Entraram</div></div>
-        <div><div class="stat__val" style="color:var(--lime-deep)">2</div><div class="stat__label">Pendentes</div></div>
+        <div><div class="stat__val" style="color:var(--bx-grey)">2</div><div class="stat__label">Pendentes</div></div>
       </div>
     </div>
   </div>
@@ -114,8 +164,8 @@
     <div class="fr"><span class="fr__av">M</span><div><div class="fr__n">Marina Costa</div><div class="fr__s">Entrou · primeira compra feita</div></div><span class="fr__r done">+5.000</span></div>
     <div class="fr"><span class="fr__av">B</span><div><div class="fr__n">Bruno Lima</div><div class="fr__s">Entrou · primeira compra feita</div></div><span class="fr__r done">+5.000</span></div>
     <div class="fr"><span class="fr__av">C</span><div><div class="fr__n">Camila Reis</div><div class="fr__s">Entrou · aguardando 1ª compra</div></div><span class="fr__r done">+5.000</span></div>
-    <div class="fr"><span class="fr__av" style="background:rgba(14,15,11,.05);color:var(--fg-subtle)">J</span><div><div class="fr__n" style="color:var(--fg-muted)">João Pedro</div><div class="fr__s">Convite enviado · não entrou</div></div><span class="fr__r pend">pendente</span></div>
-    <div class="fr"><span class="fr__av" style="background:rgba(14,15,11,.05);color:var(--fg-subtle)">L</span><div><div class="fr__n" style="color:var(--fg-muted)">Letícia Souza</div><div class="fr__s">Convite enviado · não entrou</div></div><span class="fr__r pend">pendente</span></div>
+    <div class="fr"><span class="fr__av" style="background:var(--bx-surface-2);color:var(--bx-grey)">J</span><div><div class="fr__n" style="color:var(--fg-muted)">João Pedro</div><div class="fr__s">Convite enviado · não entrou</div></div><span class="fr__r pend">pendente</span></div>
+    <div class="fr"><span class="fr__av" style="background:var(--bx-surface-2);color:var(--bx-grey)">L</span><div><div class="fr__n" style="color:var(--fg-muted)">Letícia Souza</div><div class="fr__s">Convite enviado · não entrou</div></div><span class="fr__r pend">pendente</span></div>
   </div>
 </main>
 <script src="assets/blaxx-nav-user.js"></script>

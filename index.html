@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Início</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  /* ===== Command Center — dashboard premium (dados reais + showcase) ===== */
+  /* ===== Command Center, dashboard premium (dados reais + showcase) ===== */
   /* As duas colunas eram pilhas independentes: cada card tinha a altura do
-     próprio conteúdo e nada se alinhava entre elas — a coluna 2 terminava numa
+     próprio conteúdo e nada se alinhava entre elas, a coluna 2 terminava numa
      altura qualquer em relação à 1. Com `display:contents` as pilhas somem da
      árvore de layout e os cards viram itens do MESMO grid; fixando a coluna de
      cada um, eles se emparelham linha a linha e a linha estica pelo mais alto.
      Resultado: card 1 da coluna 2 tem exatamente a altura do card 1 da coluna 1. */
-  /* `dense`: sem ele o auto-flow só anda para a frente — os 4 cards da coluna 1
+  /* `dense`: sem ele o auto-flow só anda para a frente, os 4 cards da coluna 1
      tomavam as linhas 1-4 e os da coluna 2 começavam só na linha 4, sem
      emparelhar. Com dense, cada card da coluna 2 volta e ocupa a primeira
      linha livre da sua coluna. */
@@ -25,11 +26,14 @@
   /* o card precisa ocupar a linha inteira que lhe coube, senão volta a
      encolher para o próprio conteúdo e o alinhamento se perde */
   .cc-grid > .cc-stack > .cc-panel { align-self:stretch; }
-  .cc-panel { position:relative; border-radius:24px; overflow:hidden; }
-  .cc-lime { color:var(--lime); font-weight:800; cursor:pointer; }
+  /* 28px é o raio de painel grande do tema Embarque (28/18/14/12/8). */
+  .cc-panel { position:relative; border-radius:var(--bx-r-xl); overflow:hidden; }
+  /* Link de seção em tinta: neon só é cor de texto sobre painel escuro
+     (o .cc-oppo devolve o neon mais abaixo). */
+  .cc-lime { color:var(--bx-ink); font-weight:800; cursor:pointer; }
   /* Sem quebra de linha no cabeçalho do card: título e link ficam na mesma
      linha. O link nunca encolhe; o título cede espaço e, no limite, corta com
-     reticências — assim nada vaza para fora do card (a regra de zero rolagem
+     reticências, assim nada vaza para fora do card (a regra de zero rolagem
      horizontal continua valendo). */
   .cc-section-head { display:flex; justify-content:space-between; align-items:center;
                      gap:12px; flex-wrap:nowrap; margin-bottom:14px; }
@@ -38,48 +42,51 @@
   .cc-section-head > a, .cc-section-head > span { flex:0 0 auto; white-space:nowrap; }
 
   /* HERO */
-  .cc-hero { padding:28px; color:var(--fg-on-dark); background:radial-gradient(circle at 84% 24%, rgba(89,253,39,.2), transparent 28%), linear-gradient(140deg,#06080A,#0D1217); }
+  .cc-hero { padding:28px; color:var(--bx-ink); background:var(--bx-surface); }
   .cc-hero-row { display:grid; grid-template-columns:1fr .9fr; gap:18px; align-items:center; }
   .cc-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-on-dark-muted); }
   .cc-balance { font-family:var(--font-mono); font-size:54px; font-weight:700; letter-spacing:-.03em; line-height:.95; margin:16px 0 4px; }
   .cc-balance small { font-size:16px; color:var(--fg-on-dark-muted); margin-left:8px; }
   .cc-hero-sub { color:var(--fg-on-dark-muted); font-size:13px; margin-top:8px; }
   .cc-quick { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:22px; }
-  .cc-q { border:0; border-radius:15px; height:72px; background:var(--white); color:var(--ink); font-weight:800; font-size:13px; box-shadow:0 12px 24px rgba(0,0,0,.2); cursor:pointer; transition:transform .16s var(--ease); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-decoration:none; }
-  .cc-q:hover { transform:translateY(-3px); }
-  .cc-q.primary { background:var(--lime); }
+  .cc-q { border:1px solid var(--bx-line); border-radius:var(--bx-r-md); height:72px; background:var(--bx-surface); color:var(--bx-ink); font-weight:700; font-size:13px; box-shadow:none; cursor:pointer; transition:background .16s var(--ease); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-decoration:none; }
+  .cc-q:hover { background:var(--bx-surface-2); }
+  .cc-q.primary { background:var(--bx-neon); border-color:transparent; }
   .cc-q i { font-size:20px; font-style:normal; }
 
   /* OPORTUNIDADE */
-  .cc-oppo { min-height:210px; padding:30px; color:#fff; background:linear-gradient(120deg, rgba(7,10,12,.95), rgba(7,10,12,.5)), linear-gradient(135deg,#1a1030,#0b1230); }
-  .cc-oppo h2 { font-family:var(--font-display); font-size:30px; margin:20px 0 6px; line-height:1.05; }
-  .cc-pill { display:inline-flex; align-items:center; background:#6d35b9; color:#fff; border-radius:999px; font-weight:800; font-size:11px; padding:6px 11px; margin-left:8px; }
+  /* Painel preto da marca (como o painel de partidas da home), sem o
+     gradiente roxo de outra paleta. O h2 herda a cor clara de propósito:
+     a regra global de h2 pinta tinta, e tinta sobre preto some. */
+  .cc-oppo { min-height:210px; padding:30px; color:var(--fg-on-dark); background:var(--bx-ink); }
+  .cc-oppo h2 { font-family:var(--font-display); font-size:30px; margin:20px 0 6px; line-height:1.05; color:inherit; }
+  .cc-pill { display:inline-flex; align-items:center; background:var(--bx-neon); color:var(--bx-ink); border-radius:999px; font-weight:800; font-size:11px; padding:6px 11px; margin-left:8px; }
 
   /* MARKETPLACE
      O card de parceiro herdava o tema ESCURO (borda branca 10% + fundo branco
      3%). Quando o painel virou claro, os dois viraram invisíveis: o item ficou
-     sem card nenhum — emoji e texto soltos no branco. Agora ele é um card de
-     verdade, na assinatura da área logada (borda tinta + sombra dura, cantos
-     arredondados). O neon sai do TEXTO (reprova contraste no claro: 1,23:1) e
-     vira o selo da taxa, com texto tinta por cima — 17,8:1.                  */
-  .cc-market { padding:24px; background:#06080A; color:#fff; }
-  .cc-exps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-  /* Branco puro de propósito: no tema Neo-Brutal --white e --cream foram
-     redefinidos para #F4F4F0 (styles.css:474), que é a cor do PRÓPRIO painel —
-     usar o token deixaria o card e o fundo idênticos. O branco eleva o item. */
+     sem card nenhum, emoji e texto soltos no branco. Agora ele é um bilhete
+     do tema Embarque: superfície clara, contorno de 1px, canto 18px; o hover
+     escurece o contorno para tinta (como o bilhete selecionado da home), sem
+     deslocar nem sombrear. O neon sai do TEXTO (reprova contraste no claro:
+     1,23:1) e vira o selo da taxa, com texto tinta por cima, 17,8:1.      */
+  .cc-market { padding:24px; background:var(--bx-surface); color:var(--bx-ink); }
+  .cc-exps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+  /* O item e o painel são a mesma superfície: o que separa um do outro é o
+     contorno, não a cor, como nos bilhetes de pacote da home. */
   .cc-exp { display:flex; flex-direction:column; gap:12px; min-width:0; padding:16px;
-            text-decoration:none; cursor:pointer; background:#FFFFFF; color:var(--ink);
-            border:2px solid var(--ink); border-radius:16px; box-shadow:3px 3px 0 var(--ink);
-            transition:transform .12s var(--ease), box-shadow .12s var(--ease); }
-  .cc-exp:hover  { transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--lime); }
-  .cc-exp:active { transform:translate(1px,1px);   box-shadow:1px 1px 0 var(--ink); }
-  .cc-exp:focus-visible { outline:3px solid var(--ink); outline-offset:3px; }
-  /* Cabeçalho: selo do parceiro + seta (affordance que o toque enxerga — no
+            text-decoration:none; cursor:pointer; background:var(--bx-surface); color:var(--bx-ink);
+            border:1px solid var(--bx-line); border-radius:var(--bx-r-lg); box-shadow:none;
+            transition:border-color .15s var(--ease); }
+  .cc-exp:hover  { border-color:var(--bx-ink); }
+  .cc-exp:active { border-color:var(--bx-ink); background:var(--bx-surface-2); }
+  .cc-exp:focus-visible { outline:3px solid var(--bx-ink); outline-offset:3px; }
+  /* Cabeçalho: selo do parceiro + seta (affordance que o toque enxerga, no
      mobile não existe hover para revelar que o card é clicável). */
   .cc-exp-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .cc-exp .em { width:46px; height:46px; flex:0 0 auto; display:grid; place-items:center;
-                font-size:24px; line-height:1; background:var(--paper-2);
-                border:2px solid var(--ink); border-radius:12px; }
+                font-size:24px; line-height:1; background:var(--bx-surface-2);
+                border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); }
   .cc-exp .go { display:grid; place-items:center; flex:0 0 auto; width:26px; height:26px;
                 font-family:var(--font-mono); font-size:15px; font-weight:800;
                 font-style:normal; color:var(--ink); line-height:1; }
@@ -88,22 +95,23 @@
                    color:var(--ink); overflow-wrap:anywhere; }
   .cc-exp .rate { display:inline-block; align-self:flex-start; max-width:100%;
                   font-family:var(--font-mono); font-size:11.5px; font-weight:700; line-height:1.35;
-                  color:var(--ink); background:var(--lime); border:2px solid var(--ink);
-                  border-radius:10px; padding:4px 10px; overflow-wrap:anywhere; }
+                  color:var(--ink); background:var(--bx-neon); border:0;
+                  border-radius:var(--bx-r-xxs); padding:4px 10px; overflow-wrap:anywhere; }
 
 
   /* LEVELS */
-  .cc-levels { padding:22px; background:var(--white); border:1px solid var(--line); }
+  .cc-levels { padding:22px; background:var(--bx-surface); border:1px solid var(--bx-line); }
   /* O selo do nível é pintado pela API (tier.color / tier.text_color). O que
-     é nosso: a moldura. Borda tinta + sombra dura dão a ele o mesmo peso dos
-     outros cards, e funcionam tanto no OURO quanto num tier escuro. */
-  .cc-level-card { min-height:118px; border-radius:16px; color:#fff; padding:18px 20px; margin:14px 0;
+     é nosso: a forma. Sem moldura nem sombra, como o cartão de embarque da
+     home: a cor cheia do tier já dá o peso; funciona no OURO e num tier
+     escuro. O h2 herda a cor que a API define, em vez da tinta global. */
+  .cc-level-card { min-height:118px; border-radius:var(--bx-r-lg); color:var(--fg-on-dark); padding:18px 20px; margin:14px 0;
                    display:flex; flex-direction:column; justify-content:center; gap:6px;
-                   border:3px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
-                   background:radial-gradient(circle at 80% 40%, rgba(89,253,39,.2), transparent 24%), linear-gradient(135deg,#101318,#010101); }
+                   border:0; box-shadow:none;
+                   background:var(--bx-ink); }
   .cc-level-card h2 { font-family:var(--font-display); margin:0; font-size:30px; letter-spacing:-.02em;
-                      line-height:1; text-transform:uppercase; }
-  /* Era opacity:.82 sobre o dourado — o subtítulo lavava. A hierarquia agora
+                      line-height:1; text-transform:uppercase; color:inherit; }
+  /* Era opacity:.82 sobre o dourado, o subtítulo lavava. A hierarquia agora
      vem de tamanho e família, não de transparência: o texto fica na cor cheia
      que a API define para o tier (no OURO, 9,36:1). */
   .cc-level-card small { opacity:1; font-family:var(--font-mono); font-size:12px;
@@ -112,16 +120,16 @@
   .cc-prog-head { display:flex; justify-content:space-between; align-items:baseline; gap:10px;
                   font-family:var(--font-mono); font-size:12px; color:var(--ink); }
   .cc-prog-head b { font-size:15px; font-weight:800; }
-  /* Barra contida em moldura tinta: no claro o trilho de 10% de tinta quase
-     não se via, e o preenchimento neon não tinha limite definido. */
-  .cc-progress { height:14px; background:var(--paper); border:2px solid var(--ink);
+  /* Trilho em superfície-2 com contorno fino: no claro o trilho de 10% de
+     tinta quase não se via; o contorno dá o limite que o neon precisa. */
+  .cc-progress { height:14px; background:var(--bx-surface-2); border:1px solid var(--bx-line);
                  border-radius:999px; overflow:hidden; margin-top:8px; }
-  .cc-progress span { display:block; height:100%; background:var(--lime); width:0;
-                      border-right:2px solid var(--ink); transition:width 1.1s var(--ease-out); }
+  .cc-progress span { display:block; height:100%; background:var(--bx-neon); width:0;
+                      border-radius:999px; transition:width 1.1s var(--ease-out); }
 
   /* TRANSFER */
-  .cc-transfer { padding:22px; background:var(--white); border:1px solid var(--line); }
-  .cc-tbal { background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin:14px 0; }
+  .cc-transfer { padding:22px; background:var(--bx-surface); border:1px solid var(--bx-line); }
+  .cc-tbal { background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:var(--bx-r-md); padding:14px 16px; margin:14px 0; }
   .cc-tbal small { color:var(--fg-muted); }
   .cc-tamount { font-family:var(--font-mono); font-size:26px; font-weight:700; letter-spacing:-1px; }
   .cc-tamount span { font-size:14px; color:var(--fg-muted); }
@@ -135,17 +143,20 @@
      viewport. É a mesma correção já aplicada em .cc-stats nesta folha. */
   .cc-bottom { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,.8fr);
                gap:20px; margin-top:20px; align-items:stretch; }
-  .cc-light { background:var(--white); border:1px solid var(--line); padding:22px; border-radius:24px; }
+  .cc-light { background:var(--bx-surface); border:1px solid var(--bx-line); padding:22px; border-radius:var(--bx-r-xl); box-shadow:var(--bx-sh); }
   .cc-tiles { display:flex; flex-direction:column; gap:6px; }
   .cc-tile { display:flex; align-items:center; gap:12px; padding:11px; border-radius:14px; cursor:pointer; transition:background .16s var(--ease); text-decoration:none; color:var(--fg); }
-  .cc-tile:hover { background:var(--bg); }
-  .cc-tile .em { width:38px; height:38px; border-radius:11px; display:grid; place-items:center; font-size:17px; background:var(--bg); flex-shrink:0; }
+  .cc-tile:hover { background:var(--bx-surface-2); }
+  .cc-tile .em { width:38px; height:38px; border-radius:var(--bx-r-sm); display:grid; place-items:center; font-size:17px; background:var(--bx-surface-2); flex-shrink:0; }
   .cc-tile .bd { flex:1; min-width:0; }
-  .cc-tile .tt { font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .cc-tile .ss { color:var(--fg-muted); font-size:12px; }
+  /* Título e legenda são <span>: em linha, a legenda colava no fim do título
+     ("Mercado Vivocompra") e o overflow/ellipsis do título nunca valia,
+     porque caixa em linha ignora overflow. Em bloco cada um tem a sua linha. */
+  .cc-tile .tt { display:block; font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cc-tile .ss { display:block; color:var(--fg-muted); font-size:12px; }
   .cc-tile .mt { font-family:var(--font-mono); font-weight:700; font-size:13px; }
   .cc-tile .mt.pos { color:var(--pos); } .cc-tile .mt.neg { color:var(--neg); }
-  .cc-mini { display:flex; gap:12px; align-items:center; background:var(--white); border:1px solid var(--line); border-radius:16px; padding:13px; margin-top:10px; box-shadow:var(--sh-1); }
+  .cc-mini { display:flex; gap:12px; align-items:center; background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-lg); padding:13px; margin-top:10px; box-shadow:none; }
   .cc-mini small { display:block; color:var(--fg-muted); font-size:11px; }
   .cc-mini b { font-size:15px; }
   .cc-mini .cc-icon { width:34px; height:34px; }
@@ -155,33 +166,36 @@
 
   /* ── Refino do card Patrimônio ────────────────────────────────────────
      O que estava errado:
-     · "+X pts este mês" era position:absolute SOBRE o gráfico — a linha
+     · "+X pts este mês" era position:absolute SOBRE o gráfico, a linha
        passava por baixo do texto. Virou um selo ao lado do rótulo.
      · Saldo em 54px estourava a caixa em telas de 375px.
-     · Botões com sombra borrada (0 12px 24px) destoavam do brutalismo, que
-       usa sombra dura sem blur.
+     · Botões com sombra borrada (0 12px 24px) viravam uma mancha dentro do
+       painel claro; no tema Embarque o botão é contorno fino, sem sombra.
      · Rótulo em 11px, abaixo do mínimo de leitura.                        */
   .cc-head-row { display:flex; align-items:center; justify-content:space-between;
                  gap:12px; flex-wrap:wrap; }
   .cc-eyebrow { font-size:12px; }
   .cc-trend { display:inline-flex; align-items:baseline; gap:5px;
               font-family:var(--font-mono); font-size:12px; font-weight:700;
-              color:var(--lime); background:rgba(89,253,39,.10);
-              border:1px solid rgba(89,253,39,.35); border-radius:999px;
+              color:var(--bx-ink); background:var(--bx-neon);
+              border:0; border-radius:999px;
               padding:5px 11px; white-space:nowrap; }
-  .cc-trend small { font-weight:500; color:var(--fg-on-dark-muted); font-size:11px; }
+  .cc-trend small { font-weight:500; color:rgba(10,11,14,.72); font-size:11px; }
   .cc-balance { font-size:clamp(38px,11vw,54px); margin:18px 0 6px; }
   .cc-balance small { font-size:.38em; font-weight:600; margin-left:6px;
                       color:var(--fg-on-dark-muted); letter-spacing:0; }
   .cc-hero-sub { margin-top:10px; }
   /* gráfico: vira faixa decorativa, sem competir com os números */
   .cc-quick { gap:10px; margin-top:24px; }
-  .cc-q { height:64px; border:2px solid var(--ink);
-          box-shadow:3px 3px 0 rgba(0,0,0,.55); border-radius:14px;
+  .cc-q { height:64px; border:1px solid var(--bx-line);
+          box-shadow:none; border-radius:var(--bx-r-md);
           display:flex; flex-direction:column; align-items:center;
           justify-content:center; gap:5px; font-size:12.5px; }
-  .cc-q i { font-style:normal; font-size:17px; line-height:1; }
-  .cc-q:hover { transform:translate(1px,1px); box-shadow:1px 1px 0 rgba(0,0,0,.55); }
+  /* O ícone precisa de caixa própria: o <svg> de dentro tem width/height
+     100% e, sem medida no <i>, ocupava a largura inteira do botão (141px
+     num botão de 64px de altura), cobrindo o rótulo. */
+  .cc-q i { font-style:normal; font-size:17px; line-height:1; width:22px; height:22px; display:grid; place-items:center; flex:0 0 auto; }
+  .cc-q:hover { transform:none; box-shadow:none; }
 
   @media (max-width: 760px) {
     .cc-hero { padding:22px 18px; }
@@ -210,27 +224,27 @@
 
 
   /* ── Métricas do patrimônio ───────────────────────────────────────────
-     Trocamos o gráfico (decorativo, sem escala nem eixo — não dava para ler
+     Trocamos o gráfico (decorativo, sem escala nem eixo, não dava para ler
      valor nenhum) e a conversão em R$ por três números acionáveis:
      · quanto dá para resgatar AGORA;
-     · quanto expira em 90 dias (a informação que evita perda — o regulamento
+     · quanto expira em 90 dias (a informação que evita perda, o regulamento
        prevê validade de 24 meses, então isso é dinheiro que some);
      · nível atual, que conecta com a régua de benefícios.                  */
   /* auto-fit em vez de 3 colunas fixas: a quebra tem que responder à largura
      da COLUNA, não à da janela. Numa janela de 800px a coluna do hero tem
-     ~270px — com 3 fixas cada métrica ficava com 85px e o rótulo virava
+     ~270px, com 3 fixas cada métrica ficava com 85px e o rótulo virava
      "Dispo/nível/p//resga/te". A media query de viewport não pegava isso. */
   .cc-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(148px,1fr));
               gap:10px; margin-top:22px; }
-  .cc-stat { background:rgba(244,246,238,.05); border:1px solid rgba(244,246,238,.12);
-             border-radius:14px; padding:12px 13px; min-width:0; }
+  .cc-stat { background:var(--bx-surface-2); border:1px solid var(--bx-line);
+             border-radius:var(--bx-r-md); padding:12px 13px; min-width:0; }
   .cc-stat-k { display:block; font-family:var(--font-mono); font-size:11.5px;
                letter-spacing:.04em; color:var(--fg-on-dark-muted); line-height:1.35;
                overflow-wrap:anywhere; }
   .cc-stat-v { display:block; margin-top:7px; font-family:var(--font-mono);
                font-size:19px; font-weight:700; color:var(--fg-on-dark); }
-  .cc-stat--warn { border-color:rgba(255,193,7,.32); background:rgba(255,193,7,.07); }
-  .cc-stat--warn .cc-stat-v { color:#FFD24A; }
+  .cc-stat--warn { border-color:rgba(122,90,0,.25); background:rgba(122,90,0,.08); }
+  .cc-stat--warn .cc-stat-v { color:var(--warn-text); }
   @media (max-width: 760px) {
     /* O auto-fit já quebra sozinho; aqui só garantimos que a última métrica
        ocupe a linha inteira quando sobrar sozinha, em vez de meia largura. */
@@ -240,94 +254,96 @@
 
   /* ── TEMA CLARO DOS CARDS ─────────────────────────────────────────────
      Os painéis eram pretos com texto neon. No claro o neon REPROVA
-     contraste (1,23:1 sobre #F4F4F0 — ilegível), então ele deixa de ser cor
-     de TEXTO e passa a ser só preenchimento de fundo/realce. O verde de
-     texto vira #2E6B00 (5,92:1) e a hierarquia volta para a tinta preta.
-     A assinatura brutalista continua: borda tinta grossa + sombra dura.   */
+     contraste (1,23:1 sobre superfície clara, ilegível), então ele deixa de
+     ser cor de TEXTO e passa a ser só preenchimento de fundo/realce, e a
+     hierarquia volta para a tinta preta. A moldura é a do tema Embarque
+     (assets/blaxx-embarque.css): contorno de 1px, canto macio, sombra
+     difusa. A borda tinta grossa + sombra dura do brutalismo saiu daqui de
+     propósito: era exatamente o que brigava com a folha compartilhada.   */
   .cc-hero,
   .cc-market,
   .cc-levels,
   .cc-transfer {
-    background: var(--white) !important;
-    color: var(--ink) !important;
-    border: 3px solid var(--ink);
-    box-shadow: 6px 6px 0 var(--ink);
+    background: var(--bx-surface);
+    color: var(--bx-ink);
+    border: 1px solid var(--bx-line);
+    box-shadow: var(--bx-sh);
   }
 
   /* ⚠️ Neon como TEXTO só sobrevive sobre painel ESCURO. `.cc-lime` nasceu no
      tema escuro e continuou neon nos painéis que viraram claros: em
-     `.cc-levels` o "Cartão →" ficava em 1,23:1 — invisível na prática.
-     Aqui a cor de link dos painéis claros passa a #2E6B00 (5,92:1).
-     O painel .cc-oppo NÃO entra: ele pinta com
-     gradiente escuro (rgb(7,9,11)) e o neon ali está correto — auditores
-     automáticos acusam 1,08 porque leem `background-color: transparent`
-     e sobem até o fundo claro da página. É falso positivo. */
+     `.cc-levels` o "Cartão →" ficava em 1,23:1, invisível na prática.
+     Nos painéis claros o link é tinta. O painel .cc-oppo continua preto e
+     ali o neon volta; auditores automáticos acusam 1,08 nele porque leem
+     `background-color: transparent` e sobem até o fundo claro da página.
+     É falso positivo. O parágrafo do .cc-oppo também precisa da cor "sobre
+     preto": a regra global pinta todo <p> de cinza, 2,6:1 sobre o preto. */
   .cc-hero .cc-lime, .cc-market .cc-lime,
-  .cc-levels .cc-lime, .cc-transfer .cc-lime { color: #2E6B00 !important; }
+  .cc-levels .cc-lime, .cc-transfer .cc-lime { color: var(--bx-ink) !important; }
+  .cc-oppo .cc-lime { color: var(--bx-neon); }
+  .cc-oppo p { color: var(--bx-ink-muted); }
   .cc-hero { padding: 26px 24px; }
 
   /* Rótulos e textos auxiliares que eram "on-dark" */
   .cc-hero .cc-eyebrow,
   .cc-market .cc-eyebrow,
   .cc-hero-sub,
-  .cc-stat-k { color: #5b6058 !important; }
+  .cc-stat-k { color: var(--bx-grey) !important; }
 
-  .cc-balance { color: var(--ink) !important; }
-  .cc-balance small { color: #5b6058 !important; }
+  .cc-balance { color: var(--bx-ink) !important; }
+  .cc-balance small { color: var(--bx-grey) !important; }
 
-  /* Selo de tendência: fundo neon sólido com texto preto (17,8:1) */
+  /* Selo de tendência: preenchimento neon sólido com texto preto (17,8:1) */
   .cc-trend {
-    background: var(--lime); border-color: var(--ink);
-    color: var(--ink); border-width: 2px;
+    background: var(--bx-neon); border: 0;
+    color: var(--bx-ink);
   }
   .cc-trend small { color: rgba(10,11,14,.72); }
 
-  /* Métricas */
+  /* Métricas: poço em superfície-2 com contorno fino */
   .cc-stat {
-    background: rgba(10,11,14,.035);
-    border: 2px solid rgba(10,11,14,.14);
+    background: var(--bx-surface-2);
+    border: 1px solid var(--bx-line);
   }
-  .cc-stat-v { color: var(--ink) !important; }
-  .cc-stat--warn { background: rgba(255,193,7,.14); border-color: rgba(138,101,0,.45); }
-  .cc-stat--warn .cc-stat-v { color: #8a6500 !important; }   /* 4,83:1 */
+  .cc-stat-v { color: var(--bx-ink) !important; }
+  .cc-stat--warn { background: rgba(122,90,0,.08); border-color: rgba(122,90,0,.25); }
+  .cc-stat--warn .cc-stat-v { color: var(--warn-text) !important; }   /* #7a5a00 · 6,1:1 */
 
-  /* Ações rápidas: contraste invertido — a primária fica neon, as demais
-     ganham borda tinta para não sumirem no card claro. */
-  .cc-q { background: var(--white); color: var(--ink); border: 2px solid var(--ink);
-          box-shadow: 3px 3px 0 var(--ink); }
-  .cc-q.primary { background: var(--lime); }
-  .cc-q:hover { box-shadow: 1px 1px 0 var(--ink); }
+  /* Ações rápidas: a primária fica neon, as demais em superfície com
+     contorno fino; o hover escurece a superfície em vez de deslocar. */
+  .cc-q { background: var(--bx-surface); color: var(--bx-ink); border: 1px solid var(--bx-line);
+          box-shadow: none; }
+  .cc-q.primary { background: var(--bx-neon); border-color: transparent; }
+  .cc-q:hover { background: var(--bx-surface-2); box-shadow: none; }
+  .cc-q.primary:hover { background: #4FE81F; }
 
-  /* Card preto → sombra neon. Nos painéis que continuam escuros a sombra dura
-     tinta é invisível (preto sobre preto): o relevo brutalista volta em neon.
-     Aqui o neon é sombra, não texto — a regra de contraste segue respeitada. */
+  /* Painel preto da campanha: o único escuro do miolo, no preto da marca,
+     como o painel de partidas da home. Sem moldura; a sombra é a difusa do
+     tema, não o relevo neon do brutalismo. */
   .cc-oppo {
-    border: 3px solid var(--ink);
-    box-shadow: 6px 6px 0 var(--lime);
+    border: 0;
+    box-shadow: var(--bx-sh);
   }
 
   /* Mercado e mapa */
-  .cc-market { border-radius: 24px; }
+  .cc-market { border-radius: var(--bx-r-xl); }
   .cc-market * { color: inherit; }
-    background: rgba(10,11,14,.05) !important;
-    border: 2px solid rgba(10,11,14,.14);
-  }
   /* Preços/valores em verde precisam do tom escuro */
   /* Neon como TEXTO reprova sobre claro (1,35:1). Todo verde de texto dentro
-     dos cards claros usa #2E6B00 (5,92:1). O neon segue só em preenchimento. */
+     dos cards claros usa o --pos do tema (#1f6b14). O neon segue só em preenchimento. */
   .cc-market .pos, .cc-money, .pos,
-  .cc-market span[class=""] { color: #2E6B00 !important; }
+  .cc-market span[class=""] { color: var(--pos) !important; }
   /* Exceção: quando o neon É o fundo, o texto volta a ser tinta. O selo de
-     taxa do card de parceiro entra aqui — ele é neon preenchido. */
+     taxa do card de parceiro entra aqui, ele é neon preenchido. */
   .cc-q.primary, .cc-q.primary *, .cc-trend, .cc-trend *,
-  .cc-exp .rate { color: var(--ink) !important; }
+  .cc-exp .rate { color: var(--bx-ink) !important; }
 
   @media (max-width: 980px) {
     .cc-grid, .cc-bottom { grid-template-columns:1fr; }
     .cc-hero-row { grid-template-columns:1fr; }
     .cc-exps { grid-template-columns:1fr; }
     /* Numa coluna só não há par para alinhar: solta a coluna fixa, senão os
-       cards da direita continuam pedindo a coluna 2 — que vira uma coluna
+       cards da direita continuam pedindo a coluna 2, que vira uma coluna
        IMPLÍCITA e parte a linha em duas (medido em 375px: 66px + 255px, com
        `grid-template-columns:1fr` valendo normalmente).
        Os seletores repetem o :first/:last-of-type de propósito: sem isso este
@@ -338,8 +354,7 @@
   }
 
   /* ── Espaçamento mobile do cabeçalho ──────────────────────────────────
-     Medido em 375px: o chip "SALDO AO VIVO" tinha gap 0 acima E abaixo —
-     colado no texto de cima e no card de baixo, sem respiro. No desktop o
+     Medido em 375px: o chip "SALDO AO VIVO" tinha gap 0 acima E abaixo,      colado no texto de cima e no card de baixo, sem respiro. No desktop o
      chip fica ao lado do título (por isso passava despercebido); ao empilhar
      no mobile, ele precisa do próprio ritmo vertical. */
   @media (max-width: 760px) {
@@ -387,43 +402,43 @@
               <div class="cc-eyebrow">Patrimônio em Rewards</div>
               <span class="cc-trend"><span id="cc-month">+0</span> <small>este mês</small></span>
             </div>
-            <div class="cc-balance"><span id="cc-balance">—</span><small>pts</small></div>
-            <div class="cc-hero-sub" id="cc-pending">—</div>
+            <div class="cc-balance"><span id="cc-balance">, </span><small>pts</small></div>
+            <div class="cc-hero-sub" id="cc-pending">, </div>
 
             <!-- Substitui o gráfico decorativo e a conversão em R$: três
                  números que o cliente usa para DECIDIR alguma coisa. -->
             <div class="cc-stats">
               <div class="cc-stat">
                 <span class="cc-stat-k">Disponível p/ resgate</span>
-                <strong class="cc-stat-v" id="cc-avail">—</strong>
+                <strong class="cc-stat-v" id="cc-avail">, </strong>
               </div>
               <div class="cc-stat cc-stat--warn">
                 <span class="cc-stat-k">Expiram em 90 dias</span>
-                <strong class="cc-stat-v" id="cc-expiring">—</strong>
+                <strong class="cc-stat-v" id="cc-expiring">, </strong>
               </div>
               <div class="cc-stat">
                 <span class="cc-stat-k">Nível atual</span>
-                <strong class="cc-stat-v" id="cc-tier-mini">—</strong>
+                <strong class="cc-stat-v" id="cc-tier-mini">, </strong>
               </div>
             </div>
           </div>
         </div>
         <div class="cc-quick">
-          <a href="comprar.html" class="cc-q primary"><i>🛒</i>Comprar</a>
-          <a href="enviar.html" class="cc-q"><i>✈</i>Transferir</a>
+          <a href="comprar.html" class="cc-q primary"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></i>Comprar</a>
+          <a href="enviar.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M20 4 3.5 10.8c-.8.3-.8 1.5.1 1.7l6.4 1.6 1.6 6.4c.2.9 1.4.9 1.7.1L20 4Z"/><path d="m20 4-9.9 10.1"/></svg></i>Transferir</a>
           <a href="resgates.html" class="cc-q"><i>⇄</i>Resgatar</a>
-          <a href="parceiros.html" class="cc-q"><i>🎁</i>Parceiros</a>
+          <a href="parceiros.html" class="cc-q"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></i>Parceiros</a>
         </div>
       </article>
 
-      <!-- OPORTUNIDADE — campanha REAL de /campaigns/.
+      <!-- OPORTUNIDADE, campanha REAL de /campaigns/.
            Era "LATAM PASS · Bônus 85% · +122.000 pontos" fixo no HTML, sem
            nenhuma fonte de dados e (desde a remoção dos selos) sem nada que o
            distinguisse do saldo real. Agora mostra a campanha ativa de maior
            recompensa; sem campanha ativa, o bloco não é exibido. -->
       <article class="cc-panel cc-oppo" id="cc-oppo" hidden>
         <div class="cc-eyebrow" style="color:var(--lime)">Campanha em destaque</div>
-        <h2 id="cc-oppo-nome">—</h2>
+        <h2 id="cc-oppo-nome">, </h2>
         <p id="cc-oppo-desc" class="muted"></p>
         <p id="cc-oppo-premio" hidden>Recompensa: <b class="cc-lime" style="font-size:20px"></b></p>
         <a href="campanhas.html" class="btn btn--primary" style="margin-top:14px">Ver campanha</a>
@@ -442,7 +457,7 @@
       <!-- NÍVEIS (REAL) -->
       <article class="cc-panel cc-levels">
         <div class="cc-section-head"><h3>Níveis Blaxx</h3><a href="cartao.html" class="cc-lime">Cartão →</a></div>
-        <div class="cc-level-card" id="cc-level-card"><h2 id="cc-tier">—</h2><small id="cc-tier-sub">Programa de pontos</small></div>
+        <div class="cc-level-card" id="cc-level-card"><h2 id="cc-tier">, </h2><small id="cc-tier-sub">Programa de pontos</small></div>
         <div class="cc-prog-head"><small id="cc-next-label">Progresso</small><b id="cc-progress-pct">0%</b></div>
         <div class="cc-progress"><span id="cc-progress-fill"></span></div>
         <p class="muted" id="cc-next-hint" style="margin-top:10px;font-size:13px"></p>
@@ -452,7 +467,7 @@
       <article class="cc-panel cc-transfer">
         <h3 style="margin:0">Transferir pontos</h3>
         <p class="muted" style="margin:6px 0 0">Envie pontos a outro cliente Blaxx, sem taxa.</p>
-        <div class="cc-tbal"><small>Saldo disponível</small><div class="cc-tamount"><span id="cc-tbal">—</span> <span>pts</span></div></div>
+        <div class="cc-tbal"><small>Saldo disponível</small><div class="cc-tamount"><span id="cc-tbal">, </span> <span>pts</span></div></div>
         <a href="enviar.html" class="btn btn--primary btn--block">Enviar agora →</a>
       </article>
 
@@ -476,7 +491,7 @@
 
   </div>
 
-  <p class="cc-disclaimer">Pontos são créditos promocionais — não são moeda, depósito ou investimento.</p>
+  <p class="cc-disclaimer">Pontos são créditos promocionais, não são moeda, depósito ou investimento.</p>
 </main>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-nav-user.js"></script>
@@ -498,31 +513,31 @@
   }
 
   function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
-  // Nomes/regras vêm da API e são interpolados em innerHTML — escapar aqui
+  // Nomes/regras vêm da API e são interpolados em innerHTML, escapar aqui
   // fecha a porta para HTML vindo do cadastro de parceiro.
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => (
     {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function renderWallet(w, txs){
-    setText('cc-balance', w ? fmt(w.balance_pts) : '—');
-    setText('cc-tbal', w ? fmt(w.balance_pts) : '—');
+    setText('cc-balance', w ? fmt(w.balance_pts) : ', ');
+    setText('cc-tbal', w ? fmt(w.balance_pts) : ', ');
     const pend = w ? Number(w.pending_pts||0) : 0;
     setText('cc-pending', pend>0 ? fmt(pend)+' pts em processamento' : 'Nenhum ponto pendente');
     const monthIn = (txs||[]).filter(t=>Number(t.amount_pts)>0).reduce((s,t)=>s+Number(t.amount_pts),0);
     setText('cc-month', '+'+fmt(monthIn));
     // Disponível = saldo menos o que ainda está em processamento.
     const disp = w ? Math.max(0, Number(w.balance_pts||0) - pend) : 0;
-    setText('cc-avail', w ? fmt(disp)+' pts' : '—');
+    setText('cc-avail', w ? fmt(disp)+' pts' : ', ');
     // Expirando: o backend ainda não expõe esse corte; enquanto não expuser,
     // mostramos travessão em vez de inventar número.
-    setText('cc-expiring', w && w.expiring_90d != null ? fmt(w.expiring_90d)+' pts' : '—');
+    setText('cc-expiring', w && w.expiring_90d != null ? fmt(w.expiring_90d)+' pts' : ', ');
   }
 
   function renderCard(c){
     if (!c){ return; }
     const t = c.tier || {};
-    setText('cc-tier', (t.label||'—').toUpperCase());
-    setText('cc-tier-mini', (t.label||'—').toUpperCase());
+    setText('cc-tier', (t.label||', ').toUpperCase());
+    setText('cc-tier-mini', (t.label||', ').toUpperCase());
     const card = document.getElementById('cc-level-card');
     if (card && t.color){ card.style.background = t.color; card.style.color = t.text_color || '#fff'; }
     setText('cc-tier-sub', c.lifetime_points>0 ? fmt(c.lifetime_points)+' pts acumulados' : 'Programa de pontos');
@@ -542,7 +557,7 @@
     const list = (items||[]).slice(0,3);
     if (!list.length){ wrap.innerHTML = '<p class="muted">Sem parceiros no momento.</p>'; return; }
     wrap.innerHTML = list.map(p=>{
-      // O selo só existe se houver regra/categoria — um selo neon vazio vira
+      // O selo só existe se houver regra/categoria, um selo neon vazio vira
       // um retângulo verde sem significado.
       const rule = p.accrual_rule || p.category || '';
       return `
@@ -605,7 +620,7 @@
       {id:'pulse',name:'Pulse Eletro',logo_emoji:'📱',accrual_rule:'Até 4 pts/R$',category:'Tecnologia'}]);
     const _demo = [
       {id:'1',name:'Dobro de pontos em viagens',description:'Até 30/06 · parceiros selecionados',reward_pts:2000},
-      {id:'2',name:'Cashback turbo no varejo',description:'Resgate via PIX em 6 meses',reward_pts:5000}];
+      {id:'2',name:'Cashback turbo no varejo',description:'Válido por 6 meses',reward_pts:5000}];
     renderCampaigns(_demo); renderOportunidade(_demo);
     renderActivity([
       {amount_pts:1240,description:'Compra · Mercado Vivo',type:'compra'},

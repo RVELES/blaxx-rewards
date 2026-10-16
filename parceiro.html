@@ -5,62 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Painel do Parceiro · BlaXx</title>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  /* Paleta Neo-Brutal: papel, tinta, neon. Contraste medido, não estimado:
-     tinta #0A0B0E sobre papel #E8E6DD = 15,8:1; neon é PREENCHIMENTO, nunca
-     cor de texto sobre claro (1,23:1 seria invisível). */
-  :root { --p-ink:#0A0B0E; --p-paper:#E8E6DD; --p-card:#F4F4F0; --p-neon:#59FD27;
-          --p-muted:#5F665E; --p-line:#0A0B0E; --p-amber:#9A6B00; }
+  /* Tema "Embarque": os tokens locais (--p-*) só apelidam os do tema, para o
+     resto da folha não repetir var(--bx-...) em cada linha. Contraste medido
+     no tema: tinta #0A0B0E sobre o chão #E4E1D9 = 15,6:1; cinza #555860 sobre
+     o chão = 5,45:1 e sobre o cartão = 6,76:1 (AA para texto corrido). Neon é
+     PREENCHIMENTO, nunca cor de texto sobre claro (1,23:1 seria invisível). */
+  :root { --p-ink:var(--bx-ink); --p-paper:var(--bx-bg); --p-card:var(--bx-surface); --p-neon:var(--bx-neon);
+          --p-muted:var(--bx-grey); --p-line:var(--bx-line); --p-amber:var(--warn-text); }
   body { background: var(--p-paper); color: var(--p-ink); }
   .shell { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
-  .brutal { background: var(--p-card); border: 2.5px solid var(--p-line);
-            border-radius: 4px; box-shadow: 5px 5px 0 var(--p-ink); }
+  /* O nome ficou (está no HTML); o desenho é o cartão do design: contorno
+     fino, canto 18px, sombra macia. */
+  .brutal { background: var(--p-card); border: 1px solid var(--p-line);
+            border-radius: var(--bx-r-lg); box-shadow: var(--bx-sh); }
   .grid { display: grid; gap: 14px; }
   .grid.kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
   .kpi { padding: 16px 18px; }
-  .kpi .label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
-                color: var(--p-muted); font-weight: 700; }
-  .kpi .value { font-size: 30px; font-weight: 800; margin-top: 6px; color: var(--p-ink); }
+  .kpi .label { font-family: var(--bx-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+                color: var(--p-muted); font-weight: 400; }
+  .kpi .value { font-size: 30px; font-weight: 800; letter-spacing: -.02em; margin-top: 6px; color: var(--p-ink); }
   .kpi .sub { font-size: 12px; color: var(--p-muted); margin-top: 4px; }
-  .kpi.dark { background: var(--p-ink); border-color: var(--p-ink);
-              box-shadow: 5px 5px 0 rgba(10,11,14,.35); }
-  .kpi.dark .label, .kpi.dark .sub { color: #9DA39A; }
+  .kpi.dark { background: var(--p-ink); border-color: var(--p-ink); box-shadow: none; }
+  .kpi.dark .label, .kpi.dark .sub { color: var(--bx-ink-muted); }
   .kpi.dark .value { color: var(--p-neon); }
   table.tbl { width: 100%; border-collapse: collapse; }
-  .tbl th { text-align: left; font-size: 11px; letter-spacing: .06em;
-            text-transform: uppercase; color: var(--p-muted); padding: 10px 14px;
-            border-bottom: 2px solid var(--p-line); }
+  .tbl th { text-align: left; font-family: var(--bx-mono); font-size: 11px; letter-spacing: .08em;
+            text-transform: uppercase; font-weight: 400; color: var(--p-muted); padding: 10px 14px;
+            border-bottom: 1px solid var(--p-line); }
   .tbl td { padding: 11px 14px; font-size: 14px; color: var(--p-ink);
-            border-bottom: 1px solid #DDDCD3; }
+            border-bottom: 1px solid var(--p-line); }
   .tbl tr:last-child td { border-bottom: 0; }
   .tbl td.num, .tbl th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .bar { display: flex; align-items: flex-end; gap: 3px; height: 90px; padding: 0 2px; }
-  .bar i { flex: 1; background: var(--p-neon); border: 1px solid var(--p-ink);
+  /* .bar aqui é o histograma; no tema, .bar é a barra de progresso (pílula
+     com contorno). Zera o que vaza dela para o gráfico não virar pílula. */
+  .bar { display: flex; align-items: flex-end; gap: 3px; height: 90px; padding: 0 2px;
+         background: transparent; border: 0; border-radius: 0; }
+  .bar i { flex: 1; background: var(--p-neon); border: 0; border-radius: 2px 2px 0 0;
            min-height: 2px; display: block; }
-  .bar i.zero { background: #DDDCD3; }
+  .bar i.zero { background: var(--p-line); }
   .sec { margin-top: 26px; }
   .sec h2 { font-size: 17px; margin: 0 0 12px; }
   .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  .pill { display: inline-flex; padding: 3px 10px; border-radius: 999px;
-          font-size: 11px; font-weight: 700; border: 1.5px solid var(--p-ink); }
-  .pill.on { background: var(--p-neon); color: var(--p-ink); }
-  .pill.off { background: #DDDCD3; color: var(--p-muted); }
-  .btn { border: 2.5px solid var(--p-ink); border-radius: 4px; background: var(--p-card);
-         color: var(--p-ink); font-weight: 700; font-size: 14px; padding: 10px 16px;
-         cursor: pointer; box-shadow: 3px 3px 0 var(--p-ink); }
-  .btn.primary { background: var(--p-ink); color: var(--p-neon); }
-  .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
-  .field { width: 100%; padding: 12px 14px; border: 2px solid var(--p-ink);
-           border-radius: 4px; background: #fff; font-size: 15px; color: var(--p-ink); }
-  .login-wrap { max-width: 400px; margin: 8vh auto; }
-  .warn { background: #FFF4DE; border: 2px solid var(--p-amber); color: var(--p-amber);
-          padding: 12px 14px; border-radius: 4px; font-size: 13px; font-weight: 600; }
-  .keybox { font-family: var(--font-mono, monospace); font-size: 13px;
+  .pill { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-family: var(--bx-mono);
+          font-size: 11px; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--p-line); }
+  .pill.on { background: var(--p-neon); color: var(--p-ink); border-color: transparent; }
+  .pill.off { background: var(--bx-surface-2); color: var(--p-muted); }
+  /* No celular a folha base deixa os botões inline-flex, e aí text-align
+     não centraliza o rótulo do "Entrar" (largura 100%): centra pelo flex. */
+  .btn { border: 1px solid var(--p-line); border-radius: var(--bx-r-xxs); background: var(--p-card);
+         color: var(--p-ink); font-family: var(--bx-sans); font-weight: 700; font-size: 14px; padding: 10px 16px;
+         cursor: pointer; box-shadow: none; justify-content: center; }
+  .btn:hover { background: var(--bx-surface-2); }
+  .btn.primary { background: var(--p-neon); color: var(--p-ink); border-color: transparent; }
+  .btn.primary:hover { background: #4FE81F; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .field { width: 100%; padding: 12px 14px; border: 1px solid var(--p-line);
+           border-radius: var(--bx-r-sm); background: var(--p-card); font-size: 15px; color: var(--p-ink); }
+  .login-wrap { max-width: 400px; margin: 8vh auto; padding: 0 16px; }
+  /* #F7EFD6 é o --warn da família A em assets/blaxx-embarque.css, que fica
+     sombreado pela redeclaração de --warn (cor de texto) no mesmo :root;
+     enquanto isso não é corrigido lá, o valor vai literal aqui. */
+  .warn { background: #F7EFD6; border: 1px solid rgba(122,90,0,.35); color: var(--p-amber);
+          padding: 12px 14px; border-radius: var(--bx-r-sm); font-size: 13px; font-weight: 600; }
+  .keybox { font-family: var(--bx-mono); font-size: 13px;
             word-break: break-all; background: var(--p-ink); color: var(--p-neon);
-            padding: 14px; border-radius: 4px; }
+            padding: 14px; border-radius: var(--bx-r-sm); }
   .muted { color: var(--p-muted); font-size: 13px; }
   @media (max-width: 640px) {
-    .shell { padding: 18px 14px 48px; }
+    .shell { padding: 18px 16px 48px; }
     .kpi .value { font-size: 24px; }
     .tbl th:nth-child(2), .tbl td:nth-child(2) { display: none; }
   }
@@ -264,7 +278,7 @@
           + '<td class="num">' + brl(x.amount_brl) + '</td>'
           + '<td class="num">' + num(x.points_awarded) + '</td>'
           + '<td class="num">' + brl(x.bill_brl) + '</td></tr>';
-      }).join('') : '<tr><td colspan="5" style="padding:28px;text-align:center;color:#5F665E;">'
+      }).join('') : '<tr><td colspan="5" style="padding:28px;text-align:center;color:var(--p-muted);">'
                   + 'Nenhuma venda pontuada ainda.</td></tr>';
       return api('/b2b/panel/invoices');
     }).then(function(d){
@@ -285,12 +299,12 @@
         return '<tr><td><code>' + esc(f.number) + '</code></td>'
           + '<td>' + esc(per) + '</td>'
           + '<td class="num">' + num(f.points_issued)
-            + (f.points_reversed ? ' <span style="color:#9A6B00;">-' + num(f.points_reversed) + '</span>' : '')
+            + (f.points_reversed ? ' <span style="color:var(--p-amber);">-' + num(f.points_reversed) + '</span>' : '')
           + '</td>'
           + '<td class="num">' + brl(f.amount_brl) + '</td>'
           + '<td class="num"><span class="pill ' + (f.status==='open'?'off':'on') + '">'
             + esc(rotulo[f.status] || f.status) + '</span></td></tr>';
-      }).join('') : '<tr><td colspan="5" style="padding:24px;text-align:center;color:#5F665E;">'
+      }).join('') : '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--p-muted);">'
                   + 'Nenhuma fatura fechada ainda.</td></tr>';
       return api('/b2b/panel/keys').catch(function(){ return null; });
     }).then(function(d){
@@ -325,5 +339,9 @@
   if (tok()) carregar(); else mostrarLogin();
 })();
 </script>
+<!-- rodapé-recibo do tema Embarque, montado por assets/blaxx-nav.js -->
+<footer class="footer"></footer>
+<script src="assets/blaxx-nav-user.js"></script>
+<script src="assets/blaxx-nav.js"></script>
 </body>
 </html>

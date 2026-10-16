@@ -20,7 +20,8 @@
     help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.2 1.8-2.2 3.3"/><circle cx="12" cy="16.6" r="0.6" fill="currentColor" stroke="none"/></svg>',
     bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V10a6 6 0 0 1 12 0v6l1.5 2.2H4.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>',
     menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
-    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>'
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+    logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9"/><path d="M10 12h11m0 0-3.5-3.5M21 12l-3.5 3.5"/></svg>'
   };
 
   // canais sociais oficiais
@@ -45,9 +46,10 @@
     ['Segurança', '#', 'shield', 'seguranca'],
     ['Ajuda', '#', 'help', 'ajuda'],
   ];
+  const LOGOUT = ['Sair', 'login.html', 'logout', 'sair'];
   const TOPNAV = [
     ['Início', 'index.html', 'inicio'],
-    ['Como funciona', '#', 'comofunciona'],
+    ['Como funciona', 'como-funciona.html', 'comofunciona'],
     ['Parceiros', 'parceiros.html', 'parceiros'],
     ['Resgates', 'resgates.html', 'resgates'],
     ['Comprar pontos', 'comprar.html', 'comprar'],
@@ -70,14 +72,14 @@
 
   const screen = document.body.getAttribute('data-screen') || 'inicio';
 
-  // Marca OFICIAL — vetor traçado a partir do PNG do pacote.
+  // Marca OFICIAL, vetor traçado a partir do PNG do pacote.
   // Antes daqui: um B redesenhado à mão + wordmark em TEXTO com font-family
-  // Inter (que nem é a fonte da marca) — a "logo" mudava de forma conforme a
+  // Inter (que nem é a fonte da marca), a "logo" mudava de forma conforme a
   // fonte que o navegador conseguisse carregar.
   //
   // Por que não usamos o SVG de BlaXx_Vetores_Editaveis direto: os paths dele
   // não batem com a arte do PNG (hastes mais grossas, "a" e "l" redesenhados,
-  // linha do REWARDS deslocada) — 1,58% dos pixels divergiam do original.
+  // linha do REWARDS deslocada), 1,58% dos pixels divergiam do original.
   // O arquivo aqui foi vetorizado do próprio PNG com potrace sobre a cobertura
   // anti-aliased: 0,03% de divergência, ~50x mais fiel.
   // Reproduzir: docs/operacao/scripts/vetorizar_marca.py
@@ -86,7 +88,8 @@
   // #0A0B0E da marca sem plantar um #000000 por cima) e verde do pacote
   // (#9EF107) normalizado para o neon oficial #59FD27. Variante com o verde
   // original: assets/marca/blaxx-wordmark-verde-do-pack.svg
-  // Exige fundo ESCURO: "Bla" é branco. Em superfície clara, use o menu preto.
+  // Exige fundo ESCURO: "Bla" é branco. A barra do tema "Embarque" é PRETA
+  // (15/10), então é esta mesmo.
   const brandMarkup = () => `
     <img class="brand__img" src="assets/marca/blaxx-wordmark.svg"
          alt="BlaXx Rewards"
@@ -99,15 +102,26 @@
       ${badge ? `<span class="badge">${badge}</span>` : ''}
     </a>`;
 
-  const sidebarInner = `
+  // Sessão real, lida pelo mesmo módulo que preenche a topbar. Antes o cartão
+  // trazia um nome fixo ("Ricardo Veles · 32.480 pts") e a sidebar inteira
+  // aparecia para VISITANTE em páginas públicas (como-funciona, faq, termos),
+  // um usuário inventado logado ao lado do texto. Sem sessão não há sidebar.
+  const sessao = (window.BlaxxNavUser && window.BlaxxNavUser.usuario) ? window.BlaxxNavUser.usuario() : null;
+  const nomeSessao = sessao && window.BlaxxNavUser.primeiroNome ? window.BlaxxNavUser.primeiroNome(sessao) : '';
+  const inicialSessao = sessao && window.BlaxxNavUser.inicial ? window.BlaxxNavUser.inicial(sessao) : '';
+  const esc = (t) => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const profileCard = sessao ? `
     <div class="profile-card">
-      <div class="av">R</div>
+      <div class="av">${esc(inicialSessao)}</div>
       <div>
-        <div class="profile-card__name">Ricardo Veles</div>
-        <div class="profile-card__meta">PLANO PLUS · <b>32.480 pts</b></div>
+        <div class="profile-card__name">${esc(nomeSessao)}</div>
+        <div class="profile-card__meta"><a href="carteira.html">Ver carteira →</a></div>
       </div>
-    </div>
+    </div>` : '';
+  const sidebarInner = `
+    ${profileCard}
     ${PRIMARY.map(n => navItem(...n)).join('')}
+    ${navItem(...LOGOUT)}
     <div class="nav-divider"></div>
     ${SECONDARY.map(n => navItem(...n)).join('')}
   `;
@@ -124,30 +138,33 @@
       ${TOPNAV.map(([l, h, k]) => `<a href="${h}" class="${k === screen ? 'is-active' : ''}">${l}</a>`).join('')}
     </nav>
     <div class="topbar__right">
-      <a class="icon-btn" href="central-notificacoes.html" aria-label="Notificações">${I.bell}<span class="dot"></span></a>
       <a class="user-pill" href="perfil.html"><span class="av"></span><span class="t"></span></a>
     </div>`;
   // Avatar e nome ficam VAZIOS de propósito: quem preenche é o
   // assets/blaxx-nav-user.js, a partir da sessão real. Antes vinha
-  // "R"/"Olá, Ricardo" fixo no HTML — nome de outra pessoa aparecendo para
+  // "R"/"Olá, Ricardo" fixo no HTML, nome de outra pessoa aparecendo para
   // todo usuário logado, e um piscar de dado inventado antes do JS corrigir.
 
   // ---- shell ----
   const main = document.querySelector('main');
   const shell = document.createElement('div');
   shell.className = 'shell';
-  const aside = document.createElement('aside');
-  aside.className = 'sidebar';
-  aside.innerHTML = `<div class="sidebar__sticky">${sidebarInner}</div>`;
+  const aside = sessao ? document.createElement('aside') : null;
+  if (aside) {
+    aside.className = 'sidebar';
+    aside.innerHTML = `<div class="sidebar__sticky">${sidebarInner}</div>`;
+  } else {
+    shell.classList.add('shell--sem-sidebar');
+  }
   document.body.insertBefore(topbar, document.body.firstChild);
-  // A topbar nasce aqui, depois do DOMContentLoaded do módulo — por isso a
+  // A topbar nasce aqui, depois do DOMContentLoaded do módulo, por isso a
   // chamada explícita em vez de esperar o auto-init dele.
   if (window.BlaxxNavUser) window.BlaxxNavUser.aplicar();
   // A topbar acabou de nascer; o BlaxxNav marca o lado da gaveta (esquerda
   // logado, direita visitante) e reescreve os destinos que sairiam do app.
   if (window.BlaxxNav) window.BlaxxNav.iniciar();
   main.parentNode.insertBefore(shell, main);
-  shell.appendChild(aside);
+  if (aside) shell.appendChild(aside);
   shell.appendChild(main);
 
   // ---- site footer ----
@@ -162,7 +179,7 @@
     ]],
     // Informação e legal: tudo PÚBLICO, não manda ninguém para a área logada.
     // Os 8 links apontavam para '#' (mortos). Agora vão para as páginas que
-    // existem e não pedem sessão — conferido uma a uma. "Abrir chamado" saiu
+    // existem e não pedem sessão, conferido uma a uma. "Abrir chamado" saiu
     // da lista: é a única que exige login, então não cabe num bloco público
     // (quem não tem conta cairia numa tela de sessão sem entender por quê);
     // o caminho para ela é a própria Central de ajuda.
@@ -207,13 +224,31 @@
   scrim.className = 'drawer-scrim';
   const drawer = document.createElement('div');
   drawer.className = 'drawer';
-  drawer.innerHTML = sidebarInner;
+  drawer.innerHTML = sessao ? sidebarInner : [
+    ['Comprar pontos', 'comprar-pontos.html', 'coins', 'comprar'],
+    ['Parceiros', 'parceiros.html', 'partners', 'parceiros'],
+    ['Como funciona', 'como-funciona.html', 'help', 'comofunciona'],
+    ['Central de ajuda', 'central-ajuda.html', 'help', 'ajuda'],
+    ['Entrar', 'login.html', 'user', 'entrar'],
+    ['Criar conta', 'cadastro.html', 'user', 'cadastro'],
+  ].map(n => navItem(...n)).join('');
   document.body.appendChild(scrim);
   document.body.appendChild(drawer);
   const mb = document.getElementById('menuBtn');
   const close = () => { drawer.classList.remove('open'); scrim.classList.remove('open'); };
   if (mb) mb.addEventListener('click', () => { drawer.classList.add('open'); scrim.classList.add('open'); });
   scrim.addEventListener('click', close);
+
+  // ---- Sair: limpa a sessão local antes de voltar pro login ----
+  document.querySelectorAll('a[href="login.html"]').forEach(a => {
+    if ((a.textContent || '').trim().toLowerCase() !== 'sair') return;
+    a.addEventListener('click', () => {
+      try {
+        Object.keys(localStorage).forEach(k => { if (k.indexOf('blaxx_') === 0) localStorage.removeItem(k); });
+        Object.keys(sessionStorage).forEach(k => { if (k.indexOf('blaxx_') === 0) sessionStorage.removeItem(k); });
+      } catch (e) {}
+    });
+  });
 
   // ---- animate progress bars in on load ----
   requestAnimationFrame(() => {

@@ -6,18 +6,22 @@
 <title>BlaXx · Redefinir senha</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e vence a cascata. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   body { background: var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
   /* Barra preta: a marca oficial tem "Bla" BRANCO e não sobrevive sobre o
-     papel — medido aqui: 1,25:1 no "Bla" e 1,08:1 no "Xx", ou seja, a logo
+     papel, medido aqui: 1,25:1 no "Bla" e 1,08:1 no "Xx", ou seja, a logo
      inteira era invisível nesta tela. O link auxiliar também estava em neon
-     sobre claro (1,08:1). Sobre preto, ambos passam com folga. */
+     sobre claro (1,08:1). Sobre preto, ambos passam com folga.
+     No tema Embarque esta barra faz o papel da barra utilitária (.bx-util):
+     preta, texto no cinza da barra, sem a borda grossa do brutalismo. */
   .auth-top { display: flex; align-items: center; justify-content: space-between;
               gap: 16px; flex-wrap: wrap; padding: 18px 28px;
-              background: var(--ink); border-bottom: 4px solid var(--ink); }
+              background: var(--bx-ink); border-bottom: 0; }
   .auth-top img { height: 30px; width: auto; display: block; }
-  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: #cfd2cb; }
-  .auth-top a.alt b { color: var(--lime); }   /* neon sobre preto: 14,5:1 */
+  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: var(--bx-bar-fg); }
+  .auth-top a.alt b { color: var(--bx-neon); }   /* neon sobre preto: 14,5:1 */
   .auth-wrap { flex: 1; display: grid; place-items: center; padding: 24px; }
   .auth { width: 100%; max-width: 420px; padding: 36px; animation: rise .5s var(--ease-out) both; }
   .auth h1 { font-family: var(--font-display); font-weight: 900; font-size: 28px; letter-spacing: -0.02em; margin: 0 0 4px; }
@@ -25,9 +29,12 @@
   .f { margin-bottom: 16px; }
   .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
   .f input { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 13px 14px; font-family: var(--font-body); font-size: 14.5px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
-  .f input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  /* Foco como na folha do tema: contorno tinta + anel neon translúcido. */
+  .f input:focus { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
   .msg { font-size: 13px; padding: 11px 13px; border-radius: var(--r-sm); margin-bottom: 14px; }
-  .msg.ok { background: var(--lime-12); border: 1px solid var(--lime-40); color: var(--lime-deep); }
+  /* Verde escuro legível sobre tinte claro (--ok/--ok-text da folha do tema):
+     #5AB800 como cor de texto dava 2,3:1 e reprovava AA. */
+  .msg.ok { background: var(--ok); border: 1px solid var(--bx-line); color: var(--ok-text); }
   .msg.err { background: rgba(224,72,61,.08); border: 1px solid rgba(224,72,61,.3); color: #c0392b; }
   .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
   .auth-foot a { text-decoration: underline; }
@@ -75,7 +82,7 @@
     var msg = $('msg'), btn = $('btnReset');
     function show(type, text){ msg.className = 'msg ' + type; msg.textContent = text; msg.style.display = 'block'; }
 
-    // token vem na query (?token=) — enviado por e-mail.
+    // token vem na query (?token=), enviado por e-mail.
     var params = new URLSearchParams(location.search);
     var token = params.get('token') || '';
     if (!token){

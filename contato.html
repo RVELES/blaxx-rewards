@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Contato comercial | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,7 +42,7 @@
 <main class="shell">
 <div class="page-head">
     <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> <a href="venda-pontos.html">Vender pontos</a><span class="sep">/</span> Contato</div>
-    <h1>Vamos falar de <span style="color:#2E6B00;">parceria</span>.</h1>
+    <h1>Vamos falar de <span style="background:var(--bx-neon);color:var(--bx-ink);padding:0 .09em;-webkit-box-decoration-break:clone;box-decoration-break:clone;">parceria</span>.</h1>
     <p class="lead" style="max-width:60ch;margin-top:14px;">Conte sobre seu negócio. Resposta em até 1 dia útil com proposta sob medida.</p>
 </div>
 
@@ -79,8 +79,8 @@
                     <select>
                         <option>Selecione</option>
                         <option>Até R$ 5 mil</option>
-                        <option>R$ 5 mil — R$ 50 mil</option>
-                        <option>R$ 50 mil — R$ 500 mil</option>
+                        <option>R$ 5 mil a R$ 50 mil</option>
+                        <option>R$ 50 mil a R$ 500 mil</option>
                         <option>Acima de R$ 500 mil</option>
                     </select>
                 </div>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="checkbox-row">
                     <input type="checkbox" id="lgpd" checked>
-                    <label for="lgpd">Concordo com o tratamento dos meus dados conforme a <a href="termos.html" style="color:var(--ink);font-weight:700;">política de privacidade</a>.</label>
+                    <label for="lgpd">Concordo com o tratamento dos meus dados conforme a <a href="privacidade.html" style="color:var(--ink);font-weight:700;">política de privacidade</a>.</label>
                 </div>
                 <button class="button full lg" id="btnContato" type="button">Enviar pedido via WhatsApp →</button>
             </form>
@@ -126,7 +126,7 @@
             <p style="margin:0;font-size:14px;">Até 1 dia útil para a primeira devolutiva. Reuniões agendadas em até 3 dias úteis.</p>
 
             <div class="alert success mt-4">
-                <div class="alert-icon">✓</div>
+                <div class="alert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
                 <div>
                     <h4>Atendimento dedicado</h4>
                     <p>Você terá um ponto único de contato para todo o relacionamento.</p>
@@ -184,7 +184,9 @@
     </div>
 </footer>
 <style>
-  [data-link="venda-pontos"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
+  /* Item ativo no tema "Embarque": pílula preta com texto claro (como
+     .links a[aria-current] em assets/blaxx-embarque.css), não neon. */
+  [data-link="venda-pontos"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
   [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
   [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
 </style>

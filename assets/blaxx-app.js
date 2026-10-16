@@ -53,8 +53,9 @@
 
   function notify(msg, kind) {
     kind = kind || 'info';
-    var bg = { ok: '#efffe6', err: '#ffede8', warn: '#fff7df', info: '#e8f3ff' }[kind];
-    var color = { ok: '#2d651b', err: '#a83417', warn: '#8a6500', info: '#1c4f87' }[kind];
+    // tokens do tema Embarque (assets/blaxx-embarque.css), não literais da paleta antiga
+    var bg = { ok: 'var(--ok,#E4F5DA)', err: 'var(--danger,#F6DFD6)', warn: 'var(--warn,#F7EFD6)', info: 'var(--info,#DCE8F3)' }[kind];
+    var color = { ok: 'var(--ok-text,#1f6b14)', err: 'var(--danger-text,#9a2f15)', warn: 'var(--warn-text,#7a5a00)', info: 'var(--info-text,#1b4a80)' }[kind];
     var el = document.createElement('div');
     // A11y: erros usam role=alert (assertivo, interrompe leitor de tela);
     // outros usam role=status (polite, espera o leitor terminar).
@@ -99,7 +100,7 @@
   // Marcador de build: este projeto já perdeu horas com o navegador servindo
   // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
   // hora se o que está rodando é o arquivo do disco.
-  window.BLAXX_APP_BUILD = 'b2b-religado-2026-09-02';
+  window.BLAXX_APP_BUILD = 'embarque-2026-10-14';
 
   var STORE = {
     token: function () {
@@ -185,12 +186,12 @@
     bar.setAttribute('role', 'status');
     bar.setAttribute('aria-live', 'polite');
     bar.style.cssText =
-      'position:fixed;top:0;left:0;right:0;z-index:9998;background:#fff7df;color:#8a6500;' +
-      'padding:10px 16px;font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:600;' +
-      'text-align:center;border-bottom:1px solid #f0c850;box-shadow:0 2px 6px rgba(0,0,0,.08);';
+      'position:fixed;top:0;left:0;right:0;z-index:9998;background:var(--warn,#F7EFD6);color:var(--warn-text,#7a5a00);' +
+      'padding:10px 16px;font-family:var(--bx-sans,system-ui,sans-serif);font-size:13px;font-weight:600;' +
+      'text-align:center;border-bottom:1px solid var(--bx-line,#D9D6CE);box-shadow:0 2px 6px rgba(0,0,0,.08);';
     bar.innerHTML =
       '<span id="bx-offline-msg">⚠ Conexao instavel com o servidor. Tentando reconectar…</span> ' +
-      '<button id="bx-offline-retry" style="margin-left:12px;background:#8a6500;color:#fff;border:0;' +
+      '<button id="bx-offline-retry" style="margin-left:12px;background:var(--warn-text,#7a5a00);color:#fff;border:0;' +
       'padding:4px 12px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;">' +
       'Verificar agora</button>';
     document.body.appendChild(bar);
@@ -1729,7 +1730,6 @@
         '<div><span class="k">Para</span><span class="v">' + p.to + '</span></div>' +
         '<div><span class="k">Pontos</span><span class="v" style="font-size:20px;font-weight:700;">' + fmt(p.amount_pts) + ' pts</span></div>' +
         (p.message ? '<div><span class="k">Mensagem</span><span class="v">' + p.message + '</span></div>' : '') +
-        '<div><span class="k">Taxa</span><span class="v" style="color:var(--ok-text);">Grátis</span></div>' +
       '</div>' +
       '<div class="alert warn mt-2"><div class="alert-icon">!</div><div><p>Pontos não podem ser cancelados após confirmação.</p></div></div>' +
       '<div style="display:flex;gap:8px;margin-top:14px;">' +

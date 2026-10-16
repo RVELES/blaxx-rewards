@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Você recebeu pontos | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,13 +42,13 @@
 <main class="shell">
 <section class="section">
     <div class="card center" style="padding:56px 32px;max-width:640px;margin:40px auto;">
-        <div class="icon-badge">★</div>
+        <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></div>
         <span class="kicker" style="margin:0 auto;background:var(--lime-soft);color:var(--ink);border-color:var(--lime);">Pontos a receber</span>
         <h1 style="font-size:32px;margin-top:14px;">Mariana, Lucas te enviou 2.000 pts!</h1>
         <p class="lead" style="max-width:50ch;margin:8px auto 22px;">"Para celebrar seu aniversário 🎉"</p>
 
         <div class="alert success" style="text-align:left;max-width:420px;margin:0 auto 22px;">
-            <div class="alert-icon">✓</div>
+            <div class="alert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
             <div>
                 <h4>Pronto para receber</h4>
                 <p>Faça login para ativar os pontos na sua carteira.</p>
@@ -65,9 +65,9 @@
 <section class="section">
     <div class="section-head"><h2>O que dá pra fazer com 2.000 pts?</h2></div>
     <div class="grid">
-        <div class="card"><div class="card-icon">☕</div><h3>Café no Starbucks</h3><p>Voucher de R$ 30 a partir de 3.000 pts.</p></div>
-        <div class="card"><div class="card-icon">💸</div><h3>Saque no PIX</h3><p>R$ 20 direto na sua conta a partir de 2.500 pts.</p></div>
-        <div class="card"><div class="card-icon">🛒</div><h3>Vouchers de mercado</h3><p>Carrefour, Pão de Açúcar e mais.</p></div>
+        <div class="card"><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3c-.8.9-.8 1.6 0 2.5M12 3c-.8.9-.8 1.6 0 2.5"/></svg></div><h3>Café no Starbucks</h3><p>Voucher de R$ 30 a partir de 3.000 pts.</p></div>
+        <div class="card"><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/><path d="M16 15l5 5m0-5-5 5"/></svg></div><h3>Saque no PIX</h3><p>R$ 20 direto na sua conta a partir de 2.500 pts.</p></div>
+        <div class="card"><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div><h3>Vouchers de mercado</h3><p>Carrefour, Pão de Açúcar e mais.</p></div>
     </div>
 </section>
 
@@ -127,9 +127,14 @@
     </div>
 </footer>
 <style>
-  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo da navegação na linguagem "Embarque": pílula preta com texto
+     claro e ícone neon, o mesmo tratamento que assets/blaxx-embarque.css dá a
+     .side-nav a.active. O neon deixa de ser cor de texto e o ícone perde a
+     caixa neon do tema brutal; o !important continua necessário porque o
+     seletor de atributo perde em especificidade para .side-nav a. */
+  [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
+  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
+  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script>
   if ('serviceWorker' in navigator) {

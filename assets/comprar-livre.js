@@ -26,12 +26,12 @@
   })();
   var POLL_INTERVAL_MS = 4000;
   var POLL_MAX_DURATION_MS = 30 * 60 * 1000; // 30 minutos
-  var CENTS_PER_POINT = 9; // 1 pt = R$ 0,09 — sincronizar com backend Config.CENTS_PER_POINT
+  var CENTS_PER_POINT = 9; // 1 pt = R$ 0,09, sincronizar com backend Config.CENTS_PER_POINT
 
   // ---- Util de token + safeNext (independente do blaxx-app.js) ----
   // Lê token de localStorage (atual, sessão persistente) com fallback pra
   // sessionStorage (legacy). blaxx-app.js usa STORE que salva em localStorage,
-  // então JAMAIS olhar só sessionStorage — quebra a compra inteira.
+  // então JAMAIS olhar só sessionStorage, quebra a compra inteira.
   function getToken() {
     try {
       var t = localStorage.getItem('blaxx_token');
@@ -42,12 +42,12 @@
       if (st) return st;
     } catch (e) {}
     // Fallback pro formato legado blaxx_session (mesmo padrão do resto do
-    // site) — senão sessões antigas não conseguem comprar.
+    // site), senão sessões antigas não conseguem comprar.
     try { return (JSON.parse(localStorage.getItem('blaxx_session') || 'null') || {}).token || null; }
     catch (e) { return null; }
   }
   function clearStoredCreds() {
-    // Limpa os DOIS formatos — se sobrasse blaxx_session, o login veria a
+    // Limpa os DOIS formatos, se sobrasse blaxx_session, o login veria a
     // sessão remanescente e devolveria pro app: loop de redirect no 401.
     try {
       localStorage.removeItem('blaxx_token');
@@ -121,13 +121,13 @@
               if (ok) return api(path, opts, true);
               clearStoredCreds();
               redirectToLoginPreservingHere();
-              var e1 = new Error('Sessão expirada — redirecionando.');
+              var e1 = new Error('Sessão expirada, redirecionando.');
               e1.status = 401; throw e1;
             });
           }
           clearStoredCreds();
           redirectToLoginPreservingHere();
-          var err401 = new Error('Sessão expirada — redirecionando.');
+          var err401 = new Error('Sessão expirada, redirecionando.');
           err401.status = 401;
           throw err401;
         }
@@ -202,7 +202,7 @@
     });
   }
 
-  // ---- Etapa 1 — valor digitado ----
+  // ---- Etapa 1, valor digitado ----
   window.onAmountChange = function (val) {
     var amount = parseInputAmount(val);
     var cents = Math.round(amount * 100);
@@ -257,7 +257,7 @@
   }
 
   function loadCardConfig() {
-    // Público — sem Authorization (não passa pelo api() de propósito:
+    // Público, sem Authorization (não passa pelo api() de propósito:
     // 401 aqui não pode derrubar a sessão).
     return fetch(API + '/payments/card/config')
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -271,9 +271,9 @@
           if (getQueryMethod() === 'card') window.setMethod('card');
         } else if (getQueryMethod() === 'card') {
           // Veio de comprar-pontos.html?method=card mas o cartão está
-          // desligado (CARD_ENABLED=0) — avisa e segue com PIX em vez de
+          // desligado (CARD_ENABLED=0), avisa e segue com PIX em vez de
           // deixar um método morto selecionado.
-          showInlineError('Pagamento com cartão indisponível no momento — use PIX.', 'info');
+          showInlineError('Pagamento com cartão indisponível no momento, use PIX.', 'info');
         }
       })
       .catch(function () { /* cartão indisponível → segue PIX-only */ });
@@ -306,7 +306,7 @@
       })
       .catch(function (e) {
         if (e.status === 401) return; // já redirecionou
-        // Backend exige email verificado pra comprar — abre modal e retry
+        // Backend exige email verificado pra comprar, abre modal e retry
         // automatico apos verificacao bem sucedida. Comparacao case-insensitive
         // (backend devolve "EMAIL_NOT_VERIFIED" uppercase).
         var data = e && e.data || {};
@@ -343,14 +343,14 @@
   };
 
   // =====================================================================
-  // Cartão de crédito — Stripe Elements
+  // Cartão de crédito, Stripe Elements
   //
   // PCI (SAQ-A): o Elements tokeniza o cartão NO NAVEGADOR com a chave pk_;
   // o backend recebe apenas card_token single-use. Nunca enviar número de
-  // cartão/CVV para a API BlaXx — o endpoint recusa (RAW_CARD_DATA).
+  // cartão/CVV para a API BlaXx, o endpoint recusa (RAW_CARD_DATA).
   // =====================================================================
 
-    // Restaura o passo de valor livre e volta pra PIX — evita a tela
+    // Restaura o passo de valor livre e volta pra PIX, evita a tela
     // ficar num beco sem saída (step-1 escondido, sem Brick).
     function recoverToStep1() {
       var s1 = document.getElementById('step-1');
@@ -371,14 +371,14 @@
       api('/pix/packages').then(function (packages) {
         var p = packages && packages[pkg];
         if (!p || !p.price_brl) {
-          showInlineError('Pacote desconhecido — escolha um valor livre.', 'warn');
+          showInlineError('Pacote desconhecido, escolha um valor livre.', 'warn');
           recoverToStep1();
           return;
         }
         mountStripeCard(Number(p.price_brl), { package: pkg });
       }).catch(function (e) {
         if (e.status !== 401) {
-          showInlineError(e.message || 'Falha ao carregar o pacote — tente PIX.');
+          showInlineError(e.message || 'Falha ao carregar o pacote, tente PIX.');
           recoverToStep1();
         }
       });
@@ -444,12 +444,14 @@
     loadStripeJs().then(function () {
       if (!cardCfg.public_key) throw new Error('sem chave publicavel');
       stripeObj = window.Stripe(cardCfg.public_key, { locale: 'pt-BR' });
-      stripeElements = stripeObj.elements();
+      // A fonte do tema (Archivo) entra no iframe do Stripe por cssSrc; sem
+      // isso o campo do cartão cairia em Arial, destoando do resto do checkout.
+      stripeElements = stripeObj.elements({ fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap' }] });
 
       var holder = document.createElement('div');
       holder.id = 'bx-stripe-card';
-      // Neo-Brutal: borda preta grossa, sem raio, fundo claro.
-      holder.style.cssText = 'border:3px solid #0A0B0E;background:#F4F4F0;' +
+      // Tema Embarque: contorno fino, canto macio, superfície clara.
+      holder.style.cssText = 'border:1px solid var(--bx-line,#D9D6CE);border-radius:12px;background:var(--bx-surface,#FBFAF7);' +
         'padding:14px;margin-bottom:14px;';
       box.appendChild(holder);
 
@@ -457,10 +459,10 @@
         hidePostalCode: true,
         style: {
           base: {
-            color: '#0A0B0E', fontFamily: '"Space Grotesk", Arial, sans-serif',
-            fontSize: '16px', '::placeholder': { color: '#8A929E' },
+            color: '#0A0B0E', fontFamily: 'Archivo, Arial, sans-serif',
+            fontSize: '16px', '::placeholder': { color: '#555860' },
           },
-          invalid: { color: '#D64545' },
+          invalid: { color: '#9a2f15' },
         },
       });
       stripeCardEl.mount('#bx-stripe-card');
@@ -475,7 +477,7 @@
 
       var msg = document.createElement('div');
       msg.id = 'bx-stripe-msg';
-      msg.style.cssText = 'font-size:13px;color:#D64545;min-height:18px;margin-bottom:10px;';
+      msg.style.cssText = 'font-size:13px;color:var(--danger-text,#9a2f15);min-height:18px;margin-bottom:10px;';
       box.appendChild(msg);
       stripeCardEl.on('change', function (ev) {
         msg.textContent = (ev.error && ev.error.message) ? ev.error.message : '';
@@ -553,16 +555,16 @@
         return;
       }
       // Status terminal negativo devolvido como HTTP 2xx (ex.: rejected/cancelled).
-      // Precisa REJEITAR a promise do onSubmit — se resolvesse, o Brick do MP
+      // Precisa REJEITAR a promise do onSubmit, se resolvesse, o Brick do MP
       // mostraria a própria tela de sucesso contradizendo o aviso.
       if (charge.status === 'rejected' || charge.status === 'cancelled') {
         showInlineError('O pagamento não foi aprovado pelo emissor. ' +
           'Tente outro cartão ou PIX.', 'err');
         var errNeg = new Error('card_' + charge.status);
-        errNeg.bxHandled = true; // aviso já exibido — catch não deve sobrescrever
+        errNeg.bxHandled = true; // aviso já exibido, catch não deve sobrescrever
         throw errNeg;
       }
-      showInlineError('Pagamento em estado ' + String(charge.status || '') + ' — acompanhe na carteira.', 'warn');
+      showInlineError('Pagamento em estado ' + String(charge.status || '') + ', acompanhe na carteira.', 'warn');
       var errUnk = new Error('card_status_' + String(charge.status || 'unknown'));
       errUnk.bxHandled = true;
       throw errUnk;
@@ -589,7 +591,7 @@
         '<h3 style="margin-bottom:12px;"><span class="step-num">2</span> Pagamento em análise</h3>' +
         '<div style="text-align:center;padding:18px;">' +
           '<span class="status-pill status-confirming">⏱ Aguardando aprovação do emissor…</span>' +
-          '<div style="font-size:13px;color:#5f665e;margin-top:10px;">' +
+          '<div style="font-size:13px;color:var(--bx-grey,#555860);margin-top:10px;">' +
             'Isso pode levar alguns instantes. Assim que aprovar, os pontos ' +
             'entram automaticamente na sua carteira.' +
           '</div>' +
@@ -604,7 +606,7 @@
     pollHandle = setInterval(function () {
       if (Date.now() - pollStartedAt > POLL_MAX_DURATION_MS) {
         clearInterval(pollHandle); pollHandle = null;
-        showInlineError('A análise está demorando — acompanhe o status na sua carteira.', 'warn');
+        showInlineError('A análise está demorando, acompanhe o status na sua carteira.', 'warn');
         return;
       }
       api('/payments/card/charge/' + chargeId).then(function (c) {
@@ -647,9 +649,9 @@
       brBox.id = 'br-code-box';
       brBox.style.cssText = 'margin-top:16px;text-align:left;';
       brBox.innerHTML =
-        '<div style="font-size:12px;color:#5f665e;margin-bottom:6px;">Ou copie o código PIX:</div>' +
+        '<div style="font-size:12px;color:var(--bx-grey,#555860);margin-bottom:6px;">Ou copie o código PIX:</div>' +
         '<div style="display:flex;gap:8px;align-items:stretch;">' +
-          '<textarea id="br-code-text" readonly style="flex:1;height:64px;font-family:ui-monospace,monospace;font-size:11px;background:#f5f7f0;border:1px solid #e6eadf;border-radius:8px;padding:8px;resize:none;"></textarea>' +
+          '<textarea id="br-code-text" readonly style="flex:1;height:64px;font-family:var(--bx-mono,ui-monospace,monospace);font-size:11px;background:var(--bx-surface-2,#F4F2EC);border:1px solid var(--bx-line,#D9D6CE);border-radius:8px;padding:8px;resize:none;"></textarea>' +
           '<button id="br-code-copy" class="button secondary" type="button" style="white-space:nowrap;">Copiar</button>' +
         '</div>';
       qrBox.appendChild(brBox);
@@ -672,18 +674,18 @@
     if (!summary && qrBox) {
       summary = document.createElement('div');
       summary.id = 'charge-summary';
-      summary.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid #e6eadf;font-size:13px;text-align:left;';
+      summary.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid var(--bx-line,#D9D6CE);font-size:13px;text-align:left;';
       summary.innerHTML =
         '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
-          '<span style="color:#5f665e;">Valor</span>' +
+          '<span style="color:var(--bx-grey,#555860);">Valor</span>' +
           '<span style="font-weight:600;" id="sum-amt">—</span>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
-          '<span style="color:#5f665e;">Pontos</span>' +
+          '<span style="color:var(--bx-grey,#555860);">Pontos</span>' +
           '<span style="font-weight:600;" id="sum-pts">—</span>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
-          '<span style="color:#5f665e;">Expira em</span>' +
+          '<span style="color:var(--bx-grey,#555860);">Expira em</span>' +
           '<span style="font-weight:600;">30 minutos</span>' +
         '</div>';
       qrBox.appendChild(summary);
@@ -721,7 +723,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Polling — checa status da charge a cada 4s; para após 30 min (TTL).
+  // Polling, checa status da charge a cada 4s; para após 30 min (TTL).
   function startPolling(chargeId) {
     if (pollHandle) clearInterval(pollHandle);
     pollStartedAt = Date.now();
@@ -798,7 +800,7 @@
   function bootAfterConfig() {
     var pkg = getQueryPkg();
     if (!pkg) {
-      // Fluxo valor livre — aguarda usuario digitar
+      // Fluxo valor livre, aguarda usuario digitar
       return;
     }
     if (currentMethod === 'card') {
@@ -817,7 +819,7 @@
     if (!loading) {
       loading = document.createElement('div');
       loading.id = 'pkg-loading';
-      loading.style.cssText = 'text-align:center;padding:48px;color:#5f665e;';
+      loading.style.cssText = 'text-align:center;padding:48px;color:var(--bx-grey,#555860);';
       loading.textContent = 'Gerando seu QR Code…';
       var wrap = document.querySelector('.buy-wrap');
       if (wrap) wrap.insertBefore(loading, wrap.firstChild);

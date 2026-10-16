@@ -2,9 +2,33 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Segurança</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e vence a cascata. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
   .panel { padding: 26px 28px; }
@@ -12,7 +36,7 @@
   .panel__sub { font-size: 13px; color: var(--fg-muted); margin: 0 0 18px; }
   .row { display: flex; align-items: center; gap: 16px; padding: 15px 0; }
   .row + .row { border-top: 1px solid var(--line); }
-  .row .ico { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--lime-12); color: var(--lime-deep); flex-shrink: 0; font-size: 16px; }
+  .row .ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--bx-neon); color: var(--bx-ink); flex-shrink: 0; font-size: 16px; }
   .row .b { flex: 1; min-width: 0; }
   .row .t { font-weight: 700; font-size: 14.5px; }
   .row .s { font-size: 12.5px; color: var(--fg-muted); }
@@ -21,7 +45,7 @@
   .ses .d { font-weight: 700; font-size: 13.5px; }
   .ses .m { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); }
   .score { padding: 26px; }
-  .score__num { font-family: var(--font-mono); font-weight: 700; font-size: 54px; color: var(--lime); line-height: 1; }
+  .score__num { font-family: var(--bx-sans); font-weight: 900; letter-spacing: -.03em; font-size: 54px; color: var(--bx-neon); line-height: 1; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 </style>
 <script type="application/ld+json">
@@ -42,12 +66,12 @@
         <h2 class="panel__title">Autenticação</h2>
         <p class="panel__sub">Camadas extras de proteção no acesso à sua conta.</p>
         <div class="row">
-          <span class="ico">🔑</span>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="8" cy="15" r="4"/><path d="M11 12 20 3"/><path d="M16 7l3 3M13 10l2.5 2.5"/></svg></span>
           <div class="b"><div class="t">Senha</div><div class="s">Mantenha uma senha forte e exclusiva.</div></div>
           <button id="btnChangePw" type="button" class="btn btn--sm btn--outline">Alterar senha</button>
         </div>
         <div class="row">
-          <span class="ico">📱</span>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 19h2"/></svg></span>
           <div class="b"><div class="t">Verificação em duas etapas (2FA)</div><div class="s">App autenticador (TOTP) ativo desde 12/03/2026.</div></div>
           <span class="chip">ATIVA ✓</span>
         </div>
@@ -76,15 +100,15 @@
       </div>
       <div class="card panel">
         <h2 class="panel__title">Boas práticas</h2>
-        <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Nunca compartilhe códigos</div><div class="s">O BlaXx nunca pede o código 2FA por telefone ou WhatsApp.</div></div></div>
-        <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Confira a chave Pix</div><div class="s">Resgates só vão para a chave cadastrada no seu <a href="perfil.html" style="text-decoration:underline">perfil</a>.</div></div></div>
-        <div class="row"><span class="ico">✓</span><div class="b"><div class="t">Desconfie de links</div><div class="s">Suspeita de fraude? <a href="abrir-chamado.html" style="text-decoration:underline">Abra um chamado</a> imediatamente.</div></div></div>
+        <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Nunca compartilhe códigos</div><div class="s">O BlaXx nunca pede o código 2FA por telefone ou WhatsApp.</div></div></div>
+        <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Confira a chave Pix</div><div class="s">Resgates só vão para a chave cadastrada no seu <a href="perfil.html" style="text-decoration:underline">perfil</a>.</div></div></div>
+        <div class="row"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span><div class="b"><div class="t">Desconfie de links</div><div class="s">Suspeita de fraude? <a href="abrir-chamado.html" style="text-decoration:underline">Abra um chamado</a> imediatamente.</div></div></div>
       </div>
     </div>
   </div>
 
   <!-- Overlay: alterar senha -->
-  <div id="pwOverlay" style="position:fixed;inset:0;background:rgba(8,9,7,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px">
+  <div id="pwOverlay" style="position:fixed;inset:0;background:rgba(10,11,14,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px">
     <div class="card" style="max-width:400px;width:100%;padding:28px">
       <h2 class="panel__title">Alterar senha</h2>
       <div id="pwMsg" style="display:none;font-size:13px;padding:10px 12px;border-radius:var(--r-sm);margin-bottom:12px"></div>

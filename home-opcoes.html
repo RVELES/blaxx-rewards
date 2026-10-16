@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Opções de home | BlaXx Pontos</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Comparação lado a lado das variantes de home no sistema Brutal Grid.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/blaxx-brutal.css">
+<style>
+/* Página interna de comparação. Não entra no ar (noindex, e nenhum link aponta
+   para ela): existe para decidir qual home vira a oficial.
+
+   Cada cartão mostra a página de verdade dentro de um iframe de 1400x900
+   reduzido por transform:scale. É a única forma honesta de comparar: captura
+   de tela envelhece no instante em que alguém edita um arquivo, o iframe não. */
+.topo{border-bottom:var(--bw) solid var(--black);padding:clamp(30px,5vw,56px) 0}
+.topo .d2{margin:16px 0 14px}
+
+.lista{display:grid;grid-template-columns:1fr;gap:clamp(26px,4vw,44px);
+  padding:clamp(34px,5vw,60px) 0}
+@media(min-width:900px){.lista{grid-template-columns:1fr 1fr}}
+
+.opcao{border:var(--bw) solid var(--black);background:var(--white);box-shadow:var(--sh);
+  display:flex;flex-direction:column}
+.opcao.atual{box-shadow:6px 8px 0 var(--neon),6px 8px 0 4px var(--black)}
+
+/* a janelinha: proporção fixa e recorte, com a página real reduzida dentro */
+.tela{position:relative;aspect-ratio:1400/900;overflow:hidden;
+  border-bottom:var(--bw) solid var(--black);background:var(--paper)}
+.tela iframe{position:absolute;top:0;left:0;width:1400px;height:900px;border:0;
+  transform-origin:0 0;pointer-events:none}
+.tela a.cobre{position:absolute;inset:0;z-index:2}
+.tela .carregando{position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--grey)}
+
+.info{padding:clamp(18px,2.4vw,26px);display:flex;flex-direction:column;gap:10px;flex:1}
+.info .linha{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.info .num{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--grey)}
+.info .selo{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--neon);border:2px solid var(--black);padding:2px 8px}
+.info h2{font-size:clamp(22px,2.6vw,30px);font-weight:700;text-transform:uppercase;
+  letter-spacing:-.03em;line-height:.95}
+.info p{font-size:15px;line-height:1.55;color:var(--ink)}
+.info .acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:12px}
+
+.nota{border:3px solid var(--black);background:var(--paper);padding:clamp(18px,2.4vw,26px);
+  margin-bottom:clamp(30px,4vw,50px)}
+.nota p{font-size:15px;line-height:1.6;max-width:78ch}
+.nota p + p{margin-top:10px}
+.nota b{font-weight:700}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap in">
+    <a href="#topo" aria-label="BlaXx Pontos">
+      <img class="mark" src="assets/marca/blaxx-wordmark-claro.svg" alt="BlaXx Rewards">
+    </a>
+    <div class="baract">
+      <a class="pillbtn sm ghost" href="blaxx-neon.html">Home no ar</a>
+    </div>
+  </div>
+</header>
+
+<section class="topo" id="topo">
+  <div class="wrap">
+    <span class="tagline"><i>✳</i> Uso interno · não publicado</span>
+    <h1 class="d2">Oito composições,<br>dois sistemas.</h1>
+    <p class="lead">As sete primeiras usam os tokens do Brutal Grid e o
+      <code>assets/blaxx-brutal.css</code>; a oitava é o tema Embarque (<code>assets/blaxx-embarque.css</code>). O que muda é a disposição dos objetos, o
+      tratamento do letreiro e os desenhos. Clique numa janelinha para abrir a página
+      inteira em outra aba.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="lista" id="lista"></div>
+
+  <div class="nota">
+    <p><b>Como ler isto.</b> A janelinha é a página de verdade rodando dentro de um iframe
+      reduzido, não uma captura de tela. Se você editar qualquer arquivo e recarregar aqui,
+      a miniatura muda junto.</p>
+    <p><b>O globo aparece em todas.</b> Ele carrega d3 e topojson por página, então seis
+      iframes ao mesmo tempo deixam esta tela de comparação pesada. Isso é custo da
+      comparação, não das páginas: aberta sozinha, cada home carrega um globo só.</p>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="legal">
+      <span>BlaXx Pontos © 2026 · página interna de decisão</span>
+      <span><a href="blaxx-neon.html">Voltar para a home no ar</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// A lista mora aqui e não no HTML para que acrescentar uma variante seja uma linha.
+var OPCOES = [
+  { arq:'blaxx-neon.html',      nome:'Editorial',      selo:'no ar',
+    txt:'A home atual. Hero em grade 8/4, passos numerados, globo integrado ao fim da página.' },
+  { arq:'home-brutal.html',     nome:'Brutal Grid',    selo:'base',
+    txt:'A primeira proposta do sistema: hero com painel em pílula, grade 2x2 com losango no cruzamento, faixa preta de números.' },
+  { arq:'home-v1-cartaz.html',  nome:'Cartaz',         selo:'',
+    txt:'Tipografia em escala de cartaz de rua, sem ilustração no hero. Regras horizontais no lugar de cards e globo de borda a borda.' },
+  { arq:'home-v2-ficha.html',   nome:'Ficha técnica',  selo:'',
+    txt:'Datasheet: células rotuladas em mono, tabela comparativa de pacotes, globo como figura numerada de manual.' },
+  { arq:'home-v3-vitrine.html', nome:'Vitrine',        selo:'',
+    txt:'Nada alinhado: cards em degrau, adesivos girados, globo em recorte circular, setas ligando os blocos.' },
+  { arq:'home-v4-terminal.html',nome:'Terminal',       selo:'escuro',
+    txt:'A página inteira no escuro. Hero em forma de sessão de terminal, números em neon, globo com halo.' },
+  { arq:'home-v5-revista.html', nome:'Revista',        selo:'',
+    txt:'Diagramação impressa: capa, colunas de texto com capitular, destaque atravessando as colunas, globo em spread.' },
+  { arq:'home-embarque.html',   nome:'Embarque',       selo:'design 3a',
+    txt:'O design 3a aplicado: cartão de embarque como hero, rota em três escalas, bilhetes de pacote com recibo, painel de partidas com o globo, rodapé-recibo. Superfícies claras, Archivo + Space Mono.' }
+];
+
+var lista = document.getElementById('lista');
+
+OPCOES.forEach(function(o, i){
+  var art = document.createElement('article');
+  art.className = 'opcao' + (o.selo === 'no ar' ? ' atual' : '');
+  var n = String(i + 1).padStart(2, '0');
+  art.innerHTML =
+    '<div class="tela">' +
+      '<span class="carregando">carregando ' + o.nome + '…</span>' +
+      '<iframe title="Prévia da opção ' + o.nome + '" loading="lazy" tabindex="-1"></iframe>' +
+      '<a class="cobre" href="' + o.arq + '" target="_blank" rel="noopener" ' +
+         'aria-label="Abrir a opção ' + o.nome + ' em outra aba"></a>' +
+    '</div>' +
+    '<div class="info">' +
+      '<div class="linha"><span class="num">' + n + '</span>' +
+        (o.selo ? '<span class="selo">' + o.selo + '</span>' : '') + '</div>' +
+      '<h2>' + o.nome + '</h2>' +
+      '<p>' + o.txt + '</p>' +
+      '<div class="acoes">' +
+        '<a class="pillbtn sm" href="' + o.arq + '" target="_blank" rel="noopener">Abrir inteira</a>' +
+        '<a class="pillbtn sm ghost" href="' + o.arq + '">Abrir aqui</a>' +
+      '</div>' +
+    '</div>';
+  lista.appendChild(art);
+
+  var iframe = art.querySelector('iframe');
+  iframe.addEventListener('load', function(){
+    var aviso = art.querySelector('.carregando');
+    if (aviso) aviso.remove();
+  });
+  iframe.src = o.arq;
+});
+
+// A escala do iframe depende da largura real do cartão, que muda com a janela.
+// Sem isto a página reduzida fica cortada ou sobrando, e a comparação mente.
+function escalar(){
+  document.querySelectorAll('.tela').forEach(function(tela){
+    var iframe = tela.querySelector('iframe');
+    if (iframe) iframe.style.transform = 'scale(' + (tela.clientWidth / 1400) + ')';
+  });
+}
+escalar();
+window.addEventListener('resize', escalar);
+// os iframes podem terminar de montar depois do primeiro cálculo
+window.addEventListener('load', escalar);
+</script>
+
+</body>
+</html>

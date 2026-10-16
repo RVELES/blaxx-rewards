@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Parceiros</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  /* ===== Parceiros — redesign premium (Nubank/XP/Livelo/Apple-like) ===== */
+  /* ===== Parceiros, redesign premium (Nubank/XP/Livelo/Apple-like) ===== */
   .pz { --pz-lime: var(--lime); }
   .pz .page-head { margin-bottom: 22px; }
 
@@ -21,21 +24,23 @@
   .pz-metric__hint { font-size:12px; font-weight:700; }
   .pz-metric__hint--warn { color:#E0483D; }
   .pz-metric .pz-track { height:8px; border-radius:999px; background: var(--line); overflow:hidden; margin-top:4px; }
-  .pz-metric .pz-fill { height:100%; border-radius:999px; background: linear-gradient(90deg, var(--lime-deep), var(--lime)); width:0; transition: width 1s var(--ease-out); }
+  .pz-metric .pz-fill { height:100%; border-radius:999px; background: var(--bx-neon); width:0; transition: width 1s var(--ease-out); }
   .pz-badge-tier { align-self:flex-start; font-family:var(--font-mono); font-weight:800; font-size:12px; padding:5px 12px; border-radius:999px; letter-spacing:.04em; }
 
-  /* Banner carrossel — refeito.
+  /* Banner carrossel, refeito.
      O que estava errado, medido no navegador:
        · altura FIXA de 184px com tag+título(30px)+texto+CTA dentro: o CTA era
          cortado pela borda inferior do banner;
        · as setas ‹ › ficavam em left/right:14px, por CIMA do corpo do texto,
-         que começa em padding 34px — a seta cobria a 1ª letra do título;
+         que começa em padding 34px, a seta cobria a 1ª letra do título;
        · os dots (bottom:16px, left:34px) disputavam o mesmo canto do CTA.
      Agora: os slides empilham na MESMA célula de grid (sem position:absolute),
      então a altura vem do conteúdo e nada corta. Setas e dots foram para uma
      régua própria, fora da coluna de texto. */
-  .pz-banner { position:relative; border-radius:24px; overflow:hidden; margin-bottom:26px;
-               background: var(--ink); border:3px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+  /* Painel escuro do tema (como o painel de partidas da home): canto 28px, sem
+     contorno grosso nem sombra dura. */
+  .pz-banner { position:relative; border-radius:var(--bx-r-xl); overflow:hidden; margin-bottom:26px;
+               background: var(--bx-ink); border:0; box-shadow:var(--bx-sh); }
   .pz-slides { display:grid; }
   .pz-slide { grid-area:1 / 1; display:grid; grid-template-columns: minmax(0,1.5fr) minmax(0,.8fr);
               opacity:0; visibility:hidden; transition: opacity .45s var(--ease); pointer-events:none; }
@@ -45,12 +50,12 @@
   /* Selo neon preenchido com texto tinta (17,8:1) em vez de neon como texto */
   .pz-slide__tag { align-self:flex-start; font-family:var(--font-mono); font-size:11px;
                    font-weight:800; letter-spacing:.08em; text-transform:uppercase;
-                   color: var(--ink); background: var(--lime); border:2px solid var(--ink);
+                   color: var(--bx-ink); background: var(--bx-neon); border:0;
                    border-radius:999px; padding:4px 11px; }
   .pz-slide__title { font-family: var(--font-display); font-weight:800; font-size:clamp(22px,2.4vw,30px);
                      letter-spacing:-.02em; line-height:1.1; overflow-wrap:anywhere; }
   .pz-slide__sub { color: var(--fg-on-dark-muted); font-size:14px; line-height:1.45; max-width:46ch; }
-  /* Recompensa: o número é o motivo de a campanha existir — vira o destaque */
+  /* Recompensa: o número é o motivo de a campanha existir, vira o destaque */
   .pz-slide__prize { display:inline-flex; align-items:baseline; gap:6px; align-self:flex-start;
                      font-family:var(--font-mono); font-weight:800; font-size:22px; color: var(--lime); }
   .pz-slide__prize small { font-size:12px; font-weight:700; color: var(--fg-on-dark-muted); }
@@ -62,10 +67,10 @@
   .pz-banner__dots button { width:8px; height:8px; border-radius:999px; border:none; background: rgba(255,255,255,.32); cursor:pointer; transition: all .2s var(--ease); padding:0; }
   .pz-banner__dots button.on { background: var(--lime); width:22px; }
   /* Controles agrupados no canto inferior direito: saem de cima do texto e
-     deixam de brigar com o CTA. 38px de alvo — acima do mínimo de toque. */
+     deixam de brigar com o CTA. 38px de alvo, acima do mínimo de toque. */
   .pz-banner__ctrl { position:absolute; right:16px; bottom:14px; z-index:3;
                      display:flex; align-items:center; gap:10px; }
-  .pz-banner__arrow { width:38px; height:38px; border-radius:999px; border:2px solid rgba(244,244,240,.5);
+  .pz-banner__arrow { width:38px; height:38px; border-radius:999px; border:1px solid rgba(244,242,236,.4);
                       background: rgba(10,11,14,.55); color:#F4F4F0; cursor:pointer;
                       display:grid; place-items:center; font-size:18px; line-height:1; padding:0;
                       transition: background .2s var(--ease), border-color .2s var(--ease); }
@@ -76,31 +81,31 @@
   .pz-searchrow { display:flex; gap:12px; margin-bottom:18px; }
   .pz-search { position:relative; flex:1; }
   .pz-search input { width:100%; height:56px; border-radius:18px; border:1px solid var(--line); background: var(--white); padding:0 18px 0 50px; font-size:15px; font-family: var(--font-body); color: var(--fg); transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
-  .pz-search input:focus { outline:none; border-color: var(--lime); box-shadow: 0 0 0 4px var(--lime-20); }
+  .pz-search input:focus { outline:none; border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
   .pz-search svg { position:absolute; left:18px; top:50%; transform:translateY(-50%); color: var(--fg-subtle); }
   .pz-favbtn { height:56px; padding:0 22px; border-radius:18px; border:1px solid var(--line); background: var(--white); font-weight:700; font-size:14px; color: var(--fg); cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition: all .18s var(--ease); white-space:nowrap; }
-  .pz-favbtn:hover { border-color: var(--line-strong); }
+  .pz-favbtn:hover { border-color: var(--bx-leader); }
   .pz-favbtn.on { background: var(--ink); color: var(--lime); border-color: var(--ink); }
 
   /* Pills */
   .pz-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
   .pz-pill { border:1px solid var(--line); background: var(--white); color: var(--fg-muted); font-weight:700; font-size:13px; padding:9px 17px; border-radius:999px; transition: all .16s var(--ease); cursor:pointer; }
   .pz-pill.on { background: var(--lime); border-color: var(--lime); color: var(--ink); }
-  .pz-pill:hover:not(.on) { border-color: var(--line-strong); color: var(--fg); }
+  .pz-pill:hover:not(.on) { border-color: var(--bx-leader); color: var(--bx-ink); }
 
   /* Grid de parceiros */
   .pz-grid { display:grid; grid-template-columns: repeat(5,1fr); gap:16px; }
   .pz-card { position:relative; padding:20px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition: transform .22s var(--ease), box-shadow .22s var(--ease); animation: pzfade .4s var(--ease-out) both; }
-  .pz-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: var(--sh-3); }
-  .pz-card__logo { width:54px; height:54px; border-radius:16px; display:grid; place-items:center; font-size:28px; background: var(--gray, #F6F7F8); }
+  .pz-card:hover { transform: none; box-shadow: var(--bx-sh); }
+  .pz-card__logo { width:54px; height:54px; border-radius:var(--bx-r-md); display:grid; place-items:center; font-size:28px; background: var(--bx-surface-2); }
   .pz-card__name { font-weight:800; font-size:16px; letter-spacing:-.01em; color: var(--ink); }
   .pz-card__cat { font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color: var(--fg-subtle); margin-top:-6px; }
   .pz-card__pts { font-family: var(--font-mono); font-weight:800; font-size:12px; color: var(--ink); background: var(--lime); padding:5px 10px; border-radius:8px; align-self:flex-start; }
-  .pz-card__cash { font-size:12px; font-weight:700; color: var(--lime-deep); }
+  .pz-card__cash { font-size:12px; font-weight:700; color: var(--bx-grey); }
   .pz-card__buy { margin-top:auto; font-weight:700; font-size:13px; color: var(--ink); display:inline-flex; gap:5px; align-items:center; transition: gap .18s var(--ease); }
   .pz-card:hover .pz-card__buy { gap:9px; }
   .pz-fav { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:999px; border:1px solid var(--line); background: var(--white); cursor:pointer; display:grid; place-items:center; font-size:15px; color: var(--fg-subtle); transition: all .18s var(--ease); z-index:2; }
-  .pz-fav:hover { border-color: var(--line-strong); transform: scale(1.1); }
+  .pz-fav:hover { border-color: var(--bx-leader); transform: none; }
   .pz-fav.on { color:#E0483D; border-color: rgba(224,72,61,.3); background: rgba(224,72,61,.06); }
   .pz-empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
 
@@ -112,7 +117,11 @@
   /* Rodapé benefícios */
   .pz-benefits { display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin:34px 0 8px; }
   .pz-benefit { padding:22px; }
-  .pz-benefit__ico { font-size:26px; }
+  /* O ícone é um SVG de 24 unidades com width/height:100%: sem caixa fixa
+     ele esticava até a largura do cartão (205px medidos). A caixa de 28px
+     vale pro SVG e pro emoji (⭐), que ficam na mesma altura de linha. */
+  .pz-benefit__ico { font-size:26px; line-height:1; height:28px; display:flex; align-items:center; color: var(--bx-ink); }
+  .pz-benefit__ico svg { width:28px; height:28px; display:block; }
   .pz-benefit__t { font-weight:800; font-size:15px; margin:10px 0 5px; color: var(--ink); }
   .pz-benefit__d { font-size:13px; color: var(--fg-muted); line-height:1.5; }
 
@@ -130,7 +139,13 @@
        que no mobile ficam sobre o corpo do slide (a arte sai de cena). */
     .pz-slide__body{ padding:22px 20px 62px; }
   }
-  @media (max-width: 480px){ .pz-grid{grid-template-columns:1fr;} .pz-searchrow{flex-direction:column;} }
+  /* Benefícios em coluna única no celular: em duas colunas o título de 15px
+     partia no meio da palavra ("Parceir-os Exclusi-vos"). */
+  @media (max-width: 480px){ .pz-grid{grid-template-columns:1fr;} .pz-searchrow{flex-direction:column;} .pz-benefits{grid-template-columns:1fr;} }
+  /* O styles.css dá min-height:44px a todo <button> no celular (alvo de toque);
+     nas bolinhas do carrossel isso virava barras de 8x44. O alvo de toque ali
+     são as setas (38px); as bolinhas são indicador de posição. */
+  @media (max-width: 900px){ .pz-banner__dots button { min-height:0; } }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Parceiros","item":"https://blaxxpontos.com.br/parceiros.html"}]}
@@ -180,10 +195,10 @@
 
   <!-- Benefícios -->
   <section class="pz-benefits">
-    <div class="card pz-benefit"><div class="pz-benefit__ico">📈</div><div class="pz-benefit__t">Acumule Mais</div><div class="pz-benefit__d">Compre nas melhores lojas e acumule até 12 pts por real.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico">💵</div><div class="pz-benefit__t">Cashback</div><div class="pz-benefit__d">Receba parte do valor de volta em pontos ou saldo.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M4 18 10 11l4 3 6-8"/><path d="M14 6h6v6"/></svg></div><div class="pz-benefit__t">Acumule Mais</div><div class="pz-benefit__d">Compre nas melhores lojas e acumule até 12 pts por real.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg></div><div class="pz-benefit__t">Cashback</div><div class="pz-benefit__d">Receba parte do valor de volta em pontos ou saldo.</div></div>
     <div class="card pz-benefit"><div class="pz-benefit__ico">⭐</div><div class="pz-benefit__t">Parceiros Exclusivos</div><div class="pz-benefit__d">Benefícios reservados para clientes Black.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico">🔒</div><div class="pz-benefit__t">Segurança</div><div class="pz-benefit__d">Ambiente protegido e monitorado de ponta a ponta.</div></div>
+    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M12 3 5 6v6c0 4.3 3 7.2 7 9 4-1.8 7-4.7 7-9V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></svg></div><div class="pz-benefit__t">Segurança</div><div class="pz-benefit__d">Ambiente protegido e monitorado de ponta a ponta.</div></div>
   </section>
 </main>
 
@@ -251,7 +266,7 @@
   const fmtPts = n => Number(n||0).toLocaleString('pt-BR');
 
   // O banner dizia "CAMPANHA EM DESTAQUE" mas os slides vinham de
-  // PARTNERS.slice(0,4) — eram PARCEIROS. O rótulo não correspondia ao dado.
+  // PARTNERS.slice(0,4), eram PARCEIROS. O rótulo não correspondia ao dado.
   // Agora usa /campaigns/ de verdade quando há campanha ativa; sem campanha,
   // mostra parceiros com o rótulo correto, em vez de chamar parceiro de campanha.
   function slidesDoBanner(){
@@ -369,6 +384,13 @@
 
   // ---- busca instantânea ----
   document.getElementById('search').addEventListener('input', e=>{ query=e.target.value; renderGrid(); });
+  // DEPOIS do listener acima: a busca da barra (assets/blaxx-nav.js) chega como ?q=; entra no campo e
+  // dispara o mesmo filtro, como se a pessoa tivesse digitado aqui.
+  (function(){
+    var q = new URLSearchParams(location.search).get('q');
+    var campo = document.getElementById('search');
+    if (q && campo) { campo.value = q; campo.dispatchEvent(new Event('input', { bubbles: true })); }
+  })();
   document.getElementById('favBtn').onclick = ()=>{ favOnly=!favOnly; activeCat=favOnly?'__fav__':''; syncFavBtn(); renderPills(); renderGrid(); };
 
   // ---- demo fallback (sem sessão / API offline) ----
@@ -384,8 +406,6 @@
       {id:'saude',name:'Farma Bem',category:'Saúde',description:'Farmácias e bem-estar.',logo_emoji:'💊',accrual_rule:'Até 4 pts/R$'},
     ];
     CATS = ['Viagens','Tecnologia','Moda','Casa','Supermercado','Saúde'];
-    renderMetrics({balance_pts:16320,pending_pts:1200,balance_brl_equiv:1468.80},
-                  {tier:{label:'Ouro',color:'#D4AF37',text_color:'#0B0B0C'},next_tier:{label:'Black'},points_to_next:25200,progress_pct:66});
   }
 
   // ---- boot ----
@@ -399,10 +419,10 @@
     if (pres && Array.isArray(pres.items) && pres.items.length){
       PARTNERS = pres.items.map(p=>({ ...p, id:String(p.id) }));
       CATS = (cres && Array.isArray(cres.items)) ? cres.items : [...new Set(PARTNERS.map(p=>p.category).filter(Boolean))];
-      renderMetrics(wallet, card);
     } else {
       demo();
     }
+    renderMetrics(wallet, card);
     renderBanner(); renderPills(); syncFavBtn(); renderGrid();
   })();
 })();

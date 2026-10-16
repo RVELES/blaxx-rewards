@@ -2,9 +2,34 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Resgates</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom: 24px; }
   .bal-pill { display:flex; align-items:center; gap:12px; background: var(--ink); color: var(--fg-on-dark); border-radius: var(--r-lg); padding: 14px 22px; }
@@ -22,9 +47,9 @@
 
   .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .rw { padding: 18px; display:flex; flex-direction:column; transition: transform .22s var(--ease), box-shadow .22s var(--ease); }
-  .rw:hover { transform: translateY(-4px); box-shadow: var(--sh-3); }
+  .rw:hover { transform: none; box-shadow: var(--bx-sh); }
   .rw__img { height: 130px; border-radius: var(--r-md); display:grid; place-items:center; font-size: 46px; margin-bottom: 16px; position: relative; overflow:hidden; background: var(--lime-12); }
-  .rw__cat { position:absolute; top:12px; left:12px; font-family: var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background: rgba(255,255,255,.85); color: var(--ink); padding:4px 9px; border-radius: var(--r-pill); }
+  .rw__cat { position:absolute; top:12px; left:12px; font-family: var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background: var(--bx-surface); color: var(--bx-ink); padding:4px 9px; border-radius: var(--r-pill); }
   .rw__name { font-weight:800; font-size: 15.5px; letter-spacing:-.01em; }
   .rw__desc { font-size: 12.5px; color: var(--fg-muted); margin: 3px 0 16px; flex:1; }
   .rw__foot { display:flex; align-items:center; justify-content:space-between; gap:10px; }
@@ -38,9 +63,9 @@
   .voucher__stub { width: 96px; flex-shrink:0; display:grid; place-items:center; font-size:34px; position:relative; background: var(--lime-12); }
   .voucher__body { padding: 18px 22px; flex:1; }
   .voucher__name { font-weight:800; font-size: 16px; }
-  .voucher__code { font-family: var(--font-mono); font-size:13px; background: rgba(14,15,11,.05); border:1px dashed var(--line-strong); padding:8px 12px; border-radius:8px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .voucher__code { font-family: var(--font-mono); font-size:13px; background: var(--bx-surface-2); border:1px dashed var(--bx-leader); padding:8px 12px; border-radius:8px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
   .voucher__meta { font-family: var(--font-mono); font-size:11px; color: var(--fg-subtle); margin-top:10px; }
-  .st-on { background: var(--lime); color: var(--ink); } .st-used { background: rgba(14,15,11,.06); color: var(--fg-muted); }
+  .st-on { background: var(--bx-neon); color: var(--bx-ink); } .st-used { background: var(--bx-surface-2); color: var(--bx-grey); }
 
   .pane { display:none; } .pane.on { display:block; }
   .empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }

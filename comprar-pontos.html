@@ -6,11 +6,27 @@
   (function(){ try { var t = localStorage.getItem('blaxx_token') || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; if (!t) { location.href = 'login.html'; } } catch(e){ location.href = 'login.html'; } })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Comprar pontos | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
+<style>
+  /* Aviso informativo no tema Embarque. Em assets/styles.css o .alert.info
+     pinta fundo e texto com --info/--info-text; o :root do tema redefine
+     --info como cor de TEXTO (vocabulário da família B) e o aviso ficava azul
+     sobre azul. Até o tema separar os dois tokens, o aviso usa a superfície-2
+     do design, com o "i" num selo preto. Remover quando o compartilhado mudar. */
+  .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
+  .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
+  .alert.info p{ color:var(--bx-grey); opacity:1; }
+  /* Rótulo de seção ("PAGAMENTO"): em assets/styles.css é oliva #6f8a18 em
+     bloco; o tema pinta .eyebrow como pílula (família B) e, em bloco, ela
+     vira uma barra de borda a borda. Aqui é o rótulo mono cinza do design. */
+  .sec-head .eyebrow{ display:block; width:max-content; background:transparent; border:0; padding:0;
+    color:var(--bx-grey); font-family:var(--bx-mono); font-size:13px; font-weight:400; letter-spacing:.08em; }
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,7 +61,7 @@
 <div class="page-head">
     <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> Comprar pontos</div>
     <span class="kicker-trust"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Pacotes simples, transparentes, sem mensalidade</span>
-    <h1>Acelere seu próximo <span style="color:#6f8a18;">resgate</span>.</h1>
+    <h1>Acelere seu próximo <span style="background:var(--bx-neon);color:var(--bx-ink);padding:0 .09em;-webkit-box-decoration-break:clone;box-decoration-break:clone;">resgate</span>.</h1>
     <p class="lead" style="max-width:60ch;margin-top:14px;">Complete o saldo necessário para destravar benefícios. Pacotes a partir de R$ 180,00, com até 15% de bônus.</p>
 </div>
 
@@ -63,11 +79,11 @@
         <div class="card">
             <h3>Por que comprar pontos?</h3>
             <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:14px;">
-                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);font-weight:900;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Crédito instantâneo no PIX. Em até 1 minuto na sua carteira.</li>
-                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);font-weight:900;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Bônus em todos os pacotes acima de Start.</li>
-                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);font-weight:900;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Acúmulo extra empilhável com campanhas ativas.</li>
-                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);font-weight:900;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Pagamento seguro: PIX, cartão ou boleto.</li>
-                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);font-weight:900;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Pontos válidos por 24 meses.</li>
+                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);width:18px;height:18px;flex:none;margin-top:2px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Crédito instantâneo no PIX. Em até 1 minuto na sua carteira.</li>
+                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);width:18px;height:18px;flex:none;margin-top:2px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Bônus em todos os pacotes acima de Start.</li>
+                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);width:18px;height:18px;flex:none;margin-top:2px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Acúmulo extra empilhável com campanhas ativas.</li>
+                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);width:18px;height:18px;flex:none;margin-top:2px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Pagamento seguro: PIX, cartão ou boleto.</li>
+                <li style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ok-text);width:18px;height:18px;flex:none;margin-top:2px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></span> Pontos válidos por 24 meses.</li>
             </ul>
         </div>
 

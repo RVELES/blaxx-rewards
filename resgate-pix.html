@@ -6,11 +6,14 @@
   (function(){ try { var t = localStorage.getItem('blaxx_token') || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; if (!t) { location.href = 'login.html'; } } catch(e){ location.href = 'login.html'; } })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Resgatar via PIX | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia tokens e componentes.
+     Fica no HTML, e não só injetado pelo assets/blaxx-nav.js, para a página não piscar no tema antigo. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -71,7 +74,7 @@
 <main>
 <div class="page-head">
     <div class="crumbs"><a href="dashboard.html">Início</a><span class="sep">/</span> Resgatar via PIX</div>
-    <h1 style="font-size:32px;">Resgatar pontos via <span style="color:var(--lime-dark);">PIX</span></h1>
+    <h1 style="font-size:32px;">Resgatar pontos via <span style="background:var(--bx-neon);color:var(--bx-ink);padding:0 .09em;">PIX</span></h1>
     <p class="muted">Converta seus pontos em dinheiro real direto na sua chave PIX. Sem taxa.</p>
 </div>
 
@@ -151,8 +154,11 @@
     </div>
 </footer>
 <style>
-  [data-side="resgate-pix"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side="resgate-pix"] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo na linguagem do tema "Embarque" (mesmos valores de .links a.active e
+     .side-nav a.active em assets/blaxx-embarque.css): pílula preta, texto claro e só o
+     ícone em neon. Antes era texto neon sobre preto, a assinatura do bloco Neo-Brutal. */
+  [data-side="resgate-pix"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
+  [data-side="resgate-pix"] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

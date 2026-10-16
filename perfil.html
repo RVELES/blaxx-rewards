@@ -2,9 +2,32 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Perfil</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 20px; align-items: start; }
   .me { padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -25,10 +48,18 @@
   .pref + .pref { border-top: 1px solid var(--line); }
   .pref .t { font-weight: 700; font-size: 14px; }
   .pref .s { font-size: 12.5px; color: var(--fg-muted); }
-  .switch { position: relative; width: 46px; height: 26px; border-radius: 99px; background: rgba(14,15,11,0.12); border: none; transition: background .25s var(--ease); flex-shrink: 0; cursor:pointer; }
+  .switch { position: relative; width: 46px; height: 26px; border-radius: 99px; background: var(--bx-line); border: none; transition: background .25s var(--ease); flex-shrink: 0; cursor:pointer; }
   .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--white); box-shadow: var(--sh-1); transition: transform .25s var(--ease); }
   .switch.on { background: var(--lime); }
   .switch.on::after { transform: translateX(20px); }
+  /* No celular a regra global de alvo de toque (button min-height:44px,
+     styles.css) esticava o interruptor de 26px num blob, e a quebra de
+     linha dos filhos do card jogava o botão para baixo do rótulo. O
+     desenho fica 46x26 e a área de toque de 44px vem de um ::before
+     invisível, sem deformar o controle. */
+  .switch { min-height: 26px; }
+  .switch::before { content: ''; position: absolute; inset: -9px 0; }
+  .card .pref { flex-wrap: nowrap; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 </style>
 <script type="application/ld+json">
@@ -74,7 +105,7 @@
         <div class="pref"><div><div class="t">Ofertas de parceiros</div><div class="s">Promoções personalizadas com base no seu perfil.</div></div><button class="switch" onclick="this.classList.toggle('on')" aria-label="Alternar"></button></div>
       </div>
 
-      <div class="card panel" style="border-color:rgba(226,83,59,0.25)">
+      <div class="card panel" style="border-color:var(--neg)">
         <h2 class="panel__title" style="color:var(--neg)">Zona de risco</h2>
         <div class="pref"><div><div class="t">Sair da conta</div><div class="s">Encerra a sessão neste dispositivo.</div></div><button id="btnLogout" class="btn btn--sm btn--outline">Sair</button></div>
         <div class="pref"><div><div class="t">Excluir minha conta</div><div class="s">Remove dados pessoais conforme a LGPD. Pontos remanescentes são perdidos.</div></div><a href="abrir-chamado.html" class="btn btn--sm btn--outline">Solicitar</a></div>
@@ -97,20 +128,20 @@
 
   if (!token()) { location.href = 'login.html'; return; }
 
-  function maskCpf(c){ c=(c||'').replace(/\D/g,''); if(c.length!==11) return c||'—'; return '***.***.'+c.slice(6,9)+'-**'; }
-  function maskPhone(p){ if(!p) return '—'; var d=(''+p).replace(/\D/g,''); if(d.length<4) return p; return '+'+d.slice(0,2)+' (••) ••••-'+d.slice(-4); }
+  function maskCpf(c){ c=(c||'').replace(/\D/g,''); if(c.length!==11) return c||', '; return '***.***.'+c.slice(6,9)+'-**'; }
+  function maskPhone(p){ if(!p) return ', '; var d=(''+p).replace(/\D/g,''); if(d.length<4) return p; return '+'+d.slice(0,2)+' (••) ••••-'+d.slice(-4); }
 
   function fill(u, w){
     if (u){
       $('meAv').textContent = (u.name||'?').trim()[0].toUpperCase();
-      $('meName').textContent = u.name || '—';
-      $('meMail').textContent = u.email || '—';
-      $('fNome').textContent = u.name || '—';
-      $('fEmail').textContent = u.email || '—';
+      $('meName').textContent = u.name || ', ';
+      $('meMail').textContent = u.email || ', ';
+      $('fNome').textContent = u.name || ', ';
+      $('fEmail').textContent = u.email || ', ';
       $('fEmailV').textContent = (u.email_verified || u.email_verified_at) ? 'VERIFICADO ✓' : 'NÃO VERIFICADO';
       $('fCel').textContent = maskPhone(u.phone);
       $('fCpf').textContent = maskCpf(u.cpf);
-      $('fPix').textContent = u.pix_key || u.email || '—';
+      $('fPix').textContent = u.pix_key || u.email || ', ';
       $('mePlan').textContent = u.is_vip ? 'CLIENTE VIP' : 'CLIENTE';
     }
     if (w){
@@ -130,7 +161,7 @@
   ]).then(function(res){ fill(res[0]||sUser, res[1]); });
 
   $('btnLogout').addEventListener('click', function(){
-    // Limpa os DOIS formatos de sessão — senão login.html vê o blaxx_token
+    // Limpa os DOIS formatos de sessão, senão login.html vê o blaxx_token
     // remanescente e redireciona de volta pro dashboard (loop de logout).
     try {
       localStorage.removeItem('blaxx_session');

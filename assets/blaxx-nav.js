@@ -1,4 +1,5 @@
-/* blaxx-nav.js — gaveta de navegação no mobile.
+/* blaxx-nav.js, gaveta de navegação no mobile e chrome "Embarque" (barra
+ * utilitária, mega-menus, busca e rodapé-recibo; ver montarChromeEmbarque).
  *
  * O BURACO QUE ISTO FECHA
  * -----------------------
@@ -7,13 +8,13 @@
  * nada no lugar**. No celular o usuário fica sem navegação alguma: só logo e
  * as ações da direita. O `chrome.js` e a landing têm gaveta; estas 49, não.
  *
- * Este módulo injeta o hamburger e a gaveta apenas onde falta — se a página já
+ * Este módulo injeta o hamburger e a gaveta apenas onde falta, se a página já
  * tem uma (`.drawer`, `.bx-drawer`), sai sem tocar em nada.
  *
  * AGRUPAMENTO
  * -----------
  * Por intenção do usuário, não por tela: Conta · Pontos · Descobrir · Ajuda.
- * O menu de visitante é outro — oferecer "Carteira" a quem não entrou leva a
+ * O menu de visitante é outro, oferecer "Carteira" a quem não entrou leva a
  * uma tela de sessão sem explicação.
  *
  * COMPORTAMENTO
@@ -81,7 +82,7 @@
   // `index.html` é a Início da área logada no código, mas em produção o
   // netlify.toml faz /index.html → 301 → / , e / serve a landing de marketing
   // (blaxx-neon.html). Resultado: 5 pontos do chrome.js e 21 páginas inline
-  // levavam o usuário LOGADO para fora do app — inclusive o clique no logo.
+  // levavam o usuário LOGADO para fora do app, inclusive o clique no logo.
   //
   // A reescrita é feita em runtime, e não trocando o href no HTML, porque o
   // destino correto depende da sessão: para quem NÃO entrou, ir para a landing
@@ -135,71 +136,379 @@
   }
 
   // --------------------------------------------------------------------- //
-  // Rodapé de 4 colunas                                                    //
+  // Chrome "Embarque" (design 3a, 14/10/2026)                              //
   // --------------------------------------------------------------------- //
-  // Estrutura e itens espelham o rodapé da Dotz, item a item, por decisão do
-  // produto (03/08). Onde a BlaXx já faz o que o item descreve, o link vai
-  // para a página real; onde não faz, vai para `em-breve.html?r=<slug>`, que
-  // explica o que é e diz com todas as letras que não existe hoje.
+  // Barra utilitária preta, barra de navegação clara com mega-menus, busca
+  // e rodapé em forma de recibo. Montado aqui, e não no HTML das páginas,
+  // pelo mesmo motivo da gaveta: são 73 páginas em dois sistemas de chrome
+  // (topbar inline e chrome.js), e um lugar só é a única forma de os dois
+  // ficarem iguais. A folha é assets/blaxx-embarque.css.
   //
-  // Consequência registrada: a taxonomia da Dotz não tem "comprar pontos",
-  // "enviar pontos" nem "resgatar em dinheiro" — que são o núcleo da BlaXx.
-  // Eles continuam alcançáveis pela gaveta e pelo menu, não pelo rodapé.
-  var EB = 'em-breve.html?r=';
+  // O que o mock trazia e NÃO entra, de propósito: "1 PT = R$ 0,09 · FIXO",
+  // "TAXA R$ 0,00" e "esse número não muda" (removidos da UI no commit
+  // b7b8dcd, 15/09); "42 destinos", Miami/Dubai/Tóquio e voos "BX 101" (a
+  // rede real são as 12 cidades de BLAXX_POINTS, em 3 verticais). Os slots
+  // ficam; o texto é o que a plataforma faz de verdade.
+  var FOLHA_EMBARQUE = 'assets/blaxx-embarque.css';
+  var CIDADES_NA_REDE = 2;    // São Paulo e Rio de Janeiro, as cidades com parceiros no mapa (home-embarque.html)
+
+  // Pacotes: os literais são o fallback (iguais ao config.py do backend);
+  // /pix/packages atualiza quando responde.
+  var PACOTES = {
+    start: { nome: 'Start', pts: 2000,  preco: 180,  obs: 'PIX ou cartão' },
+    plus:  { nome: 'Plus ★', pts: 5500, preco: 470,  obs: 'cerca de 5% de bônus' },
+    prime: { nome: 'Prime', pts: 12000, preco: 972,  obs: 'cerca de 10% de bônus' }
+  };
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  var UTIL = {
+    esq: [
+      ['on', '● ' + CIDADES_NA_REDE + ' cidades na rede'],
+      ['',   '✳ Resgate em reais via PIX'],
+      ['',   'Sem mensalidade']
+    ],
+    dir: [
+      ['Segurança', 'seguranca.html'],
+      ['Central de ajuda', 'central-ajuda.html']
+    ]
+  };
+
+  // Itens da barra para quem NÃO entrou (o mock). Quem entrou mantém os
+  // links da própria página; os mega-menus se prendem a eles pelo href.
+  var NAV_VISITANTE = [
+    ['Comprar pontos', 'comprar-pontos.html', 'comprar'],
+    ['Parceiros', 'parceiros.html', 'parceiros'],
+    ['Como funciona', 'como-funciona.html', null],
+    ['Ajuda', 'central-ajuda.html', 'ajuda']
+  ];
+  // href → chave do mega-menu (cobre as duplicatas que o site tem)
+  var MEGA_POR_HREF = {
+    'comprar-pontos.html': 'comprar', 'comprar.html': 'comprar', 'comprar-livre.html': 'comprar',
+    'parceiros.html': 'parceiros',
+    'central-ajuda.html': 'ajuda', 'ajuda.html': 'ajuda', 'faq.html': 'ajuda'
+  };
+
+  function megaDados(u) {
+    var p = PACOTES;
+    return {
+      comprar: {
+        cols: [
+          ['PACOTES', [
+            [p.start.nome + ' · ' + fmtPts(p.start.pts) + ' pts', fmtBrl(p.start.preco) + ' · ' + p.start.obs, 'comprar-pontos.html', 'start'],
+            [p.plus.nome  + ' · ' + fmtPts(p.plus.pts)  + ' pts', fmtBrl(p.plus.preco)  + ' · ' + p.plus.obs,  'comprar-pontos.html', 'plus'],
+            [p.prime.nome + ' · ' + fmtPts(p.prime.pts) + ' pts', fmtBrl(p.prime.preco) + ' · ' + p.prime.obs, 'comprar-pontos.html', 'prime']
+          ]],
+          ['OUTRAS FORMAS', [
+            ['Valor livre', 'Escolha quanto quer comprar', 'comprar-livre.html'],
+            ['Enviar pontos', 'Mande para quem quiser', u ? 'enviar.html' : 'como-funciona.html'],
+            ['Resgatar via PIX', 'Pontos em reais na sua conta', u ? 'resgates.html' : 'regras-pontos.html']
+          ]]
+        ],
+        destaque: { tipo: 'neon', rotulo: 'MAIS ESCOLHIDO', num: fmtPts(p.plus.pts), un: 'pts',
+                    txt: p.plus.nome + ' · ' + fmtBrl(p.plus.preco) + ' · ' + p.plus.obs,
+                    ir: 'Comprar →', href: 'comprar-pontos.html', canhoto: 'EMBARCAR' }
+      },
+      parceiros: {
+        cols: [
+          ['CATEGORIAS', [
+            ['Postos', 'Combustível e conveniência', 'parceiros.html?q=postos'],
+            ['Supermercados', 'Compras do dia a dia', 'parceiros.html?q=supermercado'],
+            ['Farmácias', 'Saúde e cuidado', 'parceiros.html?q=farm%C3%A1cia']
+          ]],
+          ['REDE', [
+            ['Mapa da rede', CIDADES_NA_REDE + ' cidades com parceiros', 'home-embarque.html#mapa'],
+            ['Todos os parceiros', 'Lista completa por cidade', 'parceiros.html'],
+            ['Seja parceiro', 'Leve sua marca para a rede', 'contato.html']
+          ]]
+        ],
+        destaque: { tipo: 'painel', rotulo: 'PAINEL DE PARTIDAS',
+                    linhas: ['SÃO PAULO', 'RIO DE JANEIRO'],
+                    ir: CIDADES_NA_REDE + ' cidades · ver mapa →', href: 'home-embarque.html#mapa' }
+      },
+      ajuda: {
+        cols: [
+          ['COMEÇAR', [
+            ['Como funciona', 'Compre, envie e troque', 'como-funciona.html'],
+            ['Regulamento do programa', 'As regras, por extenso', 'regulamento.html'],
+            ['Segurança', 'Como protegemos sua conta', 'seguranca.html']
+          ]],
+          ['SUPORTE', [
+            ['Central de ajuda', 'Perguntas frequentes', 'central-ajuda.html'],
+            ['Falar com a gente', u ? 'Abra um chamado' : 'Fale com a equipe', u ? 'abrir-chamado.html' : 'contato.html'],
+            ['Privacidade e LGPD', 'Seus direitos e dados', 'privacidade.html']
+          ]]
+        ],
+        // "até 1 dia útil" é o prazo que contato, central-ajuda e abrir-chamado
+        // já prometem; o mock dizia "24h", que ninguém promete.
+        destaque: { tipo: 'recibo', linhas: [['ATENDIMENTO', 'por chamado'], ['RESPOSTA', 'até 1 dia útil'], ['CUSTO', 'nenhum']],
+                    ir: (u ? 'Abrir chamado' : 'Falar com a gente') + ' →', href: u ? 'abrir-chamado.html' : 'contato.html' }
+      }
+    };
+  }
+
+  // Rodapé: só o que existe. O rodapé anterior espelhava a Dotz item a item
+  // (decisão de 03/08) e mandava metade dos links para em-breve.html; o design
+  // 3a tem três colunas curtas e todas apontam para páginas reais.
   var RODAPE = [
-    ['Conheça a BlaXx', [
-      ['Conta BlaXx', 'perfil.html'],
+    ['PRODUTO', [
+      ['Comprar pontos', 'comprar-pontos.html'],
+      ['Parceiros', 'parceiros.html'],
+      ['Enviar pontos', 'enviar-pontos.html'],
+      ['Resgatar via PIX', 'resgates.html']
+    ]],
+    ['AJUDA', [
       ['Como funciona', 'como-funciona.html'],
-      ['Como resgatar pontos', 'regras-pontos.html'],
-      ['Plataforma', EB + 'plataforma'],
-      ['Cadastre-se', 'cadastro.html'],
-      ['Fale conosco', 'contato.html'],
+      ['Central de ajuda', 'central-ajuda.html'],
+      ['Falar com a gente', 'contato.html'],
+      ['Segurança', 'seguranca.html']
     ]],
-    ['Ganhe mais pontos', [
-      ['Ganhe em lojas online', EB + 'lojas-online'],
-      ['Ganhe com nossos parceiros', 'parceiros.html'],
-      ['Ganhe com cartões de crédito', EB + 'cartoes'],
-      ['Ganhe com bancos parceiros', EB + 'bancos'],
-      ['Ganhe em lojas físicas', EB + 'lojas-fisicas'],
-      ['Cashback BlaXx', EB + 'cashback'],
-      ['Lembrete de cupons', EB + 'cupons'],
-      ['Programa BlaXx+', EB + 'programa'],
-    ]],
-    ['Use seus pontos', [
-      ['Com produtos', EB + 'produtos'],
-      ['Com viagens', EB + 'viagens'],
-      ['Com pagamento de contas', EB + 'contas'],
-    ]],
-    ['Institucional', [
-      ['Relação com investidores', EB + 'investidores'],
-      ['Trabalhe conosco', EB + 'trabalhe'],
-      ['Seja um parceiro', 'contato.html'],
-      ['Empréstimo pessoal', EB + 'emprestimo'],
-    ]],
+    ['LEGAL', [
+      ['Termos de uso', 'documentos-termos.html'],
+      ['Privacidade', 'privacidade.html'],
+      ['Regulamento do programa', 'regulamento.html'],
+      ['Mapa do site', 'sitemap.html']
+    ]]
   ];
 
   function montarRodape() {
-    var pe = document.querySelector('footer.footer');
+    var pe = document.querySelector('footer.footer, footer.site-footer');
+    // Página com barra e sem <footer> (comprar-livre, em-breve) ficava sem
+    // rodapé; o rodapé é parte do chrome, então ele nasce aqui quando falta.
+    if (!pe && document.querySelector('.topbar')) {
+      pe = document.createElement('footer'); pe.className = 'footer';
+      document.body.appendChild(pe);
+    }
     if (!pe || pe.getAttribute('data-bxnav')) return false;
 
-    var html =
-      '<div class="footer-inner">' +
-        '<div>' +
-          '<div class="brand"><span class="mark">BlaXx</span></div>' +
-          '<p class="about">Compre pontos, envie para quem quiser e resgate em ' +
-          'dinheiro de verdade, direto na sua conta via PIX.</p>' +
-        '</div>';
+    var html = '<div class="bx-foot"><div class="bx-zig"></div><div class="bx-foot-corpo">' +
+      '<div class="bx-foot-marca">' +
+        '<a href="index.html" aria-label="BlaXx Pontos"><img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards"></a>'   /* rodapé preto: "Bla" branco */ +
+        '<p>Compre pontos, envie para quem quiser e resgate em dinheiro de verdade, ' +
+        'direto na sua conta via PIX. Sem letra miúda.</p>' +
+      '</div>';
     RODAPE.forEach(function (col) {
-      html += '<div><h4>' + esc(col[0]) + '</h4><ul>';
+      html += '<div class="bx-foot-col"><h4>' + esc(col[0]) + '</h4>';
       col[1].forEach(function (it) {
-        html += '<li><a href="' + esc(it[1]) + '">' + esc(it[0]) + '</a></li>';
+        html += '<a href="' + esc(it[1]) + '">' + esc(it[0]) + '</a>';
       });
-      html += '</ul></div>';
+      html += '</div>';
     });
-    html += '</div>';
+    html += '</div><div class="bx-foot-base">' +
+      '<span>© 2026 BlaXx Pontos</span>' +
+      '<span class="bx-barcode" aria-hidden="true"></span>' +
+      '<span class="bx-foot-aviso">Os pontos BlaXx não são moeda, depósito, investimento, valor mobiliário ' +
+      'ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</span>' +
+      '</div><div class="bx-zig bx-zig--baixo"></div></div>';
     pe.innerHTML = html;
     pe.setAttribute('data-bxnav', '1');
     return true;
+  }
+
+  // A folha do tema precisa estar no <link> de cada página (sem piscar). Isto
+  // é a rede de segurança para a página que ficou de fora.
+  function garantirFolha() {
+    if (document.querySelector('link[href$="' + FOLHA_EMBARQUE + '"]')) return;
+    var l = document.createElement('link');
+    l.rel = 'stylesheet'; l.href = FOLHA_EMBARQUE;
+    document.head.appendChild(l);
+  }
+
+  function montarUtil(barra) {
+    if (document.querySelector('.bx-util')) return;
+    var el = document.createElement('div');
+    el.className = 'bx-util';
+    var html = '<div class="bx-util-in"><div class="bx-util-grupo">';
+    UTIL.esq.forEach(function (it) { html += '<span class="' + it[0] + '">' + esc(it[1]) + '</span>'; });
+    html += '</div><div class="bx-util-grupo">';
+    UTIL.dir.forEach(function (it) { html += '<a href="' + esc(it[1]) + '">' + esc(it[0]) + '</a>'; });
+    html += '<span lang="pt-BR">PT-BR</span></div></div>';
+    el.innerHTML = html;
+    barra.parentNode.insertBefore(el, barra);
+  }
+
+  // chrome.js monta a topbar com filhos diretos em flex; para a barra
+  // nascer com a mesma anatomia do topbar inline, os filhos vão para um
+  // contêiner único.
+  function envolverTopo(barra) {
+    if (barra.querySelector('.nav, .bx-topo')) return barra.querySelector('.nav, .bx-topo');
+    var topo = document.createElement('div');
+    topo.className = 'bx-topo';
+    while (barra.firstChild) topo.appendChild(barra.firstChild);
+    barra.appendChild(topo);
+    return topo;
+  }
+
+  // A barra é preta: qualquer wordmark de fundo claro que a página traga no
+  // HTML vira a variante escura ("Bla" branco, "Xx" neon).
+  function normalizarMarca(barra) {
+    barra.querySelectorAll('img[src*="blaxx-wordmark-claro"]').forEach(function (img) {
+      img.src = img.src.replace(/blaxx-wordmark-claro(-neon)?\.svg/, 'blaxx-wordmark.svg');
+    });
+  }
+
+  function montarNavVisitante(topo) {
+    var links = topo.querySelector('.links, .topnav');
+    if (!links) return;
+    var atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var html = '';
+    NAV_VISITANTE.forEach(function (it) {
+      var ativo = it[1].toLowerCase() === atual ? ' aria-current="page"' : '';
+      html += '<a href="' + esc(it[1]) + '"' + ativo + '>' + esc(it[0]) + '</a>';
+    });
+    links.innerHTML = html;
+  }
+
+  function montarAcoesVisitante(topo) {
+    var dir = topo.querySelector('.cta-row, .topbar__right');
+    if (!dir) return;
+    if (dir.querySelector('a[href="login.html"], a[href="cadastro.html"]')) return;
+    dir.querySelectorAll('.user-pill, .nav-user, .nav-bell').forEach(function (n) { n.remove(); });
+    dir.insertAdjacentHTML('beforeend',
+      '<a class="bx-entrar" href="login.html">Entrar</a>' +
+      '<a class="bx-criar" href="cadastro.html">Criar conta</a>');
+  }
+
+  function montarBusca(topo) {
+    if (topo.querySelector('.bx-busca')) return;
+    var f = document.createElement('form');
+    f.className = 'bx-busca'; f.action = 'parceiros.html'; f.method = 'get';
+    f.setAttribute('role', 'search');
+    f.innerHTML = '<span class="lupa" aria-hidden="true"></span>' +
+      '<input type="search" name="q" placeholder="Buscar parceiro, destino ou voucher" aria-label="Buscar parceiro, destino ou voucher" autocomplete="off">' +
+      '<kbd aria-hidden="true">/</kbd>';
+    var dir = topo.querySelector('.cta-row, .topbar__right');
+    if (dir) topo.insertBefore(f, dir); else topo.appendChild(f);
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key !== '/' || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      var a = document.activeElement, tag = a && a.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (a && a.isContentEditable)) return;
+      ev.preventDefault(); f.querySelector('input').focus();
+    });
+  }
+
+  function megaHtml(chave, d) {
+    var html = '<div class="bx-mega" id="bxMega-' + chave + '" hidden><div class="bx-mega-in">';
+    d.cols.forEach(function (col) {
+      html += '<div class="bx-mega-col"><span class="bx-mega-rotulo">' + esc(col[0]) + '</span>';
+      col[1].forEach(function (it) {
+        html += '<a class="bx-mega-item" href="' + esc(it[2]) + '"' + (it[3] ? ' data-pkg="' + it[3] + '"' : '') + '>' +
+          '<b>' + esc(it[0]) + '</b><span>' + esc(it[1]) + '</span></a>';
+      });
+      html += '</div>';
+    });
+    var x = d.destaque;
+    if (x.tipo === 'neon') {
+      html += '<a class="bx-mega-neon" href="' + esc(x.href) + '" data-pkg="plus"><div class="miolo">' +
+        '<span class="bx-rotulo">' + esc(x.rotulo) + '</span>' +
+        '<span class="num"><span data-pts>' + esc(x.num) + '</span> <small>' + esc(x.un) + '</small></span>' +
+        '<span data-txt>' + esc(x.txt) + '</span><span class="ir">' + esc(x.ir) + '</span></div>' +
+        '<div class="bx-canhoto"><span class="bx-vert">' + esc(x.canhoto) + '</span></div></a>';
+    } else if (x.tipo === 'painel') {
+      html += '<div class="bx-mega-painel"><span class="bx-rotulo">' + esc(x.rotulo) + '</span>';
+      x.linhas.forEach(function (c) { html += '<div class="linha"><span>' + esc(c) + '</span><i>✓</i></div>'; });
+      html += '<a class="ir" href="' + esc(x.href) + '">' + esc(x.ir) + '</a></div>';
+    } else {
+      html += '<div class="bx-mega-recibo"><div class="bx-zig" style="--bx-zig-cor:#F4F2EC"></div><div class="corpo">';
+      x.linhas.forEach(function (l) { html += '<div class="bx-leader"><span>' + esc(l[0]) + '</span><i></i><span>' + esc(l[1]) + '</span></div>'; });
+      html += '<a class="ir" href="' + esc(x.href) + '">' + esc(x.ir) + '</a></div></div>';
+    }
+    return html + '</div></div>';
+  }
+
+  function montarMega(barra, topo, u) {
+    if (barra.getAttribute('data-bx-mega')) return;
+    var links = topo.querySelectorAll('.links a, .topnav a');
+    if (!links.length) return;
+    var dados = megaDados(u), montados = {}, abertos = null, temporizador = null;
+
+    links.forEach(function (a) {
+      var href = (a.getAttribute('href') || '').split(/[?#]/)[0].toLowerCase();
+      var chave = MEGA_POR_HREF[href];
+      if (!chave || !dados[chave] || montados[chave]) return;
+      barra.insertAdjacentHTML('beforeend', megaHtml(chave, dados[chave]));
+      var painel = barra.querySelector('#bxMega-' + chave);
+      montados[chave] = painel;
+      a.setAttribute('aria-haspopup', 'true');
+      a.setAttribute('aria-expanded', 'false');
+      a.setAttribute('aria-controls', 'bxMega-' + chave);
+      a.insertAdjacentHTML('beforeend', ' <i class="bx-caret" aria-hidden="true"></i>');
+
+      function abrir() {
+        if (abertos && abertos !== chave) fechar();
+        painel.hidden = false; a.setAttribute('aria-expanded', 'true'); abertos = chave;
+      }
+      function fechar() {
+        if (!abertos) return;
+        var p = montados[abertos], g = barra.querySelector('[aria-controls="bxMega-' + abertos + '"]');
+        p.hidden = true; if (g) g.setAttribute('aria-expanded', 'false'); abertos = null;
+      }
+      // Clique alterna (teclado e toque); o cursor abre com um atraso curto
+      // para não disparar ao atravessar a barra, e fecha ao sair do par
+      // gatilho+painel. O primeiro clique num item com painel abre o painel
+      // em vez de navegar: a página do item está dentro do próprio painel.
+      a.addEventListener('click', function (ev) {
+        if (window.innerWidth <= LARGURA_DESKTOP) return;
+        ev.preventDefault();
+        if (abertos === chave) fechar(); else abrir();
+      });
+      [a, painel].forEach(function (el) {
+        el.addEventListener('pointerenter', function (ev) {
+          if (ev.pointerType === 'touch' || window.innerWidth <= LARGURA_DESKTOP) return;
+          clearTimeout(temporizador); temporizador = setTimeout(abrir, 120);
+        });
+        el.addEventListener('pointerleave', function (ev) {
+          if (ev.pointerType === 'touch') return;
+          clearTimeout(temporizador); temporizador = setTimeout(function () { if (abertos === chave) fechar(); }, 180);
+        });
+      });
+      painel.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { fechar(); a.focus(); } });
+      a.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape') fechar();
+        if (ev.key === 'ArrowDown' && abertos === chave) { ev.preventDefault(); var f = painel.querySelector('a'); if (f) f.focus(); }
+      });
+      painel.addEventListener('focusout', function (ev) {
+        if (!painel.contains(ev.relatedTarget) && ev.relatedTarget !== a) fechar();
+      });
+      document.addEventListener('click', function (ev) {
+        if (abertos === chave && !painel.contains(ev.target) && !a.contains(ev.target)) fechar();
+      });
+    });
+    barra.setAttribute('data-bx-mega', '1');
+    if (Object.keys(montados).length) barra.classList.add('bx-com-mega');
+
+    // preços reais, quando a API responde; o fallback do HTML continua valendo
+    if (montados.comprar && window.BLAXX_API) {
+      fetch(window.BLAXX_API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function (d) {
+          Object.keys(PACOTES).forEach(function (k) {
+            var pk = d[k]; if (!pk) return;
+            var item = montados.comprar.querySelector('.bx-mega-item[data-pkg="' + k + '"]');
+            if (item && pk.points != null) item.querySelector('b').textContent = PACOTES[k].nome + ' · ' + fmtPts(pk.points) + ' pts';
+            if (item && pk.price_brl != null) item.querySelector('span').textContent = fmtBrl(pk.price_brl) + ' · ' + PACOTES[k].obs;
+          });
+          var pl = d.plus, neon = montados.comprar.querySelector('.bx-mega-neon');
+          if (pl && neon) {
+            if (pl.points != null) neon.querySelector('[data-pts]').textContent = fmtPts(pl.points);
+            if (pl.price_brl != null) neon.querySelector('[data-txt]').textContent = PACOTES.plus.nome + ' · ' + fmtBrl(pl.price_brl) + ' · ' + PACOTES.plus.obs;
+          }
+        })
+        .catch(function () {});
+    }
+  }
+
+  function montarChromeEmbarque(barra, u) {
+    garantirFolha();
+    var topo = envolverTopo(barra);
+    normalizarMarca(barra);
+    if (!barra.getAttribute('data-bx-embarque')) {
+      montarUtil(barra);
+      if (!u) { montarNavVisitante(topo); montarAcoesVisitante(topo); }
+      montarBusca(topo);
+      barra.setAttribute('data-bx-embarque', '1');
+    }
+    montarMega(barra, topo, u);
   }
 
   function sair() {
@@ -212,8 +521,8 @@
   }
 
   // Lado da gaveta: ESQUERDA logado, DIREITA visitante. Antes cada sistema
-  // decidia sozinho — chrome.js abria à esquerda, blaxx-app.js e esta à
-  // direita — então a mesma área logada abria de um lado ou do outro conforme
+  // decidia sozinho, chrome.js abria à esquerda, blaxx-app.js e esta à
+  // direita, então a mesma área logada abria de um lado ou do outro conforme
   // a página. A marcação vai no <html> para que valha também para a gaveta do
   // chrome.js, que não é construída aqui.
   function marcarLado(u) {
@@ -224,24 +533,28 @@
 
   function iniciar() {
     // Qualquer barra serve para marcar lado e prender no app. O chrome.js monta
-    // `<div class="topbar">` SEM `.nav` dentro — exigir `.nav` aqui deixava as
+    // `<div class="topbar">` SEM `.nav` dentro, exigir `.nav` aqui deixava as
     // 23 páginas dele de fora justamente da regra de lado, que é onde a
     // inconsistência aparecia.
     var barra = document.querySelector('.topbar');
-    if (!barra) return;
-
     var u = usuario();
 
     // Vale para TODA página com barra, inclusive as que já têm gaveta própria:
     // o lado e a prisão no app não dependem de quem construiu o menu.
-    marcarLado(u);
+    if (barra) {
+      marcarLado(u);
+      montarChromeEmbarque(barra, u);
+    }
+    // O rodapé não depende da barra: página sem topbar (regulamento, parceiro,
+    // 404) ganha o rodapé-recibo se trouxer <footer class="footer"> no HTML.
     montarRodape();
     // DEPOIS do rodapé: ele acabou de inserir links, e alguns (Conta BlaXx,
     // Cadastre-se) sairiam do app para quem já está logado.
     if (u) prenderNoApp();
+    if (!barra) return;
 
     // `.drawer` cobre chrome.js e a landing, que têm gaveta própria e menu
-    // próprio — ali não se constrói outra. O `.bx-drawer` do blaxx-app.js NÃO
+    // próprio, ali não se constrói outra. O `.bx-drawer` do blaxx-app.js NÃO
     // entra nesta lista de propósito: ele cede a nós (ver installHamburgerMenu),
     // para que as 49 páginas inline tenham UMA gaveta só, e a mesma.
     if (document.querySelector('.drawer, #' + ID_GAVETA)) return;
@@ -262,7 +575,7 @@
 
     // DENTRO do .cta-row, não como irmão: no mobile o .nav vira grid
     // (`1fr auto`) e um filho direto sem coluna atribuída é auto-posicionado e
-    // esticado — o botão saía com 143px de largura em vez de 44. Como item
+    // esticado, o botão saía com 143px de largura em vez de 44. Como item
     // flex do .cta-row ele respeita o próprio tamanho e fica junto das demais
     // ações, que é onde o usuário procura.
     var cta = nav.querySelector('.cta-row');
@@ -290,7 +603,7 @@
       if (abrir) {
         gaveta.hidden = false;
         // Reflow forçado em vez de requestAnimationFrame: rAF é suspenso em
-        // aba oculta, e ali a classe nunca era aplicada — a gaveta ficava
+        // aba oculta, e ali a classe nunca era aplicada, a gaveta ficava
         // `hidden=false` porém fora da tela, sem foco e sem como fechar pelo
         // scrim. Ler offsetWidth obriga o layout a assentar, o que faz a
         // transição rodar, e é síncrono.
@@ -308,7 +621,7 @@
         // setTimeout(0), não rAF: o clique devolve o foco ao próprio botão
         // depois do handler, então focar de forma síncrona aqui é desfeito e o
         // teclado fica preso fora de um diálogo aria-modal. A macrotarefa roda
-        // depois disso — e, ao contrário do rAF, roda também em aba oculta.
+        // depois disso, e, ao contrário do rAF, roda também em aba oculta.
         setTimeout(function () {
           var primeiro = gaveta.querySelector('a, button');
           if (primeiro) primeiro.focus();
@@ -343,8 +656,7 @@
     });
 
     window.addEventListener('resize', function () {
-      // No desktop os links horizontais reaparecem e a gaveta perde o sentido —
-      // deixá-la aberta prenderia o scroll do body sobre o conteúdo.
+      // No desktop os links horizontais reaparecem e a gaveta perde o sentido,       // deixá-la aberta prenderia o scroll do body sobre o conteúdo.
       if (window.innerWidth > LARGURA_DESKTOP && !gaveta.hidden) alternar(false);
     });
   }

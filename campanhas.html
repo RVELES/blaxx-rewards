@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Campanhas</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { margin-bottom: 24px; }
   .cgrid { display:grid; grid-template-columns: repeat(2,1fr); gap:18px; }
@@ -12,11 +15,13 @@
   .camp__top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:12px; }
   .camp__title { font-family: var(--font-display); font-weight:900; font-size: 20px; letter-spacing:-.01em; }
   .camp__sub { font-size:13.5px; color: var(--fg-muted); margin-top:4px; }
-  .camp__reward { font-family: var(--font-mono); font-weight:700; font-size:14px; color: var(--lime-deep); white-space:nowrap; }
+  /* Recompensa em pílula neon com texto tinta: o verde escuro como TEXTO sobre
+     o cartão claro reprovava contraste. */
+  .camp__reward { font-family: var(--font-mono); font-weight:700; font-size:14px; color: var(--bx-ink); background: var(--bx-neon); padding:5px 10px; border-radius: var(--bx-r-xxs); line-height:1.2; white-space:nowrap; }
   .camp__prog { margin-top:auto; padding-top:18px; }
   .camp__meta { display:flex; justify-content:space-between; font-family: var(--font-mono); font-size:11.5px; color: var(--fg-muted); margin-bottom:9px; }
-  .bar { height:8px; border-radius:999px; background: var(--line); overflow:hidden; }
-  .bar__fill { height:100%; border-radius:999px; background: linear-gradient(90deg,var(--lime-deep),var(--lime)); width:0; transition: width 1s var(--ease-out); }
+  .bar { height:10px; border-radius:999px; background: var(--bx-surface-2); border:1px solid var(--bx-line); overflow:hidden; }
+  .bar__fill { height:100%; border-radius:999px; background: var(--bx-neon); width:0; transition: width 1s var(--ease-out); }
   .camp__foot { display:flex; align-items:center; justify-content:space-between; margin-top:16px; gap:10px; }
   .time-tag { font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); background: rgba(232,169,51,.15); color:#8a6a00; }
   .done-tag { background: var(--lime); color: var(--ink); font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); }
@@ -63,7 +68,7 @@
       var pct = c.completed_at ? 100 : (c.progress_pct||0);
       var dl = daysLeft(c.period_end);
       var foot;
-      if (c.completed_at){ foot = '<span class="done-tag">✓ CONCLUÍDA</span>'; }
+      if (c.completed_at){ foot = '<span class="done-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M4 12.5 9.5 18 20 6"/></svg> CONCLUÍDA</span>'; }
       else if (!c.joined){ foot = '<button class="btn btn--primary btn--sm" data-join="'+c.id+'">Participar →</button>'; }
       else { foot = '<span class="time-tag">EM ANDAMENTO</span>'; }
       var timeInfo = (dl!==null && dl>=0 && !c.completed_at) ? ('<span class="time-tag">'+(dl===0?'ÚLTIMO DIA':('FALTAM '+dl+' DIAS'))+'</span>') : '<span></span>';

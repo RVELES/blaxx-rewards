@@ -1,10 +1,10 @@
-/* blaxx-nav-user.js — normaliza o lado direito da navegação.
+/* blaxx-nav-user.js, normaliza o lado direito da navegação.
  *
  * POR QUE ESTE ARQUIVO EXISTE
  * ---------------------------
  * O PWA tem DOIS sistemas de navegação que não se conversam:
  *
- *   A) `chrome.js` injeta `.topbar > .topbar__right` em 23 páginas — com sino
+ *   A) `chrome.js` injeta `.topbar > .topbar__right` em 23 páginas, com sino
  *      em SVG e uma `.user-pill` cujo avatar e nome estavam **hardcoded**
  *      ("R" / "Olá, Ricardo").
  *   B) 48 páginas trazem `<header class="topbar"><nav class="nav">` copiada
@@ -121,7 +121,7 @@
     if (!saudacao) return;
     if (!u) { saudacao.style.display = 'none'; return; }
 
-    // Estrutura final: [inicial no círculo][nome — some no mobile via CSS]
+    // Estrutura final: [inicial no círculo][nome, some no mobile via CSS]
     saudacao.textContent = '';
     saudacao.classList.add('nav-user');
     saudacao.setAttribute('href', 'perfil.html');

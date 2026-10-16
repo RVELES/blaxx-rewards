@@ -6,18 +6,22 @@
 <title>BlaXx · Entrar</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e vence a cascata. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   body { background: var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
   /* Barra preta: a marca oficial tem "Bla" BRANCO e não sobrevive sobre o
-     papel — medido aqui: 1,25:1 no "Bla" e 1,08:1 no "Xx", ou seja, a logo
+     papel, medido aqui: 1,25:1 no "Bla" e 1,08:1 no "Xx", ou seja, a logo
      inteira era invisível nesta tela. O link auxiliar também estava em neon
-     sobre claro (1,08:1). Sobre preto, ambos passam com folga. */
+     sobre claro (1,08:1). Sobre preto, ambos passam com folga.
+     No tema Embarque esta barra faz o papel da barra utilitária (.bx-util):
+     preta, texto no cinza da barra, sem a borda grossa do brutalismo. */
   .auth-top { display: flex; align-items: center; justify-content: space-between;
               gap: 16px; flex-wrap: wrap; padding: 18px 28px;
-              background: var(--ink); border-bottom: 4px solid var(--ink); }
+              background: var(--bx-ink); border-bottom: 0; }
   .auth-top img { height: 30px; width: auto; display: block; }
-  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: #cfd2cb; }
-  .auth-top a.alt b { color: var(--lime); }   /* neon sobre preto: 14,5:1 */
+  .auth-top a.alt { font-size: 13.5px; font-weight: 600; color: var(--bx-bar-fg); }
+  .auth-top a.alt b { color: var(--bx-neon); }   /* neon sobre preto: 14,5:1 */
   .auth-wrap { flex: 1; display: grid; place-items: center; padding: 24px; }
   .auth { width: 100%; max-width: 420px; padding: 36px; animation: rise .5s var(--ease-out) both; }
   .auth h1 { font-family: var(--font-display); font-weight: 900; font-size: 30px; letter-spacing: -0.02em; margin: 0 0 4px; }
@@ -25,7 +29,8 @@
   .f { margin-bottom: 16px; }
   .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
   .f input { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 13px 14px; font-family: var(--font-body); font-size: 14.5px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
-  .f input:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  /* Foco como na folha do tema: contorno tinta + anel neon translúcido. */
+  .f input:focus { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
   .row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin: 4px 0 20px; }
   .row a { font-weight: 700; text-decoration: underline; }
   .auth-foot { text-align: center; padding: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
@@ -62,7 +67,7 @@
         <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
       </div>
       <div class="row">
-        <label style="display:flex;align-items:center;gap:7px;color:var(--fg-muted)"><input type="checkbox" checked style="accent-color:var(--lime-deep)"> Lembrar de mim</label>
+        <label style="display:flex;align-items:center;gap:7px;color:var(--bx-grey);font-family:var(--bx-sans);font-size:13px;text-transform:none;letter-spacing:0"><input type="checkbox" checked style="accent-color:var(--lime-deep)"> Lembrar de mim</label>
         <a href="recuperar-senha.html">Esqueci a senha</a>
       </div>
       <div class="f" id="mfaWrap" style="display:none">
@@ -99,7 +104,7 @@
 
     // Destino pós-login: honra ?next= do requireAuth(), mas só caminhos
     // internos (começando com "/" e sem "//") pra evitar open redirect.
-    // Default: dashboard.html — index.html é a landing (shadow no netlify.toml).
+    // Default: dashboard.html, index.html é a landing (shadow no netlify.toml).
     function nextUrl(){
       try {
         var n = new URLSearchParams(location.search).get('next') || '';
@@ -128,7 +133,7 @@
     }
 
     // Se já está logado, vai direto pro app. Sessões antigas gravaram só
-    // blaxx_session — backfill das chaves do app antes de redirecionar.
+    // blaxx_session, backfill das chaves do app antes de redirecionar.
     try {
       var _s = JSON.parse(localStorage.getItem('blaxx_session')||'null');
       if (_s && _s.token) { saveSession(_s); location.replace(nextUrl()); }
@@ -151,7 +156,7 @@
             location.href = nextUrl(); return;
           }
           if (res.s === 401 && res.j.mfa_required){ $('mfaWrap').style.display='block'; showErr('Informe o código de verificação (2FA).'); return; }
-          if (res.j && res.j.mfa_challenge_token){ showErr('2FA por SMS ativo — conclua pelo app oficial.'); return; }
+          if (res.j && res.j.mfa_challenge_token){ showErr('2FA por SMS ativo, conclua pelo app oficial.'); return; }
           if (res.s === 423){ showErr(res.j.error || 'Conta bloqueada temporariamente. Tente mais tarde.'); return; }
           showErr((res.j && res.j.error) || 'Não foi possível entrar.');
         })

@@ -5,41 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin · BlaXx</title>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  body { background: #faf8f3; }
+  /* Tema "Embarque": as cores fixas da paleta antiga (#faf8f3, #F4F4F0,
+     #e6eadf, #5f665e, #080907…) viram tokens --bx-*, os rótulos de tabela
+     vão para Space Mono e nada aqui briga com assets/blaxx-embarque.css. */
+  body { background: var(--bx-bg); }
   .admin-shell { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 14px; margin-bottom: 28px; }
-  .stat-card { background: #F4F4F0; border: 1px solid #e6eadf; border-radius: 14px; padding: 18px; }
-  .stat-card .label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #5f665e; font-weight: 600; }
-  .stat-card .value { font-size: 28px; font-weight: 800; color: #080907; margin-top: 6px; }
-  .stat-card .subtitle { font-size: 12px; color: #8a918a; margin-top: 4px; }
-  table.admin-tbl { width: 100%; background: #F4F4F0; border: 1px solid #e6eadf; border-radius: 14px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
-  .admin-tbl th { background: #f0f3eb; padding: 12px 14px; text-align: left; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: #5f665e; }
-  .admin-tbl td { padding: 12px 14px; border-top: 1px solid #f0f3eb; font-size: 14px; }
-  .admin-tbl tr:hover td { background: #fafcf3; }
-  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-  .badge.admin { background: #080907; color: #59FD27; }
-  .badge.vip { background: #fff7df; color: #8a6500; }
-  .badge.verified { background: #efffe6; color: #2d651b; }
-  .badge.unverified { background: #ffede8; color: #a83417; }
+  .stat-card { background: var(--bx-surface); border: 1px solid var(--bx-line); border-radius: var(--bx-r-md); padding: 18px; }
+  .stat-card .label { font-family: var(--bx-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bx-grey); font-weight: 400; }
+  .stat-card .value { font-size: 28px; font-weight: 800; letter-spacing: -.02em; color: var(--bx-ink); margin-top: 6px; }
+  .stat-card .subtitle { font-size: 12px; color: var(--bx-grey); margin-top: 4px; }
+  table.admin-tbl { width: 100%; background: var(--bx-surface); border: 1px solid var(--bx-line); border-radius: var(--bx-r-md); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  .admin-tbl th { background: var(--bx-surface-2); padding: 12px 14px; text-align: left; font-family: var(--bx-mono); font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bx-grey); }
+  .admin-tbl td { padding: 12px 14px; border-top: 1px solid var(--bx-line); font-size: 14px; }
+  .admin-tbl tr:hover td { background: var(--bx-surface-2); }
+  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-family: var(--bx-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+  .badge.admin { background: var(--bx-ink); color: var(--bx-neon); }
+  .badge.vip { background: var(--bx-neon); color: var(--bx-ink); }
+  .badge.verified { background: var(--ok); color: var(--ok-text); }
+  .badge.unverified { background: var(--danger); color: var(--danger-text); }
   .toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
-  .toolbar input[type="search"] { flex: 1; min-width: 240px; padding: 10px 14px; border: 1px solid #e6eadf; border-radius: 10px; font-size: 14px; background: #F4F4F0; }
-  .toolbar select { padding: 10px 14px; border: 1px solid #e6eadf; border-radius: 10px; font-size: 14px; background: #F4F4F0; }
-  .tab-row { display: flex; gap: 8px; border-bottom: 1px solid #e6eadf; margin-bottom: 18px; }
-  .tab-row button { background: none; border: none; padding: 12px 16px; cursor: pointer; font-size: 14px; font-weight: 600; color: #5f665e; border-bottom: 2px solid transparent; }
-  .tab-row button.active { color: #080907; border-bottom-color: #59FD27; }
+  .toolbar input[type="search"] { flex: 1; min-width: 240px; padding: 10px 14px; border: 1px solid var(--bx-line); border-radius: var(--bx-r-xs); font-size: 14px; background: var(--bx-surface); }
+  .toolbar select { padding: 10px 14px; border: 1px solid var(--bx-line); border-radius: var(--bx-r-xs); font-size: 14px; background: var(--bx-surface); }
+  /* As abas quebram linha no celular: seis rótulos numa linha só estouravam
+     a largura da tela (regra do projeto: zero rolagem horizontal em 375px). */
+  .tab-row { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--bx-line); margin-bottom: 18px; }
+  .tab-row button { background: none; border: none; padding: 12px 16px; cursor: pointer; font-family: var(--bx-sans); font-size: 14px; font-weight: 600; color: var(--bx-grey); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab-row button.active { color: var(--bx-ink); border-bottom-color: var(--bx-ink); }
   .vip-toggle { position: relative; display: inline-block; width: 44px; height: 22px; cursor: pointer; }
   .vip-toggle input { opacity: 0; width: 0; height: 0; }
-  .vip-toggle .slider { position: absolute; inset: 0; background: #d4d4d8; border-radius: 22px; transition: .2s; }
-  .vip-toggle .slider::before { content: ""; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: .2s; }
-  .vip-toggle input:checked + .slider { background: #59FD27; }
+  .vip-toggle .slider { position: absolute; inset: 0; background: var(--bx-line); border-radius: 22px; transition: .2s; }
+  .vip-toggle .slider::before { content: ""; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: var(--bx-surface); border-radius: 50%; transition: .2s; }
+  .vip-toggle input:checked + .slider { background: var(--bx-neon); }
   .vip-toggle input:checked + .slider::before { transform: translateX(22px); }
-  .empty-state { padding: 40px; text-align: center; color: #8a918a; }
-  .pager { display: flex; justify-content: space-between; margin-top: 16px; align-items: center; font-size: 13px; color: #5f665e; }
-  .pager button { padding: 6px 14px; border: 1px solid #e6eadf; background: #F4F4F0; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .empty-state { padding: 40px; text-align: center; color: var(--bx-grey); }
+  .pager { display: flex; justify-content: space-between; margin-top: 16px; align-items: center; font-size: 13px; color: var(--bx-grey); }
+  .pager button { padding: 6px 14px; border: 1px solid var(--bx-line); background: var(--bx-surface); border-radius: var(--bx-r-xxs); cursor: pointer; font-family: var(--bx-sans); font-size: 13px; }
   .pager button[disabled] { opacity: .4; cursor: not-allowed; }
-  .tx-amount.pos { color: #2d651b; font-weight: 700; }
-  .tx-amount.neg { color: #a83417; font-weight: 700; }
+  .tx-amount.pos { color: var(--ok-text); font-weight: 700; }
+  .tx-amount.neg { color: var(--danger-text); font-weight: 700; }
+  /* Avisos amarelos: #F7EFD6 é o --warn da família A em blaxx-embarque.css,
+     sombreado pela redeclaração de --warn (cor de texto) no mesmo :root. */
+  .aviso-amarelo { background: #F7EFD6; border: 1px solid rgba(122,90,0,.35); color: var(--warn-text); }
+  @media (max-width: 720px) {
+    .admin-shell { padding: 20px 16px; }
+    /* Tabelas de 6 a 8 colunas rolam dentro da própria caixa, não a página. */
+    table.admin-tbl { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Admin","item":"https://blaxxpontos.com.br/admin.html"}]}
@@ -52,7 +66,7 @@
       <span class="mark">BlaXx</span>
     </a>
     <div class="cta-row">
-      <span id="admin-name" style="font-size:13px;color:#5f665e;margin-right:8px;"></span>
+      <span id="admin-name" style="font-size:13px;color:var(--bx-grey);margin-right:8px;"></span>
       <a class="button ghost" href="/dashboard">Voltar</a>
       <button class="button" onclick="adminLogout()">Sair</button>
     </div>
@@ -61,7 +75,7 @@
 
 <div class="admin-shell">
   <h1 style="font-size:32px;margin-bottom:4px;">Painel do Administrador</h1>
-  <p style="color:#5f665e;margin-bottom:24px;">Visão geral e gestão de usuários, transações e VIPs.</p>
+  <p style="color:var(--bx-grey);margin-bottom:24px;">Visão geral e gestão de usuários, transações e VIPs.</p>
 
   <!-- Stats -->
   <div class="stats-grid" id="stats-grid">
@@ -73,10 +87,10 @@
     <button class="active" data-tab="users" onclick="switchTab('users')">Usuários</button>
     <button data-tab="transactions" onclick="switchTab('transactions')">Movimentações</button>
     <button data-tab="payments" onclick="switchTab('payments')">
-      Pagamentos pendentes <span id="pending-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
+      Pagamentos pendentes <span id="pending-count" style="background:var(--danger-text);color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
     <button data-tab="payouts" onclick="switchTab('payouts')">
-      Resgates PIX <span id="payouts-count" style="background:#a83417;color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
+      Resgates PIX <span id="payouts-count" style="background:var(--danger-text);color:#fff;padding:1px 7px;border-radius:99px;font-size:11px;margin-left:4px;display:none;">0</span>
     </button>
     <button data-tab="packages" onclick="switchTab('packages')">Pacotes</button>
     <button data-tab="merchants" onclick="switchTab('merchants')">Redes B2B</button>
@@ -122,7 +136,7 @@
 
   <!-- Tab: Payments (PIX manual pendente) -->
   <div id="tab-payments" style="display:none;">
-    <p style="color:#5f665e;font-size:13px;margin-bottom:12px;">
+    <p style="color:var(--bx-grey);font-size:13px;margin-bottom:12px;">
       Usuários que pagaram via PIX e estão aguardando confirmação. Confirme no extrato bancário e clique <b>Confirmar</b> para liberar os pontos.
     </p>
     <table class="admin-tbl">
@@ -141,7 +155,7 @@
 
   <!-- Tab: Payouts (venda/resgate PIX aguardando execução manual) -->
   <div id="tab-payouts" style="display:none;">
-    <p style="color:#5f665e;font-size:13px;margin-bottom:12px;">
+    <p style="color:var(--bx-grey);font-size:13px;margin-bottom:12px;">
       Resgates em que os pontos já foram <b>debitados</b> e aguardam a transferência PIX.
       Faça o PIX no banco para a chave indicada, cole o <b>EndToEndID</b> do comprovante e clique <b>Confirmar</b>.
       Se a chave for inválida, clique <b>Falhou</b> para <b>estornar</b> os pontos automaticamente.
@@ -197,16 +211,16 @@
 
   <!-- Tab: Packages (preços de pacotes editáveis) -->
   <div id="tab-packages" style="display:none;">
-    <p style="color:#5f665e;font-size:13px;margin-bottom:8px;">
+    <p style="color:var(--bx-grey);font-size:13px;margin-bottom:8px;">
       Preços dos pacotes de pontos exibidos na landing e cobrados na compra.
     </p>
-    <p style="background:#fff7df;border:1px solid #f0d98a;color:#8a6500;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;">
+    <p class="aviso-amarelo" style="font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;">
       ⚠️ Alterar o preço muda o valor cobrado do cliente no PIX. Editar salva como <b>rascunho</b>; só vai ao ar ao <b>Publicar</b>.
     </p>
     <div id="packages-toolbar" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
       <button id="pkg-publish-btn" class="button" onclick="publishPackages(this)" disabled style="font-size:13px;padding:8px 16px;">Publicar alterações</button>
-      <button id="pkg-discard-btn" class="button" onclick="discardDrafts(this)" disabled style="font-size:13px;padding:8px 16px;background:#2a2a2a;">Descartar rascunhos</button>
-      <span id="pkg-pending" style="font-size:12px;color:#8a6500;font-weight:600;"></span>
+      <button id="pkg-discard-btn" class="button" onclick="discardDrafts(this)" disabled style="font-size:13px;padding:8px 16px;background:var(--bx-ink);color:var(--bx-surface);">Descartar rascunhos</button>
+      <span id="pkg-pending" style="font-size:12px;color:var(--warn-text);font-weight:600;"></span>
     </div>
     <table class="admin-tbl">
       <thead>
@@ -225,11 +239,11 @@
 
   <!-- Tab: Redes B2B -->
   <div id="tab-merchants" style="display:none;">
-    <p style="color:#5f665e;font-size:13px;margin-bottom:8px;">
+    <p style="color:var(--bx-grey);font-size:13px;margin-bottom:8px;">
       Redes que EMITEM pontos na compra do cliente e devem à BlaXx por isso.
       Diferente de "parceiros", que são só vitrine.
     </p>
-    <div id="b2b-alerta" style="display:none;background:#ffede8;border:1px solid #f0b3a0;color:#a83417;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;"></div>
+    <div id="b2b-alerta" style="display:none;background:var(--danger);border:1px solid rgba(154,47,21,.35);color:var(--danger-text);font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:16px;"></div>
 
     <div class="stats-grid" id="b2b-stats"></div>
 
@@ -237,32 +251,32 @@
       <button class="button" onclick="toggleNovaRede()" style="font-size:13px;padding:8px 16px;">+ Cadastrar rede</button>
     </div>
 
-    <div id="nova-rede" style="display:none;background:#F4F4F0;border:1px solid #e6eadf;border-radius:14px;padding:18px;margin-bottom:18px;">
+    <div id="nova-rede" style="display:none;background:var(--bx-surface);border:1px solid var(--bx-line);border-radius:14px;padding:18px;margin-bottom:18px;">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
-        <label style="font-size:12px;color:#5f665e;font-weight:600;">Nome
-          <input id="nr-nome" class="field" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
-        <label style="font-size:12px;color:#5f665e;font-weight:600;">CNPJ
-          <input id="nr-cnpj" class="field" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
-        <label style="font-size:12px;color:#5f665e;font-weight:600;">Vertical
-          <select id="nr-vertical" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;">
+        <label style="font-size:12px;color:var(--bx-grey);">Nome
+          <input id="nr-nome" class="field" style="width:100%;padding:9px 12px;border:1px solid var(--bx-line);border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:var(--bx-grey);">CNPJ
+          <input id="nr-cnpj" class="field" style="width:100%;padding:9px 12px;border:1px solid var(--bx-line);border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:var(--bx-grey);">Vertical
+          <select id="nr-vertical" style="width:100%;padding:9px 12px;border:1px solid var(--bx-line);border-radius:8px;margin-top:4px;">
             <option value="posto">Posto</option>
             <option value="supermercado">Supermercado</option>
             <option value="farmacia">Farmácia</option>
           </select></label>
-        <label style="font-size:12px;color:#5f665e;font-weight:600;">Cliente gasta p/ 1 pt (centavos)
-          <input id="nr-acumulo" type="number" value="500" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
-        <label style="font-size:12px;color:#5f665e;font-weight:600;">Rede paga p/ ponto (centavos)
-          <input id="nr-cobranca" type="number" value="10" style="width:100%;padding:9px 12px;border:1px solid #e6eadf;border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:var(--bx-grey);">Cliente gasta p/ 1 pt (centavos)
+          <input id="nr-acumulo" type="number" value="500" style="width:100%;padding:9px 12px;border:1px solid var(--bx-line);border-radius:8px;margin-top:4px;"></label>
+        <label style="font-size:12px;color:var(--bx-grey);">Rede paga p/ ponto (centavos)
+          <input id="nr-cobranca" type="number" value="10" style="width:100%;padding:9px 12px;border:1px solid var(--bx-line);border-radius:8px;margin-top:4px;"></label>
       </div>
-      <p id="nr-aviso" style="font-size:12px;color:#8a6500;font-weight:600;margin:10px 0 0;"></p>
+      <p id="nr-aviso" style="font-size:12px;color:var(--warn-text);font-weight:600;margin:10px 0 0;"></p>
       <button class="button" style="margin-top:12px;font-size:13px;padding:8px 16px;" onclick="criarRede(this)">Cadastrar</button>
     </div>
 
     <div id="credencial-nova" style="display:none;margin-bottom:16px;">
-      <p style="background:#fff7df;border:1px solid #f0d98a;color:#8a6500;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:8px;">
+      <p class="aviso-amarelo" style="font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:8px;">
         Copie agora — a chave não é recuperável depois.
       </p>
-      <div id="credencial-valor" style="font-family:monospace;font-size:13px;word-break:break-all;background:#0A0B0E;color:#59FD27;padding:14px;border-radius:10px;"></div>
+      <div id="credencial-valor" style="font-family:var(--bx-mono);font-size:13px;word-break:break-all;background:var(--bx-ink);color:var(--bx-neon);padding:14px;border-radius:10px;"></div>
     </div>
 
     <table class="admin-tbl">
@@ -282,9 +296,9 @@
 
     <div style="display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 12px;">
       <h2 style="font-size:17px;margin:0;">Faturas</h2>
-      <span id="inv-total" style="font-size:13px;font-weight:700;color:#5f665e;">—</span>
+      <span id="inv-total" style="font-size:13px;font-weight:700;color:var(--bx-grey);">—</span>
     </div>
-    <p style="color:#5f665e;font-size:13px;margin:0 0 12px;">
+    <p style="color:var(--bx-grey);font-size:13px;margin:0 0 12px;">
       Fechar congela os totais e carimba as vendas do período. Estorno que chegar
       depois vira crédito na fatura seguinte — a fechada não muda.
     </p>
@@ -305,6 +319,8 @@
     </table>
   </div>
 </div>
+
+<footer class="footer"></footer>
 
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/admin.js"></script>

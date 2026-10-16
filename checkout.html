@@ -6,12 +6,29 @@
   (function(){ try { var t = localStorage.getItem('blaxx_token') || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; if (!t) { location.href = 'login.html'; } } catch(e){ location.href = 'login.html'; } })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Checkout | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
+<style>
+  /* Aviso informativo no tema Embarque. Em assets/styles.css o .alert.info
+     pinta fundo e texto com --info/--info-text; o :root do tema redefine
+     --info como cor de TEXTO (vocabulário da família B) e o aviso ficava azul
+     sobre azul. Até o tema separar os dois tokens, o aviso usa a superfície-2
+     do design, com o "i" num selo preto. Remover quando o compartilhado mudar. */
+  .alert.info{ background:var(--bx-surface-2); border-color:var(--bx-line); color:var(--bx-ink); }
+  .alert.info .alert-icon{ background:var(--bx-ink); color:var(--bx-neon); }
+  .alert.info p{ color:var(--bx-grey); opacity:1; }
+  /* O tema põe todo <label> em Space Mono caixa alta: é o rótulo curto de
+     campo (Nome, CPF). Nesta página o <label> também embrulha o cartão de
+     forma de pagamento e a frase do aceite dos termos, que são texto corrido
+     e saíam gritando em caixa alta. Voltam à sans; tamanho, peso e cor
+     continuam vindo do assets/styles.css. Remover quando o compartilhado
+     restringir o seletor label{} aos rótulos de campo. */
+  label.option-card,.checkbox-row label{ font-family:var(--bx-sans); letter-spacing:0; text-transform:none; }
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -125,7 +142,7 @@
         <div class="summary-card">
             <h3>Resumo da compra</h3>
             <div class="flex" style="gap:14px;align-items:center;margin:14px 0;padding:14px;background:var(--bg);border-radius:14px;">
-                <div class="card-icon">★</div>
+                <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3 9h18M12 9v11"/><path d="M12 9C9 9 7 5 9.5 4.2 11 3.7 12 6.5 12 9c0-2.5 1-5.3 2.5-4.8C17 5 15 9 12 9Z"/></svg></div>
                 <div>
                     <strong>Pacote Plus</strong>
                     <div class="muted" style="font-size:13px;">5.500 pontos · +10% bônus</div>

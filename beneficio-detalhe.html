@@ -6,8 +6,10 @@
 <title>Netflix 30 dias · Resgate | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> da página só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -47,7 +49,7 @@
     <div class="split-page">
         <div>
             <div class="card" style="padding:0;overflow:hidden;">
-                <div class="reward-img" style="height:240px;font-size:90px;">🎬</div>
+                <div class="reward-img" style="height:240px;font-size:90px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="m3 10 2.5-4h3L6 10Z" fill="currentColor" stroke="none"/><path d="m8.5 10 2.5-4h3l-2.5 4Z" fill="currentColor" stroke="none"/><path d="m14 10 2.5-4h3l-2.5 4Z" fill="currentColor" stroke="none"/></svg></div>
                 <div style="padding:28px;">
                     <span class="tag">Streaming</span>
                     <h1 style="font-size:32px;margin:8px 0;">Netflix 30 dias</h1>
@@ -79,7 +81,7 @@
                 <div><span class="k">Custo</span><span class="v" style="font-size:22px;color:var(--ink);font-weight:900;">12.000 pts</span></div>
             </div>
             <div class="alert success" style="margin-top:14px;">
-                <div class="alert-icon">✓</div>
+                <div class="alert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M4 12.5 9.5 18 20 6"/></svg></div>
                 <div><p>Você tem saldo suficiente: <strong>84.750 pts</strong>.</p></div>
             </div>
             <a href="confirmar-resgate.html" class="button full lg" style="margin-top:14px;">Resgatar agora →</a>
@@ -91,10 +93,10 @@
 <section class="section">
     <div class="section-head"><h2>Você também pode gostar</h2></div>
     <div class="grid four">
-        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img">🎵</div><div class="reward-body"><span class="tag">Streaming</span><h3>Spotify Premium</h3><div class="reward-cost">8.000 <small>pts</small></div></div></a>
-        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img">🎮</div><div class="reward-body"><span class="tag">Gaming</span><h3>Xbox Game Pass</h3><div class="reward-cost">10.000 <small>pts</small></div></div></a>
-        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img">📚</div><div class="reward-body"><span class="tag">Leitura</span><h3>Kindle Unlimited</h3><div class="reward-cost">6.000 <small>pts</small></div></div></a>
-        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img">📺</div><div class="reward-body"><span class="tag">Streaming</span><h3>Disney+</h3><div class="reward-cost">10.000 <small>pts</small></div></div></a>
+        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="16" r="2.5"/><path d="M9.5 18V5.5L19.5 4v11.5"/></svg></div><div class="reward-body"><span class="tag">Streaming</span><h3>Spotify Premium</h3><div class="reward-cost">8.000 <small>pts</small></div></div></a>
+        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="2.5" y="8" width="19" height="10" rx="4"/><path d="M7 11v4M5 13h4"/><circle cx="16" cy="12" r="0.9" fill="currentColor" stroke="none"/><circle cx="18.5" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></div><div class="reward-body"><span class="tag">Gaming</span><h3>Xbox Game Pass</h3><div class="reward-cost">10.000 <small>pts</small></div></div></a>
+        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><path d="M5 4h4a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H5Z"/><path d="M19 4h-4a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H19Z"/></svg></div><div class="reward-body"><span class="tag">Leitura</span><h3>Kindle Unlimited</h3><div class="reward-cost">6.000 <small>pts</small></div></div></a>
+        <a href="beneficio-detalhe.html" class="reward-card"><div class="reward-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M9 21h6M12 17v4"/></svg></div><div class="reward-body"><span class="tag">Streaming</span><h3>Disney+</h3><div class="reward-cost">10.000 <small>pts</small></div></div></a>
     </div>
 </section>
 </main>
@@ -146,9 +148,12 @@
     </div>
 </footer>
 <style>
-  [data-link="resgates"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo no tema "Embarque": pílula preta com texto claro, sem borda nem
+     sombra dura (mesma leitura de .links a[aria-current] e .side-nav a.active
+     em assets/blaxx-embarque.css). O ícone fica neon, que sobre preto passa. */
+  [data-link="resgates"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
+  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
+  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

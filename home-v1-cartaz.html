@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0B0E">
+<title>Pontos que viram coisas | BlaXx Pontos</title>
+<meta name="description" content="Compre pontos, envie para quem você quiser e troque por benefício de verdade. Cadastro gratuito, PIX ou cartão, extrato aberto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/blaxx-brutal.css">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="assets/blaxx-globo.js"></script>
+<style>
+/* =========================================================================
+   VARIANTE "CARTAZ" · só a composição desta página.
+
+   A ideia: se a home fosse impressa e colada num muro, o que sobreviveria a
+   dez metros de distância? Sobrevive o letreiro. Então aqui a tipografia é o
+   desenho: nada de quadradinhos soltos, selo giratório, painel de produto ou
+   grade tracejada. O que organiza a página são réguas pretas de borda a borda
+   e números enormes, o mesmo vocabulário de um cartaz de rua.
+
+   Consequências práticas de escolher cartaz em vez de vitrine:
+   - hero sem coluna de apoio: uma palavra por linha, quase 16vw no desktop,
+     e todo o resto (linha de apoio, dois botões) pesando pouco embaixo;
+   - fundo papel liso, porque textura competiria com o letreiro;
+   - nenhum card em lugar nenhum: item de lista virou régua clicável;
+   - as faixas pretas e o globo vão de janela a janela, sem respiro lateral,
+     para o papel parecer recortado e não emoldurado.
+
+   Tudo que é identidade e chrome (tokens, botão, barra, marquee, globo, FAQ,
+   chamada final, rodapé) vem de assets/blaxx-brutal.css e não é redeclarado.
+   ========================================================================= */
+
+/* A barra escura é a moldura preta no topo do cartaz. Único efeito colateral:
+   .bar.escura pinta TODO link de branco, e isso apaga o texto das DUAS pílulas
+   da barra: a de fundo claro e a de fundo neon (branco sobre neon dá 1,2:1).
+   Devolvemos o preto em qualquer pílula que esteja dentro da barra. */
+.bar.escura .pillbtn{color:var(--black)}
+
+/* A barra é sticky com 74px de altura e o scroll é suave: sem esta reserva o
+   pulo de cada âncora para o topo da seção fica escondido atrás da barra.
+   #topo entra na conta porque o hero começa logo abaixo da barra: sem reserva o
+   rótulo mono ficaria por baixo dela ao voltar pela marca. */
+#topo,#fazer,#mapa,#pacotes,#perguntas{scroll-margin-top:78px}
+
+/* ---------- HERO: o letreiro ----------
+   Uma palavra por linha em caixa-alta. O clamp vai a 15vw em vez de um valor
+   fixo porque a graça é o texto encostar na margem em qualquer tela; o piso de
+   50px e os <br> escritos à mão garantem que a 375px nada vaze para fora. */
+.cartaz{position:relative;background:var(--paper);
+  border-bottom:var(--bw) solid var(--black);
+  padding-top:clamp(28px,5vw,64px);padding-bottom:clamp(40px,7vw,90px)}
+.cartaz h1{font-size:clamp(50px,15vw,228px);line-height:.84;margin:clamp(20px,3vw,40px) 0 0}
+/* respiro entre o letreiro e o pé do hero: o cartaz vive do vazio */
+.cartaz .apoio{margin-top:clamp(28px,4.5vw,56px);display:grid;gap:22px}
+.cartaz .apoio p{font-size:clamp(16px,1.8vw,21px);line-height:1.5;max-width:40ch;font-weight:500}
+.cartaz .botoes{display:flex;flex-wrap:wrap;gap:14px}
+/* o rótulo mono é o único elemento fora do fluxo, e só onde sobra canto */
+@media(min-width:1000px){
+  .cartaz .selo{position:absolute;top:clamp(28px,5vw,64px);right:var(--pad)}
+  /* o rótulo saiu do fluxo, então o letreiro precisa reservar a altura dele
+     com folga: a pílula tem 38px e a primeira linha é a mais larga da página,
+     então em 1000px ela passaria raspando no rótulo se o respiro fosse justo */
+  .cartaz h1{margin-top:clamp(72px,6vw,84px)}
+  .cartaz .apoio{grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:34px}
+}
+
+/* ---------- RÉGUAS: o que dá para fazer ----------
+   Sem card: cada item é uma linha de borda a borda, com o número tomando o
+   espaço que um card tomaria. A linha inteira é <a>, então o alvo de toque é
+   a régua toda e o hover inverte para preto, como um cartaz molhado de tinta. */
+.reguas{background:var(--white)}
+.reguas .cabeca{padding:clamp(40px,6vw,86px) var(--pad) clamp(28px,3.5vw,44px);
+  border-bottom:var(--bw) solid var(--black);display:grid;gap:18px}
+@media(min-width:900px){
+  .reguas .cabeca{grid-template-columns:minmax(0,1fr) minmax(0,34ch);
+    align-items:end;gap:48px}
+}
+.reguas .cabeca .tagline{justify-self:start}
+.regua{display:grid;grid-template-columns:1fr;gap:6px;
+  padding:clamp(22px,3vw,38px) var(--pad);
+  border-bottom:var(--bw) solid var(--black);color:var(--black);
+  transition:background .1s,color .1s}
+.regua .num{font-weight:700;letter-spacing:-.04em;line-height:.8;
+  font-size:clamp(56px,11vw,150px);color:var(--black)}
+.regua .txt{max-width:44ch}
+.regua h3{font-size:clamp(20px,2.4vw,30px);font-weight:700;letter-spacing:-.025em;
+  margin-bottom:8px}
+.regua p{font-size:15.5px;line-height:1.6}
+.regua .seta{font-family:var(--mono);font-size:13px;letter-spacing:.14em;
+  text-transform:uppercase;white-space:nowrap}
+@media(min-width:900px){
+  /* número largo à esquerda, texto numa coluna estreita à direita: é a
+     assimetria que faz a página ler como cartaz e não como tabela */
+  .regua{grid-template-columns:minmax(0,2.1fr) minmax(0,3fr) auto;
+    align-items:center;gap:40px}
+  .regua .num{font-size:clamp(90px,9vw,150px)}
+}
+.regua:hover,.regua:focus-visible{background:var(--black);color:var(--white)}
+.regua:hover .num,.regua:focus-visible .num{color:var(--neon)}
+@media(prefers-reduced-motion:reduce){.regua{transition:none}}
+
+/* ---------- PLACAR: faixa preta com os números enormes ----------
+   Largura total, sem .wrap: os números são o segundo letreiro da página.
+   No telefone vira 2x2 em vez de rolar na horizontal. */
+.placar{background:var(--black);color:var(--white);
+  border-top:var(--bw) solid var(--black);border-bottom:var(--bw) solid var(--black);
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:900px){.placar{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.placar div{padding:clamp(26px,3.4vw,46px) clamp(16px,2.4vw,34px);
+  border-right:2px solid #262A31;border-bottom:2px solid #262A31}
+.placar div:nth-child(2n){border-right:0}
+.placar div:nth-child(n+3){border-bottom:0}
+@media(min-width:900px){
+  .placar div{border-bottom:0;border-right:2px solid #262A31}
+  .placar div:last-child{border-right:0}
+}
+.placar b{display:block;font-size:clamp(52px,12vw,132px);font-weight:700;
+  line-height:.82;letter-spacing:-.05em}
+/* o neon aqui é um fio, não um preenchimento: marca o número sem virar área */
+.placar i{display:block;width:44px;height:var(--bw);background:var(--neon);
+  margin:16px 0 14px}
+.placar span{display:block;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;color:#9AA3AE;line-height:1.55}
+
+/* ---------- MAPA DA REDE em faixa full-bleed ----------
+   O globo encosta nas duas laterais da janela: tiramos borda e sombra dos
+   lados e trocamos o 3:2 do núcleo por altura própria, senão em tela larga a
+   faixa viraria uma parede. O título entra sobreposto numa placa de canto,
+   sobre fundo claro, porque texto preto direto na esfera perderia contraste
+   quando o continente passasse por baixo. */
+.faixaglobo{background:var(--white);padding:0}
+.faixaglobo .cinema-frame{border-left:0;border-right:0;box-shadow:none;
+  aspect-ratio:auto;height:clamp(430px,50vw,720px)}
+.faixaglobo .placa{position:absolute;left:var(--pad);top:26px;z-index:4;
+  background:var(--white);border:var(--bw) solid var(--black);
+  box-shadow:var(--sh);padding:16px 20px 18px;max-width:min(78%,30ch)}
+.faixaglobo .placa .tagline{margin-bottom:12px}
+.faixaglobo .placa h2{margin:0}
+/* o contador sai do canto superior esquerdo para não brigar com a placa */
+.faixaglobo .cinema-card{left:auto;right:var(--pad);top:auto;bottom:56px}
+.faixaglobo .rodape{display:grid;gap:20px;
+  padding:clamp(26px,3.4vw,42px) var(--pad) clamp(40px,6vw,80px)}
+@media(min-width:900px){
+  .faixaglobo .rodape{grid-template-columns:minmax(0,1fr) auto;
+    align-items:start;gap:48px}
+}
+.faixaglobo .legenda{margin-top:0}
+@media(max-width:560px){
+  .faixaglobo .cinema-frame{height:460px}
+  .faixaglobo .placa{left:14px;right:14px;max-width:none;padding:13px 15px 15px;
+    box-shadow:4px 5px 0 var(--black)}
+}
+
+/* ---------- PACOTES em faixas empilhadas ----------
+   Três faixas de largura total, não três colunas: assim o preço não vira
+   comparação de planos de software e o número de pontos ganha a escala do
+   resto da página. Nome à esquerda, pontos no meio, botão à direita. */
+.pacotes{background:var(--paper);border-top:var(--bw) solid var(--black)}
+.pacotes .cabeca{padding:clamp(40px,6vw,86px) var(--pad) clamp(26px,3.4vw,40px)}
+.faixapack{display:grid;grid-template-columns:1fr;gap:16px;
+  padding:clamp(24px,3.2vw,40px) var(--pad);
+  border-top:var(--bw) solid var(--black);align-items:center}
+.faixapack:last-of-type{border-bottom:var(--bw) solid var(--black)}
+.faixapack .nome{font-family:var(--mono);font-size:13px;letter-spacing:.18em;
+  text-transform:uppercase;font-weight:700}
+.faixapack .nome em{display:block;font-style:normal;font-weight:400;font-size:11px;
+  letter-spacing:.12em;color:var(--grey);margin-top:8px;line-height:1.6}
+.faixapack .valor{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+.faixapack .pts{font-size:clamp(46px,7.4vw,104px);font-weight:700;
+  line-height:.85;letter-spacing:-.045em}
+.faixapack .pts small{font-size:.3em;font-weight:500;letter-spacing:.02em}
+.faixapack .prc{font-family:var(--mono);font-size:clamp(15px,1.5vw,18px);font-weight:500}
+/* a faixa do meio é a única com fundo diferente: destaque sem selo nem etiqueta */
+.faixapack.destaque{background:var(--white)}
+@media(min-width:900px){
+  .faixapack{grid-template-columns:minmax(0,15ch) minmax(0,1fr) auto;gap:40px}
+  .faixapack .valor{justify-content:flex-start}
+}
+.pacotes .pe{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;
+  justify-content:space-between;
+  padding:clamp(22px,3vw,34px) var(--pad) clamp(40px,6vw,80px);font-size:15px}
+.pacotes .pe a{border-bottom:3px solid var(--neon);font-weight:600}
+
+/* ---------- ar em volta dos blocos que usam .wrap ---------- */
+.sec.perguntas .sechead{max-width:34ch}
+</style>
+</head>
+<body>
+
+<!-- ====================== NAV ====================== -->
+<header class="bar escura">
+  <div class="wrap largo in">
+    <a href="#topo" aria-label="BlaXx Pontos, ir para o início">
+      <img class="mark" src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
+    </a>
+    <nav class="navd" aria-label="Principal">
+      <a href="#fazer">O que dá para fazer</a>
+      <a href="#mapa">Mapa da rede</a>
+      <a href="#pacotes">Pacotes</a>
+      <a href="parceiros.html">Parceiros</a>
+      <a href="#perguntas">Perguntas</a>
+    </nav>
+    <div class="baract">
+      <a class="pillbtn sm ghost" href="login.html">Entrar</a>
+      <a class="pillbtn sm" href="cadastro.html">Criar conta</a>
+      <button class="burger" type="button" aria-label="Abrir menu" aria-expanded="false"
+              aria-controls="menuMob" onclick="bxMenu(this)"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<div class="drawer" id="menuMob">
+  <a href="#fazer">O que dá para fazer</a>
+  <a href="#mapa">Mapa da rede</a>
+  <a href="#pacotes">Pacotes</a>
+  <a href="parceiros.html">Parceiros</a>
+  <a href="como-funciona.html">Como funciona</a>
+  <a href="central-ajuda.html">Central de ajuda</a>
+  <a href="#perguntas">Perguntas</a>
+  <a href="login.html">Entrar na minha conta</a>
+</div>
+
+<!-- ====================== HERO: O LETREIRO ====================== -->
+<section class="cartaz" id="topo">
+  <div class="wrap largo">
+    <span class="tagline selo"><i>✳</i> Programa de pontos · Brasil · 2026</span>
+    <h1 class="d1">Pontos<br>que<br>viram<br><span class="hl">coisas</span>.</h1>
+    <div class="apoio">
+      <p>Compre, envie para quem você quiser e troque por benefício de verdade.
+        Cadastro gratuito, extrato aberto.</p>
+      <div class="botoes">
+        <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+        <a class="pillbtn ghost" href="#pacotes">Ver pacotes</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== MARQUEE ====================== -->
+<div class="marq" aria-hidden="true">
+  <div>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+    <span>Compre</span><i>✳</i><span>Envie</span><i>✳</i><span>Troque</span><i>✳</i>
+  </div>
+</div>
+
+<!-- ====================== RÉGUAS ====================== -->
+<section class="reguas" id="fazer" aria-labelledby="tit-fazer">
+  <div class="cabeca">
+    <div>
+      <span class="tagline"><i>✳</i> O que dá para fazer</span>
+      <h2 class="d2" id="tit-fazer" style="margin-top:16px">Quatro<br>linhas, só.</h2>
+    </div>
+    <p class="lead mut">Não tem segredo escondido em letra miúda. A conta faz quatro
+      coisas e cada uma delas caber numa linha já é a explicação.</p>
+  </div>
+
+  <a class="regua" href="comprar-pontos.html">
+    <span class="num" aria-hidden="true">01</span>
+    <div class="txt">
+      <h3>Comprar pontos</h3>
+      <p>Pacote pronto ou valor livre, do jeito que couber no mês. Pagamento por PIX ou
+        cartão, com o crédito na carteira assim que o pagamento é confirmado.</p>
+    </div>
+    <span class="seta" aria-hidden="true">Comprar →</span>
+  </a>
+
+  <a class="regua" href="como-funciona.html">
+    <span class="num" aria-hidden="true">02</span>
+    <div class="txt">
+      <h3>Enviar para alguém</h3>
+      <p>Mande pontos para outra conta BlaXx informando e-mail ou CPF. Entre contas
+        pessoais o envio é gratuito, dentro dos limites diários, e quem recebe usa
+        como quiser. Confira o destinatário: envio confirmado não volta atrás.</p>
+    </div>
+    <span class="seta" aria-hidden="true">Entender →</span>
+  </a>
+
+  <a class="regua" href="parceiros.html">
+    <span class="num" aria-hidden="true">03</span>
+    <div class="txt">
+      <h3>Trocar por benefício</h3>
+      <p>Vouchers, vantagens nas redes parceiras e cashback via PIX na chave cadastrada
+        no seu perfil. Você escolhe quando usar.</p>
+    </div>
+    <span class="seta" aria-hidden="true">Ver rede →</span>
+  </a>
+
+  <a class="regua" href="regras-pontos.html">
+    <span class="num" aria-hidden="true">04</span>
+    <div class="txt">
+      <h3>Acompanhar cada ponto</h3>
+      <p>Extrato aberto com data e origem de cada ponto, e aviso 30 dias antes de
+        qualquer vencimento, por e-mail e push. Nada sai da conta sem você saber.</p>
+    </div>
+    <span class="seta" aria-hidden="true">Ler regras →</span>
+  </a>
+</section>
+
+<!-- ====================== PLACAR ====================== -->
+<section class="placar" aria-label="Números do programa">
+  <div>
+    <b>3</b><i aria-hidden="true"></i>
+    <span>Categorias de rede parceira: posto, supermercado e farmácia</span>
+  </div>
+  <div>
+    <b>12</b><i aria-hidden="true"></i>
+    <span>Cidades no mapa da rede</span>
+  </div>
+  <div>
+    <b>24</b><i aria-hidden="true"></i>
+    <span>Meses de validade de cada lote de pontos</span>
+  </div>
+  <div>
+    <b>30</b><i aria-hidden="true"></i>
+    <span>Dias de aviso antes de vencer, por e-mail e push</span>
+  </div>
+</section>
+
+<!-- ====================== MAPA DA REDE (FULL-BLEED) ====================== -->
+<section class="faixaglobo globo" id="mapa" aria-labelledby="tit-mapa">
+  <div class="cinema-frame">
+    <div class="placa">
+      <span class="tagline"><i>✳</i> Mapa da rede</span>
+      <h2 class="d3" id="tit-mapa">Ganhe pontos por todo o Brasil.</h2>
+    </div>
+    <canvas id="gvCanvas" aria-label="Globo com as cidades da rede parceira" role="img"></canvas>
+    <div id="globoTip" class="globe-tip"></div>
+    <div class="cinema-card"><small>Rede em expansão</small><b id="netCount">12</b><span>cidades no mapa</span></div>
+    <div class="cinema-marq" aria-hidden="true"><span>SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;SÃO PAULO ✓ · RIO DE JANEIRO ✓ · BELO HORIZONTE ✓ · CURITIBA ✓ · PORTO ALEGRE ✓ · RECIFE ✓ · FORTALEZA ✓ · SALVADOR ✓ · BRASÍLIA ✓ · CAMPINAS ✓ · GOIÂNIA ✓ · MANAUS ✓ ·&nbsp;</span></div>
+  </div>
+  <div class="rodape">
+    <p class="hint">Arraste para girar o globo. Toque ou passe o cursor num alfinete para
+      ver a cidade, e clique para abrir a página de parceiros. São 12 cidades no mapa e
+      a rede segue em expansão.</p>
+    <ul class="legenda">
+      <li><i style="background:rgb(231,178,74)"></i>Postos</li>
+      <li><i style="background:rgb(79,201,106)"></i>Supermercados</li>
+      <li><i style="background:rgb(63,198,216)"></i>Farmácias</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ====================== PACOTES ====================== -->
+<section class="pacotes" id="pacotes" aria-labelledby="tit-pacotes">
+  <div class="cabeca">
+    <span class="tagline"><i>✳</i> Pacotes</span>
+    <h2 class="d2" id="tit-pacotes" style="margin-top:16px">Escolha o<br>seu tamanho.</h2>
+  </div>
+
+  <div class="faixapack" data-pkg="start">
+    <span class="nome">Start<em>PIX ou cartão</em></span>
+    <span class="valor">
+      <span class="pts"><span data-pts>2.000</span><small> pts</small></span>
+      <span class="prc"><span data-price>R$ 180,00</span></span>
+    </span>
+    <a class="pillbtn" href="comprar-pontos.html">Comprar Start</a>
+  </div>
+
+  <div class="faixapack destaque" data-pkg="plus">
+    <span class="nome">Plus<em>PIX ou cartão · cerca de 5% de bônus</em></span>
+    <span class="valor">
+      <span class="pts"><span data-pts>5.500</span><small> pts</small></span>
+      <span class="prc"><span data-price>R$ 470,00</span></span>
+    </span>
+    <a class="pillbtn" href="comprar-pontos.html">Comprar Plus</a>
+  </div>
+
+  <div class="faixapack" data-pkg="prime">
+    <span class="nome">Prime<em>PIX ou cartão · cerca de 10% de bônus</em></span>
+    <span class="valor">
+      <span class="pts"><span data-pts>12.000</span><small> pts</small></span>
+      <span class="prc"><span data-price>R$ 972,00</span></span>
+    </span>
+    <a class="pillbtn" href="comprar-pontos.html">Comprar Prime</a>
+  </div>
+
+  <div class="pe">
+    <span class="mut">Prefere outro valor? Dá para comprar exatamente o que você quiser.</span>
+    <a href="comprar-livre.html">Comprar valor livre&nbsp;→</a>
+  </div>
+</section>
+
+<!-- ====================== PERGUNTAS ====================== -->
+<section class="sec perguntas" id="perguntas" aria-labelledby="tit-faq">
+  <div class="wrap largo">
+    <div class="sechead">
+      <span class="tagline"><i>✳</i> Perguntas</span>
+      <h2 class="d2" id="tit-faq" style="margin-top:16px">Antes que<br>você pergunte.</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Os pontos valem dinheiro?</summary>
+        <div class="ans">Não. Os pontos BlaXx são créditos promocionais de uso restrito dentro
+          da plataforma. Não são moeda, depósito, investimento, valor mobiliário nem criptoativo.
+          Está tudo escrito em <a href="regras-pontos.html">regras de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Quanto custa participar?</summary>
+        <div class="ans">O cadastro e a manutenção da conta são gratuitos. Você só paga quando
+          decide <a href="comprar-pontos.html">comprar um pacote de pontos</a>.</div>
+      </details>
+      <details>
+        <summary>Como eu pago?</summary>
+        <div class="ans">Por PIX ou cartão, e o crédito entra na sua carteira assim que o
+          pagamento é confirmado. Se preferir um valor que não está nos pacotes, use a
+          <a href="comprar-livre.html">compra com valor livre</a>.</div>
+      </details>
+      <details>
+        <summary>Qual é a validade dos pontos?</summary>
+        <div class="ans">Cada lote vale 24 meses a partir do acúmulo, salvo regra específica
+          avisada na campanha. Você é avisado 30 dias antes por e-mail e push. No vencimento
+          os pontos são debitados e não podem ser restaurados.</div>
+      </details>
+      <details>
+        <summary>Posso mandar pontos para outra pessoa?</summary>
+        <div class="ans">Para qualquer pessoa que tenha conta BlaXx, informando e-mail ou CPF.
+          Entre contas pessoais o envio é gratuito, dentro dos limites diários. Confira sempre
+          o destinatário: transferência confirmada não pode ser revertida.</div>
+      </details>
+      <details>
+        <summary>No que eu troco os pontos?</summary>
+        <div class="ans">Em vouchers, em vantagens na rede parceira, das categorias do dia a dia
+          (posto, supermercado e farmácia) ou em cashback via PIX na chave cadastrada no seu
+          perfil. A rede está em <a href="parceiros.html">parceiros</a>.</div>
+      </details>
+      <details>
+        <summary>E se eu me arrepender da compra?</summary>
+        <div class="ans">Compras a distância têm direito de arrependimento de 7 dias, conforme o
+          artigo 49 do Código de Defesa do Consumidor. Depois desse prazo a compra é definitiva,
+          salvo as exceções descritas na
+          <a href="politica-reembolso.html">política de reembolso</a>.</div>
+      </details>
+      <details>
+        <summary>Meus dados estão protegidos?</summary>
+        <div class="ans">O tratamento segue a LGPD (Lei 13.709/2018) e dá para ativar verificação
+          em duas etapas na sua conta. Os detalhes estão na
+          <a href="privacidade.html">política de privacidade</a>.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== CHAMADA FINAL ====================== -->
+<section class="final">
+  <div class="wrap in">
+    <h2 class="d2">Cole isso<br>na parede.</h2>
+    <p>Compre, envie, troque. O resto da história você acompanha no extrato,
+      com data e origem de cada ponto.</p>
+    <a class="pillbtn" href="cadastro.html">Criar conta grátis</a>
+  </div>
+</section>
+
+<!-- ====================== RODAPÉ ====================== -->
+<footer class="foot">
+  <div class="wrap largo">
+    <div class="cols">
+      <div>
+        <p class="tag2">Pontos que viram coisas. Você compra, envia e troca quando quiser.</p>
+      </div>
+      <div>
+        <h3>Plataforma</h3>
+        <ul>
+          <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+          <li><a href="comprar-livre.html">Valor livre</a></li>
+          <li><a href="parceiros.html">Parceiros</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Ajuda e regras</h3>
+        <ul>
+          <li><a href="central-ajuda.html">Central de ajuda</a></li>
+          <li><a href="regras-pontos.html">Regras de pontos</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+          <li><a href="privacidade.html">Privacidade e LGPD</a></li>
+          <li><a href="politica-reembolso.html">Política de reembolso</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>BlaXx Pontos © 2026</span>
+      <span><a href="privacidade.html#direitos">Seus direitos LGPD</a></span>
+    </div>
+  </div>
+  <div class="bigmark">
+    <img src="assets/marca/blaxx-wordmark.svg" alt="BlaXx Rewards">
+  </div>
+</footer>
+
+<script>
+function bxMenu(btn){
+  var d = document.getElementById('menuMob');
+  var open = !d.classList.contains('on');
+  d.classList.toggle('on', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+</script>
+
+<script>
+// fecha a gaveta ao navegar, senão ela fica aberta sobre a âncora de destino
+document.querySelectorAll('#menuMob a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.getElementById('menuMob').classList.remove('on');
+    var b = document.querySelector('.burger');
+    if (b) b.setAttribute('aria-expanded','false');
+  });
+});
+</script>
+
+<script>
+(function(){
+  var canvas = document.getElementById('gvCanvas');
+  if (!canvas || typeof blaxxCreateGlobe !== 'function') return;
+  var contador = document.getElementById('netCount');
+  if (contador && typeof BLAXX_POINTS !== 'undefined') contador.textContent = BLAXX_POINTS.length;
+  var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  fetch('vendor/countries-110m.json')
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(world){
+      blaxxCreateGlobe(canvas, {
+        world: world, points: BLAXX_POINTS, suppliers: BLAXX_SUPPLIERS,
+        accent: '89,253,39', initialRotation: [47, -12], zoom: 0.46,
+        autoRotate: !reduzir,
+        tooltip: document.getElementById('globoTip'),
+        onPointClick: function(){ location.href = 'parceiros.html'; },
+        sphHi:'#E3F1FC', sphMid:'#8EC3EA', sphLo:'#4A93D1',
+        landColor:'rgba(15,50,90,0.85)', coastColor:'rgba(8,32,60,0.55)',
+        borderColor:'rgba(8,32,60,0.28)', gratColor:'rgba(8,32,60,0.10)',
+        ringAlpha:0.5, atmAlpha:0
+      });
+    })
+    .catch(function(e){ console.error('globo:', e); });
+})();
+</script>
+
+<script>
+(function(){
+  function resolveApi(){
+    var host = location.hostname;
+    var isLocal = host === 'localhost' || host === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(host);
+    if (isLocal) return location.protocol + '//' + host + ':5050';
+    return 'https://blaxx-pontos-exe.onrender.com';
+  }
+  var API = resolveApi();
+  function fmtPts(n){ return Number(n).toLocaleString('pt-BR'); }
+  function fmtBrl(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fill(key, pkg){
+    if (!pkg) return;
+    var card = document.querySelector('[data-pkg="' + key + '"]');
+    if (!card) return;
+    var p = card.querySelector('[data-pts]'), pr = card.querySelector('[data-price]');
+    if (p && pkg.points != null) p.textContent = fmtPts(pkg.points);
+    if (pr && pkg.price_brl != null) pr.textContent = fmtBrl(pkg.price_brl);
+  }
+  fetch(API + '/pix/packages', { headers: { 'Accept': 'application/json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){ fill('start', d.start); fill('plus', d.plus); fill('prime', d.prime); })
+    .catch(function(){});
+})();
+</script>
+
+</body>
+</html>

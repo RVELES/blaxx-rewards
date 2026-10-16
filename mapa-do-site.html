@@ -5,11 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Mapa do site</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal para vencer a
+     cascata. O <link> fica no HTML porque o blaxx-nav.js só injeta a folha
+     como rede de segurança, e injetar tarde faz a página piscar. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .map { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
   .col { padding: 24px; }
   .col h3 { font-family: var(--font-display); font-weight: 900; font-size: 18px; margin: 0 0 4px; }
-  .col .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--lime-deep); }
+  /* Rótulo de área em pílula neon com texto preto: --lime-deep como cor de
+     texto dá 2,4:1 sobre o cartão claro, o verde só serve como preenchimento. */
+  .col .k { display: inline-block; font-family: var(--bx-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; background: var(--bx-neon); color: var(--bx-ink); padding: 4px 9px; border-radius: 999px; margin-bottom: 10px; }
   .col a { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--fg-muted); padding: 10px 0; border-top: 1px solid var(--line); transition: color .2s var(--ease), padding-left .2s var(--ease); }
   .col a:first-of-type { margin-top: 14px; }
   .col a:hover { color: var(--ink); padding-left: 4px; }

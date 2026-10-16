@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Privacidade e LGPD</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal para vencer a
+     cascata. O <link> fica no HTML porque o blaxx-nav.js só injeta a folha
+     como rede de segurança, e injetar tarde faz a página piscar. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .doc { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
   .toc { padding: 20px 22px; position: sticky; top: 94px; }
@@ -14,7 +18,9 @@
   .body { padding: 32px 36px; }
   .body h2 { font-family: var(--font-display); font-weight: 900; font-size: 21px; letter-spacing: -0.01em; margin: 34px 0 10px; scroll-margin-top: 94px; }
   .body h2:first-of-type { margin-top: 0; }
-  .body h2 .n { font-family: var(--font-mono); font-size: 12px; color: var(--lime-deep); margin-right: 8px; }
+  /* Cinza do tema, não --lime-deep: #5AB800 como cor de texto dá 2,4:1 sobre a
+     superfície clara (reprova AA); o verde só serve como preenchimento. */
+  .body h2 .n { font-family: var(--bx-mono); font-size: 12px; color: var(--bx-grey); margin-right: 8px; }
   .body p, .body li { font-size: 14px; color: var(--fg-muted); }
   .body b { color: var(--ink); }
   .body ul { padding-left: 20px; margin: 8px 0; }
@@ -30,7 +36,7 @@
   <header class="page-head" data-screen-label="Privacidade" style="margin-bottom:28px">
     <span class="eyebrow">DOCUMENTO · LGPD · LEI 13.709/2018</span>
     <h1 class="h-display">Privacidade.</h1>
-    <p class="lead">Como coletamos, usamos e protegemos os seus dados — e <b>quais são os seus direitos</b>.</p>
+    <p class="lead">Como coletamos, usamos e protegemos os seus dados, e <b>quais são os seus direitos</b>.</p>
   </header>
 
   <div class="doc">

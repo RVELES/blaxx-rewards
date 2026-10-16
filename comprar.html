@@ -27,20 +27,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Comprar pontos</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
+     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { margin-bottom: 24px; }
   .buy-grid { display:grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
   .packs { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .pack { padding: 22px; cursor:pointer; position:relative; transition: all .2s var(--ease); border:1.5px solid var(--line); }
-  .pack:hover { border-color: var(--line-strong); transform: translateY(-2px); }
-  .pack.sel { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
-  .pack__pts { font-family: var(--font-mono); font-weight:700; font-size: 30px; letter-spacing:-.02em; }
+  /* Bilhete de pacote, na linguagem do tema: contorno fino, sem salto no hover;
+     o selecionado ganha contorno tinta e o anel neon do foco. */
+  .pack { padding: 22px; cursor:pointer; position:relative; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); border:1px solid var(--bx-line); }
+  .pack:hover { border-color: var(--bx-leader); transform: none; }
+  .pack.sel { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
+  /* Número grande é Archivo 800 (como o .pts do bilhete da home); mono fica só nos rótulos */
+  .pack__pts { font-family: var(--bx-sans); font-weight:800; font-size: 30px; letter-spacing:-.02em; }
   .pack__pts span { font-size:13px; color: var(--fg-muted); font-weight:500; }
   .pack__price { font-size: 14px; color: var(--fg-muted); margin-top:4px; }
   .pack__price b { color: var(--ink); font-size: 16px; }
-  .pack__bonus { display:inline-flex; margin-top:14px; font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); background: var(--lime-12); color: var(--lime-deep); }
+  .pack__bonus { display:inline-flex; margin-top:14px; font-family: var(--font-mono); font-size:11px; font-weight:700; padding:5px 11px; border-radius: var(--r-pill); background: var(--bx-neon); color: var(--bx-ink); }
   .pack__flag { position:absolute; top:-10px; right:16px; font-family: var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.06em; background: var(--ink); color: var(--lime); padding:4px 10px; border-radius: var(--r-pill); }
-  .pack__check { position:absolute; top:18px; right:18px; width:22px; height:22px; border-radius:50%; border:2px solid var(--line-strong); display:grid; place-items:center; transition: all .2s var(--ease); }
+  .pack__check { position:absolute; top:18px; right:18px; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--bx-leader); display:grid; place-items:center; transition: all .2s var(--ease); }
   .pack.sel .pack__check { background: var(--lime); border-color: var(--lime); }
   .pack__check svg { width:12px; height:12px; opacity:0; transition: opacity .2s; }
   .pack.sel .pack__check svg { opacity:1; }
@@ -48,18 +54,20 @@
   .custom { padding: 22px 24px; margin-top:16px; }
   .custom h3 { font-family: var(--font-display); font-weight:900; font-size: 17px; margin:0 0 4px; }
   .custom p { font-size:13px; color: var(--fg-muted); margin:0 0 18px; }
-  .slider { -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px; background: rgba(14,15,11,.1); outline:none; }
-  .slider::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background: var(--lime); border:3px solid var(--ink); cursor:pointer; box-shadow: var(--sh-1); }
-  .slider::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background: var(--lime); border:3px solid var(--ink); cursor:pointer; }
+  /* border:0 porque o bloco brutal do styles.css põe 3px de tinta em TODO input,
+     e o tema só repõe os tipos de texto, não o range. */
+  .slider { -webkit-appearance:none; appearance:none; width:100%; height:8px; border:0; border-radius:99px; background: var(--bx-line); outline:none; }
+  .slider::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background: var(--bx-neon); border:1px solid var(--bx-ink); cursor:pointer; box-shadow: 0 2px 6px rgba(10,11,14,.18); }
+  .slider::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background: var(--bx-neon); border:1px solid var(--bx-ink); cursor:pointer; }
   .slider-meta { display:flex; justify-content:space-between; font-family: var(--font-mono); font-size:11px; color: var(--fg-subtle); margin-top:10px; }
 
   /* summary */
   .summary { padding: 26px; position: sticky; top: 96px; }
   .summary__eyebrow { font-family: var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color: var(--fg-on-dark-muted); }
-  .summary__total { font-family: var(--font-mono); font-weight:700; font-size: 48px; line-height:1; letter-spacing:-.03em; color: var(--lime); margin: 14px 0 2px; }
+  .summary__total { font-family: var(--bx-sans); font-weight:800; font-size: 48px; line-height:1; letter-spacing:-.03em; color: var(--lime); margin: 14px 0 2px; }
   .summary__unit { font-family: var(--font-mono); font-size:13px; color: var(--fg-on-dark-muted); }
   .sline { display:flex; justify-content:space-between; align-items:center; padding: 12px 0; font-size:14px; }
-  .sline + .sline { border-top:1px solid rgba(244,246,238,.1); }
+  .sline + .sline { border-top:1px solid var(--bx-ink-2); }
   .sline .k { color: var(--fg-on-dark-muted); }
   .sline .v { font-family: var(--font-mono); font-weight:700; }
   .sline .v.bonus { color: var(--lime); }
@@ -75,13 +83,13 @@
   .pay.disabled { opacity:.4; cursor:not-allowed; }
 
   /* overlay de pagamento PIX */
-  .pixov { position:fixed; inset:0; background:rgba(8,9,7,.72); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; }
+  .pixov { position:fixed; inset:0; background:rgba(10,11,14,.55); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; }
   .pixov.open { display:flex; }
-  .pixov__card { background:var(--white); border-radius:var(--r-lg); max-width:420px; width:100%; padding:28px; text-align:center; box-shadow:var(--sh-3); }
-  .pixov__status { font-family:var(--font-mono); font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:6px 12px; border-radius:var(--r-pill); background:var(--lime-12); color:var(--lime-deep); display:inline-block; }
+  .pixov__card { background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-xl); max-width:420px; width:100%; padding:28px; text-align:center; box-shadow:var(--bx-sh-lg); }
+  .pixov__status { font-family:var(--font-mono); font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:6px 12px; border-radius:var(--r-pill); background:var(--bx-neon); color:var(--bx-ink); display:inline-block; }
   .pixov__qr { width:220px; height:220px; margin:20px auto; border-radius:12px; border:1px solid var(--line); display:grid; place-items:center; object-fit:contain; }
-  .pixov__copy { display:flex; gap:8px; align-items:center; background:var(--gray, #F6F7F8); border-radius:var(--r-sm); padding:10px 12px; font-size:11px; }
-  .pixov__copy code { word-break:break-all; flex:1; text-align:left; font-family:ui-monospace,monospace; color:var(--fg-muted); }
+  .pixov__copy { display:flex; gap:8px; align-items:center; background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); padding:10px 12px; font-size:11px; }
+  .pixov__copy code { word-break:break-all; flex:1; text-align:left; font-family:var(--bx-mono); color:var(--bx-grey); }
   .pixov__row { display:flex; justify-content:space-between; font-size:14px; margin-top:14px; }
   .pixov__row .v { font-family:var(--font-mono); font-weight:700; }
 

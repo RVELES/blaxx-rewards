@@ -2,16 +2,40 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Abrir chamado</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
   .form { padding: 28px 30px; }
   .f { margin-bottom: 18px; }
   .f label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 7px; }
   .f input, .f select, .f textarea { width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--cream); padding: 12px 14px; font-family: var(--font-body); font-size: 14px; color: var(--fg); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
-  .f input:focus, .f select:focus, .f textarea:focus { border-color: var(--lime-deep); box-shadow: 0 0 0 3px var(--lime-20); }
+  /* Foco igual ao dos campos do tema: contorno tinta e halo neon. */
+  .f input:focus, .f select:focus, .f textarea:focus { border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
   .f textarea { min-height: 130px; resize: vertical; }
   .ok { display: none; background: var(--lime-12); border: 1px solid var(--lime-40); border-radius: var(--r-sm); padding: 14px 16px; font-size: 13.5px; margin-top: 16px; }
   .ok.show { display: block; }
@@ -20,6 +44,11 @@
   .side p { font-size: 13px; color: var(--fg-muted); }
   .side .row { display:flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 13px; color: var(--fg-muted); }
   .side .row b { color: var(--ink); }
+  /* No celular as regras globais do card (styles.css) quebravam a seta
+     numa linha só e esticavam os links de texto para 44px de altura.
+     A linha é curta e os links são corridos: ficam em linha. */
+  .side .row { flex-wrap: nowrap; }
+  .side .row a { display: inline; min-height: 0; }
   @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
 </style>
 <script type="application/ld+json">
@@ -75,7 +104,7 @@
       </div>
       <div class="card card--dark side">
         <h3 style="color:var(--fg-on-dark)">Suspeita de fraude?</h3>
-        <p style="color:var(--fg-on-dark-muted)">Selecione a categoria "Suspeita de fraude" — esses chamados têm <b style="color:var(--lime)">prioridade máxima</b>. Enquanto isso, revise sua <a href="seguranca.html" style="color:var(--lime);text-decoration:underline">segurança</a>.</p>
+        <p style="color:var(--fg-on-dark-muted)">Selecione a categoria "Suspeita de fraude", esses chamados têm <b style="color:var(--lime)">prioridade máxima</b>. Enquanto isso, revise sua <a href="seguranca.html" style="color:var(--lime);text-decoration:underline">segurança</a>.</p>
       </div>
     </div>
   </div>
@@ -93,7 +122,7 @@
     var assunto = (document.getElementById('assunto')||{}).value || '';
     var desc = (document.getElementById('desc')||{}).value || '';
     // Lê o usuário nos DOIS formatos: novo blaxx_user com fallback pro legado
-    // blaxx_session — senão contas Google (só blaxx_token) saíam sem nome.
+    // blaxx_session, senão contas Google (só blaxx_token) saíam sem nome.
     var u = null;
     try { u = JSON.parse(localStorage.getItem('blaxx_user')||'null'); } catch(e){}
     if (!u) { try { u = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).user; } catch(e){} }

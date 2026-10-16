@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>Validar e-mail | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal para vencer
+     a cascata. Fica no HTML porque o blaxx-nav.js só injeta se faltar, e a
+     injeção tardia faz a página piscar no tema antigo. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -41,7 +44,7 @@
 </header>
 <div class="auth-wrap">
 <div class="auth-card center">
-    <div class="icon-badge">📧</div>
+    <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg></div>
     <h2>Confirmação de e-mail</h2>
     <p class="sub">Estamos validando o link que você recebeu.</p>
 
@@ -113,9 +116,13 @@
     </div>
 </footer>
 <style>
-  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
-  [data-side=""] .ic { background: var(--lime) !important; color: var(--black) !important; }
+  /* Item ativo no tema "Embarque": pílula preta com texto claro, a mesma
+     leitura de .links a.active e .side-nav a.active em
+     assets/blaxx-embarque.css. O neon fica só no ícone, sobre o preto —
+     nunca como cor de texto em fundo claro (reprova contraste). */
+  [data-link=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
+  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 700 !important; }
+  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
 </style>
 <script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-app.js"></script>

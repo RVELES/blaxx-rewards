@@ -2,9 +2,32 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<script>
+// Guard de acesso, pagina exige sessao ativa. Roda antes de qualquer CSS/HTML
+// do corpo carregar, pra minimizar o flash de conteudo de demonstracao pra
+// quem chega sem estar logado (ex.: link de rodape do site aberto, favorito
+// antigo, URL adivinhada). location.replace() em vez de .href pra nao deixar
+// a pagina protegida no historico do navegador.
+(function () {
+  try {
+    var raw = localStorage.getItem('blaxx_token');
+    if (!raw) {
+      var sess = JSON.parse(localStorage.getItem('blaxx_session') || 'null');
+      raw = sess && sess.token;
+    }
+    if (!raw) {
+      var dest = location.pathname + location.search;
+      location.replace('/login.html?next=' + encodeURIComponent(dest));
+    }
+  } catch (e) {
+    location.replace('/login.html');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Extrato</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { margin-bottom: 24px; }
   .sum-row { display:grid; grid-template-columns: repeat(3,1fr); gap:16px; margin-bottom: 24px; }
@@ -16,7 +39,8 @@
   .toolbar { display:flex; align-items:center; gap:12px; margin-bottom: 18px; flex-wrap: wrap; }
   .tabs { display:flex; gap:6px; background: var(--white); border:1px solid var(--line); padding:5px; border-radius: var(--r-pill); }
   .tabs button { border:0; background:transparent; font-weight:700; font-size:13.5px; color: var(--fg-muted); padding:8px 18px; border-radius: var(--r-pill); transition: all .18s var(--ease); cursor:pointer; }
-  .tabs button.on { background: var(--ink); color: var(--lime); }
+  /* Aba ativa igual ao item ativo da barra do tema: preto com texto claro. */
+  .tabs button.on { background: var(--bx-ink); color: var(--bx-surface); }
   .search { margin-left:auto; display:flex; align-items:center; gap:8px; background: var(--white); border:1px solid var(--line); border-radius: var(--r-pill); padding: 9px 16px; min-width: 220px; color: var(--fg-muted); }
   .search input { border:0; background:transparent; outline:none; font-family: var(--font-body); font-size:14px; width:100%; color: var(--fg); }
 
@@ -24,8 +48,8 @@
   .ledger { padding: 6px 0; }
   .row { display:flex; align-items:center; gap:16px; padding: 15px 24px; transition: background .15s var(--ease); }
   .row + .row { border-top: 1px solid var(--line); }
-  .row:hover { background: rgba(14,15,11,0.025); }
-  .row__ico { width:42px; height:42px; border-radius:11px; display:grid; place-items:center; flex-shrink:0; }
+  .row:hover { background: var(--bx-surface-2); }
+  .row__ico { width:42px; height:42px; border-radius:var(--bx-r-sm); display:grid; place-items:center; flex-shrink:0; }
   .row__ico svg { width:19px; height:19px; }
   .row__body { flex:1; min-width:0; }
   .row__t { font-weight:700; font-size:14.5px; }

@@ -5,41 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Regulamento do Programa de Pontos</title>
 <link rel="stylesheet" href="styles.css">
+<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e vence a cascata. -->
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .doc { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
-  /* ── Menu do documento (Neo-Brutal) ──────────────────────────────────
+  /* ── Menu do documento (tema Embarque) ───────────────────────────────
      Era uma lista solta de links. Agora é um menu com hierarquia visível:
-     número em mono, item ativo marcado pelo neon, borda tinta e sombra dura.
-     No mobile vira um <details> recolhido — assim o conteúdo começa na
-     primeira dobra em vez de ficar depois de 10 links. */
+     número em mono e item ativo em preto, como o item ativo da sidebar do
+     tema. Cartão de contorno fino e sombra suave no lugar da borda tinta e
+     da sombra dura do brutalismo. No mobile vira um <details> recolhido,
+     assim o conteúdo começa na primeira dobra em vez de ficar depois de 10
+     links. */
   .toc { padding: 0; position: sticky; top: 94px; overflow: hidden;
-         border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink);
-         background: var(--paper, #E8E6DD); border-radius: 0; }
+         border: 1px solid var(--bx-line); box-shadow: var(--bx-sh);
+         background: var(--bx-surface); border-radius: 18px; }
   .toc > summary { list-style: none; cursor: pointer; display: flex;
          align-items: center; justify-content: space-between; gap: 10px;
-         background: var(--ink); color: #F4F4F0; padding: 13px 16px;
-         font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+         background: var(--bx-surface-2); color: var(--bx-ink); padding: 13px 16px;
+         border-bottom: 1px solid var(--bx-line);
+         font-family: var(--bx-mono); font-size: 11px; letter-spacing: .12em;
          text-transform: uppercase; min-height: 46px; }
   .toc > summary::-webkit-details-marker { display: none; }
   .toc > summary .chev { transition: transform .15s ease; font-size: 13px; }
   .toc[open] > summary .chev { transform: rotate(180deg); }
   .toc nav { display: flex; flex-direction: column; }
   .toc a { display: flex; align-items: center; gap: 10px; font-size: 13.5px;
-         font-weight: 600; color: var(--fg-muted); padding: 11px 15px;
-         min-height: 44px; border-bottom: 1px solid rgba(10,11,14,.10);
+         font-weight: 600; color: var(--bx-grey); padding: 11px 15px;
+         min-height: 44px; border-bottom: 1px solid var(--bx-line);
          border-left: 4px solid transparent; text-decoration: none;
          overflow-wrap: anywhere; }
   .toc a:last-child { border-bottom: 0; }
-  .toc a .num { font-family: var(--font-mono); font-size: 12px;
-         color: #4A5568; min-width: 20px; }
-  .toc a:hover { background: rgba(10,11,14,.04); color: var(--ink); }
-  .toc a.on { background: var(--lime-06, rgba(89,253,39,.10));
-         border-left-color: var(--lime, #59FD27); color: var(--ink); font-weight: 800; }
-  .toc a.on .num { color: #2E6B00; }   /* verde escuro: AA sobre papel */
+  .toc a .num { font-family: var(--bx-mono); font-size: 12px;
+         color: var(--bx-grey); min-width: 20px; }
+  .toc a:hover { background: var(--bx-surface-2); color: var(--bx-ink); }
+  .toc a.on { background: var(--bx-ink);
+         border-left-color: var(--bx-neon); color: var(--bx-surface); font-weight: 700; }
+  .toc a.on .num { color: var(--bx-neon); }   /* neon sobre preto: 14,5:1 */
   .body { padding: 32px 36px; }
   .body h2 { font-family: var(--font-display); font-weight: 900; font-size: 21px; letter-spacing: -0.01em; margin: 34px 0 10px; scroll-margin-top: 94px; }
   .body h2:first-of-type { margin-top: 0; }
-  .body h2 .n { font-family: var(--font-mono); font-size: 13px; color: #2E6B00; margin-right: 8px; }
+  .body h2 .n { font-family: var(--bx-mono); font-size: 13px; color: var(--bx-grey); margin-right: 8px; }
   .body p { font-size: 14px; color: var(--fg-muted); }
   .body li { font-size: 14px; color: var(--fg-muted); margin: 6px 0; }
   .body b { color: var(--ink); }
@@ -48,13 +53,13 @@
   .body table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
   .body th, .body td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line, #dcdcd4); }
   .body th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
-  /* REGRA: mobile sem rolagem horizontal — a tabela vira lista empilhada. */
+  /* REGRA: mobile sem rolagem horizontal, a tabela vira lista empilhada. */
   @media (max-width: 900px){
     .doc { grid-template-columns: 1fr; } .toc { position: static; } .body { padding: 24px; }
     .toc > summary { display: flex; }
     .body table, .body tbody, .body tr, .body td { display: block; width: 100%; }
     .body thead { display: none; }
-    .body tr { border: 2px solid var(--ink); margin-bottom: 12px; padding: 6px 10px; }
+    .body tr { border: 1px solid var(--bx-line); border-radius: 12px; margin-bottom: 12px; padding: 6px 12px; }
     .body td { border: 0; padding: 6px 0; }
     .body td::before { content: attr(data-label); display: block; font-family: var(--font-mono);
       font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
@@ -95,12 +100,12 @@
       <h2 id="definicoes"><span class="n">01</span>Definições</h2>
       <p>Para os fins deste regulamento:</p>
       <ul>
-        <li><b>Programa</b> — o BlaXx Pontos, programa de fidelidade operado pela BlaXx.</li>
-        <li><b>Participante</b> — pessoa física, maior de 18 anos, com CPF válido e conta ativa.</li>
-        <li><b>Pontos</b> — unidades do Programa, registradas na carteira do Participante.</li>
-        <li><b>Pontos comprados</b> — adquiridos pelo Participante mediante pagamento.</li>
-        <li><b>Pontos bonificados</b> — concedidos pela BlaXx em campanhas, sem pagamento.</li>
-        <li><b>Resgate</b> — troca de pontos por dinheiro, via PIX, ou por benefícios de parceiros.</li>
+        <li><b>Programa</b>, o BlaXx Pontos, programa de fidelidade operado pela BlaXx.</li>
+        <li><b>Participante</b>, pessoa física, maior de 18 anos, com CPF válido e conta ativa.</li>
+        <li><b>Pontos</b>, unidades do Programa, registradas na carteira do Participante.</li>
+        <li><b>Pontos comprados</b>, adquiridos pelo Participante mediante pagamento.</li>
+        <li><b>Pontos bonificados</b>, concedidos pela BlaXx em campanhas, sem pagamento.</li>
+        <li><b>Resgate</b>, troca de pontos por benefícios de parceiros ou, quando disponível, por dinheiro via PIX.</li>
       </ul>
 
       <h2 id="natureza"><span class="n">02</span>Natureza dos pontos</h2>
@@ -115,13 +120,13 @@
       <h2 id="acumulo"><span class="n">03</span>Acúmulo</h2>
       <p>Os pontos entram na carteira por duas vias:</p>
       <ul>
-        <li><b>Compra</b> — pacotes ou valor livre, pagos via PIX ou cartão. O crédito ocorre
+        <li><b>Compra</b>, pacotes ou valor livre, pagos via PIX ou cartão. O crédito ocorre
         após a confirmação do pagamento pela instituição processadora.</li>
-        <li><b>Campanhas</b> — bonificações concedidas pela BlaXx, sempre com regras próprias
+        <li><b>Campanhas</b>, bonificações concedidas pela BlaXx, sempre com regras próprias
         divulgadas na campanha (prazo, condição e quantidade).</li>
       </ul>
       <p>O crédito por compra é automático. Em pagamentos sujeitos a análise antifraude, o
-      crédito ocorre somente após a liberação — o que pode levar até 72 horas no PIX.</p>
+      crédito ocorre somente após a liberação, o que pode levar até 72 horas no PIX.</p>
 
       <h2 id="validade"><span class="n">04</span>Validade e expiração</h2>
       <table>
@@ -145,9 +150,9 @@
 
       <h2 id="resgate"><span class="n">05</span>Resgate</h2>
       <ul>
-        <li><b>Em dinheiro (PIX)</b> — convertidos à taxa vigente e enviados para chave PIX de
+        <li><b>Em dinheiro (PIX)</b>, convertidos à taxa vigente e enviados para chave PIX de
         titularidade do próprio Participante. Chave de terceiro não é aceita.</li>
-        <li><b>Em benefícios</b> — junto aos parceiros listados na plataforma, conforme
+        <li><b>Em benefícios</b>, junto aos parceiros listados na plataforma, conforme
         disponibilidade de cada parceiro.</li>
       </ul>
       <p>O resgate exige conta ativa, e-mail verificado e confirmação de senha. Pedidos são
@@ -217,7 +222,7 @@
   ajustaAbertura();
   window.addEventListener('resize', ajustaAbertura);
 
-  /* No mobile, escolher um item recolhe o menu — senão ele cobre o conteúdo
+  /* No mobile, escolher um item recolhe o menu, senão ele cobre o conteúdo
      que a pessoa acabou de pedir para ver. */
   links.forEach(function(a){
     a.addEventListener('click', function(){
@@ -258,5 +263,9 @@
 })();
 </script>
 <script src="assets/blaxx-app.js" defer></script>
+<!-- rodapé-recibo do tema Embarque, montado por assets/blaxx-nav.js -->
+<footer class="footer"></footer>
+<script src="assets/blaxx-nav-user.js"></script>
+<script src="assets/blaxx-nav.js"></script>
 </body>
 </html>

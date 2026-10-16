@@ -27,6 +27,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlaXx · Carteira</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
   .page-head { margin-bottom: 28px; }
   .balance { padding: 30px 32px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
@@ -41,7 +42,8 @@
   .scard__val { font-family: var(--font-mono); font-weight: 700; font-size: 34px; letter-spacing: -0.02em; }
   .scard__sub { font-size: 13px; color: var(--fg-muted); margin-top: 6px; }
   .scard__sub b { color: var(--ink); }
-  .scard__val.warn { color: #B58A00; }
+  /* --warn (#7a5a00) dá 6,1:1 sobre a superfície; o âmbar anterior ficava em 3,0:1. */
+  .scard__val.warn { color: var(--warn-text); }
 
   .two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: start; }
   .panel { padding: 24px 26px; }
@@ -51,8 +53,9 @@
   /* mini bar chart */
   .chart { display: flex; align-items: flex-end; gap: 12px; height: 180px; padding-top: 10px; }
   .chart__col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: flex-end; }
-  .chart__bar { width: 100%; max-width: 34px; border-radius: 7px 7px 0 0; background: rgba(14,15,11,0.08); transition: height 1s var(--ease-out); }
-  .chart__bar.hi { background: linear-gradient(180deg, var(--lime-bright), var(--lime)); }
+  /* Barras no contorno do tema (--bx-line): a tinta a 8% sumia na superfície clara. */
+  .chart__bar { width: 100%; max-width: 34px; border-radius: 8px 8px 0 0; background: var(--bx-line); transition: height 1s var(--ease-out); }
+  .chart__bar.hi { background: var(--bx-neon); }
   .chart__m { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); }
 
   .expire-list { display:flex; flex-direction: column; }
@@ -60,7 +63,8 @@
   .expire + .expire { border-top: 1px solid var(--line); }
   .expire__pts { font-family: var(--font-mono); font-weight: 700; font-size: 18px; }
   .expire__when { font-size: 12.5px; color: var(--fg-muted); }
-  .expire__tag { margin-left: auto; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(181,138,0,0.14); color: #8a6a00; }
+  /* nowrap: em 375px o selo "28 DIAS" quebrava em duas linhas ao lado de um rótulo longo. */
+  .expire__tag { margin-left: auto; white-space: nowrap; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(122,90,0,.10); color: var(--warn); }
 
   @media (max-width: 900px){ .balance, .stat-row, .two { grid-template-columns: 1fr; } .balance__num{font-size:56px;} }
 </style>
@@ -138,7 +142,7 @@
         <div class="expire">
           <span class="tile tile--soft" style="width:38px;height:38px"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.5 2"/></svg></span>
           <div><div class="expire__pts">1.500 pts</div><div class="expire__when">Nexus Airlines · jul 2024</div></div>
-          <span class="expire__tag" style="background:rgba(14,15,11,.06);color:var(--fg-muted)">54 DIAS</span>
+          <span class="expire__tag" style="background:var(--bx-surface-2);color:var(--bx-grey)">54 DIAS</span>
         </div>
       </div>
       <a href="extrato.html" class="btn btn--outline btn--block" style="margin-top:18px">Ver extrato completo →</a>

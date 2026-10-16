@@ -24,42 +24,62 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080907">
+<meta name="theme-color" content="#0A0B0E">
 <title>App ao vivo | BlaXx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  /* Tweaks para esta tela integrada */
+  /* Tweaks para esta tela integrada, na linguagem do tema "Embarque":
+     mono = Space Mono (var(--bx-mono)), tokens --bx-* no lugar de cor fixa. */
   .live-pill { display:inline-flex; align-items:center; gap:6px; background:var(--ok); color:var(--ok-text); padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; }
   .live-pill::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--ok-text); animation:pulse 1.6s infinite; }
   @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
-  .api-badge { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; background:var(--ink); color:var(--lime); padding:2px 8px; border-radius:6px; }
-  .endpoint-tag { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; color:var(--muted); }
-  .qr-box { width:130px; height:130px; background:#0c110c; border-radius:12px; padding:6px; border:1px solid var(--line); }
-  .brcode-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:10px; word-break:break-all; line-height:1.4; background:var(--bg-warm); padding:10px; border-radius:8px; max-height:90px; overflow:auto; }
+  .api-badge { font-family:var(--bx-mono); font-size:11px; background:var(--bx-ink); color:var(--bx-neon); padding:2px 8px; border-radius:6px; }
+  .endpoint-tag { font-family:var(--bx-mono); font-size:11px; color:var(--bx-grey); }
+  .qr-box { width:130px; height:130px; background:var(--bx-ink); border-radius:12px; padding:6px; border:1px solid var(--bx-line); }
+  .brcode-box { font-family:var(--bx-mono); font-size:10px; word-break:break-all; line-height:1.4; background:var(--bx-surface-2); padding:10px; border-radius:8px; max-height:90px; overflow:auto; }
   .row-input { display:grid; gap:8px; margin-top:8px; }
-  .row-input label { font-size:12px; color:var(--muted); }
-  .row-input input { padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:14px; background:var(--card); }
+  .row-input label { font-size:12px; color:var(--bx-grey); }
+  .row-input input { padding:10px 12px; border:1px solid var(--bx-line); border-radius:10px; font-size:14px; background:var(--bx-surface); min-width:0; }
   .alert { padding:10px 12px; border-radius:10px; font-size:13px; margin-top:10px; }
   .alert-ok    { background:var(--ok); color:var(--ok-text); }
-  .alert-warn  { background:var(--warn); color:var(--warn-text); }
+  /* #F7EFD6 é o --warn da família A em blaxx-embarque.css, sombreado pela
+     redeclaração de --warn (cor de texto) no mesmo :root. */
+  .alert-warn  { background:#F7EFD6; color:var(--warn-text); }
   .alert-err   { background:var(--danger); color:var(--danger-text); }
   .balance-big { font-size:42px; font-weight:800; line-height:1; letter-spacing:-0.02em; }
-  .balance-sub { color:var(--muted-2); font-size:13px; margin-top:4px; }
-  .step-label { background:var(--ink); color:var(--lime); font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px; }
+  .balance-sub { color:var(--bx-grey); font-size:13px; margin-top:4px; }
+  .step-label { background:var(--bx-ink); color:var(--bx-neon); font-family:var(--bx-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; padding:3px 10px; border-radius:999px; white-space:nowrap; flex:none; }
   .login-bar { display:grid; grid-template-columns:1.4fr 1fr auto; gap:8px; align-items:center; }
+  .login-bar input { min-width:0; }
   .pkg-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px; }
-  .pkg-btn { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:left; cursor:pointer; transition:.15s; }
-  .pkg-btn:hover { border-color:var(--ink); }
-  .pkg-btn.featured { border:2px solid var(--ink); }
-  .pkg-btn .nm { font-size:11px; color:var(--muted); }
+  /* <button> vem com display:inline-flex da folha base, o que punha nome,
+     preço e pontos lado a lado e cortava "Start"; aqui o bilhete empilha. */
+  .pkg-btn { display:flex; flex-direction:column; align-items:flex-start; gap:2px; background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:14px; padding:12px; text-align:left; cursor:pointer; transition:.15s; }
+  .pkg-btn:hover { border-color:var(--bx-ink); }
+  /* 2px é a marca de "selecionado" do design (como o bilhete da home). */
+  .pkg-btn.featured { border:2px solid var(--bx-ink); }
+  .pkg-btn .nm { font-size:11px; color:var(--bx-grey); }
   .pkg-btn .pr { font-size:16px; font-weight:700; margin-top:2px; }
-  .pkg-btn .pt { font-size:11px; color:var(--muted); }
-  .tx-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .pkg-btn .pt { font-size:11px; color:var(--bx-grey); }
+  .tx-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--bx-line); font-size:13px; }
   .tx-row:last-child { border-bottom:0; }
   .tx-amt-pos { color:var(--ok-text); font-weight:600; }
   .tx-amt-neg { color:var(--danger-text); font-weight:600; }
+  /* Celular: as grades de 3 e 4 colunas (login, pacotes, enviar, resgatar)
+     estouravam a largura da tela. As de enviar/resgatar são inline no HTML,
+     por isso o seletor por atributo (zero mudança de marcação). */
+  @media (max-width:720px) {
+    .login-bar { grid-template-columns:1fr; }
+    .pkg-grid { grid-template-columns:1fr 1fr; }
+    #app div[style*="grid-template-columns"] { grid-template-columns:1fr !important; }
+    #charge-area > div[style*="grid-template-columns"] { grid-template-columns:130px 1fr !important; }
+  }
+  @media (max-width:480px) {
+    #charge-area > div[style*="grid-template-columns"] { grid-template-columns:1fr !important; }
+  }
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
@@ -95,7 +115,7 @@
 
   <div class="page-head">
     <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> App ao vivo</div>
-    <h1>App <span style="color:var(--lime-dark);">funcional</span></h1>
+    <h1>App <span style="background:var(--bx-neon);color:inherit;padding:0 .08em;">funcional</span></h1>
     <p class="lead" style="max-width:60ch;margin-top:14px;">Esta tela usa o backend Python real. Login, saldo, compra de pontos via PIX, envio entre clientes e resgate via PIX, tudo passando pelos endpoints Flask.</p>
   </div>
 
@@ -121,14 +141,14 @@
 
     <!-- ============ CARTEIRA ============ -->
     <section class="section">
-      <div class="card" style="padding:30px;background:var(--ink);color:white;">
+      <div class="card" style="padding:30px;background:var(--bx-ink);color:#F4F2EC;border-color:var(--bx-ink);border-radius:var(--bx-r-xl);">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
           <div>
-            <div style="color:var(--lime-2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Carteira de <span id="me-name">…</span></div>
-            <div class="balance-big" style="color:var(--lime);margin-top:8px;"><span id="bal-pts">…</span> <span style="font-size:18px;color:var(--lime-soft);">pts</span></div>
-            <div class="balance-sub" style="color:var(--lime-soft);">≈ R$ <span id="bal-brl">…</span></div>
+            <div style="color:var(--bx-neon);font-family:var(--bx-mono);font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;">Carteira de <span id="me-name">…</span></div>
+            <div class="balance-big" style="color:var(--bx-neon);margin-top:8px;"><span id="bal-pts">…</span> <span style="font-size:18px;color:#F4F2EC;">pts</span></div>
+            <div class="balance-sub" style="color:var(--bx-ink-muted);">≈ R$ <span id="bal-brl">…</span></div>
           </div>
-          <button class="button ghost" id="logout" style="background:transparent;color:white;border:1px solid rgba(255,255,255,.3);">Sair</button>
+          <button class="button ghost" id="logout" style="background:transparent;color:#F4F2EC;border:1px solid rgba(244,242,236,.35);">Sair</button>
         </div>
       </div>
     </section>
@@ -152,14 +172,14 @@
           <button class="pkg-btn" data-pkg="black"><div class="nm">Black</div><div class="pr">R$ 199,90</div><div class="pt">28.000 pts</div></button>
         </div>
 
-        <div id="charge-area" style="display:none;margin-top:16px;background:var(--lime-bg);padding:16px;border-radius:14px;">
+        <div id="charge-area" style="display:none;margin-top:16px;background:var(--bx-surface-2);border:1px solid var(--bx-line);padding:16px;border-radius:14px;">
           <div style="display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:start;">
             <div class="qr-box" id="qr"></div>
             <div>
               <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">BR Code copia-e-cola</div>
               <div class="brcode-box" id="brcode"></div>
               <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
-                <span class="status-pill" id="charge-status" style="background:var(--warn);color:var(--warn-text);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;">pending</span>
+                <span class="status-pill" id="charge-status" style="background:#F7EFD6;color:var(--warn-text);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;">pending</span>
                 <button class="button" id="charge-pay" style="font-size:13px;padding:8px 14px;">Simular pagamento (webhook)</button>
               </div>
             </div>
@@ -238,7 +258,7 @@
 </footer>
 
 <style>
-  [data-link="app"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
+  [data-link="app"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
 </style>
 
 <script>
