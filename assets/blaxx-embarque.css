@@ -536,7 +536,8 @@ footer.footer,footer.site-footer{
   display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:32px;
 }
 .bx-foot-marca{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
-.bx-foot-marca img{ height:46px; width:auto; display:block; }
+.bx-foot-marca img{ height:96px; width:auto; display:block; }
+@media (max-width:880px){ .bx-foot-marca img{ height:80px; } }
 .bx-foot-marca p{ color:var(--bx-ink-muted); line-height:1.5; max-width:320px; margin:0; }
 .bx-foot-col{ display:flex; flex-direction:column; gap:12px; }
 .bx-foot-col h4{ margin:0; color:#F4F2EC; font-family:var(--bx-mono); font-size:12px; letter-spacing:.08em; font-weight:400; }
