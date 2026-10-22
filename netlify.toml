@@ -141,6 +141,21 @@
   status = 301
   force = true
 
+# parceiro-detalhe.html era uma cópia estática e órfã do detalhe do parceiro,
+# com parceiro inventado (16/10/2026). O detalhe de verdade é
+# /detalhe-parceiro.html?id=<id>; sem id, o caminho certo é a lista.
+[[redirects]]
+  from = "/parceiro-detalhe.html"
+  to = "/parceiros.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/parceiro-detalhe"
+  to = "/parceiros.html"
+  status = 301
+  force = true
+
 # Rota /lander — legado de URL Forwarding do GoDaddy que aponta para este caminho.
 # Enquanto o DNS do GoDaddy não for corrigido para apontar diretamente ao Netlify,
 # qualquer visita que chegue em /lander é redirecionada para a home (301 permanente).

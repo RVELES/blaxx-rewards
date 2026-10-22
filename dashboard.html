@@ -259,17 +259,19 @@
 
         <div class="card">
             <div class="flex between mb-2">
-                <h3>Parceiros recomendados</h3>
+                <h3>Parceiros por categoria</h3>
                 <a href="parceiros.html" class="button secondary sm">Ver todos →</a>
             </div>
             <div class="grid two">
-                <a href="detalhe-parceiro.html" class="partner-card">
-                    <div class="partner-logo">PA</div>
-                    <div><h3>Pão de Açúcar</h3><div class="rate">12 pts/R$ · +50%</div></div>
+                <!-- categorias da rede em expansão (antes: Pão de Açúcar e Shell fixos,
+                     sem integração e com taxa por real inventada) -->
+                <a href="parceiros.html?q=supermercado" class="partner-card">
+                    <span class="partner-logo bx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h16l-1.5 10.5h-13Z"/><path d="M8.5 9 11 4.5M15.5 9 13 4.5"/></svg></span>
+                    <div><h3>Supermercados</h3><div class="rate">Compras do dia a dia</div></div>
                 </a>
-                <a href="detalhe-parceiro.html" class="partner-card">
-                    <div class="partner-logo">SH</div>
-                    <div><h3>Shell</h3><div class="rate">8 pts/R$ · 2x</div></div>
+                <a href="parceiros.html?q=postos" class="partner-card">
+                    <span class="partner-logo bx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V5a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 14 5v15M3.5 20h12"/><path d="M5 10h9M14 8l3 3v6.5a1.5 1.5 0 0 0 3 0V9l-2.5-2.5"/></svg></span>
+                    <div><h3>Postos</h3><div class="rate">Combustível e conveniência</div></div>
                 </a>
             </div>
         </div>

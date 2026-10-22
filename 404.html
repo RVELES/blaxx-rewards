@@ -15,7 +15,8 @@
      vencia o padding-bottom que a camada Embarque dá a quem tem a barra de
      abas. Aqui o respiro vai para o <main> (16px) e o pé volta a ser livre. */
   @media (max-width:880px){
-    body{ padding:24px 0 0 !important; }
+    /* sem respiro no topo: a barra preta encosta no alto como na home */
+    body{ padding:0 !important; }
     .bx-com-tabbar body{ padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)) !important; }
     main{ width:100%; padding:0 16px 40px; }
     footer.footer{ width:100%; }

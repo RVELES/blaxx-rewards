@@ -3,225 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mercado Bom Preço · Parceiro | BlaXx</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="assets/styles.css">
-<!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
-     os tokens; o <style> da página só precisa não brigar com ele. -->
-<link rel="stylesheet" href="assets/blaxx-embarque.css">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="BlaXx">
-<meta name="mobile-web-app-capable" content="yes">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://blaxxpontos.com.br/"},{"@type":"ListItem","position":2,"name":"Parceiro","item":"https://blaxxpontos.com.br/parceiro-detalhe.html"}]}
-</script>
-<script src="assets/blaxx-acesso.js"></script>
+<meta name="robots" content="noindex">
+<title>Parceiros | BlaXx</title>
+<link rel="canonical" href="https://blaxxpontos.com.br/parceiros.html">
+<meta http-equiv="refresh" content="0; url=parceiros.html">
+<!-- parceiro-detalhe.html era uma cópia estática do detalhe do parceiro, com um
+     parceiro inventado e sem nenhum link apontando para ela (16/10/2026). Em
+     produção o netlify.toml responde 301 de /parceiro-detalhe(.html) para
+     /parceiros.html antes de chegar aqui; este arquivo só atende o servidor
+     local e quem tiver o endereço salvo. O detalhe de verdade é
+     detalhe-parceiro.html?id=<id>. -->
+<style>
+  body{ margin:0; min-height:100vh; display:grid; place-items:center; padding:16px; box-sizing:border-box;
+        background:#E4E1D9; color:#0A0B0E; font-family:'Space Mono',ui-monospace,Menlo,'Courier New',monospace;
+        font-size:13px; letter-spacing:.08em; text-transform:uppercase; text-align:center; }
+  a{ color:#0A0B0E; text-underline-offset:4px; }
+</style>
 </head>
 <body>
-<header class="topbar">
-    <nav class="nav">
-        <a href="index.html" class="brand">
-            <span class="mark">BlaXx</span>
-        </a>
-        <div class="links">
-            <a href="index.html" data-link="index">Início</a>
-            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
-            <a href="vender-pontos.html" data-link="vender-pontos">Vender pontos</a>
-        </div>
-        <div class="cta-row">
-            <a href="login.html" class="button ghost">Entrar</a>
-            <a href="cadastro.html" class="button">Cadastre-se</a>
-        </div>
-    </nav>
-</header>
-<main class="shell">
-<div class="page-head">
-    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> <a href="parceiros.html">Parceiros</a><span class="sep">/</span> Mercado Bom Preço</div>
-</div>
-
-<section class="section">
-    <div class="band-dark" style="padding:40px;">
-        <div>
-            <div>
-                <span class="kicker">Supermercado</span>
-                <h1 style="margin-top:14px;color:white;">Mercado Bom Preço</h1>
-                <p>Mais de 80 lojas em todo o Brasil. Pontos em todas as compras, na loja ou online, sem limite.</p>
-                <div class="actions">
-                    <a href="resgates.html" class="button">Ver resgates</a>
-                    <a href="#" class="button secondary">Encontrar loja</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="grid">
-        <div class="card">
-            <div class="card-icon">⏱</div>
-            <h3>Crédito em 24h</h3>
-            <p>Pontos confirmados em até 1 dia útil após a compra.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
-            <h3>Sem compra mínima</h3>
-            <p>Toda compra acumula pontos, sem exigência de mínimo.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 19h2"/></svg></div>
-            <h3>Online &amp; loja</h3>
-            <p>Vale no app, no site e em todas as lojas físicas.</p>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="section-head">
-        <h2>Como acumular</h2>
-    </div>
-    <div class="grid">
-        <div class="card">
-            <div class="card-icon">1</div>
-            <h3>Informe seu CPF</h3>
-            <p>No caixa, no app ou no checkout do site, informe o CPF cadastrado na BlaXx.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon">2</div>
-            <h3>Finalize a compra</h3>
-            <p>Conclua o pagamento com qualquer forma aceita pelo parceiro.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon">3</div>
-            <h3>Receba os pontos</h3>
-            <p>Acompanhe o crédito no seu extrato em até 24 horas.</p>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="section-head">
-        <h2>Campanhas ativas</h2>
-    </div>
-    <div class="grid two">
-        <a href="campanha-detalhe.html" class="campaign-card">
-            <div class="campaign-cover">
-                <span class="kicker">+50% até 30/06</span>
-                <h3 style="margin-top:10px;">Bônus em hortifruti</h3>
-            </div>
-            <div class="campaign-body">
-                <p>Compras na seção de hortifruti rendem 50% a mais em pontos.</p>
-                <div class="progress-row"><span>Sua participação</span><span><strong style="color:var(--ink);">3 compras</strong></span></div>
-            </div>
-        </a>
-        <a href="campanha-detalhe.html" class="campaign-card">
-            <div class="campaign-cover">
-                <span class="kicker">+30% no online</span>
-                <h3 style="margin-top:10px;">Compre pelo app</h3>
-            </div>
-            <div class="campaign-body">
-                <p>Pedidos pelo app do parceiro acumulam 30% a mais em pontos. Sem limite.</p>
-                <div class="progress-row"><span>Sua participação</span><span><strong style="color:var(--ink);">1 compra</strong></span></div>
-            </div>
-        </a>
-    </div>
-</section>
-</main>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaXx</span>
-            </div>
-            <p class="about">Um programa de recompensas: acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="vender-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
-                <li><a href="meus-chamados.html">Meus chamados</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Documentos</a></li>
-                <li><a href="sitemap.html">Mapa do site</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 BlaXx. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</span>
-    </div>
-</footer>
-<style>
-  /* Item ativo no tema "Embarque": pílula preta com texto claro, sem borda nem
-     sombra dura (mesma leitura de .links a[aria-current] e .side-nav a.active
-     em assets/blaxx-embarque.css). O ícone fica neon, que sobre preto passa. */
-  [data-link="parceiros"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
-  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
-  /* ---- Celular (A7) ---- */
-  @media (max-width:880px){
-    /* O app-shell e o main já dão o respiro; sem este corte os farelos
-       ficavam 84px abaixo da barra (a home fica a 20px). */
-    .page-head{ margin-top:0; padding-top:0 !important; }
-    /* O padding:40px e o gap:40px inline da faixa escura valiam entre 481 e
-       880px; abaixo de 480 o styles.css já apertava. Um valor só. */
-    .band-dark[style]{ padding:28px 20px !important; }
-    .band-dark .grid.two[style]{ gap:20px !important; }
-    .band-dark .actions{ flex-direction:column; align-items:stretch; gap:8px; }
-    .band-dark .actions .button{ width:100%; }
-    /* Os seis cartões de três colunas viravam uma torre de 1.150px com o
-       ícone em cima do texto. No celular cada um vira uma linha: ícone à
-       esquerda, título e texto à direita (mesma leitura das "escalas" da
-       home). */
-    .section > .grid:not(.two){ gap:10px !important; }
-    .section > .grid:not(.two) .card{
-      display:grid; grid-template-columns:44px minmax(0,1fr);
-      column-gap:14px; row-gap:4px; align-items:start;
-    }
-    .section > .grid:not(.two) .card .card-icon{ grid-row:1 / span 2; margin:0; }
-    .section > .grid:not(.two) .card h3{ grid-column:2; margin:0; font-size:17px !important; align-self:center; }
-    .section > .grid:not(.two) .card p{ grid-column:2; margin:0; font-size:15px; }
-    /* capa da campanha mais baixa */
-    .campaign-cover{ padding:18px !important; }
-  }
-</style>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('service-worker.js').catch(function () {});
-    });
-  }
-</script>
-<script src="assets/blaxx-nav-user.js"></script>
-<script src="assets/blaxx-nav.js"></script>
+<p>Esta página mudou de lugar. <a href="parceiros.html">Ver os parceiros &rarr;</a></p>
 </body>
 </html>

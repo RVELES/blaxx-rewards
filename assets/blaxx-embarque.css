@@ -149,7 +149,11 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
   background:var(--bx-ink); color:var(--bx-bar-fg);
   font-family:var(--bx-mono); font-size:12px; line-height:1.3;
 }
+/* content-box em todas: é como a home mede (ela não carrega a folha-base com
+   border-box global), então a barra e o rodapé ficam na mesma posição em
+   toda página. Com border-box o texto entrava 56px de cada lado. */
 .bx-util-in{
+  box-sizing:content-box;
   max-width:1280px; margin:0 auto; padding:9px clamp(16px,4.4vw,56px);
   display:flex; justify-content:space-between; align-items:center; gap:16px;
 }
@@ -158,7 +162,10 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
 .bx-util span,.bx-util a{ white-space:nowrap; color:inherit; text-decoration:none; }
 .bx-util a:hover,.bx-util a:focus-visible{ color:#fff; text-decoration:underline; text-underline-offset:3px; }
 .bx-util .on{ color:var(--bx-neon); }
-/* No celular só cabe o que cabe inteiro: nada de item cortado no meio. */
+/* Só cabe o que cabe inteiro: nada de item cortado ou encavalado. Os dois
+   grupos lado a lado pedem ~862px de miolo; abaixo de 1000px de janela o
+   grupo da direita (Segurança, Central de ajuda) sai, como no celular. */
+@media (max-width:1000px){ .bx-util-grupo + .bx-util-grupo{ display:none; } }
 @media (max-width:880px){
   .bx-util-grupo + .bx-util-grupo{ display:none; }
   .bx-util-grupo{ gap:16px; }
@@ -576,6 +583,7 @@ footer.footer,footer.site-footer{
 .bx-foot .bx-zig{ --bx-zig-cor:var(--bx-ink); }
 .bx-foot .bx-barcode{ background:repeating-linear-gradient(90deg,#F4F2EC 0 2px,transparent 2px 4px,#F4F2EC 4px 7px,transparent 7px 9px,#F4F2EC 9px 10px,transparent 10px 14px); }
 .bx-foot-corpo{
+  box-sizing:content-box;
   background:var(--bx-ink); color:#F4F2EC; padding:48px clamp(16px,4.4vw,56px) 32px; font-size:15px;
   max-width:1280px; margin:0 auto;
   display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:32px;
@@ -589,6 +597,7 @@ footer.footer,footer.site-footer{
 .bx-foot-col a{ color:var(--bx-ink-muted); text-decoration:none; width:max-content; max-width:100%; }
 .bx-foot-col a:hover{ color:var(--bx-neon); text-decoration:underline; text-underline-offset:3px; }
 .bx-foot-base{
+  box-sizing:content-box;
   background:var(--bx-ink); padding:0 clamp(16px,4.4vw,56px) 36px; max-width:1280px; margin:0 auto;
   display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;
   font-family:var(--bx-mono); font-size:12px; color:var(--bx-ink-muted);
@@ -774,6 +783,30 @@ footer.footer,footer.site-footer{
 }
 .bxnav-burger{ background:transparent; border:1px solid var(--bx-ink-2); order:9; }
 .bxnav-burger span{ background:#F4F2EC; }
+/* Entre o celular (880) e a barra cheia (~1230 logado), nada pode passar da
+   borda: medido em 22/10, o Sair do logado sumia a 1024/1100 e o Criar conta
+   do visitante a 881. Três degraus, iguais em toda página:
+   - até 1240: a saudação vira só a inicial (o nome volta acima disso);
+   - até 1180: a busca sai (no celular ela também não aparece) e os links
+     ficam mais justos;
+   - até 1040: marca menor, links em 14px e, para quem entrou, "Como
+     funciona" fica só no rodapé e na lateral (Ajuda). */
+@media (max-width:1240px){
+  .topbar[data-bx-comum] .bx-chip{ padding:0 4px; }
+  .topbar[data-bx-comum] .bx-chip-nome{ display:none; }
+}
+@media (max-width:1180px){
+  .topbar[data-bx-comum] .nav{ gap:16px; }
+  .topbar[data-bx-comum] .bx-busca{ display:none !important; }
+  .topbar[data-bx-comum] .links a{ padding:10px 10px; }
+}
+@media (max-width:1040px){
+  .topbar[data-bx-comum] .nav{ gap:14px; }
+  .topbar[data-bx-comum] .links a{ font-size:14px; padding:10px 8px; }
+  .topbar[data-bx-comum][data-bx-logado] .links a[href*="como-funciona"]{ display:none; }
+}
+/* a marca só encolhe aqui; no celular valem os tamanhos do bloco de lá */
+@media (min-width:881px) and (max-width:1040px){ .topbar[data-bx-comum] .mark{ width:124px; height:24px; } }
 @media (max-width:880px){
   .topbar[data-bx-comum] .nav{ height:60px; padding:0 16px !important; gap:10px; }
   .topbar[data-bx-comum] .links,.topbar[data-bx-comum] .bx-busca,
@@ -1008,8 +1041,8 @@ html{ scrollbar-gutter:stable; }
    Os componentes de home-embarque.html em classes bx-* reaproveitáveis, para
    montar outras páginas com a mesma arte: cartão de embarque, rota com escalas,
    bilhetes com canhoto e picote, recibo e painel de partidas (quadro preto).
-   Medidas, cores e breakpoints (1000/900/520) são os da home, que continua
-   com o CSS inline dela. Os motivos (.bx-perf, .bx-zig, .bx-leader,
+   Medidas, cores e breakpoints (1000/900/600/520) são os da home, que
+   continua com o CSS inline dela (conferido por medição a 1440-340px). Os motivos (.bx-perf, .bx-zig, .bx-leader,
    .bx-tracejo, .bx-barcode, .bx-rotulo, .bx-vert, .bx-wrap) estão acima.
    Proteção contra as folhas-base (assets/styles.css e styles.css): cada raiz
    do kit fixa fonte, tamanho e entrelinha (a home herda 16px/normal; as
@@ -1117,7 +1150,7 @@ main.bx-pagina{ padding:0 !important; }    /* folhas-base: 36px 40px / 24px 16px
        <span class="bx-escala-n">Escala 01 · Comprar</span>
        <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><span class="bx-escala-t">Compre</span></div>
        <p class="bx-escala-d">Texto.</p>
-     </div> …a última escala ganha o ponto neon
+     </div> …a última escala ganha o ponto neon; .bx-escala-t pode ser <h3>
    </div> */
 .bx-rota-grid{
   position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:32px; margin:0; padding:0; list-style:none;
@@ -1316,6 +1349,8 @@ main.bx-pagina{ padding:0 !important; }    /* folhas-base: 36px 40px / 24px 16px
 .bx-quadro-nome{ display:flex; align-items:center; gap:10px; min-width:0; }
 .bx-quadro-nome > span:last-child{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .bx-quadro-nome .bx-ico{ width:28px; height:28px; border-radius:8px; }
+/* na linha ativa (neon) o quadrado neon sumia no fundo: ganha contorno preto */
+.bx-quadro-linha--ativa .bx-ico{ outline:2px solid var(--bx-ink); outline-offset:-2px; }
 .bx-quadro-sit{ display:inline-flex; align-items:center; justify-content:flex-end; gap:8px; font-size:11px; letter-spacing:.06em; color:var(--bx-ink-muted); white-space:nowrap; }
 .bx-quadro-sit i{ width:8px; height:8px; border-radius:50%; background:#4A4D55; flex:none; }
 .bx-quadro-sit em{ font-style:normal; }
@@ -1376,7 +1411,7 @@ main.bx-pagina{ padding:0 !important; }    /* folhas-base: 36px 40px / 24px 16px
   .bx-escala-acao::before{ display:none; }
   .bx-escala:not(:last-child)::after{ content:''; position:absolute; left:11px; top:41px; bottom:-41px; border-left:2px dashed var(--bx-ink); }
   .bx-escala-n{ font-size:12px; }
-  .bx-escala-t{ font-size:34px; }
+  .bx-escala-t{ font-size:34px !important; }   /* como <h3>, a folha-base forçava 17px !important (≤480) */
   .bx-escala-d{ font-size:15px; max-width:none; }
   .bx-bilhetes-recibo{ gap:28px; }
   .bx-bilhetes{ gap:14px; }
@@ -1415,6 +1450,7 @@ main.bx-pagina{ padding:0 !important; }    /* folhas-base: 36px 40px / 24px 16px
   /* a linha do neon diminui inteira (não só o mark), sem vão entre as faixas */
   .bx-cartao-titulo > span:last-child{ margin-top:10px; font-size:.66em; line-height:1.24; }
   .bx-cartao-titulo mark{ display:inline; font-size:1em; line-height:1.28; padding:.05em .18em; margin:0; }
+  .bx-cartao-titulo > mark{ font-size:.66em; }   /* mark solto, sem o <span> da linha */
   .bx-cartao-grade{ grid-template-columns:1fr 1fr; gap:16px 14px; padding-top:18px; }
   .bx-cartao-grade b,.bx-cartao-dados b{ font-size:14px; line-height:1.3; }
   .bx-cartao-grade .bx-rotulo,.bx-cartao-dados .bx-rotulo{ font-size:10px; }

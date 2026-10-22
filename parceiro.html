@@ -1,359 +1,1208 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-bx-area="parceiro">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Painel do Parceiro · BlaXx</title>
+<meta name="description" content="Painel das empresas parceiras da BlaXx: pontos emitidos pela rede, estornos, faturas e chaves do caixa.">
+<!-- área autenticada de empresas: fora dos buscadores -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0B0E">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  /* Tema "Embarque": os tokens locais (--p-*) só apelidam os do tema, para o
-     resto da folha não repetir var(--bx-...) em cada linha. Contraste medido
-     no tema: tinta #0A0B0E sobre o chão #E4E1D9 = 15,6:1; cinza #555860 sobre
-     o chão = 5,45:1 e sobre o cartão = 6,76:1 (AA para texto corrido). Neon é
-     PREENCHIMENTO, nunca cor de texto sobre claro (1,23:1 seria invisível). */
-  :root { --p-ink:var(--bx-ink); --p-paper:var(--bx-bg); --p-card:var(--bx-surface); --p-neon:var(--bx-neon);
-          --p-muted:var(--bx-grey); --p-line:var(--bx-line); --p-amber:var(--warn-text); }
-  body { background: var(--p-paper); color: var(--p-ink); }
-  .shell { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
-  /* O nome ficou (está no HTML); o desenho é o cartão do design: contorno
-     fino, canto 18px, sombra macia. */
-  .brutal { background: var(--p-card); border: 1px solid var(--p-line);
-            border-radius: var(--bx-r-lg); box-shadow: var(--bx-sh); }
-  .grid { display: grid; gap: 14px; }
-  .grid.kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-  .kpi { padding: 16px 18px; }
-  .kpi .label { font-family: var(--bx-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
-                color: var(--p-muted); font-weight: 400; }
-  .kpi .value { font-size: 30px; font-weight: 800; letter-spacing: -.02em; margin-top: 6px; color: var(--p-ink); }
-  .kpi .sub { font-size: 12px; color: var(--p-muted); margin-top: 4px; }
-  .kpi.dark { background: var(--p-ink); border-color: var(--p-ink); box-shadow: none; }
-  .kpi.dark .label, .kpi.dark .sub { color: var(--bx-ink-muted); }
-  .kpi.dark .value { color: var(--p-neon); }
-  table.tbl { width: 100%; border-collapse: collapse; }
-  .tbl th { text-align: left; font-family: var(--bx-mono); font-size: 11px; letter-spacing: .08em;
-            text-transform: uppercase; font-weight: 400; color: var(--p-muted); padding: 10px 14px;
-            border-bottom: 1px solid var(--p-line); }
-  .tbl td { padding: 11px 14px; font-size: 14px; color: var(--p-ink);
-            border-bottom: 1px solid var(--p-line); }
-  .tbl tr:last-child td { border-bottom: 0; }
-  .tbl td.num, .tbl th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  /* .bar aqui é o histograma; no tema, .bar é a barra de progresso (pílula
-     com contorno). Zera o que vaza dela para o gráfico não virar pílula. */
-  .bar { display: flex; align-items: flex-end; gap: 3px; height: 90px; padding: 0 2px;
-         background: transparent; border: 0; border-radius: 0; }
-  .bar i { flex: 1; background: var(--p-neon); border: 0; border-radius: 2px 2px 0 0;
-           min-height: 2px; display: block; }
-  .bar i.zero { background: var(--p-line); }
-  .sec { margin-top: 26px; }
-  .sec h2 { font-size: 17px; margin: 0 0 12px; }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  .pill { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-family: var(--bx-mono);
-          font-size: 11px; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--p-line); }
-  .pill.on { background: var(--p-neon); color: var(--p-ink); border-color: transparent; }
-  .pill.off { background: var(--bx-surface-2); color: var(--p-muted); }
-  /* No celular a folha base deixa os botões inline-flex, e aí text-align
-     não centraliza o rótulo do "Entrar" (largura 100%): centra pelo flex. */
-  .btn { border: 1px solid var(--p-line); border-radius: var(--bx-r-xxs); background: var(--p-card);
-         color: var(--p-ink); font-family: var(--bx-sans); font-weight: 700; font-size: 14px; padding: 10px 16px;
-         cursor: pointer; box-shadow: none; justify-content: center; }
-  .btn:hover { background: var(--bx-surface-2); }
-  .btn.primary { background: var(--p-neon); color: var(--p-ink); border-color: transparent; }
-  .btn.primary:hover { background: #4FE81F; }
-  .btn:disabled { opacity: .45; cursor: not-allowed; }
-  .field { width: 100%; padding: 12px 14px; border: 1px solid var(--p-line);
-           border-radius: var(--bx-r-sm); background: var(--p-card); font-size: 15px; color: var(--p-ink); }
-  .login-wrap { max-width: 400px; margin: 8vh auto; padding: 0 16px; }
-  /* #F7EFD6 é o --warn da família A em assets/blaxx-embarque.css, que fica
-     sombreado pela redeclaração de --warn (cor de texto) no mesmo :root;
-     enquanto isso não é corrigido lá, o valor vai literal aqui. */
-  .warn { background: #F7EFD6; border: 1px solid rgba(122,90,0,.35); color: var(--p-amber);
-          padding: 12px 14px; border-radius: var(--bx-r-sm); font-size: 13px; font-weight: 600; }
-  .keybox { font-family: var(--bx-mono); font-size: 13px;
-            word-break: break-all; background: var(--p-ink); color: var(--p-neon);
-            padding: 14px; border-radius: var(--bx-r-sm); }
-  .muted { color: var(--p-muted); font-size: 13px; }
-  @media (max-width: 640px) {
-    .shell { padding: 18px 16px 48px; }
-    .kpi .value { font-size: 24px; }
-    .tbl th:nth-child(2), .tbl td:nth-child(2) { display: none; }
+  /* Painel do Parceiro (16/10/2026), na arte da home (home-embarque.html):
+     login = cartão de embarque com os campos no canhoto; números = bilhetes
+     com picote e canhoto; tabelas = quadro preto do painel de partidas;
+     faturas = recibo. Os componentes vêm do "Kit da home" em
+     assets/blaxx-embarque.css (classes bx-*); aqui fica só o que é desta
+     página (prefixo b2b-) e a barra própria (.bx-b2b-barra).
+     <html data-bx-area="parceiro"> faz o blaxx-nav.js NÃO montar menu,
+     lateral, abas nem o convite de consumidor; ele só preenche o rodapé.
+     Neon é PREENCHIMENTO sobre claro (1,23:1 como texto seria invisível);
+     como texto, só sobre o preto do quadro. */
+
+  html[data-bx-area="parceiro"] footer.footer{ margin-top:0; }
+
+  /* ---------- barra própria: a mesma arte da barra do site (preta, 72px,
+     wordmark "BlaXx", item neon), sem menu de consumidor ---------- */
+  .bx-b2b-barra{
+    position:sticky; top:0; z-index:60; margin:0;
+    background:var(--bx-ink); color:#F4F2EC;
+    border-top:1px solid var(--bx-ink-2); border-bottom:1px solid var(--bx-ink-2);
   }
-  /* Celular (≤ 880px): respiro de 16px como no resto da camada Embarque. As
-     tabelas de 4-5 colunas não espremem as células (data e valor quebravam em
-     duas linhas): crescem e rolam dentro da própria caixa, que já tem
-     overflow-x:auto. Datas do gráfico em 12px; campos em 16px para o iOS
-     não dar zoom ao focar. */
-  @media (max-width: 880px) {
-    .shell { padding: 20px 16px 48px; }
-    .field { font-size: 16px; }
-    .tbl th, .tbl td { white-space: nowrap; }
-    #grafico + .row { font-size: 12px !important; }
+  .bx-b2b-barra [hidden]{ display:none !important; }
+  .bx-b2b-in{
+    box-sizing:border-box; max-width:1280px; height:72px; margin:0 auto;
+    padding:0 clamp(16px,4.4vw,56px); display:flex; align-items:center; gap:22px;
+    font-family:var(--bx-sans);
   }
+  .bx-b2b-marca{ flex:none; display:flex; align-items:center; margin:0; padding:0; min-height:0; text-decoration:none; font-size:0; }
+  .bx-b2b-barra .mark{ width:140px; height:27px; }   /* desenho de fundo escuro: blaxx-embarque.css:206 */
+  .bx-b2b-area{
+    flex:none; display:inline-flex; align-items:center; margin:0; padding:10px 14px; border-radius:var(--bx-r-xxs);
+    background:var(--bx-neon); color:var(--bx-ink); font-size:15px; line-height:20px; font-weight:600; white-space:nowrap;
+  }
+  .bx-b2b-dir{ margin-left:auto; display:flex; align-items:center; gap:14px; min-width:0; }
+  .bx-b2b-rede{
+    min-width:0; max-width:360px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size:15px; line-height:20px; font-weight:500; color:#F4F2EC;
+  }
+  .bx-b2b-rede::before{
+    content:'Rede'; margin-right:10px; font-family:var(--bx-mono); font-size:11px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--bx-ink-muted);
+  }
+  .bx-b2b-sair{
+    flex:none; display:inline-flex; align-items:center; margin:0; min-height:0; padding:9px 16px; box-shadow:none; cursor:pointer;
+    background:transparent; border:1px solid var(--bx-ink-2); border-radius:999px;
+    font-family:var(--bx-sans); font-size:15px; font-weight:500; line-height:20px; color:#F4F2EC;
+    text-transform:none; letter-spacing:0; white-space:nowrap;
+  }
+  .bx-b2b-sair:hover{ border-color:var(--bx-neon); color:var(--bx-neon); background:transparent; }
+  .bx-b2b-sair:focus-visible{ outline:2px solid var(--bx-neon); outline-offset:2px; }
+
+  /* ---------- peças comuns ---------- */
+  .b2b-link{
+    display:inline; margin:0; padding:0; min-height:0; border:0; background:none; box-shadow:none; cursor:pointer;
+    font:inherit; font-weight:700; color:inherit; text-decoration:underline; text-underline-offset:3px;
+  }
+  .b2b-aviso{
+    display:flex; align-items:flex-start; gap:12px; margin:0; padding:14px 16px; border-radius:var(--bx-r-sm);
+    background:#F7EFD6; border:1px solid rgba(122,90,0,.35); color:#7a5a00;
+    font-family:var(--bx-sans); font-size:14px; font-weight:600; line-height:1.45;
+  }
+  .b2b-aviso .bx-ico{ width:28px; height:28px; border-radius:8px; }
+  .b2b-aviso a{ color:inherit; }
+  .bx-cartao-cta{ box-sizing:border-box; width:100%; margin:0; border:0; box-shadow:none; cursor:pointer; min-height:0; justify-content:center; }
+  .bx-cartao-cta:disabled{ opacity:.5; cursor:not-allowed; }
+  .b2b-cab-texto{ display:flex; flex-direction:column; gap:14px; min-width:0; }
+  .b2b-cab-nota{ font-family:var(--bx-mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--bx-grey); line-height:1.4; }
+  .b2b-texto{ margin:0 0 20px; max-width:62ch; font-size:16px; line-height:1.55; color:var(--bx-grey); }
+
+  /* ---------- login: campos no canhoto do cartão ---------- */
+  .b2b-form{ flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:24px; margin:0; }
+  .b2b-campos{ display:flex; flex-direction:column; gap:18px; }
+  .b2b-campo{ display:flex; flex-direction:column; gap:8px; }
+  .b2b-campo label{ margin:0; font-weight:400; }
+  .b2b-portao{ display:flex; flex-direction:column; gap:4px; padding-bottom:18px; border-bottom:2px dashed var(--bx-line); }
+  .bx-cartao-ja a{ white-space:nowrap; }
+  .b2b-campo .field{
+    box-sizing:border-box; width:100%; margin:0; padding:14px; min-height:50px;
+    background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:var(--bx-r-sm);
+    font-family:var(--bx-sans); font-size:16px; color:var(--bx-ink);
+  }
+
+  /* ---------- painel: cabeçalho da rede ---------- */
+  .bx-cartao-titulo.b2b-nome{ font-size:clamp(44px,6.4vw,92px); overflow-wrap:anywhere; }
+  .bx-cartao-titulo.b2b-nome mark{ font-size:.5em; }
+  .b2b-cat{ display:flex !important; align-items:center; gap:10px; }
+  .b2b-cat .bx-ico{ width:28px; height:28px; border-radius:8px; }
+  .bx-cartao-dados .b2b-devido{
+    display:inline-block; width:max-content; max-width:100%; margin-top:6px; padding:0 .1em;
+    background:var(--bx-neon); color:var(--bx-ink); font-family:var(--bx-sans); font-size:clamp(36px,3.6vw,52px);
+    font-weight:900; font-stretch:80%; line-height:1.02; letter-spacing:-.03em; white-space:nowrap;
+  }
+  .b2b-devido-sub{ display:block; margin-top:8px; font-size:14px; line-height:1.45; color:var(--bx-grey); }
+  #aviso-insolvente{ margin-top:20px; }
+
+  /* ---------- bilhetes de números ---------- */
+  .b2b-bilhetes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:24px; margin:0 0 32px; }
+  .b2b-bilhetes .bx-bilhete{ cursor:default; }
+  .b2b-bilhetes .bx-bilhete-canhoto{ width:76px; justify-content:space-between; }
+  .b2b-bilhetes .bx-bilhete-pts{ white-space:nowrap; }
+  .b2b-bilhetes .bx-bilhete-pts .b2b-moeda{ margin-right:.25em; }
+  #sec-faturas{ scroll-margin-top:84px; }
+  .b2b-bilhetes .bx-bilhete-pts.b2b-longo{ font-size:clamp(30px,3vw,40px); }
+  .b2b-bilhetes .bx-rotulo + b{ font-size:16px; font-weight:600; line-height:1.35; }
+
+  /* ---------- painel de partidas: pontos por dia ---------- */
+  .b2b-serie .b2b-grafico{ grid-column:1 / -1; padding:24px 20px 16px; }
+  .b2b-hist{
+    display:flex; align-items:flex-end; gap:4px; height:160px; margin:0; padding:0;
+    background:transparent; border:0; border-radius:0; border-bottom:1px solid var(--bx-ink-2);
+  }
+  .b2b-hist i{ flex:1; display:block; min-width:0; min-height:3px; background:var(--bx-neon); border-radius:3px 3px 0 0; }
+  .b2b-hist i.zero{ background:var(--bx-ink-3); }
+  .b2b-hist-datas{ display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-family:var(--bx-mono); font-size:12px; color:var(--bx-ink-muted); }
+  .b2b-serie .bx-painel-hint{ grid-column:1 / -1; margin-top:-14px; }
+
+  /* ---------- quadro preto com tabela ---------- */
+  .b2b-rola{ overflow-x:auto; scrollbar-width:thin; scrollbar-color:#3A3D45 transparent; }
+  /* lançamentos: 50 linhas rolam dentro do quadro, como a lista da home */
+  .b2b-rola--alto{ max-height:620px; overflow:auto; overscroll-behavior:contain; }
+  .b2b-rola--alto .b2b-tabela th{ position:sticky; top:0; z-index:1; background:var(--bx-ink); }
+  main table.b2b-tabela{
+    display:table; width:100%; max-width:none; margin:0; overflow:visible; border-collapse:collapse;
+    background:transparent; font-family:var(--bx-mono); font-size:14px; line-height:1.35; color:#F4F2EC;
+  }
+  .b2b-tabela th{
+    padding:18px 20px 12px; text-align:left; white-space:nowrap; background:transparent;
+    font-family:var(--bx-mono); font-size:11px; font-weight:400; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--bx-ink-muted); border-bottom:1px solid var(--bx-ink-2);
+  }
+  .b2b-tabela td{
+    padding:13px 20px; vertical-align:top; white-space:nowrap; overflow-wrap:normal;
+    color:#F4F2EC; background:transparent; border-bottom:1px solid #1C1F25;
+  }
+  .b2b-tabela tbody tr:last-child td{ border-bottom:0; }
+  .b2b-tabela tbody tr:hover td{ background:#15171C; }
+  .b2b-tabela .num{ text-align:right; font-variant-numeric:tabular-nums; }
+  .b2b-tabela td small{ display:block; margin-top:5px; font-size:11px; letter-spacing:.04em; color:var(--bx-ink-muted); }
+  .b2b-tabela code{
+    display:inline-block; max-width:none; margin:0; padding:2px 8px; white-space:nowrap; word-break:normal;
+    font-family:var(--bx-mono); font-size:13px; color:#F4F2EC; background:#1A1D23;
+    border:1px solid var(--bx-ink-2); border-radius:6px;
+  }
+  .b2b-tabela td.b2b-vazio{ padding:30px 20px; text-align:center; white-space:normal; color:var(--bx-ink-muted); }
+  .b2b-vazio .b2b-link{ color:var(--bx-neon); }
+  /* venda estornada: compra riscada, marca de estorno e custo líquido */
+  .b2b-estornada td{ color:var(--bx-ink-muted); }
+  .b2b-estornada .b2b-riscado{ text-decoration:line-through; }
+  .b2b-menos{ color:#F0B4A0 !important; }
+  /* fatura anulada: nada dela conta; o valor fica riscado */
+  .b2b-anulada td{ color:var(--bx-ink-muted); }
+  .b2b-anulada .b2b-valor{ text-decoration:line-through; }
+
+  /* situação (sobre o preto do quadro) */
+  .b2b-sit{
+    display:inline-flex; align-items:center; gap:7px; min-height:0; margin:0; padding:3px 10px; border-radius:999px;
+    font-family:var(--bx-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap;
+    border:1px solid transparent; background:transparent; color:var(--bx-ink-muted);
+  }
+  .b2b-sit i{ width:8px; height:8px; flex:none; border-radius:50%; background:#4A4D55; }
+  .b2b-sit--paga,.b2b-sit--ativa{ color:var(--bx-neon); padding-left:0; padding-right:0; }
+  .b2b-sit--paga i,.b2b-sit--ativa i{ background:var(--bx-neon); }
+  .b2b-sit--aberta{ background:#F7EFD6; color:#7a5a00; }
+  .b2b-sit--aberta i{ background:#7a5a00; }
+  .b2b-sit--vencida{ background:#F6DFD6; color:#9a2f15; }
+  .b2b-sit--vencida i{ background:#9a2f15; }
+  .b2b-sit--anulada{ border:1px dashed #4A4D55; color:var(--bx-ink-muted); text-decoration:line-through; }
+  .b2b-sit--anulada i{ background:transparent; border:1px solid #4A4D55; }
+  .b2b-sit--revogada{ padding-left:0; padding-right:0; }
+  .b2b-sit--estorno{ margin-top:6px; background:#F6DFD6; color:#9a2f15; }
+  .b2b-sit--estorno i{ background:#9a2f15; }
+  .b2b-revogar{
+    display:inline-flex; align-items:center; min-height:0; margin:0 0 0 12px; padding:5px 12px; cursor:pointer; box-shadow:none;
+    background:transparent; border:1px solid var(--bx-ink-2); border-radius:999px;
+    font-family:var(--bx-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#F4F2EC;
+  }
+  .b2b-revogar:hover{ border-color:#F0B4A0; color:#F0B4A0; background:transparent; }
+
+  /* ---------- recibo das faturas ---------- */
+  /* recibo um pouco mais estreito que o da home (440px): a tabela de faturas
+     tem 5 colunas e precisa caber sem rolar a 1440px */
+  .bx-bilhetes-recibo.b2b-faturas{ grid-template-columns:minmax(0,1fr) 380px; gap:40px; }
+  .b2b-faturas .b2b-tabela th,.b2b-faturas .b2b-tabela td{ padding-left:14px; padding-right:14px; }
+  .b2b-recibo-sub{ display:block; margin:-10px 0 0; text-align:right; font-size:12px; color:var(--bx-grey); line-height:1.4; }
+  .b2b-faturas .bx-recibo-total{ flex-wrap:wrap; }
+  .b2b-faturas .bx-recibo-total b{ font-size:clamp(34px,3vw,44px); }
+
+  /* ---------- chaves do PDV ---------- */
+  .b2b-acao-neon{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px; margin:0; min-height:0; padding:14px 20px;
+    border:0; border-radius:var(--bx-r-sm); box-shadow:none; cursor:pointer; background:var(--bx-neon); color:var(--bx-ink);
+    font-family:var(--bx-sans); font-size:16px; font-weight:700; line-height:normal; white-space:nowrap;
+  }
+  .b2b-acao-neon:hover{ background:#4FE81F; }
+  .b2b-acao-neon:disabled{ opacity:.5; cursor:not-allowed; }
+  .b2b-chave-nova{
+    margin:0 0 20px; padding:20px; border-radius:var(--bx-r-lg); background:var(--bx-ink); color:#F4F2EC;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .b2b-chave-aviso{ display:flex; align-items:center; gap:12px; font-family:var(--bx-sans); font-size:15px; font-weight:700; color:#F4F2EC; }
+  .b2b-chave-aviso .bx-ico{ width:32px; height:32px; border-radius:8px; }
+  .b2b-chave-linha{ display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; }
+  .keybox{
+    flex:1 1 280px; min-width:0; margin:0; padding:14px 16px; border-radius:var(--bx-r-sm);
+    background:#111318; border:1px solid var(--bx-ink-2); color:var(--bx-neon);
+    font-family:var(--bx-mono); font-size:14px; line-height:1.5; word-break:break-all; white-space:normal;
+  }
+  .b2b-copiar{
+    flex:none; display:inline-flex; align-items:center; justify-content:center; margin:0; min-height:0; padding:12px 18px; cursor:pointer;
+    background:var(--bx-neon); color:var(--bx-ink); border:0; border-radius:var(--bx-r-sm); box-shadow:none;
+    font-family:var(--bx-sans); font-size:15px; font-weight:700;
+  }
+  #chave-erro{ margin:0 0 16px; }
+
+  /* ---------- carregando / erro ---------- */
+  #carregando,#painel-erro{ min-height:48vh; }
+  .b2b-estado{
+    display:flex; align-items:flex-start; gap:18px; max-width:760px; padding:28px; border-radius:var(--bx-r-lg);
+    background:var(--bx-surface); box-shadow:var(--bx-sh); font-family:var(--bx-sans);
+  }
+  .b2b-estado-txt{ display:flex; flex-direction:column; gap:8px; min-width:0; }
+  .b2b-estado-txt b{ font-size:26px; font-weight:800; letter-spacing:-.02em; line-height:1.1; color:var(--bx-ink); }
+  .b2b-estado-txt p{ margin:0; font-size:16px; }
+  .b2b-estado-acoes{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:10px; }
+  .b2b-estado-acoes .bx-cartao-cta{ width:auto; padding:14px 22px; font-size:16px; }
+
+  /* ---------- responsivo ---------- */
+  @media (max-width:1180px){
+    .b2b-hero .bx-cartao-grade{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px 24px; }
+    .bx-bilhetes-recibo.b2b-faturas{ grid-template-columns:minmax(0,1fr); gap:28px; }
+    .b2b-faturas .bx-recibo{ transform:none; max-width:520px; margin-top:0; }
+  }
+  @media (max-width:880px){
+    .bx-b2b-in{ height:60px; padding:0 16px; gap:10px; }
+    .bx-b2b-barra .mark{ width:124px; height:24px; }
+    .bx-b2b-rede{ display:none !important; }
+    .bx-b2b-area{ padding:8px 10px; font-size:14px; }
+    .bx-b2b-sair{ padding:8px 14px; font-size:14px; }
+  }
+  @media (max-width:900px){
+    .bx-cartao-titulo.b2b-nome{ font-size:clamp(36px,9vw,64px) !important; }
+    .b2b-serie .b2b-grafico{ padding:18px 14px 12px; }
+    .b2b-hist{ height:120px; gap:3px; }
+    .b2b-tabela th{ padding:16px 12px 10px; }
+    .b2b-tabela td{ padding:12px; font-size:13px; }
+  }
+  @media (max-width:640px){
+    .b2b-bilhetes{ grid-template-columns:minmax(0,1fr); gap:12px; }
+  }
+  @media (max-width:820px){
+    /* Celular e tablet em pé: cada linha do quadro vira um cartão de duas colunas, com o
+       rótulo (data-r) em mono sobre o valor. Antes a tabela rolava para o
+       lado e Pontos/Custo ficavam fora da tela. */
+    main table.b2b-tabela,.b2b-tabela tbody{ display:block; width:100%; }
+    .b2b-tabela thead{ display:none; }
+    .b2b-tabela tr{
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px 14px;
+      padding:14px 16px; border-bottom:1px solid #1C1F25;
+    }
+    .b2b-tabela tbody tr:last-child{ border-bottom:0; }
+    .b2b-tabela td{ display:block; min-width:0; padding:0 !important; border:0 !important; white-space:normal; text-align:left; }
+    .b2b-tabela td.num{ text-align:left; }
+    .b2b-tabela td[data-r]::before{
+      content:attr(data-r); display:block; margin-bottom:3px; font-size:10px; letter-spacing:.08em;
+      text-transform:uppercase; color:var(--bx-ink-muted);
+    }
+    .b2b-tabela tbody tr:hover td{ background:transparent; }
+    .b2b-tabela td.b2b-vazio{ grid-column:1 / -1 !important; grid-row:auto !important; text-align:center; padding:14px 0 !important; }
+    #tab-lancamentos td:nth-child(1){ grid-column:1 / -1; }
+    #tab-faturas td:nth-child(1){ grid-column:1; grid-row:1; }
+    #tab-faturas td:nth-child(5),#tab-chaves td:nth-child(4){ grid-column:2; grid-row:1; text-align:right; }
+    #tab-faturas td:nth-child(2){ grid-column:1 / -1; }
+    #tab-chaves td:nth-child(1){ grid-column:1; grid-row:1; }
+    .b2b-revogar{ margin:8px 0 0 10px; }
+    .b2b-rola--alto{ max-height:560px; }
+  }
+  @media (max-width:600px){
+    .bx-b2b-barra .mark{ width:114px; height:22px; }
+    .bx-cartao-titulo.b2b-nome{ font-size:clamp(34px,10.4vw,48px) !important; line-height:.95 !important; }
+    .bx-cartao-titulo.b2b-nome mark{ font-size:1em; }   /* a linha já é .66em no kit */
+    /* no celular o kit põe os dados do canhoto em linha; aqui é um bloco só */
+    .bx-cartao-dados{ flex-direction:column; }
+    .bx-cartao-dados .b2b-devido{ font-size:40px; }
+    .b2b-bilhetes .bx-bilhete-canhoto{ width:56px; justify-content:center; }
+    .b2b-bilhetes .bx-rotulo + b{ font-size:14px; }
+    .b2b-estado{ padding:20px 16px; gap:14px; }
+    .b2b-estado-txt b{ font-size:22px; }
+    .b2b-acao-neon{ width:100%; }
+  }
+  /* logado, a 400px ou menos, o rótulo vira só "Parceiro" para caber o Sair */
+  @media (max-width:400px){ .bx-b2b-barra.b2b-logado .b2b-so-largo{ display:none; } }
 </style>
+<script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-acesso.js"></script>
 </head>
 <body>
+<a class="bx-skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-<!-- Login -->
-<div id="login" class="login-wrap">
-  <div class="brutal" style="padding:26px;">
-    <h1 style="font-size:22px;margin:0 0 4px;">Painel do Parceiro</h1>
-    <p class="muted" style="margin:0 0 20px;">Acompanhe os pontos emitidos pela sua rede.</p>
-    <label class="muted" for="email">E-mail</label>
-    <input id="email" class="field" type="email" autocomplete="username" style="margin:6px 0 14px;">
-    <label class="muted" for="senha">Senha</label>
-    <input id="senha" class="field" type="password" autocomplete="current-password" style="margin:6px 0 18px;">
-    <div id="login-erro" class="warn" style="display:none;margin-bottom:14px;"></div>
-    <button id="btn-entrar" class="btn primary" style="width:100%;">Entrar</button>
+<!-- Barra própria do painel (não é a .topbar do site: o blaxx-nav.js não
+     mexe nela). Wordmark, rótulo da área, nome da rede e Sair do painel. -->
+<header class="bx-b2b-barra">
+  <div class="bx-b2b-in">
+    <a class="bx-b2b-marca" href="/" aria-label="BlaXx Pontos, página inicial"><span class="mark">BlaXx</span></a>
+    <span class="bx-b2b-area"><span class="b2b-so-largo">Painel do&nbsp;</span>Parceiro</span>
+    <div class="bx-b2b-dir">
+      <span class="bx-b2b-rede" id="barra-rede" hidden></span>
+      <button type="button" class="bx-b2b-sair" id="btn-sair" hidden>Sair</button>
+    </div>
   </div>
+</header>
+
+<main id="conteudo" class="bx-pagina">
+
+<!-- ====================== LOGIN: CARTÃO DE EMBARQUE ====================== -->
+<div id="login">
+  <section class="bx-secao bx-secao--hero" aria-labelledby="loginTitulo">
+    <div class="bx-wrap">
+      <div class="bx-cartao">
+        <div class="bx-cartao-miolo">
+          <div class="bx-cartao-topo"><span>Cartão de embarque · Painel do Parceiro</span><span>Empresas · BlaXx</span></div>
+          <h1 class="bx-cartao-titulo" id="loginTitulo"><span>Sua rede.</span><span>Seus pontos.</span><span><mark>Venda. Pontue.<br class="bx-so-celular"> Confira.</mark></span></h1>
+          <div class="bx-cartao-grade">
+            <div><span class="bx-rotulo">De</span><b>Seu caixa</b></div>
+            <div><span class="bx-rotulo">Para</span><b>Seus clientes</b></div>
+            <div><span class="bx-rotulo">Fatura</span><b>Mensal</b></div>
+            <div><span class="bx-rotulo">Acesso</span><b>Empresas parceiras</b></div>
+          </div>
+          <p class="bx-cartao-lead">Acompanhe os pontos emitidos pela sua rede, os estornos, as faturas e as chaves que autorizam o caixa a pontuar. O acesso é criado pela equipe BlaXx.</p>
+        </div>
+        <div class="bx-perf" aria-hidden="true"></div>
+        <aside class="bx-cartao-canhoto" aria-label="Entrar no painel">
+          <form id="form-login" class="b2b-form" novalidate>
+            <div class="b2b-campos">
+              <div class="b2b-portao"><span class="bx-rotulo">Portão</span><b>Acesso da rede</b></div>
+              <div class="b2b-campo">
+                <label for="email">E-mail</label>
+                <input id="email" class="field" type="email" autocomplete="username" inputmode="email" required>
+              </div>
+              <div class="b2b-campo">
+                <label for="senha">Senha</label>
+                <input id="senha" class="field" type="password" autocomplete="current-password" required>
+              </div>
+              <div id="login-erro" class="b2b-aviso" role="alert" style="display:none;"></div>
+            </div>
+            <div class="bx-cartao-acoes">
+              <button id="btn-entrar" class="bx-cartao-cta" type="submit">Entrar</button>
+              <span class="bx-cartao-ja">Sem acesso ou esqueceu a senha? <a href="contato.html"><b>Fale com a BlaXx →</b></a></span>
+              <div class="bx-barcode" aria-hidden="true"></div>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="bx-secao" aria-labelledby="rotaB2b">
+    <div class="bx-wrap">
+      <div class="bx-secao-cab"><span class="bx-secao-rotulo" id="rotaB2b">Rota · Como funciona para a rede</span></div>
+      <ol class="bx-rota-grid">
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 01 · Caixa</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Pontue</h3></div>
+          <p class="bx-escala-d">O caixa da rede usa a chave do PDV para dar os pontos ao cliente na hora da compra.</p>
+        </li>
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 02 · Painel</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Confira</h3></div>
+          <p class="bx-escala-d">Cada venda pontuada aparece aqui, com loja, valor da compra e estorno, se houver.</p>
+        </li>
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 03 · Fechamento</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Feche</h3></div>
+          <p class="bx-escala-d">A BlaXx fecha o período e gera a fatura com os pontos emitidos, já descontados os estornos.</p>
+        </li>
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 04 · Fatura</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Pague</h3></div>
+          <p class="bx-escala-d">A fatura traz o vencimento. Estorno que chega depois do fechamento vira crédito na próxima.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
 </div>
 
-<!-- Painel -->
-<div id="painel" class="shell" style="display:none;">
-  <div class="row" style="justify-content:space-between;margin-bottom:6px;">
-    <div>
-      <h1 id="rede-nome" style="font-size:28px;margin:0;">—</h1>
-      <p id="rede-contrato" class="muted" style="margin:4px 0 0;">—</p>
+<!-- ====================== CARREGANDO / ERRO ====================== -->
+<section id="carregando" class="bx-secao bx-secao--hero" style="display:none;" aria-live="polite">
+  <div class="bx-wrap">
+    <div class="b2b-estado">
+      <span class="bx-ico" data-ico="relogio" aria-hidden="true"></span>
+      <div class="b2b-estado-txt"><span class="bx-rotulo">Painel do Parceiro</span><b>Conferindo seu acesso…</b></div>
     </div>
-    <button class="btn" onclick="sair()">Sair</button>
   </div>
+</section>
 
-  <div id="aviso-insolvente" class="warn" style="display:none;margin:14px 0;"></div>
-
-  <div class="grid kpis sec">
-    <div class="brutal kpi dark"><div class="label">A pagar (total)</div>
-      <div class="value" id="kpi-devido">—</div>
-      <div class="sub">por pontos já emitidos</div></div>
-    <div class="brutal kpi"><div class="label">Pontos hoje</div>
-      <div class="value" id="kpi-hoje">—</div>
-      <div class="sub" id="kpi-hoje-tx">—</div></div>
-    <div class="brutal kpi"><div class="label">Vendas 30 dias</div>
-      <div class="value" id="kpi-gmv">—</div>
-      <div class="sub" id="kpi-gmv-tx">—</div></div>
-    <div class="brutal kpi"><div class="label">Clientes 30 dias</div>
-      <div class="value" id="kpi-clientes">—</div>
-      <div class="sub">distintos, pontuados na rede</div></div>
-  </div>
-
-  <div class="sec">
-    <h2>Pontos por dia · 30 dias</h2>
-    <div class="brutal" style="padding:16px;">
-      <div class="bar" id="grafico"></div>
-      <div class="row muted" style="justify-content:space-between;margin-top:8px;font-size:11px;">
-        <span id="serie-de">—</span><span id="serie-ate">—</span>
+<section id="painel-erro" class="bx-secao bx-secao--hero" style="display:none;">
+  <div class="bx-wrap">
+    <div class="b2b-estado" role="alert">
+      <span class="bx-ico" data-ico="alerta" aria-hidden="true"></span>
+      <div class="b2b-estado-txt">
+        <span class="bx-rotulo" id="painel-erro-rotulo">Painel do Parceiro · Conexão</span>
+        <b id="painel-erro-titulo">Não deu para carregar o painel.</b>
+        <p id="painel-erro-msg">O servidor não respondeu.</p>
+        <div class="b2b-estado-acoes">
+          <button type="button" class="bx-cartao-cta" id="btn-tentar">Tentar de novo</button>
+          <button type="button" class="b2b-link" data-sair>Sair do painel</button>
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <div class="sec">
-    <h2>Últimos lançamentos</h2>
-    <div class="brutal" style="overflow-x:auto;">
-      <table class="tbl">
-        <thead><tr>
-          <th>Quando</th><th>Loja</th><th class="num">Compra</th>
-          <th class="num">Pontos</th><th class="num">Custo</th>
-        </tr></thead>
-        <tbody id="lancamentos"></tbody>
-      </table>
-    </div>
-  </div>
+<!-- ====================== PAINEL ====================== -->
+<div id="painel" style="display:none;">
 
-  <div class="sec">
-    <h2>Faturas</h2>
-    <div class="row" style="gap:14px;margin-bottom:12px;">
-      <div class="brutal kpi" style="flex:1;min-width:180px;">
-        <div class="label">Em aberto (não faturado)</div>
-        <div class="value" id="fat-aberto">—</div>
-        <div class="sub" id="fat-aberto-sub">—</div>
+  <!-- Cabeçalho da rede: cartão de embarque; o canhoto é o que a rede deve -->
+  <section class="bx-secao bx-secao--hero" aria-labelledby="rede-titulo">
+    <div class="bx-wrap">
+      <div class="bx-cartao b2b-hero">
+        <div class="bx-cartao-miolo">
+          <div class="bx-cartao-topo"><span>Cartão de embarque · Painel do Parceiro</span><span>Brasília · <span id="atualizado">—</span></span></div>
+          <h1 class="bx-cartao-titulo b2b-nome" id="rede-titulo"><span id="rede-nome">—</span><span><mark>Painel do Parceiro.</mark></span></h1>
+          <div class="bx-cartao-grade">
+            <div><span class="bx-rotulo">Categoria</span><b class="b2b-cat" id="rede-categoria">—</b></div>
+            <div><span class="bx-rotulo">Teto por venda</span><b id="rede-contrato">—</b></div>
+            <div><span class="bx-rotulo">Situação</span><b id="rede-situacao">—</b></div>
+            <div><span class="bx-rotulo">Seu acesso</span><b id="rede-papel">—</b></div>
+          </div>
+          <p class="bx-cartao-lead">Pontos emitidos pela rede, estornos, faturas e chaves do caixa num lugar só. Datas e horas no fuso de Brasília.</p>
+        </div>
+        <div class="bx-perf" aria-hidden="true"></div>
+        <aside class="bx-cartao-canhoto" aria-label="A pagar agora">
+          <div class="bx-cartao-dados">
+            <div>
+              <span class="bx-rotulo">A pagar agora</span>
+              <b class="b2b-devido" id="kpi-devido">—</b>
+              <span class="b2b-devido-sub" id="kpi-devido-sub">faturas fechadas e não pagas + vendas ainda não faturadas</span>
+            </div>
+          </div>
+          <div class="bx-cartao-acoes">
+            <a class="bx-cartao-cta" href="#sec-faturas">Ver faturas</a>
+            <span class="bx-cartao-ja"><button type="button" class="b2b-link" id="btn-atualizar">Atualizar o painel</button></span>
+            <div class="bx-barcode" aria-hidden="true"></div>
+          </div>
+        </aside>
       </div>
-      <div class="brutal kpi" style="flex:1;min-width:180px;">
-        <div class="label">Faturas a pagar</div>
-        <div class="value" id="fat-devendo">—</div>
-        <div class="sub">já fechadas e não quitadas</div>
-      </div>
+      <div id="aviso-insolvente" class="b2b-aviso" role="alert" style="display:none;"></div>
     </div>
-    <div class="brutal" style="overflow-x:auto;">
-      <table class="tbl">
-        <thead><tr><th>Fatura</th><th>Período</th><th class="num">Pontos</th>
-          <th class="num">Valor</th><th class="num">Estado</th></tr></thead>
-        <tbody id="faturas"></tbody>
-      </table>
-    </div>
-  </div>
+  </section>
 
-  <div class="sec" id="sec-chaves">
-    <h2>Chaves do PDV</h2>
-    <p class="muted" style="margin:-6px 0 12px;">
-      A chave é o que autoriza o caixa a pontuar. Some do sistema se for revogada.
-    </p>
-    <div id="chave-nova" style="display:none;margin-bottom:14px;">
-      <div class="warn" style="margin-bottom:8px;">
-        Copie agora — esta é a única vez que a chave aparece.
+  <!-- Bilhetes: hoje, 30 dias, clientes; embaixo, o painel de partidas -->
+  <section class="bx-secao" aria-labelledby="movTitulo">
+    <div class="bx-wrap">
+      <div class="bx-secao-cab">
+        <span class="bx-secao-rotulo">Bilhetes · Movimento da rede</span>
+        <h2 class="bx-titulo-secao" id="movTitulo">Movimento.</h2>
       </div>
-      <div class="keybox" id="chave-valor"></div>
+      <div class="b2b-bilhetes">
+        <div class="bx-bilhete">
+          <div class="bx-bilhete-miolo">
+            <div class="bx-bilhete-cab"><span>BX · Hoje</span><span id="kpi-hoje-quando">dia de Brasília</span></div>
+            <span class="bx-bilhete-pts"><span id="kpi-hoje">—</span><small> pts</small></span>
+            <div><span class="bx-rotulo">Vendas pontuadas</span><b id="kpi-hoje-tx">—</b></div>
+          </div>
+          <div class="bx-perf" aria-hidden="true"></div>
+          <div class="bx-bilhete-canhoto" aria-hidden="true"><span class="bx-vert">Hoje</span><span class="bx-ico" data-ico="raio"></span></div>
+        </div>
+        <div class="bx-bilhete">
+          <div class="bx-bilhete-miolo">
+            <div class="bx-bilhete-cab"><span>BX · 30 dias</span><span>vendas na rede</span></div>
+            <span class="bx-bilhete-pts" id="kpi-gmv">—</span>
+            <div><span class="bx-rotulo">Vendas pontuadas</span><b id="kpi-gmv-tx">—</b></div>
+          </div>
+          <div class="bx-perf" aria-hidden="true"></div>
+          <div class="bx-bilhete-canhoto" aria-hidden="true"><span class="bx-vert">30 dias</span><span class="bx-ico" data-ico="carrinho"></span></div>
+        </div>
+        <div class="bx-bilhete">
+          <div class="bx-bilhete-miolo">
+            <div class="bx-bilhete-cab"><span>BX · Clientes</span><span>últimos 30 dias</span></div>
+            <span class="bx-bilhete-pts"><span id="kpi-clientes">—</span><small> clientes</small></span>
+            <div><span class="bx-rotulo">Alcance</span><b>distintos, pontuados na rede</b></div>
+          </div>
+          <div class="bx-perf" aria-hidden="true"></div>
+          <div class="bx-bilhete-canhoto" aria-hidden="true"><span class="bx-vert">Clientes</span><span class="bx-ico" data-ico="parceiros"></span></div>
+        </div>
+      </div>
+
+      <div class="bx-painel b2b-serie">
+        <div class="bx-painel-topo">
+          <div class="bx-painel-titulo">
+            <span class="bx-secao-rotulo">Painel de partidas · 30 dias</span>
+            <h2 class="bx-titulo-secao">Pontos por dia.</h2>
+          </div>
+          <div class="bx-painel-resumo">
+            <div class="bx-painel-grande"><b id="serie-total">—</b><span>pontos emitidos em 30 dias</span></div>
+            <ul class="bx-painel-legenda" aria-label="Legenda">
+              <li><i style="background:var(--bx-neon)"></i>Dia com venda</li>
+              <li><i style="background:var(--bx-ink-3)"></i>Sem venda</li>
+            </ul>
+          </div>
+        </div>
+        <div class="bx-quadro b2b-grafico">
+          <div class="b2b-hist" id="grafico" role="img" aria-label="Pontos por dia nos últimos 30 dias"></div>
+          <div class="b2b-hist-datas"><span id="serie-de">—</span><span id="serie-ate">—</span></div>
+        </div>
+        <span class="bx-painel-hint">Cada barra é um dia fechado à meia-noite UTC (21h de Brasília). Passe o mouse para ver o número do dia.</span>
+      </div>
     </div>
-    <div class="brutal" style="overflow-x:auto;">
-      <table class="tbl">
-        <thead><tr><th>Prefixo</th><th>Apelido</th><th>Último uso</th>
-          <th class="num">Estado</th></tr></thead>
-        <tbody id="chaves"></tbody>
-      </table>
+  </section>
+
+  <!-- Últimos lançamentos: quadro preto -->
+  <section class="bx-secao" aria-labelledby="lancTitulo">
+    <div class="bx-wrap">
+      <div class="bx-secao-cab bx-secao-cab--linha">
+        <div class="b2b-cab-texto">
+          <span class="bx-secao-rotulo">Painel de partidas · Lançamentos</span>
+          <h2 class="bx-titulo-secao" id="lancTitulo">Últimos lançamentos.</h2>
+        </div>
+        <span class="b2b-cab-nota">50 mais recentes · horário de Brasília</span>
+      </div>
+      <div class="bx-quadro">
+        <div class="b2b-rola b2b-rola--alto" tabindex="0" aria-label="Últimos lançamentos (role para ver mais)">
+          <table class="b2b-tabela" id="tab-lancamentos">
+            <thead><tr>
+              <th>Quando</th><th>Loja</th><th class="num">Compra</th>
+              <th class="num">Pontos</th><th class="num">Custo</th>
+            </tr></thead>
+            <tbody id="lancamentos"><tr><td colspan="5" class="b2b-vazio">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="bx-quadro-info">
+          <span class="bx-quadro-vazio">Venda cancelada no caixa aparece como estornada: a compra fica riscada, os pontos retirados aparecem em vermelho e o custo mostra o líquido, já com o crédito do estorno.</span>
+        </div>
+      </div>
     </div>
-    <button class="btn" style="margin-top:12px;" onclick="novaChave()">Gerar nova chave</button>
-  </div>
+  </section>
+
+  <!-- Faturas: quadro + recibo -->
+  <section class="bx-secao" id="sec-faturas" aria-labelledby="fatTitulo">
+    <div class="bx-wrap">
+      <div class="bx-bilhetes-recibo b2b-faturas">
+        <div class="bx-bilhetes">
+          <div class="bx-secao-cab">
+            <span class="bx-secao-rotulo">Bilheteria · Faturas</span>
+            <h2 class="bx-titulo-secao" id="fatTitulo">Faturas.</h2>
+          </div>
+          <div class="bx-quadro">
+            <div class="b2b-rola">
+              <table class="b2b-tabela" id="tab-faturas">
+                <thead><tr><th>Fatura</th><th>Período</th><th class="num">Pontos</th>
+                  <th class="num">Valor</th><th class="num">Estado</th></tr></thead>
+                <tbody id="faturas"><tr><td colspan="5" class="b2b-vazio">Carregando…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="bx-recibo" aria-live="polite">
+          <div class="bx-zig" aria-hidden="true"></div>
+          <div class="bx-recibo-corpo">
+            <div class="bx-recibo-cabeca"><img src="assets/marca/blaxx-wordmark-barra.svg" alt="BlaXx"><span>EXTRATO DA REDE</span></div>
+            <div class="bx-tracejo" aria-hidden="true"></div>
+            <div class="bx-leader"><span>NÃO FATURADO</span><i></i><span id="fat-aberto">—</span></div>
+            <span class="b2b-recibo-sub" id="fat-aberto-sub">—</span>
+            <div class="bx-leader"><span>FATURAS A PAGAR</span><i></i><span id="fat-devendo">—</span></div>
+            <span class="b2b-recibo-sub">já fechadas e não quitadas</span>
+            <div class="bx-tracejo" aria-hidden="true"></div>
+            <div class="bx-recibo-total"><span>A PAGAR AGORA</span><b id="fat-total">—</b></div>
+            <div class="bx-recibo-faixa"><div class="bx-leader"><span>FATURAS EM ABERTO</span><i></i><span id="fat-qtd">—</span></div></div>
+            <span class="bx-recibo-nota">Estorno que chega depois do fechamento vira crédito na próxima fatura. Período e vencimento são dias de calendário; o último dia do período está incluído.</span>
+            <div class="bx-recibo-via" aria-hidden="true">Via da rede</div>
+            <a class="bx-recibo-acao" href="contato.html">Dúvidas sobre a fatura →</a>
+          </div>
+          <div class="bx-zig bx-zig--baixo" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chaves do PDV: só o responsável (owner) vê -->
+  <section class="bx-secao" id="sec-chaves" aria-labelledby="chavesTitulo">
+    <div class="bx-wrap">
+      <div class="bx-secao-cab bx-secao-cab--linha">
+        <div class="b2b-cab-texto">
+          <span class="bx-secao-rotulo">Portão · Caixa</span>
+          <h2 class="bx-titulo-secao" id="chavesTitulo">Chaves do PDV.</h2>
+        </div>
+        <button type="button" class="b2b-acao-neon" id="btn-nova-chave">Gerar nova chave</button>
+      </div>
+      <p class="b2b-texto">A chave é o que autoriza o caixa a pontuar. Revogada, ela para de valer na hora e fica na lista só como registro.</p>
+      <div id="chave-erro" class="b2b-aviso" role="alert" style="display:none;"></div>
+      <div id="chave-nova" class="b2b-chave-nova" style="display:none;" role="status">
+        <div class="b2b-chave-aviso"><span class="bx-ico" data-ico="alerta" aria-hidden="true"></span><span>Copie agora — esta é a única vez que a chave aparece.</span></div>
+        <div class="b2b-chave-linha">
+          <code class="keybox" id="chave-valor"></code>
+          <button type="button" class="b2b-copiar" id="btn-copiar">Copiar</button>
+        </div>
+      </div>
+      <div class="bx-quadro">
+        <div class="b2b-rola">
+          <table class="b2b-tabela" id="tab-chaves">
+            <thead><tr><th>Prefixo</th><th>Apelido</th><th>Último uso</th>
+              <th class="num">Estado</th></tr></thead>
+            <tbody id="chaves"><tr><td colspan="4" class="b2b-vazio">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
-<script>
-(function () {
-  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
-  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ return DEFAULT_API; } }
-  function tok(){ try { return localStorage.getItem('blaxx_parceiro_token'); } catch(e){ return null; } }
-  function setTok(t){ try { t ? localStorage.setItem('blaxx_parceiro_token', t)
-                             : localStorage.removeItem('blaxx_parceiro_token'); } catch(e){} }
-  var $ = function(id){ return document.getElementById(id); };
-  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function brl(v){ return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-  function num(v){ return (Number(v)||0).toLocaleString('pt-BR'); }
+</main>
 
-  function api(path, opts) {
-    opts = opts || {};
-    var h = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
-    var t = tok(); if (t) h.Authorization = 'Bearer ' + t;
-    return fetch(apiBase() + path, Object.assign({}, opts, {headers:h})).then(function(r){
-      if (r.status === 401 || r.status === 403) { setTok(null); mostrarLogin(); throw new Error('sessao'); }
-      return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||'falhou'); return j; });
-    });
-  }
-
-  function mostrarLogin(){ $('login').style.display=''; $('painel').style.display='none'; }
-  function mostrarPainel(){ $('login').style.display='none'; $('painel').style.display=''; }
-
-  window.sair = function(){ setTok(null); mostrarLogin(); };
-
-  $('btn-entrar').addEventListener('click', entrar);
-  $('senha').addEventListener('keydown', function(e){ if(e.key==='Enter') entrar(); });
-
-  function entrar() {
-    var b = $('btn-entrar'); b.disabled = true; b.textContent = 'Entrando…';
-    $('login-erro').style.display = 'none';
-    fetch(apiBase() + '/b2b/panel/login', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email: $('email').value.trim(), password: $('senha').value })
-    }).then(function(r){ return r.json().then(function(j){
-        if(!r.ok) throw new Error(j.error || 'não foi possível entrar'); return j; }); })
-      .then(function(j){ setTok(j.token); carregar(); })
-      .catch(function(e){ $('login-erro').textContent = e.message;
-                          $('login-erro').style.display = ''; })
-      .then(function(){ b.disabled = false; b.textContent = 'Entrar'; });
-  }
-
-  function carregar() {
-    api('/b2b/panel/summary').then(function(d){
-      mostrarPainel();
-      var m = d.merchant;
-      $('rede-nome').textContent = m.name;
-      $('rede-contrato').textContent = m.accrual_label + ' · teto de '
-        + num(m.max_points_per_tx) + ' pts por venda';
-
-      $('kpi-devido').textContent = brl(d.all_time.amount_due_brl);
-      $('kpi-hoje').textContent = num(d.today.points_issued) + ' pts';
-      $('kpi-hoje-tx').textContent = num(d.today.transactions) + ' vendas · ' + brl(d.today.gmv_brl);
-      $('kpi-gmv').textContent = brl(d.last_30d.gmv_brl);
-      $('kpi-gmv-tx').textContent = num(d.last_30d.transactions) + ' vendas pontuadas';
-      $('kpi-clientes').textContent = num(d.customers_30d);
-
-      // Rede sem chave válida não pontua: o painel precisa dizer isso, senão
-      // o parceiro só descobre pelo silêncio no caixa.
-      if (!m.is_active) {
-        $('aviso-insolvente').textContent = 'Esta rede está inativa. O caixa não consegue pontuar.';
-        $('aviso-insolvente').style.display = '';
-      }
-
-      var serie = d.series || [], teto = 0;
-      serie.forEach(function(p){ if (p.points > teto) teto = p.points; });
-      $('grafico').innerHTML = serie.map(function(p){
-        var h = teto > 0 ? Math.max(2, Math.round(p.points / teto * 88)) : 2;
-        return '<i class="' + (p.points ? '' : 'zero') + '" style="height:' + h + 'px" '
-             + 'title="' + esc(p.date) + ': ' + num(p.points) + ' pts"></i>';
-      }).join('');
-      if (serie.length) {
-        $('serie-de').textContent = serie[0].date.split('-').reverse().slice(0,2).join('/');
-        $('serie-ate').textContent = serie[serie.length-1].date.split('-').reverse().slice(0,2).join('/');
-      }
-      return api('/b2b/panel/accruals?limit=50');
-    }).then(function(d){
-      var itens = d.items || [];
-      $('lancamentos').innerHTML = itens.length ? itens.map(function(x){
-        var dt = (x.created_at || '').replace('T',' ').slice(0,16);
-        return '<tr><td>' + esc(dt) + '</td><td>' + esc(x.store_code || '—') + '</td>'
-          + '<td class="num">' + brl(x.amount_brl) + '</td>'
-          + '<td class="num">' + num(x.points_awarded) + '</td>'
-          + '<td class="num">' + brl(x.bill_brl) + '</td></tr>';
-      }).join('') : '<tr><td colspan="5" style="padding:28px;text-align:center;color:var(--p-muted);">'
-                  + 'Nenhuma venda pontuada ainda.</td></tr>';
-      return api('/b2b/panel/invoices');
-    }).then(function(d){
-      var ab = d.open_balance || {};
-      // Saldo em aberto pode ser NEGATIVO: estorno que chegou depois do
-      // fechamento vira crédito na próxima fatura. Mostrar como "a pagar"
-      // faria a rede achar que deve o que na verdade tem a receber.
-      $('fat-aberto').textContent = brl(ab.amount_brl);
-      $('fat-aberto-sub').textContent = (Number(ab.amount_brl) < 0)
-        ? 'crédito a abater na próxima fatura'
-        : num(ab.transactions) + ' vendas desde o último fechamento';
-      $('fat-devendo').textContent = brl(d.unpaid_brl);
-
-      var rotulo = { open: 'a pagar', paid: 'paga', void: 'anulada' };
-      $('faturas').innerHTML = (d.items||[]).length ? d.items.map(function(f){
-        var per = (f.period_start||'').slice(0,10).split('-').reverse().join('/')
-                + ' – ' + (f.period_end||'').slice(0,10).split('-').reverse().join('/');
-        return '<tr><td><code>' + esc(f.number) + '</code></td>'
-          + '<td>' + esc(per) + '</td>'
-          + '<td class="num">' + num(f.points_issued)
-            + (f.points_reversed ? ' <span style="color:var(--p-amber);">-' + num(f.points_reversed) + '</span>' : '')
-          + '</td>'
-          + '<td class="num">' + brl(f.amount_brl) + '</td>'
-          + '<td class="num"><span class="pill ' + (f.status==='open'?'off':'on') + '">'
-            + esc(rotulo[f.status] || f.status) + '</span></td></tr>';
-      }).join('') : '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--p-muted);">'
-                  + 'Nenhuma fatura fechada ainda.</td></tr>';
-      return api('/b2b/panel/keys').catch(function(){ return null; });
-    }).then(function(d){
-      if (!d) { $('sec-chaves').style.display = 'none'; return; }   // staff
-      $('chaves').innerHTML = (d.items||[]).map(function(k){
-        return '<tr><td><code>' + esc(k.prefix) + '</code></td><td>' + esc(k.label||'—') + '</td>'
-          + '<td>' + esc(k.last_used_at ? k.last_used_at.replace('T',' ').slice(0,16) : 'nunca') + '</td>'
-          + '<td class="num"><span class="pill ' + (k.is_active?'on':'off') + '">'
-          + (k.is_active ? 'ativa' : 'revogada') + '</span>'
-          + (k.is_active ? ' <button class="btn" style="padding:4px 10px;font-size:12px;box-shadow:none;" '
-              + 'onclick="revogar(\'' + esc(k.id) + '\')">revogar</button>' : '')
-          + '</td></tr>';
-      }).join('');
-    }).catch(function(e){ if (e.message !== 'sessao') console.error(e); });
-  }
-
-  window.novaChave = function(){
-    api('/b2b/panel/keys', {method:'POST', body: JSON.stringify({label:'PDV'})})
-      .then(function(j){
-        $('chave-valor').textContent = j.key;
-        $('chave-nova').style.display = '';
-        carregar();
-      }).catch(function(e){ alert(e.message); });
-  };
-
-  window.revogar = function(id){
-    if (!confirm('Revogar esta chave? O caixa que a usa para de pontuar na hora.')) return;
-    api('/b2b/panel/keys/' + encodeURIComponent(id), {method:'DELETE'})
-      .then(carregar).catch(function(e){ alert(e.message); });
-  };
-
-  if (tok()) carregar(); else mostrarLogin();
-})();
-</script>
 <!-- rodapé-recibo do tema Embarque, montado por assets/blaxx-nav.js -->
 <footer class="footer"></footer>
 <script src="assets/blaxx-nav-user.js"></script>
 <script src="assets/blaxx-nav.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ------------------------------------------------------------------ //
+  // Ambiente                                                            //
+  // ------------------------------------------------------------------ //
+  // A base vem do assets/blaxx-config.js (produção: o Render; localhost:
+  // o backend dev em :5050), como no resto do site. A override
+  // localStorage['blaxx_api_url'] só vale em máquina local: numa tela que
+  // recebe senha, um valor gravado ali mandaria e-mail e senha da rede para
+  // qualquer host.
+  var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+  var TOKEN = 'blaxx_parceiro_token';
+  var PAPEL = 'blaxx_parceiro_papel';   // sessionStorage: owner | staff, vem do login
+  var LIMITE_LANC = 200;                // o back aceita até 500; a tabela mostra 50
+  var MOSTRAR_LANC = 50;
+
+  function local() {
+    var h = location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(h);
+  }
+  function apiBase() {
+    var base = window.BLAXX_API || DEFAULT_API;
+    if (local()) { try { base = localStorage.getItem('blaxx_api_url') || base; } catch (e) {} }
+    return String(base).replace(/\/+$/, '');
+  }
+  function tok() { try { return localStorage.getItem(TOKEN); } catch (e) { return null; } }
+  function setTok(t) {
+    try { if (t) localStorage.setItem(TOKEN, t); else localStorage.removeItem(TOKEN); } catch (e) {}
+  }
+  var papelMem = null;
+  function papel() {
+    if (papelMem) return papelMem;
+    try { return sessionStorage.getItem(PAPEL); } catch (e) { return null; }
+  }
+  function setPapel(p) {
+    papelMem = p || null;
+    // sem papel (Sair, sessão vencida) o da sessão anterior também sai: senão
+    // o próximo acesso nesta aba herdaria "staff" e esconderia as chaves
+    try { if (p) sessionStorage.setItem(PAPEL, p); else sessionStorage.removeItem(PAPEL); } catch (e) {}
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function brl(v) { return (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function num(v) { return (Number(v) || 0).toLocaleString('pt-BR'); }
+  function centavos(v) { return Math.round((Number(v) || 0) * 100); }
+  // Valor de bilhete: "R$" e centavos em <small>, o inteiro grande.
+  function brlGrande(v) {
+    var c = centavos(v), neg = c < 0;
+    c = Math.abs(c);
+    var inteiro = Math.floor(c / 100).toLocaleString('pt-BR');
+    var cent = String(c % 100); if (cent.length < 2) cent = '0' + cent;
+    return '<small class="b2b-moeda">' + (neg ? '−' : '') + 'R$</small>' + esc(inteiro) + '<small>,' + cent + '</small>';
+  }
+  function icone(nome) { return window.BlaxxIcones ? window.BlaxxIcones.svg(nome) : ''; }
+  function pintarIcones(raiz) {
+    [].forEach.call((raiz || document).querySelectorAll('[data-ico]'), function (el) {
+      if (!el.firstChild) el.innerHTML = icone(el.getAttribute('data-ico'));
+    });
+  }
+
+  // ------------------------------------------------------------------ //
+  // Datas                                                               //
+  // ------------------------------------------------------------------ //
+  // O back grava UTC sem fuso ("2026-10-16T14:00:00.123456"). Instantes
+  // (venda, estorno, uso da chave, pagamento) vão para America/Sao_Paulo.
+  // Período e vencimento de fatura são DIAS de calendário (o fechamento usa
+  // meia-noite UTC como fronteira, [início, fim)): convertê-los para Brasília
+  // mostraria o dia anterior às 21h, então saem em UTC, só a data, e o fim
+  // exclusivo vira o último dia incluído.
+  var TZ = 'America/Sao_Paulo';
+  var F_DIA = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit', month: '2-digit' });
+  var F_DIA_ANO = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' });
+  var F_HORA = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  var F_PARTES = new Intl.DateTimeFormat('en-US', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' });
+  var F_CAL = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  function quando(s) {
+    if (!s) return null;
+    var t = String(s).replace(' ', 'T').replace(/(\.\d{3})\d+/, '$1');
+    if (!/(Z|[+-]\d\d:?\d\d)$/i.test(t)) t += 'Z';
+    var d = new Date(t);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function partesSP(d) {
+    var p = {};
+    F_PARTES.formatToParts(d).forEach(function (x) { p[x.type] = x.value; });
+    return p;
+  }
+  function diaSP(d) { var p = partesSP(d); return p.year + '-' + p.month + '-' + p.day; }
+  function dataHora(s) {
+    var d = quando(s);
+    if (!d) return '—';
+    var outroAno = diaSP(d).slice(0, 4) !== diaSP(new Date()).slice(0, 4);
+    return (outroAno ? F_DIA_ANO : F_DIA).format(d) + ' ' + F_HORA.format(d);
+  }
+  function dataLonga(s) { var d = quando(s); return d ? F_DIA_ANO.format(d) + ' ' + F_HORA.format(d) : ''; }
+  function calendario(s) { var d = quando(s); return d ? F_CAL.format(d) : '—'; }
+  function periodo(ini, fim) {
+    var a = quando(ini), b = quando(fim);
+    if (!a || !b) return '—';
+    var x = F_CAL.format(a), y = F_CAL.format(new Date(b.getTime() - 1));
+    // mesmo ano: "01/09 – 30/09/2026"
+    if (x.slice(-4) === y.slice(-4)) x = x.slice(0, 5);
+    return x + ' – ' + y;
+  }
+  function diaCurto(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] : '—'; }
+
+  // ------------------------------------------------------------------ //
+  // API                                                                 //
+  // ------------------------------------------------------------------ //
+  function falha(msg, code, parar) {
+    var e = new Error(msg); e.code = code || null; e.parar = !!parar; return e;
+  }
+  function msgDe(e) {
+    if (e instanceof TypeError) return 'Sem conexão com o servidor. Confira a internet e tente de novo.';
+    return (e && e.message) || 'Algo deu errado.';
+  }
+
+  // Desloga SÓ quando a sessão não serve mais: 401 (token vencido, o JWT do
+  // painel dura 30 min sem renovação, ou acesso desativado), 422 (token
+  // malformado, resposta do flask_jwt_extended) e 403 wrong_scope (token que
+  // não é do painel). Os outros 403 têm código e não derrubam a sessão:
+  // merchant_inactive = rede inativa (avisa); forbidden = papel staff
+  // tentando mexer em chave (a seção some).
+  function api(path, opts) {
+    opts = opts || {};
+    var h = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+    var t = tok(); if (t) h.Authorization = 'Bearer ' + t;
+    return fetch(apiBase() + path, Object.assign({}, opts, { headers: h })).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.ok) return j;
+        var code = j && j.code;
+        if (r.status === 401 || r.status === 422 || (r.status === 403 && code === 'wrong_scope')) {
+          sessaoEncerrada(code === 'inactive_user'
+            ? 'Este acesso foi desativado. Fale com a BlaXx.'
+            : 'Sua sessão terminou. Entre de novo.');
+          throw falha('sessao', code, true);
+        }
+        if (r.status === 403 && code === 'merchant_inactive') {
+          redeInativa();
+          throw falha('rede inativa', code, true);
+        }
+        if (r.status >= 500) throw falha('O servidor não conseguiu responder agora (erro ' + r.status + '). Tente de novo em instantes.', 'http_' + r.status);
+        throw falha((j && (j.error || j.msg)) || ('Erro ' + r.status + ' no servidor.'), code || ('http_' + r.status));
+      });
+    });
+  }
+
+  // ------------------------------------------------------------------ //
+  // Telas                                                               //
+  // ------------------------------------------------------------------ //
+  var TELAS = ['login', 'carregando', 'painel-erro', 'painel'];
+  function tela(nome) {
+    TELAS.forEach(function (id) { $(id).style.display = id === nome ? '' : 'none'; });
+    var dentro = nome !== 'login';
+    $('btn-sair').hidden = !dentro;
+    document.querySelector('.bx-b2b-barra').classList.toggle('b2b-logado', dentro);
+    $('barra-rede').hidden = nome !== 'painel' || !$('barra-rede').textContent;
+  }
+  function painelVisivel() { return $('painel').style.display !== 'none'; }
+
+  function erroLogin(msg) {
+    var el = $('login-erro');
+    if (!msg) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.innerHTML = '<span class="bx-ico" aria-hidden="true">' + icone('alerta') + '</span><span>' + esc(msg) + '</span>';
+    el.style.display = '';
+  }
+  function mostrarLogin(msg) { tela('login'); erroLogin(msg || ''); }
+  function mostrarPainel() { tela('painel'); }
+  function mostrarErro(msg, titulo, rotulo) {
+    $('painel-erro-rotulo').textContent = rotulo || 'Painel do Parceiro · Conexão';
+    $('painel-erro-titulo').textContent = titulo || 'Não deu para carregar o painel.';
+    $('painel-erro-msg').textContent = msg;
+    tela('painel-erro');
+  }
+
+  // Ao sair, nada da rede anterior fica na página, principalmente a chave
+  // recém-gerada (o segredo só aparece uma vez e não pode sobrar no DOM).
+  // Os números também voltam a "—": se a próxima rede que entrar neste
+  // navegador não conseguir carregar uma parte, ela não pode ver o valor da
+  // anterior no lugar.
+  var CAMPOS_RESUMO = ['rede-nome', 'rede-categoria', 'rede-contrato', 'rede-situacao', 'rede-papel', 'atualizado',
+    'kpi-hoje', 'kpi-hoje-tx', 'kpi-gmv', 'kpi-gmv-tx', 'kpi-clientes', 'serie-total', 'serie-de', 'serie-ate'];
+  function limparCobranca(sub) {
+    ['kpi-devido', 'fat-aberto', 'fat-aberto-sub', 'fat-devendo', 'fat-total', 'fat-qtd'].forEach(function (id) { $(id).textContent = '—'; });
+    $('kpi-devido-sub').textContent = sub || 'faturas fechadas e não pagas + vendas ainda não faturadas';
+  }
+  function limparPainel() {
+    $('chave-valor').textContent = '';
+    $('chave-nova').style.display = 'none';
+    $('aviso-insolvente').style.display = 'none';
+    $('barra-rede').textContent = '';
+    CAMPOS_RESUMO.forEach(function (id) { $(id).textContent = '—'; });
+    $('grafico').innerHTML = '';
+    hojeServidor = null;
+    limparCobranca();
+    ['lancamentos', 'faturas'].forEach(function (id) { $(id).innerHTML = linhaVazia(5, 'Carregando…'); });
+    $('chaves').innerHTML = linhaVazia(4, 'Carregando…');
+    $('sec-chaves').style.display = '';
+    erroChave('');
+  }
+  function sessaoEncerrada(msg) { setTok(null); setPapel(null); limparPainel(); mostrarLogin(msg); }
+
+  // Sair do PAINEL: apaga só o token do painel. A sessão de consumidor que
+  // houver no mesmo navegador (blaxx_token / blaxx_session) não é tocada.
+  window.sair = function () { setTok(null); setPapel(null); limparPainel(); mostrarLogin(); };
+
+  // 403 merchant_inactive NÃO desloga (só 401 desloga): a sessão continua
+  // válida e volta a funcionar quando a BlaXx reativar a rede. Com o painel
+  // aberto, vira aviso; sem ele, a tela de erro com "Tentar de novo" e
+  // "Sair do painel". No login, quem avisa é o entrar().
+  var MSG_INATIVA = 'Esta rede está inativa. O caixa não consegue pontuar e o painel fica bloqueado até a reativação. Fale com a BlaXx.';
+  function redeInativa() {
+    if (painelVisivel()) mostrarAviso(MSG_INATIVA);
+    else mostrarErro('O caixa não consegue pontuar e o painel fica bloqueado até a reativação. Fale com a BlaXx.',
+      'Esta rede está inativa.', 'Painel do Parceiro · Situação da rede');
+  }
+  function mostrarAviso(msg) {
+    var el = $('aviso-insolvente');
+    el.innerHTML = '<span class="bx-ico" aria-hidden="true">' + icone('alerta') + '</span><span>' + esc(msg) + '</span>';
+    el.style.display = '';
+  }
+
+  // ------------------------------------------------------------------ //
+  // Login                                                               //
+  // ------------------------------------------------------------------ //
+  function entrar() {
+    var b = $('btn-entrar');
+    var email = $('email').value.trim(), senha = $('senha').value;
+    if (!email || !senha) { erroLogin('Preencha o e-mail e a senha.'); return; }
+    b.disabled = true; b.textContent = 'Entrando…';
+    erroLogin('');
+    fetch(apiBase() + '/b2b/panel/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: senha })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.ok) return j;
+        if (r.status === 401) throw falha('E-mail ou senha incorretos.');
+        if (r.status === 429) throw falha('Muitas tentativas seguidas. Espere um minuto e tente de novo.');
+        throw falha(j.error || 'Não foi possível entrar agora.');
+      });
+    }).then(function (j) {
+      $('senha').value = '';
+      // O login não confere se a rede está ativa: o token sai, e o resumo
+      // devolveria 403. Avisa já aqui, sem passar pelo painel.
+      if (j.merchant && j.merchant.is_active === false) {
+        erroLogin(MSG_INATIVA);
+        return;
+      }
+      setTok(j.token);
+      setPapel(j.user && j.user.role);
+      limparPainel();
+      return carregar();
+    }).catch(function (e) {
+      erroLogin(msgDe(e));
+    }).then(function () { b.disabled = false; b.textContent = 'Entrar'; });
+  }
+
+  // ------------------------------------------------------------------ //
+  // Painel                                                              //
+  // ------------------------------------------------------------------ //
+  var CATEGORIAS = {
+    posto: ['Posto de combustível', 'posto'],
+    supermercado: ['Supermercado', 'supermercado'],
+    farmacia: ['Farmácia', 'farmacia']
+  };
+  var PAPEIS = { owner: 'Responsável', staff: 'Equipe' };
+  var hojeServidor = null;
+
+  function linhaVazia(cols, texto, recarregar) {
+    return '<tr><td colspan="' + cols + '" class="b2b-vazio">' + esc(texto) +
+      (recarregar ? ' <button type="button" class="b2b-link" data-recarregar>Tentar de novo</button>' : '') + '</td></tr>';
+  }
+  function falhou(id, cols, oque) {
+    return function (e) {
+      if (e && e.parar) throw e;
+      $(id).innerHTML = linhaVazia(cols, 'Não foi possível carregar ' + oque + '. ' + msgDe(e), true);
+    };
+  }
+
+  function carregar() {
+    if (!painelVisivel()) tela('carregando');
+    return api('/b2b/panel/summary').then(function (d) {
+      mostrarPainel();
+      preencherResumo(d);
+      return api('/b2b/panel/accruals?limit=' + LIMITE_LANC).then(preencherLancamentos, falhou('lancamentos', 5, 'os lançamentos'));
+    }).then(function () {
+      return api('/b2b/panel/invoices').then(preencherFaturas, function (e) {
+        // sem as faturas, "A pagar agora" não tem número: "—", nunca o da carga anterior
+        if (!(e && e.parar)) limparCobranca('não deu para carregar as faturas agora');
+        return falhou('faturas', 5, 'as faturas')(e);
+      });
+    }).then(function () {
+      // staff consulta mas não mexe em chave (b2b.py: 403 forbidden); com o
+      // papel do login nem chama. Sem o papel (aba nova), o 403 esconde.
+      if (papel() === 'staff') { $('sec-chaves').style.display = 'none'; return; }
+      return api('/b2b/panel/keys').then(preencherChaves, function (e) {
+        if (e && e.code === 'forbidden') { setPapel('staff'); $('rede-papel').textContent = PAPEIS.staff; $('sec-chaves').style.display = 'none'; return; }
+        return falhou('chaves', 4, 'as chaves')(e);
+      });
+    }).catch(function (e) {
+      if (e && e.parar) return;   // sessão ou rede inativa: já tratados em api()
+      if (painelVisivel()) mostrarAviso('Parte do painel não carregou: ' + msgDe(e));
+      else mostrarErro(msgDe(e));
+    });
+  }
+
+  function preencherResumo(d) {
+    var m = d.merchant || {};
+    var nome = m.name || 'Sua rede';
+    $('rede-nome').textContent = nome;
+    $('barra-rede').textContent = nome;
+    $('barra-rede').hidden = false;
+    var cat = CATEGORIAS[m.vertical] || ['Rede parceira', 'loja'];
+    $('rede-categoria').innerHTML = '<span class="bx-ico" aria-hidden="true">' + icone(cat[1]) + '</span><span>' + esc(cat[0]) + '</span>';
+    // Sem a regra "1 ponto a cada R$ X" (accrual_label): o valor do ponto
+    // não aparece em tela nenhuma. Do contrato, fica o teto por venda.
+    $('rede-contrato').textContent = num(m.max_points_per_tx) + ' pts';
+    $('rede-situacao').textContent = m.is_active === false ? 'Inativa' : 'Ativa';
+    $('rede-papel').textContent = PAPEIS[papel()] || '—';
+    $('atualizado').textContent = 'atualizado às ' + F_HORA.format(new Date());
+
+    // Rede sem chave válida não pontua: o painel precisa dizer isso, senão
+    // o parceiro só descobre pelo silêncio no caixa. (Hoje o back já barra
+    // o painel com 403 merchant_inactive; fica como segunda linha.)
+    if (m.is_active === false) {
+      mostrarAviso('Esta rede está inativa. O caixa não consegue pontuar.');
+    } else {
+      $('aviso-insolvente').style.display = 'none';
+    }
+
+    // "Hoje" do back começa à meia-noite UTC (21h de Brasília). Este é o
+    // valor provisório; preencherLancamentos troca pelo dia de Brasília
+    // quando a lista cobre o dia inteiro. Pontos já sem os estornados.
+    var hj = d.today || {};
+    hojeServidor = {
+      pts: (Number(hj.points_issued) || 0) - (Number(hj.points_reversed) || 0),
+      tx: Number(hj.transactions) || 0,
+      gmv: Number(hj.gmv_brl) || 0
+    };
+    pintarHoje(hojeServidor, false);
+
+    var m30 = d.last_30d || {};
+    var gmv = $('kpi-gmv');
+    gmv.innerHTML = brlGrande(m30.gmv_brl);
+    gmv.classList.toggle('b2b-longo', Math.abs(centavos(m30.gmv_brl)) >= 10000000);   // R$ 100.000 ou mais
+    $('kpi-gmv-tx').textContent = num(m30.transactions) + (Number(m30.transactions) === 1 ? ' venda pontuada' : ' vendas pontuadas');
+    $('kpi-clientes').textContent = num(d.customers_30d);
+
+    var serie = d.series || [], teto = 0, total = 0, pico = null;
+    serie.forEach(function (p) {
+      total += Number(p.points) || 0;
+      if (p.points > teto) { teto = p.points; pico = p; }
+    });
+    $('grafico').innerHTML = serie.map(function (p) {
+      var h = teto > 0 ? Math.max(2, Math.round(p.points / teto * 100)) : 2;
+      return '<i class="' + (p.points ? '' : 'zero') + '" style="height:' + h + '%" ' +
+        'title="' + esc(diaCurto(p.date)) + ': ' + num(p.points) + ' pts"></i>';
+    }).join('');
+    $('grafico').setAttribute('aria-label', 'Pontos por dia nos últimos 30 dias: ' + num(total) + ' pontos' +
+      (pico ? '; maior dia ' + diaCurto(pico.date) + ', com ' + num(pico.points) + ' pontos.' : '; nenhum dia com venda.'));
+    $('serie-total').textContent = num(total);
+    if (serie.length) {
+      $('serie-de').textContent = diaCurto(serie[0].date);
+      $('serie-ate').textContent = diaCurto(serie[serie.length - 1].date);
+    }
+  }
+
+  function pintarHoje(r, deBrasilia) {
+    $('kpi-hoje').textContent = num(r.pts);
+    $('kpi-hoje-tx').textContent = num(r.tx) + (r.tx === 1 ? ' venda · ' : ' vendas · ') + brl(r.gmv);
+    var hora = Number(partesSP(new Date()).hour);
+    $('kpi-hoje-quando').textContent = deBrasilia ? 'dia de Brasília'
+      : (hora >= 21 ? 'desde as 21h de hoje' : 'desde as 21h de ontem');
+  }
+
+  // A lista vem da venda mais nova para a mais antiga. Se ela já chega a um
+  // dia anterior (ou trouxe menos que o limite), o dia de hoje em Brasília
+  // está inteiro nela e dá para somar aqui.
+  function hojeDeBrasilia(itens) {
+    var hoje = diaSP(new Date()), r = { pts: 0, tx: 0, gmv: 0 }, cobre = itens.length < LIMITE_LANC;
+    for (var i = 0; i < itens.length; i++) {
+      var d = quando(itens[i].created_at);
+      if (!d) continue;
+      var dia = diaSP(d);
+      if (dia < hoje) { cobre = true; break; }
+      if (dia !== hoje) continue;
+      r.tx++;
+      r.gmv += Number(itens[i].amount_brl) || 0;
+      r.pts += (Number(itens[i].points_awarded) || 0) - (Number(itens[i].reversed_points) || 0);
+    }
+    r.gmv = Math.round(r.gmv * 100) / 100;
+    return cobre ? r : null;
+  }
+
+  function linhaLanc(x) {
+    var est = !!x.reversed;
+    var c1 = '<span title="' + esc(dataLonga(x.created_at)) + '">' + esc(dataHora(x.created_at)) + '</span>';
+    if (est) {
+      c1 += '<br><span class="b2b-sit b2b-sit--estorno" title="' + esc(x.reversal_reason || '') + '"><i></i>Estornada ' +
+        esc(dataHora(x.reversed_at)) + '</span>';
+    }
+    var pts = num(x.points_awarded);
+    if (est) {
+      var nao = (Number(x.points_awarded) || 0) - (Number(x.reversed_points) || 0);
+      pts += '<small class="b2b-menos">−' + num(x.reversed_points) + ' estornados</small>';
+      if (nao > 0) pts += '<small>' + num(nao) + ' já usados pelo cliente</small>';
+    }
+    var liquido = x.net_brl != null ? x.net_brl : x.bill_brl;
+    var custo = est ? brl(liquido) + '<small>líquido · bruto ' + brl(x.bill_brl) + '</small>' : brl(x.bill_brl);
+    return '<tr' + (est ? ' class="b2b-estornada"' : '') + '>' +
+      '<td>' + c1 + '</td>' +
+      '<td data-r="Loja">' + esc(x.store_code || '—') + '</td>' +
+      '<td class="num" data-r="Compra"><span class="b2b-riscado">' + brl(x.amount_brl) + '</span></td>' +
+      '<td class="num" data-r="Pontos">' + pts + '</td>' +
+      '<td class="num" data-r="Custo">' + custo + '</td></tr>';
+  }
+
+  function preencherLancamentos(d) {
+    var itens = (d && d.items) || [];
+    var mostrar = itens.slice(0, MOSTRAR_LANC);
+    $('lancamentos').innerHTML = mostrar.length ? mostrar.map(linhaLanc).join('')
+      : linhaVazia(5, 'Nenhuma venda pontuada ainda.');
+    var r = hojeDeBrasilia(itens);
+    if (r) pintarHoje(r, true);
+    else if (hojeServidor) pintarHoje(hojeServidor, false);
+  }
+
+  function sitFatura(f) {
+    var hoje = diaSP(new Date());
+    if (f.status === 'paid') {
+      return '<span class="b2b-sit b2b-sit--paga"><i></i>paga</span>' +
+        (f.paid_at ? '<small>em ' + esc(dataHora(f.paid_at)) + '</small>' : '') +
+        (f.due_date ? '<small>vencimento ' + esc(calendario(f.due_date)) + '</small>' : '');
+    }
+    if (f.status === 'void') {
+      return '<span class="b2b-sit b2b-sit--anulada"><i></i>anulada</span><small>não é cobrada</small>';
+    }
+    if (f.status === 'open') {
+      var venc = quando(f.due_date);
+      var vencida = venc && venc.toISOString().slice(0, 10) < hoje;
+      return '<span class="b2b-sit b2b-sit--' + (vencida ? 'vencida' : 'aberta') + '"><i></i>' +
+        (vencida ? 'vencida' : 'a pagar') + '</span>' +
+        '<small>' + (venc ? (vencida ? 'venceu em ' : 'vence em ') + esc(calendario(f.due_date)) : 'sem vencimento') + '</small>';
+    }
+    return '<span class="b2b-sit"><i></i>' + esc(f.status) + '</span>';
+  }
+
+  function preencherFaturas(d) {
+    // "A pagar agora" = faturas fechadas e não pagas (unpaid_brl) + o que
+    // ainda não entrou em fatura (open_balance.amount_brl, já com o crédito
+    // dos estornos). Os dois vêm de /panel/invoices. O all_time.amount_due_brl
+    // do resumo NÃO serve: soma todas as vendas desde o início, inclusive as
+    // de faturas já pagas, e passaria a mostrar uma dívida que não existe.
+    var ab = d.open_balance || {};
+    var aberto = Number(ab.amount_brl) || 0;
+    var devendo = Number(d.unpaid_brl) || 0;
+    var total = (centavos(aberto) + centavos(devendo)) / 100;
+    // Saldo em aberto pode ser NEGATIVO: estorno que chegou depois do
+    // fechamento vira crédito na próxima fatura. Mostrar como "a pagar"
+    // faria a rede achar que deve o que na verdade tem a receber.
+    $('fat-aberto').textContent = brl(aberto);
+    $('fat-aberto-sub').textContent = aberto < 0
+      ? 'crédito a abater na próxima fatura'
+      : num(ab.transactions) + (Number(ab.transactions) === 1 ? ' venda' : ' vendas') + ' desde o último fechamento';
+    $('fat-devendo').textContent = brl(devendo);
+    $('fat-total').textContent = brl(total);
+    $('kpi-devido').textContent = brl(total);
+    $('kpi-devido-sub').textContent = total < 0
+      ? 'crédito a abater na próxima fatura'
+      : 'faturas fechadas e não pagas + vendas ainda não faturadas';
+
+    var itens = d.items || [];
+    var abertas = itens.filter(function (f) { return f.status === 'open'; }).length;
+    $('fat-qtd').textContent = abertas ? num(abertas) : 'nenhuma';
+
+    $('faturas').innerHTML = itens.length ? itens.map(function (f) {
+      var pts = num(f.points_issued) +
+        (f.points_reversed ? '<small class="b2b-menos">−' + num(f.points_reversed) + ' estornados</small>' : '');
+      return '<tr' + (f.status === 'void' ? ' class="b2b-anulada"' : '') + '>' +
+        '<td><code>' + esc(f.number) + '</code></td>' +
+        '<td data-r="Período">' + esc(periodo(f.period_start, f.period_end)) + '</td>' +
+        '<td class="num" data-r="Pontos">' + pts + '</td>' +
+        '<td class="num" data-r="Valor"><span class="b2b-valor">' + brl(f.amount_brl) + '</span></td>' +
+        '<td class="num">' + sitFatura(f) + '</td></tr>';
+    }).join('') : linhaVazia(5, 'Nenhuma fatura fechada ainda.');
+  }
+
+  function preencherChaves(d) {
+    $('sec-chaves').style.display = '';
+    if (!papel()) { setPapel('owner'); $('rede-papel').textContent = PAPEIS.owner; }
+    var itens = (d && d.items) || [];
+    $('chaves').innerHTML = itens.length ? itens.map(function (k) {
+      return '<tr><td><code>' + esc(k.prefix) + '…</code></td>' +
+        '<td data-r="Apelido">' + esc(k.label || '—') + '</td>' +
+        '<td data-r="Último uso">' + (k.last_used_at ? '<span title="' + esc(dataLonga(k.last_used_at)) + '">' + esc(dataHora(k.last_used_at)) + '</span>' : 'nunca') + '</td>' +
+        '<td class="num"><span class="b2b-sit b2b-sit--' + (k.is_active ? 'ativa' : 'revogada') + '"><i></i>' +
+        (k.is_active ? 'ativa' : 'revogada') + '</span>' +
+        (k.is_active ? '<button type="button" class="b2b-revogar" data-revogar="' + esc(k.id) + '">Revogar</button>' : '') +
+        '</td></tr>';
+    }).join('') : linhaVazia(4, 'Nenhuma chave gerada ainda. Gere uma para o caixa começar a pontuar.');
+  }
+
+  function erroChave(msg) {
+    var el = $('chave-erro');
+    if (!msg) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.innerHTML = '<span class="bx-ico" aria-hidden="true">' + icone('alerta') + '</span><span>' + esc(msg) + '</span>';
+    el.style.display = '';
+  }
+  function msgChave(e) {
+    return e && e.code === 'forbidden' ? 'Só o responsável pela rede gera ou revoga chaves.' : msgDe(e);
+  }
+
+  window.novaChave = function () {
+    var b = $('btn-nova-chave');
+    b.disabled = true; erroChave('');
+    api('/b2b/panel/keys', { method: 'POST', body: JSON.stringify({ label: 'PDV' }) })
+      .then(function (j) {
+        $('chave-valor').textContent = j.key;
+        $('btn-copiar').textContent = 'Copiar';
+        $('chave-nova').style.display = '';
+        return carregar();
+      })
+      .catch(function (e) { if (!(e && e.parar)) erroChave(msgChave(e)); })
+      .then(function () { b.disabled = false; });
+  };
+
+  window.revogar = function (id) {
+    if (!confirm('Revogar esta chave? O caixa que a usa para de pontuar na hora.')) return;
+    erroChave('');
+    api('/b2b/panel/keys/' + encodeURIComponent(id), { method: 'DELETE' })
+      .then(carregar)
+      .catch(function (e) { if (!(e && e.parar)) erroChave(msgChave(e)); });
+  };
+
+  function copiarChave() {
+    var texto = $('chave-valor').textContent, b = $('btn-copiar');
+    function ok() { b.textContent = 'Copiada'; }
+    function manual() {
+      var r = document.createRange(); r.selectNodeContents($('chave-valor'));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = 'Selecionada: copie';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(ok, manual);
+    else manual();
+  }
+
+  // ------------------------------------------------------------------ //
+  // Eventos                                                             //
+  // ------------------------------------------------------------------ //
+  $('form-login').addEventListener('submit', function (e) { e.preventDefault(); entrar(); });
+  $('btn-sair').addEventListener('click', window.sair);
+  $('btn-tentar').addEventListener('click', carregar);
+  $('btn-atualizar').addEventListener('click', carregar);
+  $('btn-nova-chave').addEventListener('click', window.novaChave);
+  $('btn-copiar').addEventListener('click', copiarChave);
+  $('chaves').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-revogar]');
+    if (b) window.revogar(b.getAttribute('data-revogar'));
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-recarregar]')) carregar();
+    else if (e.target.closest('[data-sair]')) window.sair();
+  });
+
+  pintarIcones();
+  if (tok()) carregar(); else mostrarLogin();
+})();
+</script>
 </body>
 </html>

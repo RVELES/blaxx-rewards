@@ -100,7 +100,7 @@
   // Marcador de build: este projeto já perdeu horas com o navegador servindo
   // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
   // hora se o que está rodando é o arquivo do disco.
-  window.BLAXX_APP_BUILD = 'icones-og-mobile-2026-10-16';
+  window.BLAXX_APP_BUILD = 'parceiros-kit-2026-10-22';
 
   var STORE = {
     token: function () {
@@ -150,7 +150,10 @@
       try {
         localStorage.removeItem('blaxx_refresh'); sessionStorage.removeItem('blaxx_refresh');
         Object.keys(localStorage).forEach(function (k) {
-          if (k.indexOf('blaxx_') === 0 && k !== 'blaxx_set_password_dismissed_at') {
+          // ficam: o aviso de senha, o consentimento de cookies e o acesso do
+          // Painel do Parceiro (parceiro.html), que é outra sessão
+          if (k.indexOf('blaxx_') === 0 && k !== 'blaxx_set_password_dismissed_at' &&
+              k !== 'blaxx_cookie_consent_v1' && k.indexOf('blaxx_parceiro_') !== 0) {
             localStorage.removeItem(k);
           }
         });
@@ -2019,9 +2022,8 @@
         return '<div class="bx-card" style="padding:16px;border:1px solid #eee;border-radius:12px;margin:8px;">'
           + '<div style="font-size:20px;"><span class="bx-ico" style="width:32px;height:32px;vertical-align:middle;">' + _bxIconeSvg(_bxIconeDoGlifo(p.logo_emoji, 'loja')) + '</span> <strong>' + p.name + '</strong></div>'
           + '<div style="color:#888;font-size:13px;margin-top:4px;">' + p.category + '</div>'
-          + '<div style="margin-top:8px;font-size:14px;">' + (p.description || '') + '</div>'
-          + '<div style="margin-top:10px;background:#F0FAD9;color:#5AB800;padding:6px 10px;border-radius:6px;display:inline-block;font-size:12px;font-weight:600;">'
-          + (p.accrual_rule || '') + '</div></div>';
+          // sem description (seed "Parceiro Livelo") nem accrual_rule (taxa por real)
+          + '</div>';
       }).join('');
       var container = $('#bx-parceiros-list') || grid;
       if (container.id === 'bx-parceiros-list') container.innerHTML = html;
@@ -2416,7 +2418,7 @@
             'onerror="bxLogoTryNext(this)">' +
           '</div>' +
           '<div><h3>' + p.name + '</h3>' +
-          '<div class="rate">' + (p.accrual_rule || '') + '</div></div></a>';
+          '<div class="rate">' + (p.category || '') + '</div></div></a>';
       }).join('');
       var $c = document.getElementById('pt-count');
       if ($c) $c.textContent = 'Mostrando ' + filtered.length + ' parceiros (logos carregando ao rolar)';
@@ -2613,9 +2615,9 @@
         document.querySelectorAll('[data-bx-partner-description]').forEach(function (el) {
           el.textContent = p.description || 'Parceiro BlaXx.';
         });
-        // Regra de acumulo
+        // Regra de acúmulo: não aparece (a accrual_rule traz a taxa por real)
         document.querySelectorAll('[data-bx-partner-rule]').forEach(function (el) {
-          el.textContent = p.accrual_rule || '—';
+          el.hidden = true;
         });
         // Logo Clearbit no hero
         var logoBox = document.querySelector('[data-bx-partner-logo]');

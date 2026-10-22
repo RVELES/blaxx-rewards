@@ -563,25 +563,25 @@
   const icoParceiro = p => ico(ICO_CATEGORIA[String(p.category||'').toLowerCase()] || 'loja');
 
   function renderWallet(w, txs){
-    setText('cc-balance', w ? fmt(w.balance_pts) : ', ');
-    setText('cc-tbal', w ? fmt(w.balance_pts) : ', ');
+    setText('cc-balance', w ? fmt(w.balance_pts) : '—');
+    setText('cc-tbal', w ? fmt(w.balance_pts) : '—');
     const pend = w ? Number(w.pending_pts||0) : 0;
     setText('cc-pending', pend>0 ? fmt(pend)+' pts em processamento' : 'Nenhum ponto pendente');
     const monthIn = (txs||[]).filter(t=>Number(t.amount_pts)>0).reduce((s,t)=>s+Number(t.amount_pts),0);
     setText('cc-month', '+'+fmt(monthIn));
     // Disponível = saldo menos o que ainda está em processamento.
     const disp = w ? Math.max(0, Number(w.balance_pts||0) - pend) : 0;
-    setText('cc-avail', w ? fmt(disp)+' pts' : ', ');
+    setText('cc-avail', w ? fmt(disp)+' pts' : '—');
     // Expirando: o backend ainda não expõe esse corte; enquanto não expuser,
     // mostramos travessão em vez de inventar número.
-    setText('cc-expiring', w && w.expiring_90d != null ? fmt(w.expiring_90d)+' pts' : ', ');
+    setText('cc-expiring', w && w.expiring_90d != null ? fmt(w.expiring_90d)+' pts' : '—');
   }
 
   function renderCard(c){
     if (!c){ return; }
     const t = c.tier || {};
-    setText('cc-tier', (t.label||', ').toUpperCase());
-    setText('cc-tier-mini', (t.label||', ').toUpperCase());
+    setText('cc-tier', (t.label||'—').toUpperCase());
+    setText('cc-tier-mini', (t.label||'—').toUpperCase());
     const card = document.getElementById('cc-level-card');
     if (card && t.color){ card.style.background = t.color; card.style.color = t.text_color || '#fff'; }
     setText('cc-tier-sub', c.lifetime_points>0 ? fmt(c.lifetime_points)+' pts acumulados' : 'Programa de recompensas');
@@ -603,7 +603,8 @@
     wrap.innerHTML = list.map(p=>{
       // O selo só existe se houver regra/categoria, um selo neon vazio vira
       // um retângulo verde sem significado.
-      const rule = p.accrual_rule || p.category || '';
+      // só a categoria: a accrual_rule da API traz a taxa por real (valor do ponto)
+      const rule = p.category || '';
       return `
       <a class="cc-exp" href="detalhe-parceiro.html?id=${encodeURIComponent(p.id)}">
         <span class="cc-exp-top"><span class="em bx-ico">${icoParceiro(p)}</span><i class="go" aria-hidden="true">→</i></span>
@@ -654,22 +655,13 @@
     }).join('');
   }
 
+  // Sem sessão ou com a API fora do ar: estados vazios honestos. Antes vinham
+  // saldo, nível e parceiros inventados (Nexus Airlines, "pts/R$").
   function demo(){
-    renderWallet({balance_pts:16320,pending_pts:1250,balance_brl_equiv:1468.80},
-      [{amount_pts:1240},{amount_pts:500}]);
-    renderCard({tier:{label:'Ouro',color:'#D4AF37',text_color:'#0B0B0C'},next_tier:{label:'Black'},points_to_next:25200,progress_pct:66,lifetime_points:24800});
-    renderPartners([
-      {id:'nexus',name:'Nexus Airlines',logo_emoji:'✈️',accrual_rule:'Até 6 pts/R$',category:'Viagens'},
-      {id:'mercadovivo',name:'Mercado Vivo',logo_emoji:'🛒',accrual_rule:'Até 4 pts/R$',category:'Supermercado'},
-      {id:'pulse',name:'Pulse Eletro',logo_emoji:'📱',accrual_rule:'Até 4 pts/R$',category:'Tecnologia'}]);
-    const _demo = [
-      {id:'1',name:'Dobro de pontos em viagens',description:'Até 30/06 · parceiros selecionados',reward_pts:2000},
-      {id:'2',name:'Bônus de pontos no varejo',description:'Válido por 6 meses',reward_pts:5000}];
-    renderCampaigns(_demo); renderOportunidade(_demo);
-    renderActivity([
-      {amount_pts:1240,description:'Compra · Mercado Vivo',type:'compra'},
-      {amount_pts:-5000,description:'Resgate · Voucher iFood',type:'resgate'},
-      {amount_pts:500,description:'Bônus · Missão concluída',type:'bonus'}]);
+    renderWallet(null, []);
+    renderPartners([]);
+    renderCampaigns([]); renderOportunidade([]);
+    renderActivity([]);
   }
 
   (async ()=>{

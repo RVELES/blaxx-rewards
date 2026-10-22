@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0B0E">
 <title>Parceiro | BlaXx</title>
+<meta name="description" content="Benefícios de um parceiro BlaXx: o que dá para trocar com seus pontos e como fazer o resgate.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
 <!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
-     os tokens; o <style> da página só precisa não brigar com ele. -->
+     os tokens. A página usa o "Kit da home" (classes bx-* no fim da folha). -->
 <link rel="stylesheet" href="assets/blaxx-embarque.css">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
@@ -23,207 +24,256 @@
 <script src="assets/blaxx-acesso.js"></script>
 </head>
 <body>
+<!-- Detalhe do parceiro (16/10/2026), na arte da home (kit bx-* de
+     assets/blaxx-embarque.css): cartão de embarque com o parceiro, bilhetes
+     com os benefícios dele, recibo com as regras de resgate e rota com os
+     passos. Menu, rodapé, lateral (logado) e a faixa "Criar conta" são do
+     assets/blaxx-nav.js; aqui só ficam os marcadores.
+     Dados: GET {BLAXX_API}/partners/<id> (público), lido pelo script no fim.
+     Não aparecem: accrual_rule (valor do ponto), descrição "Parceiro Livelo"
+     ou "fictícia" da API (no lugar vai a categoria), logo de terceiros.
+     Fontes do texto fixo: regulamento.html §03 Acúmulo, §05 Resgate e §07
+     Tabela de resgate. -->
 <header class="topbar">
-    <nav class="nav">
-        <a href="index.html" class="brand">
-            <span class="mark">BlaXx</span>
-        </a>
-        <div class="links">
-            <a href="index.html" data-link="index">Início</a>
-            <a href="como-funciona.html" data-link="como-funciona">Como funciona</a>
-            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
-            <a href="resgates.html" data-link="resgates">Resgates</a>
-            <a href="comprar-pontos.html" data-link="comprar-pontos">Comprar pontos</a>
-            <a href="venda-pontos.html" data-link="venda-pontos">Vender pontos</a>
-        </div>
-        <div class="cta-row">
-            <a href="login.html" class="button ghost">Entrar</a>
-            <a href="cadastro.html" class="button">Cadastre-se</a>
-        </div>
-    </nav>
+  <nav class="nav" aria-label="Principal">
+    <a href="index.html" class="brand" aria-label="BlaXx Pontos"><span class="mark">BlaXx</span></a>
+  </nav>
 </header>
-<main class="shell">
-<div class="page-head">
-    <div class="crumbs"><a href="index.html">Início</a><span class="sep">/</span> <a href="parceiros.html">Parceiros</a><span class="sep">/</span> <span data-bx-partner-name>Carregando…</span></div>
-</div>
 
-<section class="section">
-    <div class="band-dark" style="padding:40px;">
-        <div class="grid two" style="gap:40px;align-items:center;">
-            <div>
-                <!-- Logo grande do parceiro (Clearbit), escala automatica
-                     se ?id= na URL retornar partner valido. Cai pra emoji. -->
-                <div data-bx-partner-logo class="partner-hero-logo" aria-hidden="true">
-                  <span class="partner-logo-fallback">◯</span>
-                </div>
-                <span class="kicker" data-bx-partner-category>Categoria</span>
-                <h1 style="margin-top:14px;color:white;" data-bx-partner-name>Carregando…</h1>
-                <p data-bx-partner-description>Carregando descrição do parceiro…</p>
-                <div class="actions">
-                    <a href="resgates.html" class="button">Ver resgates</a>
-                    <a href="#" class="button secondary">Encontrar loja</a>
-                </div>
-            </div>
-            <div class="card" style="background:var(--bx-ink-2);border-color:var(--bx-ink-3);color:#F4F2EC;box-shadow:none;">
-                <h3 style="color:white;">Você acumula</h3>
-                <div data-bx-partner-rule style="font-size:32px;font-weight:900;letter-spacing:-0.04em;color:var(--lime);line-height:1.1;">—</div>
-                <p style="color:var(--bx-ink-muted);">crédito em até 24h após a compra</p>
-                <span class="status ativo" style="margin-top:8px;">● Parceiro ativo</span>
-            </div>
+<main class="bx-pagina dp-pagina" id="conteudo" data-dp-estado="carregando" aria-busy="true">
+
+<!-- ====================== CARTÃO DO PARCEIRO ====================== -->
+<section class="bx-secao bx-secao--hero" aria-labelledby="dpTitulo">
+  <div class="bx-wrap">
+    <nav class="dp-farelo" aria-label="Você está em">
+      <a href="index.html">Início</a><span aria-hidden="true">/</span>
+      <a href="parceiros.html">Parceiros</a><span aria-hidden="true">/</span>
+      <span aria-current="page" data-bx-partner-name>Carregando…</span>
+    </nav>
+
+    <div class="bx-cartao dp-cartao">
+      <div class="bx-cartao-miolo">
+        <div class="bx-cartao-topo"><span>Cartão do parceiro · BlaXx</span><span data-dp-topo>Brasil · 2026</span></div>
+        <div class="dp-marca">
+          <span class="bx-ico" data-dp-ico aria-hidden="true"></span>
+          <div><span class="bx-rotulo" data-dp-marca-rotulo>Categoria</span><b data-bx-partner-category>Carregando…</b></div>
         </div>
+        <h1 class="bx-cartao-titulo" id="dpTitulo"><span class="dp-nome" data-dp-nome>Carregando…</span><span><mark data-dp-chamada>Um instante.</mark></span></h1>
+        <div class="bx-cartao-grade" data-dp-so-ok hidden>
+          <div><span class="bx-rotulo">De</span><b>Seus pontos</b></div>
+          <div><span class="bx-rotulo">Para</span><b>Benefícios</b></div>
+          <div><span class="bx-rotulo">Disponíveis</span><b data-dp-qtd>—</b></div>
+          <div><span class="bx-rotulo" data-dp-min-rotulo>A partir de</span><b data-dp-min>—</b></div>
+        </div>
+        <p class="bx-cartao-lead" data-dp-lead>Buscando os dados do parceiro.</p>
+      </div>
+      <div class="bx-perf" aria-hidden="true"></div>
+      <aside class="bx-cartao-canhoto" aria-label="Próximo passo">
+        <div class="bx-cartao-dados">
+          <div><span class="bx-rotulo">Passageiro</span><b>Você</b></div>
+          <div><span class="bx-rotulo">Destino</span><b class="dp-reticencias" data-dp-destino>…</b></div>
+        </div>
+        <div class="bx-cartao-acoes">
+          <a class="bx-cartao-cta" href="parceiros.html" data-dp-cta>Ver todos os parceiros</a>
+          <button type="button" class="bx-cartao-cta dp-tentar" data-dp-tentar hidden>Tentar de novo</button>
+          <span class="bx-cartao-ja" data-dp-ja>Rede em expansão · <a href="parceiros.html"><b>Parceiros →</b></a></span>
+          <div class="bx-barcode" aria-hidden="true"></div>
+        </div>
+      </aside>
     </div>
+  </div>
 </section>
 
-<section class="section">
-    <div class="grid">
-        <div class="card">
-            <div class="card-icon">⏱</div>
-            <h3>Crédito em 24h</h3>
-            <p>Pontos confirmados em até 1 dia útil após a compra.</p>
+<!-- ====================== BILHETES: BENEFÍCIOS ====================== -->
+<section class="bx-secao" id="beneficios" aria-labelledby="dpBenTitulo" data-dp-so-ok hidden>
+  <div class="bx-wrap">
+    <div class="bx-bilhetes-recibo dp-ben">
+      <div class="bx-bilhetes">
+        <div class="bx-secao-cab bx-secao-cab--linha">
+          <div class="dp-cab">
+            <span class="bx-secao-rotulo">Bilhetes · Benefícios do parceiro</span>
+            <h2 class="bx-titulo-secao" id="dpBenTitulo" data-dp-ben-titulo>Troque seus<br>pontos aqui.</h2>
+          </div>
+          <a class="bx-secao-link" href="resgates.html" data-dp-ben-link>Todos os resgates →</a>
         </div>
-        <div class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M2.5 3h2.5l2.3 12.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
-            <h3>Sem compra mínima</h3>
-            <p>Toda compra acumula pontos, sem exigência de mínimo.</p>
+        <div class="dp-lista" data-dp-lista></div>
+      </div>
+
+      <div class="bx-recibo dp-recibo" data-dp-recibo>
+        <div class="bx-zig" aria-hidden="true"></div>
+        <div class="bx-recibo-corpo">
+          <div class="bx-recibo-cabeca">
+            <img src="assets/marca/blaxx-wordmark-barra.svg" alt="BlaXx">
+            <span>FICHA DO PARCEIRO</span>
+          </div>
+          <div class="bx-tracejo" aria-hidden="true"></div>
+          <div class="bx-leader"><span>PARCEIRO</span><i></i><span data-dp-r-nome>—</span></div>
+          <div class="bx-leader"><span>CATEGORIA</span><i></i><span data-dp-r-cat>—</span></div>
+          <div class="bx-leader"><span>BENEFÍCIOS</span><i></i><span data-dp-r-qtd>—</span></div>
+          <div class="bx-leader"><span>CONTA</span><i></i><span>ativa</span></div>
+          <div class="bx-leader"><span>E-MAIL</span><i></i><span>verificado</span></div>
+          <div class="bx-leader"><span>CONFIRMAÇÃO</span><i></i><span>com senha</span></div>
+          <div class="bx-tracejo" aria-hidden="true"></div>
+          <div class="bx-recibo-total"><span>A PARTIR DE</span><b data-dp-r-min>—</b></div>
+          <div class="bx-recibo-faixa"><div class="bx-leader"><span>PEDIDO PROCESSADO</span><i></i><span>até 1 dia útil</span></div></div>
+          <span class="bx-recibo-nota">Os pontos de cada benefício seguem a tabela de resgate publicada na plataforma, conforme a disponibilidade do parceiro (Regulamento, §05 e §07).</span>
+          <div class="bx-recibo-via" aria-hidden="true">Via do passageiro</div>
+          <a class="bx-recibo-acao" href="resgates.html">Ver todos os resgates →</a>
         </div>
-        <div class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;display:block"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 19h2"/></svg></div>
-            <h3>Online &amp; loja</h3>
-            <p>Vale no app, no site e em todas as lojas físicas.</p>
-        </div>
+        <div class="bx-zig bx-zig--baixo" aria-hidden="true"></div>
+      </div>
     </div>
+  </div>
 </section>
 
-<section class="section">
-    <div class="section-head">
-        <h2>Como acumular</h2>
+<!-- ====================== ROTA: COMO USAR ====================== -->
+<section class="bx-secao bx-secao--sem-pe" id="como-usar" aria-labelledby="dpRotaTitulo" data-dp-so-ok hidden>
+  <div class="bx-wrap">
+    <div class="bx-secao-cab">
+      <span class="bx-secao-rotulo">Rota · Como usar seus pontos</span>
+      <h2 class="bx-titulo-secao" id="dpRotaTitulo">Do saldo ao benefício.</h2>
     </div>
-    <div class="grid">
-        <div class="card">
-            <div class="card-icon">1</div>
-            <h3>Informe seu CPF</h3>
-            <p>No caixa, no app ou no checkout do site, informe o CPF cadastrado na BlaXx.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon">2</div>
-            <h3>Finalize a compra</h3>
-            <p>Conclua o pagamento com qualquer forma aceita pelo parceiro.</p>
-        </div>
-        <div class="card">
-            <div class="card-icon">3</div>
-            <h3>Receba os pontos</h3>
-            <p>Acompanhe o crédito no seu extrato em até 24 horas.</p>
-        </div>
-    </div>
+    <ol class="bx-rota-grid">
+      <li class="bx-escala">
+        <span class="bx-escala-n">Escala 01 · Saldo</span>
+        <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Tenha</h3></div>
+        <p class="bx-escala-d">Compre pontos com cartão ou transferência, ou ganhe em campanhas. A compra é creditada após a confirmação do pagamento.</p>
+      </li>
+      <li class="bx-escala">
+        <span class="bx-escala-n">Escala 02 · Escolher</span>
+        <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Escolha</h3></div>
+        <p class="bx-escala-d">Escolha um benefício. Os pontos de cada um seguem a tabela de resgate publicada na plataforma.</p>
+      </li>
+      <li class="bx-escala">
+        <span class="bx-escala-n">Escala 03 · Confirmar</span>
+        <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Confirme</h3></div>
+        <p class="bx-escala-d">O resgate exige conta ativa, e-mail verificado e confirmação de senha.</p>
+      </li>
+      <li class="bx-escala">
+        <span class="bx-escala-n">Escala 04 · Trocar</span>
+        <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Troque</h3></div>
+        <p class="bx-escala-d">O pedido é processado em até 1 dia útil, conforme a disponibilidade do parceiro.</p>
+      </li>
+    </ol>
+    <p class="dp-fonte">Fonte: <a href="regulamento.html#acumulo">Regulamento, §03 Acúmulo</a>, <a href="regulamento.html#resgate">§05 Resgate</a> e <a href="regulamento.html#conversao">§07 Tabela de resgate</a>.</p>
+  </div>
 </section>
 
-<section class="section">
-    <div class="section-head">
-        <h2>Campanhas ativas</h2>
-    </div>
-    <div class="grid two">
-        <a href="detalhe-campanha.html" class="campaign-card">
-            <div class="campaign-cover">
-                <span class="kicker">+50% até 30/06</span>
-                <h3 style="margin-top:10px;">Bônus em hortifruti</h3>
-            </div>
-            <div class="campaign-body">
-                <p>Compras na seção de hortifruti rendem 50% a mais em pontos.</p>
-                <div class="progress-row"><span>Sua participação</span><span><strong style="color:var(--ink);">3 compras</strong></span></div>
-            </div>
-        </a>
-        <a href="detalhe-campanha.html" class="campaign-card">
-            <div class="campaign-cover">
-                <span class="kicker">+30% no online</span>
-                <h3 style="margin-top:10px;">Compre pelo app</h3>
-            </div>
-            <div class="campaign-body">
-                <p>Pedidos pelo app do parceiro acumulam 30% a mais em pontos. Sem limite.</p>
-                <div class="progress-row"><span>Sua participação</span><span><strong style="color:var(--ink);">1 compra</strong></span></div>
-            </div>
-        </a>
-    </div>
-</section>
 </main>
-<footer class="footer">
-    <div class="footer-inner">
-        <div>
-            <div class="brand">
-                <span class="mark">BlaXx</span>
-            </div>
-            <p class="about">Um programa de recompensas: acumule, compre, envie e troque pontos por benefícios em parceiros selecionados.</p>
-        </div>
-        <div>
-            <h4>Produto</h4>
-            <ul>
-                <li><a href="como-funciona.html">Como funciona</a></li>
-                <li><a href="parceiros.html">Parceiros</a></li>
-                <li><a href="resgates.html">Resgates</a></li>
-                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
-                <li><a href="venda-pontos.html">Vender pontos</a></li>
-                <li><a href="campanhas.html">Campanhas</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Conta</h4>
-            <ul>
-                <li><a href="login.html">Entrar</a></li>
-                <li><a href="cadastro.html">Cadastre-se</a></li>
-                <li><a href="dashboard.html">Painel</a></li>
-                <li><a href="carteira.html">Carteira</a></li>
-                <li><a href="extrato.html">Extrato</a></li>
-                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4>Suporte</h4>
-            <ul>
-                <li><a href="central-ajuda.html">Central de ajuda</a></li>
-                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
-                <li><a href="meus-chamados.html">Meus chamados</a></li>
-                <li><a href="termos.html">Termos de uso</a></li>
-                <li><a href="documentos-termos.html">Documentos</a></li>
-                <li><a href="sitemap.html">Mapa do site</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 BlaXx. Todos os direitos reservados.</span>
-        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma BlaXx.</span>
-    </div>
-</footer>
+<footer class="footer"></footer>
 <style>
-  /* Item ativo no tema "Embarque": pílula preta com texto claro, sem borda nem
-     sombra dura (mesma leitura de .links a[aria-current] e .side-nav a.active
-     em assets/blaxx-embarque.css). O ícone fica neon, que sobre preto passa. */
-  [data-link="parceiros"] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; }
-  [data-side=""] { background: var(--bx-ink) !important; color: var(--bx-surface) !important; font-weight: 600 !important; border: 0 !important; box-shadow: none !important; }
-  [data-side=""] .ic { background: transparent !important; color: var(--bx-neon) !important; }
-  /* ---- Celular (A7) ---- */
-  @media (max-width:880px){
-    /* O app-shell e o main já dão o respiro; sem este corte os farelos
-       ficavam 84px abaixo da barra (a home fica a 20px). */
-    .page-head{ margin-top:0; padding-top:0 !important; }
-    /* O padding:40px e o gap:40px inline da faixa escura valiam entre 481 e
-       880px; abaixo de 480 o styles.css já apertava. Um valor só. */
-    .band-dark[style]{ padding:28px 20px !important; }
-    .band-dark .grid.two[style]{ gap:20px !important; }
-    .band-dark .actions{ flex-direction:column; align-items:stretch; gap:8px; }
-    .band-dark .actions .button{ width:100%; }
-    /* Os seis cartões de três colunas viravam uma torre de 1.150px com o
-       ícone em cima do texto. No celular cada um vira uma linha: ícone à
-       esquerda, título e texto à direita (mesma leitura das "escalas" da
-       home). */
-    .section > .grid:not(.two){ gap:10px !important; }
-    .section > .grid:not(.two) .card{
-      display:grid; grid-template-columns:44px minmax(0,1fr);
-      column-gap:14px; row-gap:4px; align-items:start;
+  /* ---- Detalhe do parceiro: o que o kit da home não traz ---- */
+  .dp-pagina [hidden]{ display:none !important; }   /* o kit põe display nos blocos; hidden precisa vencer */
+  .dp-pagina .bx-wrap{ container-type:inline-size; }
+  /* farelo em mono, como os rótulos do cartão */
+  .dp-farelo{
+    display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:0 0 20px; min-width:0;
+    font-family:var(--bx-mono); font-size:12px; line-height:1.4; letter-spacing:.08em; text-transform:uppercase; color:var(--bx-grey);
+  }
+  /* sublinhado no texto, não borda: no celular a folha-base dá 44px de altura a "nav a" */
+  .dp-farelo a{ color:var(--bx-ink); text-decoration:underline; text-decoration-color:var(--bx-leader); text-decoration-thickness:1px; text-underline-offset:4px; }
+  .dp-farelo a:hover{ text-decoration-color:var(--bx-ink); }
+  .dp-farelo [aria-current]{ min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* marca do parceiro: o desenho da categoria no quadrado neon, nunca logo de terceiro */
+  .dp-marca{ display:flex; align-items:center; gap:16px; min-width:0; }
+  .dp-marca .bx-ico{ width:64px; height:64px; border-radius:var(--bx-r-md); }
+  .dp-marca > div{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .dp-marca b{ overflow-wrap:anywhere; }
+  /* o nome não quebra no meio da palavra: o script reduz a fonte até caber */
+  .dp-nome{ overflow-wrap:normal; word-break:normal; hyphens:manual; }
+  .dp-nome--longo{ font-size:.74em; }
+  .dp-reticencias{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  button.dp-tentar{ width:100%; border:0; cursor:pointer; }
+  button.dp-tentar:focus-visible{ outline:3px solid var(--bx-ink); outline-offset:2px; }
+  /* bilhetes: o kit faz o bilhete de pacote (rádio); aqui cada um é um link */
+  .dp-ben.dp-ben--so{ grid-template-columns:minmax(0,1fr); }   /* sem benefício: sem recibo ao lado */
+  .dp-cab{ display:flex; flex-direction:column; gap:14px; min-width:0; }
+  .dp-lista{ display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
+  a.dp-bilhete{ color:var(--bx-ink); }
+  a.dp-bilhete:hover,a.dp-bilhete:focus-visible{ border-color:var(--bx-ink); }
+  a.dp-bilhete:hover .bx-bilhete-canhoto,a.dp-bilhete:focus-visible .bx-bilhete-canhoto{ background:var(--bx-neon); }
+  /* no canhoto neon o quadrado neon sumia: ganha contorno preto (como no quadro) */
+  a.dp-bilhete:hover .bx-bilhete-canhoto .bx-ico,a.dp-bilhete:focus-visible .bx-bilhete-canhoto .bx-ico{ outline:2px solid var(--bx-ink); outline-offset:-2px; }
+  .dp-bilhete .bx-bilhete-canhoto .bx-ico{ width:40px; height:40px; border-radius:10px; }
+  .dp-bilhete-nome{ display:block; font-family:var(--bx-sans); font-size:22px; font-weight:800; line-height:1.15; letter-spacing:-.01em; color:var(--bx-ink); overflow-wrap:anywhere; }
+  .dp-bilhete-desc{ margin:0; font-size:15px; line-height:1.5; color:var(--bx-grey); }
+  .dp-bilhete-dados{ display:flex; flex-wrap:wrap; gap:12px 32px; }
+  .dp-bilhete-dados > div{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .dp-bilhete-dados b{ font-size:17px; }
+  .dp-bilhete-ir{ font-family:var(--bx-sans); font-size:15px; font-weight:700; color:var(--bx-ink); text-decoration:underline; text-underline-offset:4px; }
+  /* sem benefício: o mesmo bilhete, tracejado, com as saídas */
+  .dp-vazio{ border:2px dashed var(--bx-leader); cursor:default; }
+  .dp-vazio .bx-bilhete-canhoto{ background:var(--bx-surface-2); }
+  .dp-vazio p{ margin:0; font-size:16px; line-height:1.5; color:var(--bx-grey); max-width:52ch; }
+  .dp-vazio-acoes{ display:flex; flex-wrap:wrap; gap:10px 24px; }
+  .dp-vazio-acoes a{ font-weight:700; color:var(--bx-ink); text-decoration:underline; text-underline-offset:4px; }
+  /* recibo: nome longo encurta com reticências em vez de empurrar a borda */
+  .dp-recibo .bx-leader > span:last-child{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  .dp-recibo .bx-leader > span:first-child{ flex:none; }
+  .dp-fonte{
+    margin:32px 0 0; font-family:var(--bx-mono); font-size:12px; line-height:1.6; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--bx-grey);
+  }
+  .dp-fonte a{ color:var(--bx-ink); text-decoration:none; border-bottom:1px solid var(--bx-leader); }
+  .dp-fonte a:hover{ border-color:var(--bx-ink); }
+  .dp-pagina[data-dp-estado="carregando"] .dp-nome{ color:var(--bx-grey); }
+  /* a chamada em neon quebra como faixa de texto, não como bloco (o kit usa
+     inline-block, que numa coluna estreita virava um retângulo com sobra) */
+  @media (min-width:601px){
+    .dp-cartao .bx-cartao-titulo > span:last-child{ margin-top:.16em; font-size:.6em; line-height:1.1; }
+    .dp-cartao .bx-cartao-titulo mark{ display:inline; font-size:1em; line-height:1.1; margin:0; padding:.04em .14em; }
+  }
+
+  /* Logado: o blaxx-nav.js põe a página ao lado da lateral (.app-shell, que já
+     tem respiro); a coluna do kit não soma outro respiro nem o do topo. */
+  .app-shell .dp-pagina .bx-secao > .bx-wrap{ padding-left:0; padding-right:0; max-width:none; }
+  .app-shell .dp-pagina .bx-secao--hero{ padding-top:0; }
+  /* Coluna estreita (logado, ao lado da lateral): os mesmos cortes do kit,
+     medidos pela largura da coluna e não da janela. */
+  @container (max-width:1000px){
+    .dp-ben{ grid-template-columns:minmax(0,1fr); gap:28px; }
+    .dp-recibo{ transform:none; max-width:520px; }
+    .dp-cartao .bx-cartao-grade{ grid-template-columns:1fr 1fr; gap:16px; }
+    /* rota em 2 × 2: a 2ª e a 4ª escala fecham a linha tracejada */
+    .dp-pagina .bx-rota-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:40px; }
+    .dp-pagina .bx-escala:nth-child(2n) .bx-escala-acao::before{ right:0; }
+  }
+  /* 860 e não 820: entre 901 e 940px de janela a coluna já é estreita, e a
+     900px ela cobre o corte ≤900 do kit sem misturar as duas rotas */
+  @container (max-width:860px){
+    .dp-cartao{ flex-direction:column; }
+    .dp-cartao .bx-cartao-canhoto{ width:auto; }
+    .dp-cartao .bx-cartao-grade{ grid-template-columns:1fr 1fr; gap:16px; }
+    .dp-cartao > .bx-perf{ width:auto; height:0; border-left:0; border-top:2px dashed var(--bx-line); align-self:auto; margin:0 -1px; }
+    .dp-cartao > .bx-perf::before{ top:-14px; left:-14px; }
+    .dp-cartao > .bx-perf::after{ top:-14px; bottom:auto; left:auto; right:-14px; }
+    .dp-pagina .bx-rota-grid{ grid-template-columns:minmax(0,1fr); gap:0; }
+    .dp-pagina .bx-escala{ padding:0 0 30px; gap:6px; }
+    .dp-pagina .bx-escala:last-child{ padding-bottom:0; }
+    .dp-pagina .bx-escala-acao::before{ display:none; }
+    .dp-pagina .bx-escala:not(:last-child)::after{ content:''; position:absolute; left:11px; top:41px; bottom:-41px; border-left:2px dashed var(--bx-ink); }
+    .dp-pagina .bx-escala-t{ font-size:34px !important; }
+    .dp-pagina .bx-escala-d{ max-width:none; }
+  }
+  /* acima de 900px o kit não empilha; quando a coluna empilha o cartão, o
+     letreiro e o canhoto seguem a coluna (abaixo disso valem os cortes do kit) */
+  @media (min-width:901px){
+    @container (max-width:860px){
+      .dp-cartao .bx-cartao-canhoto{ padding:28px clamp(22px,4.4vw,56px) 32px; }
+      .dp-cartao .bx-cartao-titulo{ font-size:clamp(40px,12.6cqi,96px) !important; }
     }
-    .section > .grid:not(.two) .card .card-icon{ grid-row:1 / span 2; margin:0; }
-    .section > .grid:not(.two) .card h3{ grid-column:2; margin:0; font-size:17px !important; align-self:center; }
-    .section > .grid:not(.two) .card p{ grid-column:2; margin:0; font-size:15px; }
-    /* capa da campanha mais baixa */
-    .campaign-cover{ padding:18px !important; }
+  }
+  @media (max-width:600px){
+    .dp-farelo{ font-size:11px; margin-bottom:14px; }
+    .dp-marca{ gap:12px; }
+    .dp-marca .bx-ico{ width:52px; height:52px; border-radius:var(--bx-r-sm); }
+    .dp-marca b{ font-size:18px; }
+    .dp-lista{ gap:12px; }
+    .dp-bilhete-nome{ font-size:19px; }
+    .dp-bilhete-dados{ gap:10px 20px; }
+    .dp-bilhete-dados b{ font-size:15px; }
+    .dp-bilhete .bx-bilhete-canhoto .bx-ico{ width:34px; height:34px; border-radius:8px; }
+    .dp-fonte{ margin-top:24px; font-size:11px; }
   }
 </style>
 <script>
@@ -233,7 +283,265 @@
     });
   }
 </script>
+<script src="assets/blaxx-config.js"></script>
 <script src="assets/blaxx-nav-user.js"></script>
 <script src="assets/blaxx-nav.js"></script>
+<script>
+/* Detalhe do parceiro: lê ?id=, busca GET /partners/<id> e preenche a página.
+   Mesmo padrão do script de parceiros.html (get() + esc()); base em
+   window.BLAXX_API (assets/blaxx-config.js), com o override de
+   localStorage 'blaxx_api_url'. Sem id, 404 ou falha: estado honesto. */
+(function () {
+  'use strict';
+  var PRODUCAO = window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com';
+  function apiBase() {
+    try { return (localStorage.getItem('blaxx_api_url') || PRODUCAO).replace(/\/+$/, ''); }
+    catch (e) { return PRODUCAO.replace(/\/+$/, ''); }
+  }
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  // {status, data}: status 0 = sem resposta (rede, CORS ou tempo esgotado)
+  function get(path) {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var relogio = ctl ? setTimeout(function () { ctl.abort(); }, 30000) : null;
+    return fetch(apiBase() + path, ctl ? { signal: ctl.signal } : {})
+      .then(function (r) {
+        return r.json().catch(function () { return null; }).then(function (d) { return { status: r.status, data: d }; });
+      })
+      .catch(function () { return { status: 0, data: null }; })
+      .then(function (res) { if (relogio) clearTimeout(relogio); return res; });
+  }
+  var fmt = function (n) { return Number(n || 0).toLocaleString('pt-BR'); };
+  var semAcento = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); };
+  function ico(nome) {
+    var I = window.BlaxxIcones;
+    return (I && I.svg(nome)) || (I && I.svg('tag')) || '';
+  }
+
+  // Desenho da categoria (window.BlaxxIcones). A ordem importa: "Moda
+  // Esportiva" é moda, "Joias & Relógios" é moda.
+  var CATEGORIAS = [
+    [/combust|posto|gasolin/, 'posto'],
+    [/supermerc|mercado|hortifr/, 'supermercado'],
+    [/farmac|drogar|saude/, 'farmacia'],
+    [/hotel|hosped|resort|pousada/, 'hotel'],
+    [/viage|passage|aere|turism/, 'aviao'],
+    [/stream|entreten|cinema|filme|music|show/, 'filme'],
+    [/moda|calcad|acessor|joia|relogi|beleza|roupa|cosmet/, 'moda'],
+    [/eletron|tech|tecnolog|telecom|celular|informat/, 'celular'],
+    [/e-?commerce|compras|marketplace/, 'carrinho'],
+    [/segur/, 'seguranca'],
+    [/consorc|financ|banc|capitaliz|cambio|investim|credito/, 'carteira'],
+    [/casa|decor|constru|movei/, 'inicio'],
+    [/educa|curso|livr|escola/, 'documento'],
+    [/energia/, 'raio'],
+    [/presente/, 'resgates'],
+    [/pet/, 'favorito'],
+    [/esporte|fitness|academia/, 'estrela'],
+    [/automot|pneu|oficina/, 'configuracoes'],
+    [/mobilid|transporte/, 'local'],
+    [/aliment|restaur|cafe|bebida|comida|deliver|padaria/, 'loja']
+  ];
+  function icoCategoria(c) {
+    var s = semAcento(c);
+    for (var i = 0; i < CATEGORIAS.length; i++) if (CATEGORIAS[i][0].test(s)) return CATEGORIAS[i][1];
+    return 'tag';
+  }
+  var BENEFICIO = { voucher: 'voucher', desconto: 'tag', assinatura: 'filme', sorteio: 'estrela',
+    social: 'indique', educacao: 'documento', experiencia: 'festa', viagem: 'aviao', produto: 'resgates' };
+  function icoBeneficio(b) { return BENEFICIO[semAcento(b && b.category)] || icoCategoria(b && b.category) || 'resgates'; }
+  var ROTULO = { experiencia: 'Experiência', educacao: 'Educação', viagem: 'Viagem', assinatura: 'Assinatura',
+    voucher: 'Voucher', desconto: 'Desconto', sorteio: 'Sorteio', social: 'Social', produto: 'Produto' };
+  function rotuloCategoria(c) {
+    c = String(c || '').trim();
+    return ROTULO[semAcento(c)] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : 'Benefício');
+  }
+  // "R$ 50" não se separa na quebra de linha
+  function semQuebra(t) { return String(t || '').replace(/R\$\s+(?=\d)/g, 'R$\u00a0'); }
+
+  // A API ainda traz descrições de seed ("Parceiro Livelo · slug", "...
+  // fictícia usada nos exemplos"); essas não aparecem. Nem texto livre que
+  // fale de PIX ou do valor do ponto ("1 pt a cada R$ 2", "pts/R$").
+  function textoValido(t) {
+    t = String(t || '').trim();
+    return t && !/parceiro\s+livelo|fict[ií]ci|\bpix\b|a\s+cada\s+R\$|pts?\s*\/\s*R\$/i.test(t) ? t : '';
+  }
+
+  var main = document.getElementById('conteudo');
+  var $ = function (sel) { return main.querySelector(sel); };
+  var $$ = function (sel) { return [].slice.call(main.querySelectorAll(sel)); };
+  function texto(sel, v) { $$(sel).forEach(function (el) { el.textContent = v; }); }
+  function mostrar(ok) { $$('[data-dp-so-ok]').forEach(function (el) { el.hidden = !ok; }); }
+
+  // Nome no letreiro: a palavra não quebra no meio; se não cabe, a fonte desce.
+  function caber() {
+    var el = $('[data-dp-nome]');
+    if (!el) return;
+    el.style.fontSize = '';
+    var t = parseFloat(getComputedStyle(el).fontSize), n = 0;
+    while (el.scrollWidth > el.clientWidth + 1 && t > 22 && n < 40) { t *= 0.94; el.style.fontSize = t.toFixed(1) + 'px'; n++; }
+  }
+  var pendente = false;
+  window.addEventListener('resize', function () {
+    if (pendente) return; pendente = true;
+    requestAnimationFrame(function () { pendente = false; caber(); });
+  });
+
+  function nome(v, farelo) {
+    var el = $('[data-dp-nome]');
+    el.textContent = v;
+    el.classList.toggle('dp-nome--longo', String(v).length > 18);
+    texto('[data-bx-partner-name]', farelo || v);
+    caber();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(caber);
+  }
+
+  function estado(tipo, opc) {
+    main.setAttribute('data-dp-estado', tipo);
+    main.removeAttribute('aria-busy');
+    mostrar(false);
+    $('[data-dp-ico]').innerHTML = ico(tipo === 'erro' ? 'alerta' : 'busca');
+    texto('[data-dp-topo]', 'Sem embarque');
+    texto('[data-dp-marca-rotulo]', 'Parceiro');
+    texto('[data-bx-partner-category]', opc.rotulo);
+    nome(opc.titulo, 'Parceiro');
+    texto('[data-dp-destino]', 'A definir');
+    texto('[data-dp-chamada]', opc.chamada);
+    texto('[data-dp-lead]', opc.lead);
+    var cta = $('[data-dp-cta]'), tentar = $('[data-dp-tentar]');
+    cta.hidden = tipo === 'erro';
+    tentar.hidden = tipo !== 'erro';
+    cta.textContent = 'Ver todos os parceiros';
+    cta.setAttribute('href', 'parceiros.html');
+    $('[data-dp-ja]').innerHTML = tipo === 'erro'
+      ? 'Ou escolha outro · <a href="parceiros.html"><b>Parceiros →</b></a>'
+      : 'Benefícios da rede · <a href="resgates.html"><b>Resgates →</b></a>';
+    document.title = opc.aba + ' | BlaXx';
+  }
+
+  function bilhete(b, p) {
+    var dados = '';
+    var dias = Number(b.expires_in_days);
+    if (dias > 0) dados += '<div><span class="bx-rotulo">Validade do voucher</span><b>' + fmt(dias) + (dias === 1 ? ' dia' : ' dias') + '</b></div>';
+    var est = Number(b.stock);
+    if (b.stock != null && est === 0) dados += '<div><span class="bx-rotulo">Estoque</span><b>Esgotado</b></div>';
+    else if (est > 0) dados += '<div><span class="bx-rotulo">Estoque</span><b>' + fmt(est) + (est === 1 ? ' restante' : ' restantes') + '</b></div>';
+    var desc = textoValido(b.description);
+    return '<a class="bx-bilhete dp-bilhete" href="beneficio-detalhe.html?id=' + encodeURIComponent(b.id) + '">' +
+      '<div class="bx-bilhete-miolo">' +
+        '<div class="bx-bilhete-cab"><span>BX · ' + esc(rotuloCategoria(b.category)) + '</span>' +
+          (b.tag ? '<span>' + esc(b.tag) + '</span>' : '<span>' + esc(p.name) + '</span>') + '</div>' +
+        '<b class="dp-bilhete-nome">' + esc(semQuebra(b.name)) + '</b>' +
+        (desc ? '<p class="dp-bilhete-desc">' + esc(desc) + '</p>' : '') +
+        '<span class="bx-bilhete-pts">' + fmt(b.cost_pts) + '<small> pts</small></span>' +
+        (dados ? '<div class="dp-bilhete-dados">' + dados + '</div>' : '') +
+        '<span class="dp-bilhete-ir">Ver benefício →</span>' +
+      '</div>' +
+      '<div class="bx-perf" aria-hidden="true"></div>' +
+      '<div class="bx-bilhete-canhoto" aria-hidden="true"><span class="bx-vert">Ver benefício</span>' +
+        '<span class="bx-ico">' + ico(icoBeneficio(b)) + '</span></div>' +
+    '</a>';
+  }
+
+  function vazio(p) {
+    return '<div class="bx-bilhete dp-vazio">' +
+      '<div class="bx-bilhete-miolo">' +
+        '<div class="bx-bilhete-cab"><span>BX · Sem bilhete</span><span>' + esc(p.name || 'Parceiro') + '</span></div>' +
+        '<b class="dp-bilhete-nome">Nenhum benefício disponível agora.</b>' +
+        '<p>Os benefícios de cada parceiro dependem da disponibilidade dele. Enquanto isso, veja os resgates de toda a rede.</p>' +
+        '<div class="dp-vazio-acoes"><a href="resgates.html">Ver todos os resgates →</a><a href="parceiros.html">Outros parceiros →</a></div>' +
+      '</div>' +
+      '<div class="bx-perf" aria-hidden="true"></div>' +
+      '<div class="bx-bilhete-canhoto" aria-hidden="true"><span class="bx-vert">Sem embarque</span>' +
+        '<span class="bx-ico">' + ico('relogio') + '</span></div>' +
+    '</div>';
+  }
+
+  function preencher(p) {
+    var bens = (Array.isArray(p.benefits) ? p.benefits : []).filter(function (b) { return b && b.id != null; });
+    bens.sort(function (a, b) { return Number(a.cost_pts || 0) - Number(b.cost_pts || 0); });
+    var n = bens.length, cat = String(p.category || '').trim() || 'Parceiro';
+    var min = n ? fmt(bens[0].cost_pts) + ' pts' : '—';
+    var qtd = n ? n + (n === 1 ? ' benefício' : ' benefícios') : 'Nenhum agora';
+
+    main.setAttribute('data-dp-estado', 'ok');
+    main.removeAttribute('aria-busy');
+    mostrar(true);
+    $('[data-dp-ico]').innerHTML = ico(icoCategoria(cat));
+    texto('[data-dp-topo]', 'Brasil · 2026');
+    texto('[data-dp-marca-rotulo]', 'Categoria');
+    texto('[data-bx-partner-category]', cat);
+    nome(p.name || 'Parceiro');
+    texto('[data-dp-chamada]', n ? 'Troque seus pontos.' : 'Rede em expansão.');
+    texto('[data-dp-lead]', textoValido(p.description) || (n
+      ? 'Benefícios de ' + (p.name || 'este parceiro') + ' para trocar com seus pontos, conforme a disponibilidade de cada um. Escolha um bilhete para ver as condições.'
+      : (p.name || 'Este parceiro') + ' ainda não tem benefício disponível para troca. Os benefícios de cada parceiro dependem da disponibilidade dele.'));
+    texto('[data-dp-qtd]', qtd);
+    texto('[data-dp-min-rotulo]', n ? 'A partir de' : 'Resgate');
+    texto('[data-dp-min]', n ? min : 'Indisponível');
+    $('[data-dp-ben-titulo]').innerHTML = n ? 'Troque seus<br>pontos aqui.' : 'Benefícios do<br>parceiro.';
+    texto('[data-dp-destino]', p.name || '—');
+    var cta = $('[data-dp-cta]');
+    cta.hidden = false; $('[data-dp-tentar]').hidden = true;
+    if (n) { cta.textContent = 'Ver benefícios'; cta.setAttribute('href', '#beneficios'); }
+    else { cta.textContent = 'Ver todos os resgates'; cta.setAttribute('href', 'resgates.html'); }
+    $('[data-dp-ja]').innerHTML = 'Outros destinos · <a href="parceiros.html"><b>Parceiros →</b></a>';
+
+    $('[data-dp-lista]').innerHTML = n ? bens.map(function (b) { return bilhete(b, p); }).join('') : vazio(p);
+    $('[data-dp-recibo]').hidden = !n;
+    $('[data-dp-ben-link]').hidden = !n;
+    $('.dp-ben').classList.toggle('dp-ben--so', !n);
+    texto('[data-dp-r-nome]', p.name || '—');
+    texto('[data-dp-r-cat]', cat);
+    texto('[data-dp-r-qtd]', String(n));
+    texto('[data-dp-r-min]', min);
+    document.title = (p.name || 'Parceiro') + ' · Parceiro | BlaXx';
+  }
+
+  var id = new URLSearchParams(location.search).get('id');
+  function carregar() {
+    main.setAttribute('data-dp-estado', 'carregando');
+    main.setAttribute('aria-busy', 'true');
+    // de volta ao "carregando" (vale também para o "Tentar de novo")
+    $('[data-dp-tentar]').disabled = true;
+    $('[data-dp-ico]').innerHTML = ico('parceiros');
+    texto('[data-dp-topo]', 'Brasil · 2026');
+    texto('[data-dp-marca-rotulo]', 'Categoria');
+    texto('[data-bx-partner-category]', 'Carregando…');
+    nome('Carregando…');
+    texto('[data-dp-chamada]', 'Um instante.');
+    texto('[data-dp-destino]', '…');
+    texto('[data-dp-lead]', 'Buscando os dados do parceiro.');
+    mostrar(false);
+    get('/partners/' + encodeURIComponent(id)).then(function (res) {
+      $('[data-dp-tentar]').disabled = false;
+      if (res.status === 200 && res.data && res.data.name) { preencher(res.data); return; }
+      // 404/400, ou 200 que não é um parceiro (?id=categories cai em
+      // /partners/categories e volta uma lista): esse parceiro não existe
+      if (res.status === 404 || res.status === 400 || res.status === 200) {
+        estado('vazio', { rotulo: 'Não encontrado', titulo: 'Parceiro não encontrado.', chamada: 'Escolha outro destino.',
+          lead: 'Este parceiro não está na rede ou o endereço mudou. A lista completa está em Parceiros.', aba: 'Parceiro não encontrado' });
+        return;
+      }
+      // status 0 = sem resposta (rede ou tempo); 5xx e afins = a API falhou
+      var semRede = res.status === 0;
+      estado('erro', { rotulo: semRede ? 'Sem conexão' : 'Sem resposta', titulo: 'Não deu para carregar.', chamada: 'Tente de novo.',
+        lead: semRede ? 'A conexão com a BlaXx falhou antes de trazer este parceiro. Verifique a internet e tente de novo.'
+          : 'A BlaXx não conseguiu trazer este parceiro agora. Tente de novo em instantes.', aba: 'Parceiro' });
+    });
+  }
+  $('[data-dp-tentar]').addEventListener('click', carregar);
+
+  if (!id || !/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
+    estado('vazio', { rotulo: 'Sem parceiro', titulo: 'Qual parceiro?', chamada: 'Escolha um destino.',
+      lead: 'Este endereço não indica um parceiro. Escolha um na lista de parceiros para ver os benefícios dele.', aba: 'Parceiro' });
+  } else {
+    carregar();
+  }
+})();
+</script>
 </body>
 </html>

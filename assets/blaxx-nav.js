@@ -302,7 +302,7 @@
           ]],
           ['REDE', [
             ['Mapa da rede', 'Cidades da rede em expansão', 'home-embarque.html#mapa'],
-            ['Todos os parceiros', 'Lista completa por cidade', 'parceiros.html'],
+            ['Todos os parceiros', 'Busca por nome e categoria', 'parceiros.html'],
             ['Seja parceiro', 'Leve sua marca para a rede', 'contato.html']
           ]]
         ],
@@ -529,6 +529,7 @@
     barra.removeAttribute('data-bx-mega');
     [].forEach.call(document.querySelectorAll('.bx-mega'), function (m) { m.remove(); });
     var atual = pagina(location.pathname), links = '';
+    atual = ATIVO_COMUM[atual] || atual;
     if (u) atual = ATIVO_LOGADO[atual] || atual;
     (u ? NAV_LOGADO : NAV_VISITANTE).forEach(function (it) {
       var ativo = pagina(it[1]) === atual;
@@ -567,6 +568,8 @@
     ['Vender pontos', 'venda-pontos.html']
   ];
   var ATIVO_LOGADO = { 'index.html': 'dashboard.html', 'vender-pontos.html': 'venda-pontos.html' };
+  // o detalhe de um parceiro acende o item Parceiros do menu (visitante e logado)
+  var ATIVO_COMUM = { 'detalhe-parceiro.html': 'parceiros.html' };
   // [data-side, ícone (window.BlaxxIcones), rótulo, destino]: os do painel.
   var LATERAL = [
     ['dashboard', 'inicio', 'Início', 'dashboard.html'],
@@ -759,7 +762,7 @@
         '<div class="bx-canhoto"><span class="bx-vert">' + esc(x.canhoto) + '</span></div></a>';
     } else if (x.tipo === 'painel') {
       html += '<div class="bx-mega-painel"><span class="bx-rotulo">' + esc(x.rotulo) + '</span>';
-      x.linhas.forEach(function (c) { html += '<div class="linha"><span>' + esc(c) + '</span><i>✓</i></div>'; });
+      x.linhas.forEach(function (c) { html += '<div class="linha"><span>' + esc(c) + '</span><i>EM EXPANSÃO</i></div>'; });
       html += '<a class="ir" href="' + esc(x.href) + '">' + esc(x.ir) + '</a></div>';
     } else {
       html += '<div class="bx-mega-recibo"><div class="bx-zig" style="--bx-zig-cor:#F4F2EC"></div><div class="corpo">';
@@ -916,8 +919,9 @@
     try {
       [localStorage, sessionStorage].forEach(function (st) {
         Object.keys(st).forEach(function (k) {
+          // o acesso do Painel do Parceiro (parceiro.html) é outra sessão: fica
           if (k.indexOf('blaxx_') === 0 && k !== 'blaxx_set_password_dismissed_at' &&
-              k !== 'blaxx_cookie_consent_v1') st.removeItem(k);
+              k !== 'blaxx_cookie_consent_v1' && k.indexOf('blaxx_parceiro_') !== 0) st.removeItem(k);
         });
       });
     } catch (e) {}
@@ -961,7 +965,8 @@
     if (comum && !u) montarConvite();
     // DEPOIS do rodapé: ele acabou de inserir links, e alguns (Conta BlaXx,
     // Cadastre-se) sairiam do app para quem já está logado.
-    if (u) prenderNoApp();
+    // no Painel do Parceiro a marca leva ao site, não ao painel do consumidor
+    if (u && !areaParceiro()) prenderNoApp();
     if (!barra) return;
 
     // `.drawer` cobre chrome.js e a landing, que têm gaveta própria e menu

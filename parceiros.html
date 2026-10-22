@@ -6,185 +6,235 @@
 <title>BlaXx · Parceiros</title>
 <link rel="stylesheet" href="styles.css">
 <!-- Tema "Embarque" (design 3a): entra DEPOIS da folha principal e remapeia
-     os tokens; o <style> abaixo só precisa não brigar com ele. -->
+     os tokens. O kit da home (bx-cartao, bx-bilhete, bx-recibo, bx-rota…)
+     mora no fim desta folha; o <style> abaixo só traz o que é desta página. -->
 <link rel="stylesheet" href="assets/blaxx-embarque.css">
 <style>
-  /* ===== Parceiros, redesign premium (Nubank/XP/Livelo/Apple-like) ===== */
-  .pz { --pz-lime: var(--lime); }
-  .pz .page-head { margin-bottom: 22px; }
-
-  /* Métricas */
-  .pz-metrics { display:grid; grid-template-columns: repeat(5,1fr); gap:14px; margin: 4px 0 26px; }
-  .pz-metric { padding:18px 18px 16px; display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden; }
-  .pz-metric__label { font-family: var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color: var(--fg-subtle); }
-  .pz-metric__value { font-family: var(--font-display); font-weight:900; font-size:26px; letter-spacing:-.02em; line-height:1.05; color: var(--ink); }
-  .pz-metric__value small { font-size:14px; font-weight:800; color: var(--fg-muted); }
-  .pz-metric__cta { margin-top:auto; font-weight:700; font-size:13px; color: var(--ink); text-decoration:none; display:inline-flex; gap:5px; align-items:center; transition: gap .18s var(--ease); }
-  .pz-metric__cta:hover { gap:10px; }
-  .pz-metric__hint { font-size:12px; font-weight:700; }
-  .pz-metric__hint--warn { color:#E0483D; }
-  .pz-metric .pz-track { height:8px; border-radius:999px; background: var(--line); overflow:hidden; margin-top:4px; }
-  .pz-metric .pz-fill { height:100%; border-radius:999px; background: var(--bx-neon); width:0; transition: width 1s var(--ease-out); }
-  .pz-badge-tier { align-self:flex-start; font-family:var(--font-mono); font-weight:800; font-size:12px; padding:5px 12px; border-radius:999px; letter-spacing:.04em; }
-
-  /* Banner carrossel, refeito.
-     O que estava errado, medido no navegador:
-       · altura FIXA de 184px com tag+título(30px)+texto+CTA dentro: o CTA era
-         cortado pela borda inferior do banner;
-       · as setas ‹ › ficavam em left/right:14px, por CIMA do corpo do texto,
-         que começa em padding 34px, a seta cobria a 1ª letra do título;
-       · os dots (bottom:16px, left:34px) disputavam o mesmo canto do CTA.
-     Agora: os slides empilham na MESMA célula de grid (sem position:absolute),
-     então a altura vem do conteúdo e nada corta. Setas e dots foram para uma
-     régua própria, fora da coluna de texto. */
-  /* Painel escuro do tema (como o painel de partidas da home): canto 28px, sem
-     contorno grosso nem sombra dura. */
-  .pz-banner { position:relative; border-radius:var(--bx-r-xl); overflow:hidden; margin-bottom:26px;
-               background: var(--bx-ink); border:0; box-shadow:var(--bx-sh); }
-  .pz-slides { display:grid; }
-  .pz-slide { grid-area:1 / 1; display:grid; grid-template-columns: minmax(0,1.5fr) minmax(0,.8fr);
-              opacity:0; visibility:hidden; transition: opacity .45s var(--ease); pointer-events:none; }
-  .pz-slide.on { opacity:1; visibility:visible; pointer-events:auto; }
-  .pz-slide__body { padding:28px 34px 26px; display:flex; flex-direction:column;
-                    justify-content:center; gap:12px; min-width:0; color: var(--fg-on-dark); }
-  /* Selo neon preenchido com texto tinta (17,8:1) em vez de neon como texto */
-  .pz-slide__tag { align-self:flex-start; font-family:var(--font-mono); font-size:11px;
-                   font-weight:800; letter-spacing:.08em; text-transform:uppercase;
-                   color: var(--bx-ink); background: var(--bx-neon); border:0;
-                   border-radius:999px; padding:4px 11px; }
-  .pz-slide__title { font-family: var(--font-display); font-weight:800; font-size:clamp(22px,2.4vw,30px);
-                     letter-spacing:-.02em; line-height:1.1; overflow-wrap:anywhere; }
-  .pz-slide__sub { color: var(--fg-on-dark-muted); font-size:14px; line-height:1.45; max-width:46ch; }
-  /* Recompensa: o número é o motivo de a campanha existir, vira o destaque */
-  .pz-slide__prize { display:inline-flex; align-items:baseline; gap:6px; align-self:flex-start;
-                     font-family:var(--font-mono); font-weight:800; font-size:22px; color: var(--lime); }
-  .pz-slide__prize small { font-size:12px; font-weight:700; color: var(--fg-on-dark-muted); }
-  .pz-slide__cta { align-self:flex-start; margin-top:2px; }
-  .pz-slide__art { display:grid; place-items:center; padding:18px;
-                   background: radial-gradient(120% 120% at 80% 20%, var(--lime-20), transparent 62%); }
-  .pz-slide__art .emoji { font-size:72px; line-height:1; }
-  .pz-banner__dots { display:flex; gap:7px; }
-  .pz-banner__dots button { width:8px; height:8px; border-radius:999px; border:none; background: rgba(255,255,255,.32); cursor:pointer; transition: all .2s var(--ease); padding:0; }
-  .pz-banner__dots button.on { background: var(--lime); width:22px; }
-  /* Controles agrupados no canto inferior direito: saem de cima do texto e
-     deixam de brigar com o CTA. 38px de alvo, acima do mínimo de toque. */
-  .pz-banner__ctrl { position:absolute; right:16px; bottom:14px; z-index:3;
-                     display:flex; align-items:center; gap:10px; }
-  .pz-banner__arrow { width:38px; height:38px; border-radius:999px; border:1px solid rgba(244,242,236,.4);
-                      background: rgba(10,11,14,.55); color:#F4F4F0; cursor:pointer;
-                      display:grid; place-items:center; font-size:18px; line-height:1; padding:0;
-                      transition: background .2s var(--ease), border-color .2s var(--ease); }
-  .pz-banner__arrow:hover { background: var(--lime); color: var(--ink); border-color: var(--ink); }
-  .pz-banner__arrow:focus-visible { outline:3px solid var(--lime); outline-offset:2px; }
-
-  /* Busca + favoritos */
-  .pz-searchrow { display:flex; gap:12px; margin-bottom:18px; }
-  .pz-search { position:relative; flex:1; }
-  .pz-search input { width:100%; height:56px; border-radius:18px; border:1px solid var(--line); background: var(--white); padding:0 18px 0 50px; font-size:15px; font-family: var(--font-body); color: var(--fg); transition: border-color .18s var(--ease), box-shadow .18s var(--ease); }
-  .pz-search input:focus { outline:none; border-color: var(--bx-ink); box-shadow: 0 0 0 3px rgba(89,253,39,.35); }
-  .pz-search svg { position:absolute; left:18px; top:50%; transform:translateY(-50%); color: var(--fg-subtle); }
-  .pz-favbtn { height:56px; padding:0 22px; border-radius:18px; border:1px solid var(--line); background: var(--white); font-weight:700; font-size:14px; color: var(--fg); cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition: all .18s var(--ease); white-space:nowrap; }
-  .pz-favbtn:hover { border-color: var(--bx-leader); }
-  .pz-favbtn.on { background: var(--ink); color: var(--lime); border-color: var(--ink); }
-
-  /* Pills */
-  .pz-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
-  .pz-pill { border:1px solid var(--line); background: var(--white); color: var(--fg-muted); font-weight:700; font-size:13px; padding:9px 17px; border-radius:999px; transition: all .16s var(--ease); cursor:pointer; }
-  .pz-pill.on { background: var(--lime); border-color: var(--lime); color: var(--ink); }
-  .pz-pill:hover:not(.on) { border-color: var(--bx-leader); color: var(--bx-ink); }
-
-  /* Grid de parceiros */
-  .pz-grid { display:grid; grid-template-columns: repeat(5,1fr); gap:16px; }
-  .pz-card { position:relative; padding:20px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition: transform .22s var(--ease), box-shadow .22s var(--ease); animation: pzfade .4s var(--ease-out) both; }
-  .pz-card:hover { transform: none; box-shadow: var(--bx-sh); }
-  .pz-card__logo { width:54px; height:54px; border-radius:var(--bx-r-md); display:grid; place-items:center; font-size:28px; background: var(--bx-surface-2); }
-  .pz-card__name { font-weight:800; font-size:16px; letter-spacing:-.01em; color: var(--ink); }
-  .pz-card__cat { font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color: var(--fg-subtle); margin-top:-6px; }
-  .pz-card__pts { font-family: var(--font-mono); font-weight:800; font-size:12px; color: var(--ink); background: var(--lime); padding:5px 10px; border-radius:8px; align-self:flex-start; }
-  .pz-card__cash { font-size:12px; font-weight:700; color: var(--bx-grey); }
-  .pz-card__buy { margin-top:auto; font-weight:700; font-size:13px; color: var(--ink); display:inline-flex; gap:5px; align-items:center; transition: gap .18s var(--ease); }
-  .pz-card:hover .pz-card__buy { gap:9px; }
-  .pz-fav { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:999px; border:1px solid var(--line); background: var(--white); cursor:pointer; display:grid; place-items:center; font-size:15px; color: var(--fg-subtle); transition: all .18s var(--ease); z-index:2; }
-  .pz-fav:hover { border-color: var(--bx-leader); transform: none; }
-  .pz-fav.on { color:#E0483D; border-color: rgba(224,72,61,.3); background: rgba(224,72,61,.06); }
-  .pz-empty { grid-column:1/-1; text-align:center; padding:48px; color: var(--fg-subtle); }
-
-  /* Skeleton */
-  .pz-sk { background: linear-gradient(100deg, var(--line) 30%, rgba(255,255,255,.4) 50%, var(--line) 70%); background-size:200% 100%; animation: pzshim 1.2s infinite; border-radius:8px; }
-  .pz-card--sk { pointer-events:none; }
-  .pz-card--sk .pz-card__logo { background: var(--line); }
-
-  /* Rodapé benefícios */
-  .pz-benefits { display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin:34px 0 8px; }
-  .pz-benefit { padding:22px; }
-  /* O ícone é um SVG de 24 unidades com width/height:100%: sem caixa fixa
-     ele esticava até a largura do cartão (205px medidos). A caixa de 28px
-     vale pro SVG e pro emoji (⭐), que ficam na mesma altura de linha. */
-  .pz-benefit__ico { font-size:26px; line-height:1; height:28px; display:flex; align-items:center; color: var(--bx-ink); }
-  .pz-benefit__ico svg { width:28px; height:28px; display:block; }
-  .pz-benefit__t { font-weight:800; font-size:15px; margin:10px 0 5px; color: var(--ink); }
-  .pz-benefit__d { font-size:13px; color: var(--fg-muted); line-height:1.5; }
-
-  @keyframes pzfade { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
-  @keyframes pzshim { to { background-position: -200% 0; } }
-
-  @media (max-width: 1100px){ .pz-metrics{grid-template-columns:repeat(3,1fr);} .pz-grid{grid-template-columns:repeat(3,1fr);} .pz-benefits{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width: 760px){
-    .pz-metrics{grid-template-columns:repeat(2,1fr);}
-    .pz-grid{grid-template-columns:1fr 1fr;}
-    .pz-slide{grid-template-columns:1fr;}
-    .pz-slide__art{display:none;}
-    /* Sem altura fixa: os 200px daqui reintroduziam exatamente o corte do CTA
-       que o desktop tinha. O padding inferior reserva a faixa dos controles,
-       que no mobile ficam sobre o corpo do slide (a arte sai de cena). */
-    .pz-slide__body{ padding:22px 20px 62px; }
+  /* ===== Parceiros com a arte da home (16/10/2026) =========================
+     Cartão de embarque no topo (a busca ocupa o lugar da grade do cartão e o
+     canhoto mostra o saldo de quem está logado), lista em cartões com picote
+     e canhoto de favorito, campanhas como bilhete ao lado de um recibo-resumo
+     e a rota no fim. Regras: neon só como preenchimento, todo ícone é o
+     quadrado neon com desenho preto (window.BlaxxIcones), sem emoji, sem
+     valor do ponto. Menu, rodapé e lateral vêm do blaxx-nav.js. */
+  .pz [hidden]{ display:none !important; }
+  .pz{ font-size:16px; }
+  /* Logado, a página mora no .app-shell (lateral de 256px + respiro próprio):
+     o respiro lateral do .bx-wrap dobraria e o topo desceria abaixo da lateral. */
+  .app-shell > main.pz .bx-secao > .bx-wrap{ padding-left:0; padding-right:0; }
+  .app-shell > main.pz .bx-secao--hero{ padding-top:0; }
+  /* Com a lateral (janela 981–1280px) o miolo fica entre ~640 e ~950px, mas os
+     cortes do kit olham a JANELA (≤1000 / ≤900): a 1024 o bilhete ficava com
+     ~190px ao lado do recibo de 440px (uma palavra por linha) e as 4 escalas
+     da rota não cabiam ("Favorite"/"Confira" vazavam). Aqui o corte olha o miolo. */
+  .app-shell > main.pz{ container:pzmain / inline-size; }
+  @container pzmain (max-width:920px){
+    .pz .bx-bilhetes-recibo{ grid-template-columns:minmax(0,1fr); gap:28px; }
+    .pz .bx-recibo{ transform:none; max-width:520px; }
   }
-  /* Benefícios em coluna única no celular: em duas colunas o título de 15px
-     partia no meio da palavra ("Parceir-os Exclusi-vos"). */
-  @media (max-width: 480px){ .pz-searchrow{flex-direction:column;} .pz-benefits{grid-template-columns:1fr;} }
-  /* O styles.css dá min-height:44px a todo <button> no celular (alvo de toque);
-     nas bolinhas do carrossel isso virava barras de 8x44. O alvo de toque ali
-     são as setas (38px); as bolinhas são indicador de posição. */
-  @media (max-width: 900px){ .pz-banner__dots button { min-height:0; } }
+  @container pzmain (max-width:900px){
+    /* rota em 2 x 2: o tracejado vai do ponto até a borda em cada linha */
+    .pz .bx-rota-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:40px; }
+    .pz .bx-escala:nth-child(2n) .bx-escala-acao::before{ right:0; }
+  }
 
-  /* Celular (≤ 880px), dentro do sistema mobile do tema (abas no pé, 16px de
-     respiro, cartões de 18px). Só o que esta página tem de próprio. */
-  @media (max-width: 880px){
-    .pz .page-head { margin-bottom: 18px; }
-    /* Métricas: cinco cartões de 136px empurravam os parceiros para baixo de
-       ~430px de saldo. Ficam compactos em duas colunas e o de progresso, que
-       tem barra, ocupa a linha inteira: dois andares em vez de três. */
-    .pz-metrics { gap: 10px; margin: 0 0 18px; }
-    .pz-metric { padding: 14px 14px 12px; gap: 4px; }
-    .pz-metric:last-child { grid-column: 1 / -1; }
-    .pz-metric__value { font-size: 22px; }
-    .pz-metric__cta { font-size: 13px; }
-    /* Carrossel: setas no mínimo de toque (44px); as bolinhas ganham 44px
-       de altura de toque mas só o miolo é pintado (background-clip), para o
-       ponto continuar com 8px. A ativa repete o clip porque sua regra base
-       usa o shorthand background, que o devolve a border-box — sem isso ela
-       virava uma pílula neon de 30x44. O corpo reserva a faixa dos controles. */
-    .pz-banner__arrow { width: 44px; height: 44px; }
-    .pz-banner__dots { gap: 4px; }
-    .pz-banner__dots button { width: 16px; height: 44px; min-height: 44px; padding: 18px 4px; background-clip: content-box; }
-    .pz-banner__dots button.on { width: 30px; background-clip: content-box; }
-    .pz-banner__ctrl { right: 12px; bottom: 10px; }
-    .pz-slide__body { padding: 20px 18px 72px; }
-    .pz-slide__prize { font-size: 20px; }
-    .pz-search input, .pz-favbtn { height: 52px; border-radius: var(--bx-r-md); }
-    .pz-pills { margin-bottom: 18px; }
-    /* Parceiros: item curto (logo, nome, regra de pontos), cabe em duas
-       colunas e a lista fica com metade da altura. */
-    .pz-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .pz-card { padding: 16px; gap: 8px; }
-    .pz-card__logo { width: 48px; height: 48px; font-size: 24px; }
-    .pz-card__name { font-size: 15px; }
-    .pz-card__cat { font-size: 11px; margin-top: -4px; }
-    .pz-card__pts { font-size: 11px; white-space: nowrap; }
-    .pz-fav { width: 44px; height: 44px; top: 8px; right: 8px; font-size: 17px; }
-    .pz-benefits { gap: 12px; margin: 26px 0 0; }
-    .pz-benefit { padding: 18px; }
-    .pz-empty { padding: 32px 16px; }
+  /* ---- cartão: o título acompanha a largura do MIOLO (container), não da
+     janela: com a lateral do logado o miolo tem ~470px e "Parceiros" a 104px
+     invadia o picote. ≤900 o kit manda (cartão empilhado). ---- */
+  .pz .bx-cartao-miolo{ container:pzmiolo / inline-size; }
+  .pz .bx-cartao-titulo mark{ word-spacing:.12em; }   /* condensado a -0,035em, "Escolha o seu" grudava */
+  @media (min-width:901px){ .pz .bx-cartao-titulo{ font-size:clamp(44px,21cqi,104px); } }
+  @container pzmiolo (max-width:560px){
+    .pz-busca{ flex-wrap:wrap; }
+    .pz .pz-favbtn{ width:100%; justify-content:flex-start; }
+  }
+  /* Quando a faixa neon quebra em duas linhas (miolo estreito, ou o <br> de
+     ≤900), ela abraça cada linha em vez de virar um bloco neon: os mesmos
+     valores do bloco ≤600 do kit. */
+  @container pzmiolo (max-width:560px){
+    .pz .bx-cartao-titulo > span:last-child{ margin-top:10px; font-size:.66em; line-height:1.24; }
+    .pz .bx-cartao-titulo mark{ display:inline; font-size:1em; line-height:1.28; padding:.13em .18em; margin:0; }   /* .13em: as faixas se tocam */
+  }
+  @media (max-width:900px){
+    .pz .bx-cartao-titulo > span:last-child{ margin-top:10px; font-size:.66em; line-height:1.24; }
+    .pz .bx-cartao-titulo mark{ display:inline; font-size:1em; line-height:1.28; padding:.13em .18em; margin:0; }   /* .13em: as faixas se tocam */
+  }
+
+  /* ---- cartão: busca no lugar da grade ---- */
+  .pz-busca{ display:flex; align-items:flex-end; gap:12px; margin:0; padding-top:24px; border-top:1px solid var(--bx-line); }
+  .pz-busca-campo{ flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .pz-busca-campo > label{ margin:0; }
+  .pz-busca-linha{ position:relative; display:block; }
+  .pz-busca-linha .bx-ico{ position:absolute; left:10px; top:50%; transform:translateY(-50%); width:40px; height:40px; pointer-events:none; }
+  .pz .pz-busca-linha input{
+    box-sizing:border-box; display:block; width:100%; height:60px; min-height:60px; margin:0; padding:0 18px 0 62px;
+    background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); box-shadow:none;
+    font-family:var(--bx-sans); font-size:20px; font-weight:600; letter-spacing:-.01em; color:var(--bx-ink);
+    -webkit-appearance:none; appearance:none;
+  }
+  .pz .pz-busca-linha input::placeholder{ color:var(--bx-grey); font-weight:400; }
+  .pz .pz-busca-linha input:focus{ border-color:var(--bx-ink); box-shadow:0 0 0 3px rgba(89,253,39,.45); outline:none; }
+  /* miolo estreito (logado a ~1024): o texto de exemplo da busca era cortado em "Buscar parceir" */
+  @container pzmiolo (max-width:420px){
+    .pz .pz-busca-linha input{ font-size:16px; padding-left:58px; }
+    .pz .bx-cartao-lead{ font-size:16px; }
+  }
+  .pz .pz-favbtn{
+    flex:none; display:inline-flex; align-items:center; gap:10px; height:60px; min-height:60px; margin:0; padding:0 18px 0 10px;
+    background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-sm); box-shadow:none; cursor:pointer;
+    font-family:var(--bx-sans); font-size:15px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--bx-ink); white-space:nowrap;
+  }
+  .pz .pz-favbtn:hover{ border-color:var(--bx-ink); }
+  .pz .pz-favbtn.on{ background:var(--bx-ink); border-color:var(--bx-ink); color:#F4F2EC; }
+  .pz-favbtn .bx-ico{ width:40px; height:40px; }
+  .pz-favbtn.on .bx-ico svg path{ fill:currentColor; }
+  .pz-favbtn__n{ font-family:var(--bx-mono); font-size:12px; color:var(--bx-grey); }
+  .pz-favbtn.on .pz-favbtn__n{ color:var(--bx-ink-muted); }
+
+  /* ---- canhoto: saldo (logado) ou convite (visitante) ---- */
+  .pz-canhoto-bloco{ display:flex; flex-direction:column; justify-content:space-between; gap:24px; flex:1; }
+  .pz-dados b small{ font-size:14px; font-weight:600; color:var(--bx-grey); }
+  .pz-dica{ display:block; margin-top:2px; font-size:13px; line-height:1.35; color:var(--bx-grey); }
+  .pz-nivel{
+    display:inline-block; padding:5px 10px; border-radius:6px; background:var(--bx-ink); color:#F4F2EC;
+    font-family:var(--bx-mono); font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  }
+  .pz-trilho{ display:block; height:8px; margin-top:8px; background:var(--bx-surface-2); border:1px solid var(--bx-line); border-radius:999px; overflow:hidden; }
+  .pz-trilho > span{ display:block; width:0; height:100%; background:var(--bx-neon); transition:width 1s var(--bx-ease); }
+
+  /* ---- lista: cabeçalho de painel, pílulas em mono, aviso de cidade ---- */
+  .pz-lista-topo{ border-bottom-color:var(--bx-leader); padding-bottom:24px; }
+  .pz-pills{ display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 14px; }
+  .pz .pz-pill{
+    display:inline-flex; align-items:center; gap:8px; min-height:40px; margin:0; padding:0 14px;
+    background:var(--bx-surface); border:1px solid var(--bx-line); border-radius:var(--bx-r-xxs); box-shadow:none; cursor:pointer;
+    font-family:var(--bx-mono); font-size:12px; font-weight:400; line-height:1; letter-spacing:.08em; text-transform:uppercase; color:var(--bx-ink);
+  }
+  .pz .pz-pill:hover{ border-color:var(--bx-ink); }
+  .pz .pz-pill.on{ background:var(--bx-neon); border-color:var(--bx-neon); color:var(--bx-ink); }
+  .pz-pill__n{ color:var(--bx-grey); }
+  .pz-pill.on .pz-pill__n{ color:var(--bx-ink); }
+  .pz .pz-pill--mais{ border-style:dashed; border-color:var(--bx-leader); }
+  .pz-status{ margin:0 0 18px; font-family:var(--bx-mono); font-size:12px; line-height:1.5; letter-spacing:.08em; text-transform:uppercase; color:var(--bx-grey); }
+  .pz-aviso{
+    display:flex; align-items:flex-start; gap:16px; margin:0 0 18px; padding:18px 20px; border-radius:var(--bx-r-lg);
+    background:var(--bx-ink); color:#F4F2EC; font-family:var(--bx-mono); font-size:13px;
+  }
+  .pz-aviso__txt{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .pz-aviso__txt b{ font-family:var(--bx-sans); font-size:20px; font-weight:800; letter-spacing:-.02em; color:#fff; }
+  .pz-aviso__sit{ display:inline-flex; align-items:center; gap:8px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--bx-neon); }  /* neon como texto só sobre o preto */
+  .pz-aviso__sit i{ width:8px; height:8px; border-radius:50%; background:var(--bx-neon); flex:none; }
+  .pz-aviso p{ margin:0; color:var(--bx-ink-muted); line-height:1.5; }
+
+  /* ---- grade: cartão claro com picote e canhoto de favorito ---- */
+  /* colunas pela largura disponível (4 no visitante a 1440, 3 com a lateral) */
+  .pz-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(236px,1fr)); gap:16px; }
+  .pz-card{ position:relative; display:flex; min-width:0; background:var(--bx-surface); border-radius:var(--bx-r-lg); overflow:hidden; transition:box-shadow .15s; }
+  .pz-card:hover{ box-shadow:var(--bx-sh); }
+  .pz .pz-card__link{
+    flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; padding:20px 18px 18px;
+    color:var(--bx-ink); text-decoration:none; min-height:0;
+  }
+  .pz-card__link:focus-visible{ outline:3px solid var(--bx-ink); outline-offset:-3px; border-radius:var(--bx-r-lg); }
+  .pz-card__txt{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .pz-card__name{ font-family:var(--bx-sans); font-size:19px; font-weight:800; line-height:1.15; letter-spacing:-.01em; color:var(--bx-ink); overflow-wrap:break-word; }
+  .pz-card__cat,.pz-card__cash{ font-family:var(--bx-mono); font-size:11px; line-height:1.4; letter-spacing:.08em; text-transform:uppercase; color:var(--bx-grey); }
+  .pz-card__buy{ margin-top:auto; font-size:14px; font-weight:700; color:var(--bx-ink); }
+  .pz-card__link:hover .pz-card__buy{ text-decoration:underline; text-underline-offset:3px; }
+  .pz .pz-fav{
+    width:56px; flex:none; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:10px;
+    margin:0; padding:18px 0 16px; min-height:0; background:var(--bx-surface); border:0; border-radius:0; box-shadow:none;
+    color:var(--bx-ink); cursor:pointer; transition:background .15s;
+  }
+  .pz-fav .bx-vert{ color:var(--bx-grey); }
+  .pz-fav .bx-ico{ width:30px; height:30px; border-radius:8px; }
+  .pz .pz-fav.on{ background:var(--bx-neon); }
+  .pz-fav.on .bx-vert{ color:var(--bx-ink); }
+  /* no canhoto neon o quadrado neon sumia: ganha contorno preto (como a linha ativa do quadro) */
+  .pz-fav.on .bx-ico{ outline:2px solid var(--bx-ink); outline-offset:-2px; }
+  .pz-fav.on .bx-ico svg path{ fill:currentColor; }
+  .pz-fav:focus-visible{ outline:3px solid var(--bx-ink); outline-offset:-3px; }
+  /* esqueleto enquanto a API responde */
+  .pz-card--sk{ pointer-events:none; }
+  .pz-card--sk .pz-card__link{ gap:10px; }
+  .pz-sk{ display:block; border-radius:6px; background:linear-gradient(100deg,var(--bx-surface-2) 30%,#fff 50%,var(--bx-surface-2) 70%); background-size:200% 100%; animation:pzshim 1.2s infinite; }
+  @keyframes pzshim{ to{ background-position:-200% 0; } }
+  @media (prefers-reduced-motion:reduce){ .pz-sk{ animation:none; } }
+  /* vazio e erro: recibo em branco, tracejado */
+  .pz-empty{
+    grid-column:1 / -1; display:flex; flex-direction:column; align-items:center; gap:12px; padding:48px 24px; text-align:center;
+    background:var(--bx-surface); border:2px dashed var(--bx-leader); border-radius:var(--bx-r-lg); color:var(--bx-grey);
+  }
+  .pz-empty b{ font-family:var(--bx-sans); font-size:22px; font-weight:800; letter-spacing:-.02em; color:var(--bx-ink); }
+  .pz-empty p{ margin:0; max-width:52ch; font-size:15px; line-height:1.5; }
+  .pz .pz-tentar,.pz .pz-limpar{
+    display:inline-flex; align-items:center; justify-content:center; min-height:48px; margin:4px 0 0; padding:0 24px;
+    background:var(--bx-neon); color:var(--bx-ink); border:0; border-radius:var(--bx-r-sm); box-shadow:none; cursor:pointer;
+    font-family:var(--bx-sans); font-size:16px; font-weight:700; letter-spacing:0; text-transform:none;
+  }
+  .pz .pz-limpar{ background:var(--bx-ink); color:#F4F2EC; }
+  .pz-mais-linha{ display:flex; justify-content:center; margin-top:28px; }
+  .pz .pz-mais{
+    display:inline-flex; align-items:center; gap:10px; min-height:52px; margin:0; padding:0 28px;
+    background:var(--bx-ink); color:#F4F2EC; border:0; border-radius:var(--bx-r-sm); box-shadow:none; cursor:pointer;
+    font-family:var(--bx-sans); font-size:16px; font-weight:700; letter-spacing:0; text-transform:none;
+  }
+  .pz .pz-mais:hover{ background:var(--bx-ink-2); }
+  .pz-mais small{ font-family:var(--bx-mono); font-size:12px; font-weight:400; color:var(--bx-ink-muted); }
+
+  /* ---- campanhas: bilhete em carrossel + recibo-resumo ---- */
+  .pz-destaques--so-recibo .bx-bilhetes-recibo{ grid-template-columns:minmax(0,1fr); }
+  .pz-destaques--so-recibo .bx-recibo{ transform:none; max-width:520px; }
+  .pz-cab-txt{ display:flex; flex-direction:column; gap:14px; min-width:0; }
+  .pz-slides{ display:grid; }
+  .pz .pz-slide{ grid-area:1 / 1; visibility:hidden; opacity:0; transition:opacity .35s var(--bx-ease), border-color .15s; cursor:pointer; }
+  .pz .pz-slide.on{ visibility:visible; opacity:1; }
+  .pz .pz-slide:hover{ border-color:var(--bx-ink); }
+  .pz-slide .bx-bilhete-miolo{ gap:16px; padding:28px 32px; }
+  .pz-slide__linha{ display:flex; align-items:center; gap:14px; min-width:0; }
+  .pz-slide__title{ min-width:0; font-family:var(--bx-sans); font-size:clamp(26px,2.6vw,36px); font-weight:800; line-height:1.05; letter-spacing:-.02em; color:var(--bx-ink); overflow-wrap:anywhere; }
+  .pz-slide__sub{ margin:0; max-width:52ch; font-size:16px; line-height:1.5; color:var(--bx-grey); }
+  .pz .pz-slide .bx-bilhete-canhoto{ background:var(--bx-neon); color:var(--bx-ink); }
+  .pz-slide__ir{ width:36px; height:36px; border-radius:10px; outline:2px solid var(--bx-ink); outline-offset:-2px; }
+  .pz-banner__ctrl{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .pz-banner__dots{ display:flex; align-items:center; gap:8px; }
+  .pz .pz-banner__dots button{ width:10px; height:10px; min-height:0; margin:0; padding:0; border:0; border-radius:999px; background:var(--bx-leader); box-shadow:none; cursor:pointer; transition:width .2s var(--bx-ease), background .2s; }
+  .pz .pz-banner__dots button.on{ width:28px; background:var(--bx-ink); }
+  .pz-banner__setas{ display:flex; gap:8px; }
+  .pz .pz-banner__arrow{ width:44px; height:44px; min-height:44px; margin:0; padding:0; border-radius:var(--bx-r-sm); cursor:pointer; }
+  .pz .pz-banner__arrow:hover{ outline:2px solid var(--bx-ink); outline-offset:-2px; }
+  .pz-banner__arrow.prev svg{ transform:rotate(180deg); }
+  .pz .pz-recibo .bx-recibo-acao{ border-radius:0; }
+
+  @media (max-width:900px){
+    .pz-busca{ flex-wrap:wrap; }
+    .pz .pz-favbtn{ height:52px; min-height:52px; }
+    .pz .pz-busca-linha input{ height:56px; min-height:56px; font-size:18px; }
+    .pz-slide .bx-bilhete-miolo{ padding:20px 18px; gap:12px; }
+    .pz .pz-banner__dots button{ min-height:0; }
+  }
+  @media (max-width:760px){ .pz-grid{ grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; } }
+  /* celular: favoritos na largura toda, parceiro em linha (ícone, nome,
+     categoria) e o canhoto só com o coração, como o bilhete da home */
+  @media (max-width:600px){
+    .pz .pz-favbtn{ width:100%; justify-content:flex-start; }
+    /* saldo do logado em 2x2 (o kit põe os dados do canhoto numa linha só) */
+    .pz .pz-dados{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px 14px; }
+    /* cartão baixo (70px): recortes do picote menores */
+    .pz-card > .bx-perf::before,.pz-card > .bx-perf::after{ width:20px; height:20px; left:-11px; }
+    .pz-card > .bx-perf::before{ top:-10px; } .pz-card > .bx-perf::after{ bottom:-10px; }
+    .pz-pills{ margin-top:20px; gap:6px; }
+    .pz .pz-pill{ min-height:40px; padding:0 12px; font-size:11px; }
+    .pz-grid{ grid-template-columns:minmax(0,1fr); gap:10px; }
+    .pz .pz-card__link{ flex-direction:row; align-items:center; gap:14px; padding:14px; }
+    .pz-card__link .bx-ico{ width:40px; height:40px; }
+    .pz-card__name{ font-size:17px; }
+    .pz-card__buy{ display:none; }
+    .pz .pz-fav{ width:56px; justify-content:center; padding:0; }
+    .pz-fav .bx-vert{ display:none; }
+    .pz-aviso{ padding:16px; gap:12px; }
+    .pz-empty{ padding:32px 16px; }
+    .pz-slide__linha .bx-ico{ width:36px; height:36px; }
   }
 </style>
 <script type="application/ld+json">
@@ -193,53 +243,151 @@
 <script src="assets/blaxx-acesso.js"></script>
 </head>
 <body data-screen="parceiros">
-<main class="pz">
-  <header class="page-head" data-screen-label="Parceiros">
-    <span class="eyebrow">PROGRAMA DE RECOMPENSAS</span>
-    <h1 class="h-display">Parceiros BlaXx</h1>
-    <p class="lead">Parceiros selecionados para você acumular ainda mais pontos.</p>
-  </header>
+<main class="pz bx-pagina">
 
-  <!-- Métricas -->
-  <section class="pz-metrics" id="metrics">
-    <div class="card pz-metric"><span class="pz-metric__label">Seus pontos</span><span class="pz-metric__value" id="m-balance">—</span><a class="pz-metric__cta" href="carteira.html">Ver carteira →</a></div>
-    <div class="card pz-metric"><span class="pz-metric__label">Resgate</span><span class="pz-metric__value" id="m-brl">—</span><a class="pz-metric__cta" href="resgates.html">Resgatar agora →</a></div>
-    <div class="card pz-metric"><span class="pz-metric__label">Pontos pendentes</span><span class="pz-metric__value" id="m-pending">—</span><span class="pz-metric__hint" id="m-pending-hint">Em processamento</span></div>
-    <div class="card pz-metric"><span class="pz-metric__label">Nível atual</span><span class="pz-badge-tier" id="m-tier">—</span><a class="pz-metric__cta" href="cartao.html">Ver benefícios →</a></div>
-    <div class="card pz-metric"><span class="pz-metric__label">Progresso</span><span class="pz-metric__value" id="m-progress">—</span><div class="pz-track"><div class="pz-fill" id="m-fill"></div></div><span class="pz-metric__hint" id="m-next" style="color:var(--fg-muted)"></span></div>
-  </section>
-
-  <!-- Banner carrossel -->
-  <section class="pz-banner" id="banner">
-    <div class="pz-slides" id="slides"></div>
-    <div class="pz-banner__ctrl">
-      <div class="pz-banner__dots" id="bdots"></div>
-      <button class="pz-banner__arrow prev" id="bprev" aria-label="Slide anterior">‹</button>
-      <button class="pz-banner__arrow next" id="bnext" aria-label="Próximo slide">›</button>
+  <!-- ====================== CARTÃO DE EMBARQUE: busca + saldo ====================== -->
+  <section class="bx-secao bx-secao--hero" data-screen-label="Parceiros">
+    <div class="bx-wrap">
+      <div class="bx-cartao">
+        <div class="bx-cartao-miolo">
+          <div class="bx-cartao-topo"><span>Painel de partidas · Parceiros</span><span>Rede em expansão · 2026</span></div>
+          <h1 class="bx-cartao-titulo"><span>Parceiros</span><span>BlaXx.</span><span><mark>Escolha o seu<br class="bx-so-celular"> destino.</mark></span></h1>
+          <div class="pz-busca" role="search">
+            <div class="pz-busca-campo">
+              <label class="bx-rotulo" for="search">Destino · nome da marca ou categoria</label>
+              <span class="pz-busca-linha">
+                <span class="bx-ico" data-ico="busca" aria-hidden="true"></span>
+                <input id="search" type="search" placeholder="Buscar parceiro ou loja" autocomplete="off" enterkeyhint="search">
+              </span>
+            </div>
+            <button class="pz-favbtn" id="favBtn" type="button" aria-pressed="false">Meus favoritos</button>
+          </div>
+          <p class="bx-cartao-lead">Busque pela marca ou pela categoria e abra o parceiro para ver os detalhes. A rede está em expansão: novos parceiros entram aos poucos.</p>
+        </div>
+        <div class="bx-perf" aria-hidden="true"></div>
+        <aside class="bx-cartao-canhoto" aria-label="Sua conta">
+          <!-- Visitante: convite. O saldo (#metrics) só aparece para quem está logado. -->
+          <div class="pz-canhoto-bloco" id="pzVisitante">
+            <div class="bx-cartao-dados">
+              <div><span class="bx-rotulo">Passageiro</span><b>Você</b></div>
+              <div><span class="bx-rotulo">Portão</span><b>Parceiros</b></div>
+              <div><span class="bx-rotulo">Lista</span><b>Aberta</b></div>
+            </div>
+            <div class="bx-cartao-acoes">
+              <a class="bx-cartao-cta" href="cadastro.html">Criar conta</a>
+              <span class="bx-cartao-ja">Já tenho conta · <a href="login.html?next=%2Fparceiros.html"><b>Entrar →</b></a></span>
+              <div class="bx-barcode" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="pz-canhoto-bloco" id="metrics" hidden>
+            <div class="bx-cartao-dados pz-dados">
+              <div><span class="bx-rotulo">Seus pontos</span><b id="m-balance">…</b></div>
+              <div data-m-extra><span class="bx-rotulo">Pendentes</span><b id="m-pending">…</b><span class="pz-dica" id="m-pending-hint"></span></div>
+              <div data-m-extra><span class="bx-rotulo">Nível atual</span><b><span class="pz-nivel" id="m-tier">…</span></b></div>
+              <div data-m-extra><span class="bx-rotulo">Progresso</span><b id="m-progress">…</b><span class="pz-trilho" aria-hidden="true"><span id="m-fill"></span></span><span class="pz-dica" id="m-next"></span></div>
+            </div>
+            <div class="bx-cartao-acoes">
+              <a class="bx-cartao-cta" href="carteira.html">Ver carteira</a>
+              <span class="bx-cartao-ja"><a href="resgates.html"><b id="m-brl">Resgatar pontos →</b></a></span>
+              <div class="bx-barcode" aria-hidden="true"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   </section>
 
-  <!-- Busca -->
-  <div class="pz-searchrow">
-    <div class="pz-search">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="search" type="text" placeholder="Buscar parceiro ou loja" autocomplete="off">
+  <!-- ====================== LISTA: painel de partidas dos parceiros ====================== -->
+  <section class="bx-secao" id="lista" aria-labelledby="pzListaTitulo">
+    <div class="bx-wrap">
+      <div class="bx-painel-topo pz-lista-topo">
+        <div class="bx-painel-titulo">
+          <span class="bx-secao-rotulo">Painel de partidas · Lista completa</span>
+          <h2 class="bx-titulo-secao" id="pzListaTitulo">Todos os parceiros.</h2>
+        </div>
+        <div class="bx-painel-resumo" id="pzResumo" hidden>
+          <div class="bx-painel-grande"><b id="pzTotal"></b><span>parceiros na lista</span></div>
+        </div>
+      </div>
+      <div class="pz-pills" id="pills" role="group" aria-label="Filtrar por categoria"></div>
+      <p class="pz-status" id="pzStatus" aria-live="polite"></p>
+      <div class="pz-aviso" id="pzAviso" role="status" hidden></div>
+      <div class="pz-grid" id="grid"></div>
+      <div class="pz-mais-linha"><button class="pz-mais" id="pzMais" type="button" hidden></button></div>
     </div>
-    <button class="pz-favbtn" id="favBtn">♡ Meus Favoritos</button>
-  </div>
+  </section>
 
-  <!-- Filtros -->
-  <div class="pz-pills" id="pills"></div>
+  <!-- ====================== CAMPANHAS (bilhete) + RECIBO-RESUMO ====================== -->
+  <section class="bx-secao pz-destaques" id="pzDestaques" aria-label="Campanhas e resumo da lista">
+    <div class="bx-wrap">
+      <div class="bx-bilhetes-recibo">
+        <div class="bx-bilhetes pz-banner" id="banner">
+          <div class="bx-secao-cab bx-secao-cab--linha">
+            <div class="pz-cab-txt">
+              <span class="bx-secao-rotulo">Embarque extra · Campanhas</span>
+              <h2 class="bx-titulo-secao">Campanhas ativas.</h2>
+            </div>
+            <a class="bx-secao-link" href="campanhas.html">Ver campanhas →</a>
+          </div>
+          <div class="pz-slides" id="slides"></div>
+          <div class="pz-banner__ctrl">
+            <div class="pz-banner__dots" id="bdots"></div>
+            <div class="pz-banner__setas">
+              <button class="bx-ico pz-banner__arrow prev" id="bprev" type="button" aria-label="Campanha anterior" data-ico="seta"></button>
+              <button class="bx-ico pz-banner__arrow next" id="bnext" type="button" aria-label="Próxima campanha" data-ico="seta"></button>
+            </div>
+          </div>
+        </div>
 
-  <!-- Grid -->
-  <div class="pz-grid" id="grid"></div>
+        <div class="bx-recibo pz-recibo" id="pzRecibo" hidden>
+          <div class="bx-zig" aria-hidden="true"></div>
+          <div class="bx-recibo-corpo">
+            <div class="bx-recibo-cabeca"><img src="assets/marca/blaxx-wordmark-barra.svg" alt="BlaXx"><span>RESUMO DA LISTA</span></div>
+            <div class="bx-tracejo" aria-hidden="true"></div>
+            <div class="bx-leader"><span>PARCEIROS</span><i></i><span id="rcParceiros"></span></div>
+            <div class="bx-leader"><span>CATEGORIAS</span><i></i><span id="rcCategorias"></span></div>
+            <div class="bx-leader"><span>CAMPANHAS ATIVAS</span><i></i><span id="rcCampanhas"></span></div>
+            <div class="bx-leader"><span>SEUS FAVORITOS</span><i></i><span id="rcFavoritos"></span></div>
+            <div class="bx-tracejo" aria-hidden="true"></div>
+            <div class="bx-recibo-total"><span>NA LISTA</span><b id="rcTotal"></b></div>
+            <div class="bx-recibo-faixa"><div class="bx-leader"><span>REDE</span><i></i><span>EM EXPANSÃO</span></div></div>
+            <span class="bx-recibo-nota">Números da lista atual. Os favoritos ficam salvos só neste navegador.</span>
+            <div class="bx-recibo-via" aria-hidden="true">Via do passageiro</div>
+            <a class="bx-recibo-acao" href="#lista">Ver a lista →</a>
+          </div>
+          <div class="bx-zig bx-zig--baixo" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- Benefícios -->
-  <section class="pz-benefits">
-    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M4 18 10 11l4 3 6-8"/><path d="M14 6h6v6"/></svg></div><div class="pz-benefit__t">Acumule mais</div><div class="pz-benefit__d">Compre em parceiros selecionados e acumule pontos a cada compra.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M9 14.6v2.8c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V11"/></svg></div><div class="pz-benefit__t">Pontos de volta</div><div class="pz-benefit__d">Parte de cada compra retorna para você em pontos.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico">⭐</div><div class="pz-benefit__t">Parceiros exclusivos</div><div class="pz-benefit__d">Benefícios reservados ao nível Black.</div></div>
-    <div class="card pz-benefit"><div class="pz-benefit__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block"><path d="M12 3 5 6v6c0 4.3 3 7.2 7 9 4-1.8 7-4.7 7-9V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></svg></div><div class="pz-benefit__t">Segurança</div><div class="pz-benefit__d">Ambiente protegido e monitorado de ponta a ponta.</div></div>
+  <!-- ====================== ROTA: como usar a lista ====================== -->
+  <section class="bx-secao" aria-labelledby="pzRotaTitulo">
+    <div class="bx-wrap">
+      <div class="bx-secao-cab"><span class="bx-secao-rotulo" id="pzRotaTitulo">Rota · Como usar a lista</span></div>
+      <ol class="bx-rota-grid">
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 01 · Buscar</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Busque</h3></div>
+          <p class="bx-escala-d">Pelo nome da marca ou pela categoria, no campo do cartão.</p>
+        </li>
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 02 · Filtrar</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Filtre</h3></div>
+          <p class="bx-escala-d">As categorias separam a lista: postos, supermercados, farmácias e o resto.</p>
+        </li>
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 03 · Guardar</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Favorite</h3></div>
+          <p class="bx-escala-d">O coração do canhoto guarda o parceiro nos seus favoritos, neste navegador.</p>
+        </li>
+        <li class="bx-escala">
+          <span class="bx-escala-n">Escala 04 · Conferir</span>
+          <div class="bx-escala-acao"><span class="bx-escala-ponto" aria-hidden="true"></span><h3 class="bx-escala-t">Confira</h3></div>
+          <p class="bx-escala-d">Abra o parceiro para ver os detalhes antes de sair de casa.</p>
+        </li>
+      </ol>
+    </div>
   </section>
 </main>
 
@@ -250,223 +398,396 @@
 <script>
 (function(){
   const PRODUCTION_API = (window.BLAXX_API || 'https://blaxx-pontos-exe.onrender.com');
-  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch { return PRODUCTION_API; } }
-  function token(){ try { var _bt=localStorage.getItem('blaxx_token'); return _bt || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch { return null; } }
+  function apiBase(){ try { return (localStorage.getItem('blaxx_api_url') || PRODUCTION_API).replace(/\/+$/,''); } catch (e) { return PRODUCTION_API; } }
+  // mesma leitura de sessão do assets/blaxx-acesso.js (inclui o sessionStorage)
+  function token(){
+    try {
+      var _bt = localStorage.getItem('blaxx_token') || sessionStorage.getItem('blaxx_token');
+      return _bt || (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null;
+    } catch (e) { return null; }
+  }
+  const $ = id => document.getElementById(id);
   const fmt = n => Number(n||0).toLocaleString('pt-BR');
-  const brl = n => Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const pad2 = n => String(n).padStart(2,'0');
+  const esc = v => String(v==null?'':v).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  // busca sem acento e sem caixa: "farmacia" acha "Farmácia"
+  const norm = s => String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+  const ico = nome => (window.BlaxxIcones && window.BlaxxIcones.svg(nome)) || '';
   const FAV_KEY = 'blaxx_fav_partners';
-  const PRIMARY = ['Viagens','Tecnologia','Moda','Casa','Supermercado','Saúde'];
+  const REDUZ = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const PAGINA = () => (window.matchMedia && window.matchMedia('(max-width: 600px)').matches) ? 20 : 48;
+
+  // Categorias do banco têm duplicatas (Farmácia/Farmácias, Mercados/Supermercado,
+  // Casa/Casa & Decoração, Tech/Eletrônicos, Moda Plus/Moda...). A pílula junta
+  // as irmãs; o cartão continua mostrando a categoria original.
+  const CANON = {
+    'Combustível':'Postos','Posto':'Postos','Postos':'Postos',
+    'Supermercado':'Supermercados','Mercados':'Supermercados','Supermercados':'Supermercados',
+    'Farmácia':'Farmácias','Farmácias':'Farmácias',
+    'Casa & Decoração':'Casa','Tech':'Eletrônicos',
+    'Moda Plus':'Moda','Moda Infantil':'Moda','Moda Esportiva':'Moda','Moda Íntima':'Moda','Moda Sustentável':'Moda'
+  };
+  const canon = c => { c = String(c||'').trim(); return c ? (CANON[c] || c) : 'Outros'; };
+  const VERTICAIS = ['Postos','Supermercados','Farmácias'];          // as do mega-menu: sempre visíveis
+  const PRIMARY = VERTICAIS.concat(['Viagens','Moda','Beleza']);
+  // desenho de window.BlaxxIcones por categoria (nada de emoji)
+  const ICONE_CAT = {
+    'Postos':'posto','Automotivo':'posto','Mobilidade':'local',
+    'Supermercados':'supermercado','Alimentação':'supermercado','Bebidas':'supermercado','Café':'supermercado','Restaurantes':'loja',
+    'Farmácias':'farmacia','Saúde':'farmacia',
+    'Viagens':'aviao',
+    'Moda':'moda','Calçados':'moda','Acessórios':'moda','Joias & Relógios':'moda','Esportes':'moda','Beleza':'tag',
+    'Eletrônicos':'celular','Telecom':'celular',
+    'Streaming':'filme','Entretenimento':'filme','Música':'filme',
+    'E-commerce':'carrinho','Compras':'carrinho','Presentes':'resgates',
+    'Casa':'inicio','Construção':'inicio',
+    'Seguros':'seguranca','Consórcio':'comprar','Finanças':'comprar','Câmbio':'comprar',
+    'Energia':'raio','Educação':'documento','Pet':'loja','Serviços':'configuracoes','Outros':'tag'
+  };
+  function iconeDe(p){
+    const c = canon(p.category);
+    if (c === 'Viagens' && /hot[eé]|hosped|resort|pousada|hostel|accor|ibis|marriott|hilton/i.test(p.name||'')) return 'hotel';
+    return ICONE_CAT[c] || 'loja';
+  }
+  // Cidade na busca: a lista ainda não tem cidade (city vem vazio), então não
+  // filtra pelo nome (São Paulo acharia só "Drogaria São Paulo"): mostra todos
+  // e avisa que a rede está em expansão ali.
+  const CIDADES = {
+    'sao paulo':'São Paulo','sp':'São Paulo','sampa':'São Paulo',
+    'rio de janeiro':'Rio de Janeiro','rio':'Rio de Janeiro','rj':'Rio de Janeiro',
+    'belo horizonte':'Belo Horizonte','bh':'Belo Horizonte','brasilia':'Brasília','campinas':'Campinas',
+    'curitiba':'Curitiba','fortaleza':'Fortaleza','goiania':'Goiânia','manaus':'Manaus',
+    'porto alegre':'Porto Alegre','recife':'Recife','salvador':'Salvador'
+  };
+  function cidadeDe(q){
+    const s = norm(q).replace(/[^a-z\s]/g,' ').replace(/\s+/g,' ').trim();
+    if (!s) return '';
+    if (CIDADES[s]) return CIDADES[s];
+    const semUf = s.replace(/\s+[a-z]{2}$/,'');                       // "sao paulo sp"
+    return (semUf !== s && CIDADES[semUf]) ? CIDADES[semUf] : '';
+  }
+  // texto da API que traga valor em reais ou PIX não vai para a tela
+  const limpo = t => (t && !/R\$|\/\s*R\$|\bpix\b/i.test(t)) ? t : '';
 
   async function get(path){
     try { const r = await fetch(apiBase()+path, { headers: token()? {Authorization:'Bearer '+token()} : {} }); if(!r.ok) return null; return await r.json(); }
-    catch { return null; }
+    catch (e) { return null; }
   }
 
   // ---- estado ----
-  let PARTNERS = [], CAMPAIGNS = [], CATS = [], query = '', activeCat = '', favOnly = false, showAll = false, slide = 0, timer = null;
+  let PARTNERS = [], CAMPAIGNS = [], CATS = [], query = '', activeCat = '', showAll = false, slide = 0, timer = null, pausado = false;
+  let estado = 'carregando', limite = PAGINA();
   let favs = new Set();
-  try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]')); } catch {}
-  function saveFavs(){ try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch {} }
+  try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]').map(String)); } catch (e) {}
+  function saveFavs(){ try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch (e) {} }
+  const favCount = () => PARTNERS.filter(p => favs.has(String(p.id))).length;
 
-  // ---- skeleton inicial ----
-  function skeleton(){
-    document.getElementById('grid').innerHTML = Array.from({length:10}).map(()=>`
-      <div class="card pz-card pz-card--sk">
-        <div class="pz-card__logo"></div>
-        <div class="pz-sk" style="height:16px;width:70%"></div>
-        <div class="pz-sk" style="height:11px;width:40%"></div>
-        <div class="pz-sk" style="height:22px;width:50%;border-radius:8px"></div>
-      </div>`).join('');
-  }
+  // ícones fixos do HTML (busca, setas)
+  document.querySelectorAll('[data-ico]').forEach(el => { el.innerHTML = ico(el.getAttribute('data-ico')); });
 
-  // ---- métricas ----
+  // ---- canhoto: visitante x logado (o saldo só existe para quem tem sessão) ----
+  const LOGADO = !!token();
+  $('pzVisitante').hidden = LOGADO;
+  $('metrics').hidden = !LOGADO;
+
   function renderMetrics(wallet, card){
-    document.getElementById('m-balance').innerHTML = wallet ? (fmt(wallet.balance_pts)+' <small>pts</small>') : '—';
-    // 15/10: sem equivalência em reais na tela, o valor do ponto não é exibido.
-    document.getElementById('m-brl').textContent = wallet ? 'Disponível' : '—';
-    const pend = wallet ? Number(wallet.pending_pts||0) : 0;
-    document.getElementById('m-pending').innerHTML = fmt(pend)+' <small>pts</small>';
-    document.getElementById('m-pending-hint').textContent = pend>0 ? 'Em processamento' : 'Nada pendente';
-    if (card && card.tier){
-      const t = document.getElementById('m-tier');
-      t.textContent = (card.tier.label||'').toUpperCase();
-      t.style.background = card.tier.color || 'var(--ink)';
-      t.style.color = card.tier.text_color || '#fff';
+    const box = $('metrics');
+    if (!token()){ box.hidden = true; $('pzVisitante').hidden = false; return; }
+    box.hidden = false; $('pzVisitante').hidden = true;
+    const extras = box.querySelectorAll('[data-m-extra]');
+    if (!wallet){
+      $('m-balance').textContent = 'Indisponível agora';
+      extras.forEach(el => { el.hidden = true; });
+      return;
     }
-    const pct = card ? Number(card.progress_pct||0) : 0;
-    document.getElementById('m-progress').textContent = pct + '%';
-    requestAnimationFrame(()=>{ document.getElementById('m-fill').style.width = pct + '%'; });
-    document.getElementById('m-next').textContent = (card && card.next_tier)
-      ? `Faltam ${fmt(card.points_to_next)} pts para ${card.next_tier.label}`
-      : 'Nível máximo atingido';
+    $('m-balance').innerHTML = fmt(wallet.balance_pts)+' <small>pts</small>';
+    const pend = Number(wallet.pending_pts||0);
+    $('m-pending').innerHTML = fmt(pend)+' <small>pts</small>';
+    $('m-pending-hint').textContent = pend>0 ? 'Em processamento' : 'Nada pendente';
+    extras[0].hidden = false;
+    // cor do nível pelos tokens do tema (o backend manda o lime legado #C6FF00)
+    if (card && card.tier && card.tier.label){ $('m-tier').textContent = String(card.tier.label).toUpperCase(); extras[1].hidden = false; }
+    else extras[1].hidden = true;
+    if (card){
+      const pct = Math.max(0, Math.min(100, Number(card.progress_pct||0)));
+      $('m-progress').textContent = pct + '%';
+      requestAnimationFrame(()=>{ $('m-fill').style.width = pct + '%'; });
+      $('m-next').textContent = card.next_tier ? `Faltam ${fmt(card.points_to_next)} pts para ${card.next_tier.label}` : 'Nível máximo';
+      extras[2].hidden = false;
+    } else extras[2].hidden = true;
   }
 
-  // ---- banner ----
-  function ptsLabel(p){ return (p && p.accrual_rule) ? p.accrual_rule : 'Pontos por compra'; }
-  const esc = v => String(v==null?'':v).replace(/[&<>"']/g, c =>
-    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const fmtPts = n => Number(n||0).toLocaleString('pt-BR');
-
-  // O banner dizia "CAMPANHA EM DESTAQUE" mas os slides vinham de
-  // PARTNERS.slice(0,4), eram PARCEIROS. O rótulo não correspondia ao dado.
-  // Agora usa /campaigns/ de verdade quando há campanha ativa; sem campanha,
-  // mostra parceiros com o rótulo correto, em vez de chamar parceiro de campanha.
+  // ---- campanhas: bilhetes empilhados, um por vez ----
+  // Só campanha de verdade: sem campanha ativa o bilhete some e o recibo fica
+  // sozinho (antes caía em parceiros da lista sob o título "Campanhas ativas.",
+  // enquanto o recibo dizia "nenhuma agora").
   function slidesDoBanner(){
-    if (CAMPAIGNS.length) return CAMPAIGNS.slice(0,4).map(c => ({
+    return CAMPAIGNS.slice(0,4).map(c => ({
       tag: 'Campanha ativa',
-      titulo: c.name,
-      sub: c.description || c.mechanic || 'Participe e ganhe pontos extras.',
-      premio: c.reward_pts ? fmtPts(c.reward_pts) : '',
-      arte: '🎯',
-      cta: 'Ver campanha →',
+      titulo: limpo(c.name) || 'Campanha',
+      sub: limpo(c.description) || 'Participe e ganhe pontos extras.',
+      premio: c.reward_pts ? fmt(c.reward_pts) : '',
+      icone: 'campanhas',
+      cta: 'Ver campanha',
       href: 'campanhas.html',
     }));
-    return PARTNERS.slice(0,4).map(p => ({
-      tag: 'Parceiro em destaque',
-      titulo: p.name,
-      sub: p.description || ptsLabel(p),
-      premio: '',
-      nota: p.accrual_rule || '',
-      arte: p.logo_emoji || '🏷️',
-      cta: 'Ver parceiro →',
-      href: 'detalhe-parceiro.html?id=' + encodeURIComponent(p.id),
-    }));
   }
-
   function renderBanner(){
     const slides = slidesDoBanner();
-    const wrap = document.getElementById('slides');
-    if (!slides.length){ document.getElementById('banner').style.display='none'; return; }
+    const wrap = $('slides'), banner = $('banner');
+    if (timer){ clearInterval(timer); timer = null; }
+    if (!slides.length){ banner.style.display='none'; wrap.innerHTML=''; ajustarDestaques(); return; }
+    banner.style.display = '';
+    slide = 0;
+    const total = slides.length;
     wrap.innerHTML = slides.map((sl,i)=>`
-      <div class="pz-slide ${i===0?'on':''}" data-i="${i}" ${i===0?'':'aria-hidden="true"'}>
-        <div class="pz-slide__body">
-          <span class="pz-slide__tag">${esc(sl.tag)}</span>
-          <span class="pz-slide__title">${esc(sl.titulo)}</span>
-          <span class="pz-slide__sub">${esc(sl.sub)}</span>
-          ${sl.premio ? `<span class="pz-slide__prize">+${esc(sl.premio)} <small>pts ao concluir</small></span>` : ''}
-          ${sl.nota   ? `<span class="pz-slide__prize">${esc(sl.nota)}</span>` : ''}
-          <a class="btn btn--primary pz-slide__cta" href="${sl.href}">${esc(sl.cta)}</a>
+      <a class="pz-slide bx-bilhete ${i===0?'on':''}" data-i="${i}" href="${esc(sl.href)}" ${i===0?'':'aria-hidden="true" tabindex="-1"'}>
+        <div class="bx-bilhete-miolo pz-slide__body">
+          <div class="bx-bilhete-cab"><span class="pz-slide__tag">BX · ${esc(sl.tag)}</span><span>${pad2(i+1)} de ${pad2(total)}</span></div>
+          <div class="pz-slide__linha"><span class="bx-ico" aria-hidden="true">${ico(sl.icone)}</span><span class="pz-slide__title">${esc(sl.titulo)}</span></div>
+          ${sl.premio ? `<span class="bx-bilhete-pts pz-slide__prize">+${esc(sl.premio)}<small> pts ao concluir</small></span>` : ''}
+          <p class="pz-slide__sub">${esc(sl.sub)}</p>
         </div>
-        <div class="pz-slide__art"><span class="emoji" aria-hidden="true">${esc(sl.arte)}</span></div>
-      </div>`).join('');
-    document.getElementById('bdots').innerHTML = slides.map((_,i)=>
-      `<button data-i="${i}" class="${i===0?'on':''}" aria-label="Slide ${i+1} de ${slides.length}"></button>`).join('');
-    bindBanner(slides.length);
-    restartTimer(slides.length);
+        <div class="bx-perf" aria-hidden="true"></div>
+        <div class="bx-bilhete-canhoto pz-slide__cta" aria-hidden="true"><span class="bx-vert">${esc(sl.cta)}</span><span class="bx-ico pz-slide__ir">${ico('seta')}</span></div>
+      </a>`).join('');
+    $('bdots').innerHTML = slides.map((_,i)=>
+      `<button type="button" data-i="${i}" class="${i===0?'on':''}" aria-label="Campanha ${i+1} de ${total}"></button>`).join('');
+    document.querySelector('.pz-banner__ctrl').style.display = total > 1 ? '' : 'none';
+    bindBanner(total);
+    restartTimer(total);
+    ajustarDestaques();
   }
   function goSlide(n, total){
     slide = (n+total)%total;
     document.querySelectorAll('.pz-slide').forEach((el,i)=>{
       el.classList.toggle('on', i===slide);
-      if (i===slide) el.removeAttribute('aria-hidden'); else el.setAttribute('aria-hidden','true');
+      if (i===slide){ el.removeAttribute('aria-hidden'); el.removeAttribute('tabindex'); }
+      else { el.setAttribute('aria-hidden','true'); el.setAttribute('tabindex','-1'); }
     });
     document.querySelectorAll('#bdots button').forEach((el,i)=>el.classList.toggle('on', i===slide));
   }
   function bindBanner(total){
-    document.getElementById('bprev').onclick = ()=>{ goSlide(slide-1,total); restartTimer(total); };
-    document.getElementById('bnext').onclick = ()=>{ goSlide(slide+1,total); restartTimer(total); };
+    $('bprev').onclick = ()=>{ goSlide(slide-1,total); restartTimer(total); };
+    $('bnext').onclick = ()=>{ goSlide(slide+1,total); restartTimer(total); };
     document.querySelectorAll('#bdots button').forEach(b=> b.onclick = ()=>{ goSlide(+b.dataset.i,total); restartTimer(total); });
   }
-  function restartTimer(total){ if(timer) clearInterval(timer); if(total>1) timer = setInterval(()=>goSlide(slide+1,total), 6000); }
+  // gira a cada 6s, para sob o mouse/foco e não gira com movimento reduzido
+  function restartTimer(total){ if(timer) clearInterval(timer); timer = null; if(total>1 && !REDUZ) timer = setInterval(()=>{ if(!pausado) goSlide(slide+1,total); }, 6000); }
+  ['mouseenter','focusin'].forEach(ev => $('banner').addEventListener(ev, ()=>{ pausado = true; }));
+  ['mouseleave','focusout'].forEach(ev => $('banner').addEventListener(ev, ()=>{ pausado = false; }));
 
-  // ---- pills ----
+  // ---- recibo-resumo (só números reais da lista) ----
+  function renderRecibo(){
+    const r = $('pzRecibo');
+    if (estado !== 'ok' || !PARTNERS.length){ r.hidden = true; ajustarDestaques(); return; }
+    r.hidden = false;
+    $('rcParceiros').textContent = fmt(PARTNERS.length);
+    $('rcCategorias').textContent = fmt(new Set(PARTNERS.map(p => canon(p.category))).size);
+    $('rcCampanhas').textContent = CAMPAIGNS.length ? fmt(CAMPAIGNS.length) : 'nenhuma agora';
+    $('rcFavoritos').textContent = fmt(favCount());
+    $('rcTotal').textContent = fmt(PARTNERS.length);
+    ajustarDestaques();
+  }
+  function ajustarDestaques(){
+    const semBanner = $('banner').style.display === 'none', semRecibo = $('pzRecibo').hidden;
+    $('pzDestaques').hidden = semBanner && semRecibo;
+    $('pzDestaques').classList.toggle('pz-destaques--so-recibo', semBanner && !semRecibo);
+  }
+
+  // ---- pílulas ----
+  function contagem(){ const n = {}; PARTNERS.forEach(p => { const c = canon(p.category); n[c] = (n[c]||0) + 1; }); return n; }
   function renderPills(){
-    const ordered = [...PRIMARY.filter(c=>CATS.includes(c)), ...CATS.filter(c=>!PRIMARY.includes(c))];
-    const shown = showAll ? ordered : ordered.slice(0,6);
-    const base = [{k:'',l:'Todos'},{k:'__fav__',l:'Favoritos'}];
-    let html = base.concat(shown.map(c=>({k:c,l:c}))).map(o=>
-      `<button class="pz-pill ${(o.k===activeCat && !(o.k==='' && favOnly))?'on':''}" data-c="${o.k}">${o.l}</button>`).join('');
-    if (!showAll && ordered.length>6) html += `<button class="pz-pill" data-more="1">Mais ▼</button>`;
-    document.getElementById('pills').innerHTML = html;
-    document.querySelectorAll('#pills .pz-pill').forEach(b=>{
+    const pills = $('pills');
+    if (estado !== 'ok' || !PARTNERS.length){ pills.innerHTML = ''; return; }
+    const cont = contagem();
+    const todas = [...new Set([...VERTICAIS, ...CATS])].filter(c => VERTICAIS.includes(c) || cont[c]);
+    const ordered = [...PRIMARY.filter(c=>todas.includes(c)),
+      ...todas.filter(c=>!PRIMARY.includes(c)).sort((a,b)=>(cont[b]||0)-(cont[a]||0) || a.localeCompare(b,'pt-BR'))];
+    const shown = showAll ? ordered.slice() : ordered.slice(0,6);
+    if (activeCat && activeCat !== '__fav__' && !shown.includes(activeCat)) shown.push(activeCat);
+    const base = [{k:'',l:'Todos',n:PARTNERS.length},{k:'__fav__',l:'Favoritos',n:favCount()}];
+    let html = base.concat(shown.map(c=>({k:c,l:c,n:cont[c]||0}))).map(o=>{
+      const on = o.k===activeCat;
+      return `<button type="button" class="pz-pill ${on?'on':''}" data-c="${esc(o.k)}" aria-pressed="${on}">${esc(o.l)} <span class="pz-pill__n">${fmt(o.n)}</span></button>`;
+    }).join('');
+    if (!showAll && ordered.length > shown.length)
+      html += `<button type="button" class="pz-pill pz-pill--mais" data-more="1">Mais categorias <span class="pz-pill__n">+${ordered.length - shown.length}</span></button>`;
+    pills.innerHTML = html;
+    pills.querySelectorAll('.pz-pill').forEach(b=>{
       b.onclick = ()=>{
         if (b.dataset.more){ showAll=true; renderPills(); return; }
-        const k=b.dataset.c;
-        if (k==='__fav__'){ favOnly=true; activeCat='__fav__'; }
-        else { favOnly=false; activeCat=k; }
+        activeCat = b.dataset.c; limite = PAGINA();
         syncFavBtn(); renderPills(); renderGrid();
       };
     });
   }
-  function syncFavBtn(){ const f=document.getElementById('favBtn'); const on = favOnly||activeCat==='__fav__'; f.classList.toggle('on',on); f.textContent = on ? '♥ Meus Favoritos' : '♡ Meus Favoritos'; }
+  function syncFavBtn(){
+    const f = $('favBtn'), on = activeCat==='__fav__';
+    f.classList.toggle('on', on);
+    f.setAttribute('aria-pressed', String(on));
+    f.innerHTML = `<span class="bx-ico" aria-hidden="true">${ico('favorito')}</span><span>${on ? 'Vendo favoritos' : 'Meus favoritos'}</span><span class="pz-favbtn__n">${fmt(favCount())}</span>`;
+  }
 
-  // ---- grid ----
+  // ---- grade ----
   function filtered(){
-    const q = query.trim().toLowerCase();
+    const toks = cidadeDe(query) ? [] : norm(query).split(/\s+/).filter(Boolean);
     return PARTNERS.filter(p=>{
       if (activeCat==='__fav__'){ if(!favs.has(String(p.id))) return false; }
-      else if (activeCat){ if((p.category||'')!==activeCat) return false; }
-      if (q){ const hay=((p.name||'')+' '+(p.description||'')+' '+(p.category||'')).toLowerCase(); if(!hay.includes(q)) return false; }
+      else if (activeCat){ if(canon(p.category)!==activeCat) return false; }
+      if (toks.length && !toks.every(t => p._hay.includes(t))) return false;
       return true;
     });
   }
-  function renderGrid(){
-    const list = filtered();
-    const grid = document.getElementById('grid');
-    if (!list.length){ grid.innerHTML = `<div class="pz-empty">Nenhum parceiro encontrado.</div>`; return; }
-    grid.innerHTML = list.map((p,i)=>{
-      const fav = favs.has(String(p.id));
-      return `<div class="card pz-card" data-id="${p.id}" style="animation-delay:${Math.min(i*30,300)}ms">
-        <button class="pz-fav ${fav?'on':''}" data-fav="${p.id}" aria-label="Favoritar">${fav?'♥':'♡'}</button>
-        <div class="pz-card__logo">${p.logo_emoji || '🏷️'}</div>
-        <div class="pz-card__name">${p.name}</div>
-        <div class="pz-card__cat">${p.category || 'Parceiro'}</div>
-        <span class="pz-card__pts">${ptsLabel(p)}</span>
-        ${p.city?`<div class="pz-card__cash">📍 ${p.city}</div>`:''}
-        <span class="pz-card__buy">Comprar →</span>
-      </div>`;
-    }).join('');
-    grid.querySelectorAll('.pz-card').forEach(c=>{
-      c.onclick = (e)=>{ if(e.target.closest('.pz-fav')) return; location.href='detalhe-parceiro.html?id='+encodeURIComponent(c.dataset.id); };
-    });
-    grid.querySelectorAll('.pz-fav').forEach(b=>{
-      b.onclick = (e)=>{ e.stopPropagation(); const id=String(b.dataset.fav); favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); renderGrid(); if(activeCat==='__fav__') renderPills(); };
-    });
+  function skeleton(){
+    $('grid').innerHTML = Array.from({length:8}).map(()=>`
+      <div class="pz-card pz-card--sk" aria-hidden="true">
+        <div class="pz-card__link">
+          <span class="pz-sk" style="width:44px;height:44px;border-radius:12px"></span>
+          <span class="pz-sk" style="height:18px;width:70%"></span>
+          <span class="pz-sk" style="height:11px;width:40%"></span>
+        </div>
+        <div class="bx-perf"></div>
+        <div class="pz-fav"></div>
+      </div>`).join('');
   }
+  function cardHtml(p){
+    const id = String(p.id), fav = favs.has(id), nome = p.name || 'Parceiro';
+    return `<article class="pz-card" data-id="${esc(id)}">
+      <a class="pz-card__link" href="detalhe-parceiro.html?id=${encodeURIComponent(id)}">
+        <span class="bx-ico pz-card__logo" aria-hidden="true">${ico(iconeDe(p))}</span>
+        <span class="pz-card__txt">
+          <span class="pz-card__name">${esc(nome)}</span>
+          <span class="pz-card__cat">${esc(p.category || 'Parceiro')}</span>
+          ${p.city ? `<span class="pz-card__cash">${esc(p.city)}</span>` : ''}
+        </span>
+        <span class="pz-card__buy">Ver parceiro →</span>
+      </a>
+      <div class="bx-perf" aria-hidden="true"></div>
+      <button type="button" class="pz-fav ${fav?'on':''}" data-fav="${esc(id)}" aria-pressed="${fav}" aria-label="${fav?'Tirar dos favoritos':'Favoritar'}: ${esc(nome)}">
+        <span class="bx-vert" aria-hidden="true">${fav?'Favorito':'Favoritar'}</span>
+        <span class="bx-ico" aria-hidden="true">${ico('favorito')}</span>
+      </button>
+    </article>`;
+  }
+  function vazio(titulo, texto, botao){
+    return `<div class="pz-empty"><span class="bx-ico" aria-hidden="true">${ico(botao==='tentar'?'alerta':'busca')}</span><b>${titulo}</b>${texto?`<p>${texto}</p>`:''}${
+      botao==='tentar' ? '<button type="button" class="pz-tentar" id="pzTentar">Tentar de novo</button>' :
+      botao==='limpar' ? '<button type="button" class="pz-limpar">Limpar busca</button>' : ''}</div>`;
+  }
+  function renderStatus(n){
+    let t = '';
+    if (estado === 'ok' && PARTNERS.length){
+      if (activeCat==='__fav__') t = `${fmt(n)} favorito${n===1?'':'s'}`;
+      else if (activeCat) t = `${activeCat} · ${fmt(n)} parceiro${n===1?'':'s'}`;
+      else t = `${fmt(n)} parceiro${n===1?'':'s'}`;
+      if (query.trim() && !cidadeDe(query)) t += ` · busca “${query.trim()}”`;
+      if (n > limite) t += ` · mostrando ${fmt(limite)}`;
+    }
+    $('pzStatus').textContent = t;
+  }
+  function renderAviso(){
+    const c = estado === 'ok' ? cidadeDe(query) : '', el = $('pzAviso');
+    if (!c){ el.hidden = true; el.innerHTML = ''; return; }
+    el.hidden = false;
+    el.innerHTML = `<span class="bx-ico" aria-hidden="true">${ico('local')}</span><div class="pz-aviso__txt"><b>${esc(c)}</b><span class="pz-aviso__sit"><i aria-hidden="true"></i>Rede em expansão nesta cidade</span><p>A lista ainda não separa parceiros por cidade, então mostramos todos abaixo.</p></div>`;
+  }
+  function renderGrid(){
+    const grid = $('grid'), mais = $('pzMais');
+    mais.hidden = true;
+    if (estado === 'carregando'){ skeleton(); renderStatus(0); renderAviso(); return; }
+    if (estado === 'erro'){
+      grid.innerHTML = vazio('Não foi possível carregar os parceiros agora.', 'A lista vem do servidor da BlaXx e ele não respondeu. Confira a conexão e tente de novo.', 'tentar');
+      renderStatus(0); renderAviso(); return;
+    }
+    const list = filtered();
+    renderStatus(list.length); renderAviso();
+    if (!PARTNERS.length){ grid.innerHTML = vazio('A lista de parceiros está vazia agora.', 'A rede está em expansão: novos parceiros entram aos poucos.'); return; }
+    if (!list.length){
+      if (activeCat==='__fav__' && !query.trim()) grid.innerHTML = vazio('Nenhum favorito ainda.', 'Toque no coração do canhoto de um parceiro para guardar aqui.');
+      else if (query.trim() && !cidadeDe(query)) grid.innerHTML = vazio(`Nenhum parceiro encontrado para “${esc(query.trim())}”.`, activeCat ? 'A busca vale só para a categoria escolhida. Tente em Todos.' : 'Confira a grafia ou busque pela categoria.', 'limpar');
+      else grid.innerHTML = vazio(`Ainda não há parceiros de ${esc(activeCat)} na lista.`, 'A rede está em expansão: novos parceiros entram aos poucos.');
+      return;
+    }
+    grid.innerHTML = list.slice(0, limite).map(cardHtml).join('');
+    const resto = list.length - limite;
+    if (resto > 0){ mais.hidden = false; mais.innerHTML = `Mostrar mais parceiros <small>+${fmt(Math.min(resto, PAGINA()))} de ${fmt(resto)}</small>`; }
+  }
+  function pintarFav(b, on){
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', String(on));
+    const nome = (b.closest('.pz-card').querySelector('.pz-card__name')||{}).textContent || '';
+    b.setAttribute('aria-label', (on?'Tirar dos favoritos':'Favoritar') + ': ' + nome);
+    const v = b.querySelector('.bx-vert'); if (v) v.textContent = on ? 'Favorito' : 'Favoritar';
+  }
+  // um ouvinte só para a grade inteira (favorito, tentar de novo, limpar busca)
+  $('grid').addEventListener('click', e=>{
+    const fav = e.target.closest('.pz-fav[data-fav]');
+    if (fav){
+      e.preventDefault();
+      const id = String(fav.dataset.fav);
+      favs.has(id) ? favs.delete(id) : favs.add(id); saveFavs();
+      if (activeCat==='__fav__') renderGrid(); else pintarFav(fav, favs.has(id));
+      renderPills(); syncFavBtn(); renderRecibo();
+      return;
+    }
+    if (e.target.closest('#pzTentar')){ carregar(); return; }
+    if (e.target.closest('.pz-limpar')){ const s = $('search'); s.value = ''; query = ''; limite = PAGINA(); renderGrid(); s.focus(); }
+  });
+  $('pzMais').onclick = ()=>{ limite += PAGINA(); renderGrid(); };
 
   // ---- busca instantânea ----
-  document.getElementById('search').addEventListener('input', e=>{ query=e.target.value; renderGrid(); });
-  // DEPOIS do listener acima: a busca da barra (assets/blaxx-nav.js) chega como ?q=; entra no campo e
-  // dispara o mesmo filtro, como se a pessoa tivesse digitado aqui.
+  $('search').addEventListener('input', e=>{ query=e.target.value; limite = PAGINA(); renderGrid(); });
+  // DEPOIS do listener acima: a busca da barra (assets/blaxx-nav.js) e o mega-menu chegam como ?q=;
+  // entra no campo e dispara o mesmo filtro, como se a pessoa tivesse digitado aqui.
+  // As verticais do mega-menu (?q=postos, ?q=supermercado, ?q=farmácia) ligam a pílula
+  // da categoria em vez de buscar a palavra no nome (antes ?q=postos dava zero).
+  const VERTICAL_Q = { 'postos':'Postos','posto':'Postos','combustivel':'Postos',
+    'supermercado':'Supermercados','supermercados':'Supermercados','mercados':'Supermercados',
+    'farmacia':'Farmácias','farmacias':'Farmácias','drogaria':'Farmácias','drogarias':'Farmácias' };
   (function(){
     var q = new URLSearchParams(location.search).get('q');
-    var campo = document.getElementById('search');
-    if (q && campo) { campo.value = q; campo.dispatchEvent(new Event('input', { bubbles: true })); }
+    var campo = $('search');
+    if (q && VERTICAL_Q[norm(q)]) { activeCat = VERTICAL_Q[norm(q)]; return; }
+    if (q && campo) {
+      campo.value = q; campo.dispatchEvent(new Event('input', { bubbles: true }));
+      document.querySelectorAll('.bx-busca input[name="q"]').forEach(function(i){ if (!i.value) i.value = q; });
+    }
   })();
-  document.getElementById('favBtn').onclick = ()=>{ favOnly=!favOnly; activeCat=favOnly?'__fav__':''; syncFavBtn(); renderPills(); renderGrid(); };
+  $('favBtn').onclick = ()=>{
+    activeCat = activeCat==='__fav__' ? '' : '__fav__'; limite = PAGINA();
+    syncFavBtn(); renderPills(); renderGrid();
+    const lista = $('lista');
+    if (lista.getBoundingClientRect().top > window.innerHeight * 0.75) lista.scrollIntoView({ behavior: REDUZ ? 'auto' : 'smooth', block: 'start' });
+  };
 
-  // ---- demo fallback (sem sessão / API offline) ----
-  function demo(){
-    PARTNERS = [
-      {id:'nexus',name:'Nexus Airlines',category:'Viagens',description:'Passagens nacionais e internacionais.',logo_emoji:'✈️',accrual_rule:'Até 6 pts/R$',city:'Brasil'},
-      {id:'mercadovivo',name:'Mercado Vivo',category:'Supermercado',description:'Supermercado com entrega grátis.',logo_emoji:'🛒',accrual_rule:'Até 4 pts/R$'},
-      {id:'pulse',name:'Pulse Eletro',category:'Tecnologia',description:'Eletrônicos e gadgets.',logo_emoji:'📱',accrual_rule:'Até 4 pts/R$'},
-      {id:'vertice',name:'Loja Vértice',category:'Moda',description:'Moda e lifestyle, online e lojas.',logo_emoji:'👟',accrual_rule:'Até 5 pts/R$'},
-      {id:'haven',name:'Hotéis Haven',category:'Viagens',description:'Rede de hotéis e resorts.',logo_emoji:'🏨',accrual_rule:'Até 5 pts/R$'},
-      {id:'orbita',name:'Posto Órbita',category:'Casa',description:'Combustível e conveniência 24h.',logo_emoji:'⛽',accrual_rule:'Até 3 pts/R$'},
-      {id:'stream',name:'Stream+',category:'Tecnologia',description:'Assinaturas de streaming.',logo_emoji:'🎬',accrual_rule:'Até 2 pts/R$'},
-      {id:'saude',name:'Farma Bem',category:'Saúde',description:'Farmácias e bem-estar.',logo_emoji:'💊',accrual_rule:'Até 4 pts/R$'},
-    ];
-    CATS = ['Viagens','Tecnologia','Moda','Casa','Supermercado','Saúde'];
-  }
-
-  // ---- boot ----
-  (async ()=>{
-    skeleton();
+  // ---- boot (e "tentar de novo"): sem lista inventada se a API falhar ----
+  async function carregar(){
+    estado = 'carregando'; renderGrid(); renderPills();
     const [wallet, card, pres, cres, cam] = await Promise.all([
-      get('/wallet/'), get('/card/'), get('/partners/'), get('/partners/categories'), get('/campaigns/')
+      token() ? get('/wallet/') : null, token() ? get('/card/') : null,
+      get('/partners/'), get('/partners/categories'), get('/campaigns/')
     ]);
     CAMPAIGNS = (cam && (cam.items || cam)) || [];
     if (!Array.isArray(CAMPAIGNS)) CAMPAIGNS = [];
-    if (pres && Array.isArray(pres.items) && pres.items.length){
-      PARTNERS = pres.items.map(p=>({ ...p, id:String(p.id) }));
-      CATS = (cres && Array.isArray(cres.items)) ? cres.items : [...new Set(PARTNERS.map(p=>p.category).filter(Boolean))];
+    CAMPAIGNS = CAMPAIGNS.filter(c => c && c.is_active !== false);   // o recibo diz "campanhas ativas"
+    const itens = pres && (Array.isArray(pres) ? pres : pres.items);
+    if (Array.isArray(itens)){
+      estado = 'ok';
+      PARTNERS = itens.map(p=>({ ...p, id:String(p.id), _hay: norm((p.name||'')+' '+(p.category||'')+' '+canon(p.category)) }));
+      const daApi = (cres && Array.isArray(cres.items)) ? cres.items : [];
+      CATS = [...new Set(daApi.concat(PARTNERS.map(p=>p.category)).filter(Boolean).map(canon))];
     } else {
-      demo();
+      estado = 'erro'; PARTNERS = []; CATS = [];
     }
+    $('pzResumo').hidden = estado !== 'ok';
+    $('pzTotal').textContent = fmt(PARTNERS.length);
     renderMetrics(wallet, card);
-    renderBanner(); renderPills(); syncFavBtn(); renderGrid();
-  })();
+    renderBanner(); renderPills(); syncFavBtn(); renderGrid(); renderRecibo();
+  }
+  syncFavBtn();
+  carregar();
 })();
 </script>
 </body>
