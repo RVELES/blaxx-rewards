@@ -262,7 +262,9 @@
     return fetch(API + '/payments/card/config')
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (cfg) {
-        var enabled = !!(cfg && cfg.enabled && cfg.public_key);
+        // C6: link de pagamento, sem chave pública (o cartão é digitado na
+        // página do C6). Stripe: precisa da chave publicável do Elements.
+        var enabled = !!(cfg && cfg.enabled && (cfg.public_key || cfg.provider === 'c6'));
         if (enabled) {
           cardCfg = cfg;
           var row = document.getElementById('method-row');
@@ -366,6 +368,7 @@
 
   function startCardFlow() {
     var pkg = getQueryPkg();
+    if (cardCfg.provider === 'c6') { startC6Checkout(pkg); return; }
     if (pkg) {
       // Pacote: preço vem do catálogo do backend
       api('/pix/packages').then(function (packages) {
@@ -390,6 +393,71 @@
       return;
     }
     mountStripeCard(amount, { amount_brl: amount });
+  }
+
+  // ---------------- C6 Checkout (link de pagamento C6 Pay) ---------------- #
+  // O backend cria o link e o cliente paga na página do C6: o número do
+  // cartão nunca passa pelo nosso site. Na volta, o C6 redireciona para
+  // ?compra_cartao=<id> e acompanharC6Checkout() confere o pagamento.
+  function startC6Checkout(pkg) {
+    var body;
+    if (pkg) {
+      body = { package: pkg };
+    } else {
+      var amount = parseInputAmount(document.getElementById('amount-input').value);
+      if (amount < 10) { showInlineError('Valor mínimo: R$ 10,00', 'warn'); return; }
+      body = { amount_brl: amount };
+    }
+    var btn = document.getElementById('btn-create');
+    if (btn) { btn.disabled = true; btn.textContent = 'Abrindo pagamento…'; }
+    api(cardCfg.checkout_path || '/payments/c6/card/checkout', { method: 'POST', body: JSON.stringify(body) })
+      .then(function (c) {
+        if (!c || !c.url || c.url.indexOf('https://') !== 0) throw new Error('Link de pagamento indisponível.');
+        try { sessionStorage.setItem('blaxx_compra_cartao', c.id); } catch (e) {}
+        location.href = c.url;
+      })
+      .catch(function (e) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Pagar com cartão'; }
+        if (e && e.status === 401) return;
+        showInlineError((e && e.message) || 'Não foi possível abrir o pagamento com cartão. Tente a transferência.');
+        if (!pkg) return;
+        recoverToStep1();
+      });
+  }
+
+  function acompanharC6Checkout(id) {
+    var s1 = document.getElementById('step-1');
+    if (s1) s1.style.display = 'none';
+    var wrap = document.querySelector('.buy-wrap') || document.body;
+    var aviso = document.createElement('div');
+    aviso.id = 'c6-retorno';
+    aviso.setAttribute('role', 'status');
+    aviso.style.cssText = 'text-align:center;padding:48px 16px;color:var(--bx-grey,#555860);';
+    aviso.textContent = 'Confirmando seu pagamento…';
+    wrap.insertBefore(aviso, wrap.firstChild);
+    var tentativas = 0;
+    (function consultar() {
+      tentativas++;
+      api((cardCfg.checkout_path || '/payments/c6/card/checkout') + '/' + encodeURIComponent(id))
+        .then(function (c) {
+          var st = String((c && c.status) || '').toLowerCase();
+          if (st === 'paid') {
+            try { sessionStorage.removeItem('blaxx_compra_cartao'); } catch (e) {}
+            location.href = '/compra-aprovada.html';
+          } else if (st === 'expired' || st === 'cancelled') {
+            location.href = '/compra-recusada.html';
+          } else if (tentativas < 20) {
+            setTimeout(consultar, 3000);
+          } else {
+            location.href = '/compra-pendente.html';
+          }
+        })
+        .catch(function (e) {
+          if (e && e.status === 401) return;
+          if (tentativas < 20) setTimeout(consultar, 3000);
+          else location.href = '/compra-pendente.html';
+        });
+    })();
   }
 
   // Roteador de checkout de cartão. Arquitetura 2026-08-01: cartão é STRIPE
@@ -798,6 +866,8 @@
   }
 
   function bootAfterConfig() {
+    var volta = location.search.match(/[?&]compra_cartao=([a-zA-Z0-9]{8,40})/);
+    if (volta) { acompanharC6Checkout(volta[1]); return; }
     var pkg = getQueryPkg();
     if (!pkg) {
       // Fluxo valor livre, aguarda usuario digitar
