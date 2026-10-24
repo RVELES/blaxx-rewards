@@ -65,14 +65,20 @@
 
   // ---- favicon ----
   (function(){
-    let l = document.querySelector('link[rel="icon"]');
-    if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); }
-    l.type = 'image/svg+xml'; l.href = 'assets/favicon.svg';
+    // As páginas já trazem o conjunto completo no <head> (favicon.ico +
+    // favicon.svg + apple-touch-icon); aqui só a rede de segurança.
+    if (document.querySelector('link[rel="icon"]')) return;
+    const l = document.createElement('link');
+    l.rel = 'icon'; l.type = 'image/svg+xml'; l.href = '/assets/favicon.svg?v=49';
+    document.head.appendChild(l);
   })();
 
   const screen = document.body.getAttribute('data-screen') || 'inicio';
 
   // Marca OFICIAL, vetor traçado a partir do PNG do pacote.
+  // 24/10/2026: o traçado automático virou desenho geométrico (hastes retas,
+  // arcos concêntricos, X/x de lados retos), mesma caixa; ver o comentário em
+  // assets/marca/blaxx-wordmark-barra.svg. O histórico abaixo é do traçado.
   // Antes daqui: um B redesenhado à mão + wordmark em TEXTO com font-family
   // Inter (que nem é a fonte da marca), a "logo" mudava de forma conforme a
   // fonte que o navegador conseguisse carregar.

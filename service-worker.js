@@ -18,7 +18,7 @@
 // quem já visitou o site continua rodando a versão em cache, foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v48-cartao-c6';
+const CACHE = 'blaxx-v49-logos';
 const PRECACHE = [
   '/',
   '/login.html',
@@ -42,9 +42,10 @@ const PRECACHE = [
   '/assets/blaxx-nav-user.js',
   '/assets/blaxx-nav.js',
   '/assets/blaxx-acesso.js',
-  '/assets/icons/icon.svg',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png',
+  '/assets/favicon.svg?v=49',
+  '/assets/icons/icon.svg?v=49',
+  '/assets/icons/icon-192.png?v=49',
+  '/assets/icons/icon-512.png?v=49',
   '/manifest.json',
 ];
 
@@ -130,8 +131,9 @@ self.addEventListener('push', (ev) => {
   ev.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/assets/icons/icon-192.png',
-      badge: '/assets/icons/icon-192.png',
+      icon: '/assets/icons/icon-192.png?v=49',
+      // selo da barra de status do Android: só a silhueta do B (máscara alfa)
+      badge: '/assets/icons/badge-96.png?v=49',
       data: { url: data.url || '/dashboard.html' },
       vibrate: [120, 60, 120],
     })

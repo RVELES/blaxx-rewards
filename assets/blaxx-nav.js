@@ -379,7 +379,7 @@
 
     var html = '<div class="bx-foot"><div class="bx-zig"></div><div class="bx-foot-corpo">' +
       '<div class="bx-foot-marca">' +
-        '<a href="index.html" aria-label="BlaXx Pontos"><img src="assets/marca/blaxx-logo-completo-justo.svg" alt="BlaXx Rewards"></a>'   /* rodapé: logo completo (pedido de 16/10); a barra fica com o B */ +
+        '<a href="index.html" aria-label="BlaXx Pontos"><img src="assets/marca/blaxx-logo-completo-justo.svg" alt="BlaXx Rewards"></a>'   /* rodapé: logo completo (pedido de 16/10); a barra fica com a palavra BlaXx */ +
         '<p>Um programa de recompensas simples: compre pontos, envie para quem quiser ' +
         'e troque por benefícios em parceiros selecionados. Sem letra miúda.</p>' +
       '</div>';

@@ -201,10 +201,11 @@ p.lead,.lead{ font-size:18px; color:var(--bx-grey); line-height:1.5; }
 
 /* Marca fora da barra (fundo claro): o mesmo logo da barra, só "BlaXx", na
    variante clara (16/10: "aplique o logo da home para todo o site, menos o
-   rodapé"). Desenho 825 × 166. */
+   rodapé"). Mesma caixa da variante escura (817 × 158, 24/10), então os dois
+   logos saem do mesmo tamanho. */
 .brand{ display:flex; align-items:center; gap:0; font-size:0; color:transparent; }
 .brand .mark,.mark{
-  display:block; width:140px; height:28px; min-width:0; padding:0;
+  display:block; width:140px; height:27px; min-width:0; padding:0;
   background:transparent url('marca/blaxx-wordmark-barra-claro.svg') left center / contain no-repeat;
   border:0; border-radius:0; box-shadow:none; font-size:0; color:transparent;
 }
