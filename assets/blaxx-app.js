@@ -55,7 +55,7 @@
     kind = kind || 'info';
     // tokens do tema Embarque (assets/blaxx-embarque.css), não literais da paleta antiga
     var bg = { ok: 'var(--ok,#E4F5DA)', err: 'var(--danger,#F6DFD6)', warn: 'var(--warn,#F7EFD6)', info: 'var(--info,#DCE8F3)' }[kind];
-    var color = { ok: 'var(--ok-text,#1f6b14)', err: 'var(--danger-text,#9a2f15)', warn: 'var(--warn-text,#7a5a00)', info: 'var(--info-text,#1b4a80)' }[kind];
+    var color = { ok: 'var(--ok-text,#1F6B0B)', err: 'var(--danger-text,#9a2f15)', warn: 'var(--warn-text,#7a5a00)', info: 'var(--info-text,#1b4a80)' }[kind];
     var el = document.createElement('div');
     // A11y: erros usam role=alert (assertivo, interrompe leitor de tela);
     // outros usam role=status (polite, espera o leitor terminar).
@@ -100,7 +100,7 @@
   // Marcador de build: este projeto já perdeu horas com o navegador servindo
   // JS antigo do cache. Comparar window.BLAXX_APP_BUILD com o esperado diz na
   // hora se o que está rodando é o arquivo do disco.
-  window.BLAXX_APP_BUILD = 'logos-2026-10-24';
+  window.BLAXX_APP_BUILD = 'verde-2026-10-26';
 
   var STORE = {
     token: function () {
@@ -541,7 +541,7 @@
 
         // Etapa 2: input do código (escondido até enviar)
         '<div id="bx-verify-step-input" style="display:none;">' +
-          '<div id="bx-verify-sent-msg" style="font-size:13px;color:#2d651b;background:#efffe6;padding:10px 12px;border-radius:8px;margin-bottom:14px;"></div>' +
+          '<div id="bx-verify-sent-msg" style="font-size:13px;color:#1F6B0B;background:#efffe6;padding:10px 12px;border-radius:8px;margin-bottom:14px;"></div>' +
           '<label for="bx-verify-code" style="display:block;font-size:13px;font-weight:700;color:#080907;margin-bottom:6px;">Código recebido</label>' +
           '<input id="bx-verify-code" type="text" inputmode="numeric" maxlength="6" pattern="\\d{6}" placeholder="000000" autocomplete="one-time-code" ' +
             'style="width:100%;padding:14px;font-size:24px;letter-spacing:0.4em;text-align:center;font-weight:700;' +
@@ -1666,7 +1666,7 @@
           clearInterval(handle);
           if (pill) {
             pill.style.background = 'var(--ok-soft, #efffe6)';
-            pill.style.color = 'var(--ok-text, #2d651b)';
+            pill.style.color = 'var(--ok-text, #1F6B0B)';
             pill.textContent = 'Pagamento confirmado';
           }
           STORE.setFlow('charge_paid', c);
@@ -2041,7 +2041,7 @@
       if (!container) return;
       container.innerHTML = items.map(function (b) {
         return '<div class="bx-benefit-card" data-id="' + b.id + '" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;cursor:pointer;">'
-          + (b.tag ? '<span style="background:#F0FAD9;color:#5AB800;padding:2px 8px;border-radius:4px;font-size:11px;">' + b.tag + '</span>' : '')
+          + (b.tag ? '<span style="background:#F0FAD9;color:#1F6B0B;padding:2px 8px;border-radius:4px;font-size:11px;">' + b.tag + '</span>' : '')
           + '<div style="margin-top:6px;"><span class="bx-ico">' + _bxIconeSvg(_bxIconeDoGlifo(b.image_emoji, 'estrela')) + '</span></div>'
           + '<strong>' + b.name + '</strong>'
           + (b.partner_name ? '<div style="color:#888;font-size:12px;">' + b.partner_name + '</div>' : '')
@@ -2101,7 +2101,7 @@
       container.innerHTML = items.map(function (c) {
         var pct = c.progress_pct || 0;
         return '<div class="bx-camp-card" style="padding:14px;border:1px solid #eee;border-radius:12px;margin:8px;">'
-          + (c.completed_at ? '<span style="color:#5AB800">Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
+          + (c.completed_at ? '<span style="color:#1F6B0B">Concluída</span>' : c.joined ? '<span>Participando</span>' : '<span>Ativa</span>')
           + '<h3>' + c.name + '</h3>'
           + '<p>' + (c.description || '') + '</p>'
           + '<p style="color:#888;font-size:12px;">' + (c.mechanic || '') + '</p>'
@@ -2833,7 +2833,7 @@
       var pwd = input.value;
       if (!pwd) { target.textContent = defaultText; target.style.color = ''; return; }
       var r = passwordStrength(pwd);
-      var colors = ['#a83417','#a83417','#8a6500','#2d651b','#2d651b'];
+      var colors = ['#a83417','#a83417','#8a6500','#1F6B0B','#1F6B0B'];
       target.style.color = colors[Math.max(0, r.score - 1)] || '#888';
       target.textContent = 'Senha ' + r.label + (r.hints.length ? ', falta: ' + r.hints.join(', ') : '');
     });

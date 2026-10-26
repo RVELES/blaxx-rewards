@@ -21,9 +21,11 @@
     --lime-2: #A8FF4D;
     --lime-soft: #F0FAD9;
     --lime-bg: #f5fbe2;
-    --lime-dark: #5AB800;
+    /* Verde OFICIAL p/ texto/ícone sobre claro (26/10): 6,63:1 no branco, 5,87:1 no papel. */
+    --bx-verde-escuro: #1F6B0B;
+    --lime-dark: var(--bx-verde-escuro); /* era #5AB800 (2,5:1, reprovado) */
     --ok: #efffe6;
-    --ok-text: #2d651b;
+    --ok-text: var(--bx-verde-escuro);
     --warn: #fff7df;
     --warn-text: #8a6500;
     --danger: #ffede8;
@@ -1141,7 +1143,7 @@ textarea { resize: vertical; min-height: 100px; }
     font-size: 13px;
 }
 .alert.success { background: var(--ok); border-color: #b9e2a4; color: var(--ok-text); }
-.alert.success .alert-icon { background: #6bb43a; color: white; }
+.alert.success .alert-icon { background: var(--bx-verde-escuro); color: white; }
 .alert.warn { background: var(--warn); border-color: #f0d68b; color: var(--warn-text); }
 .alert.warn .alert-icon { background: #d99e00; color: white; }
 .alert.error { background: var(--danger); border-color: #f0b39e; color: var(--danger-text); }
@@ -1452,7 +1454,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     font-weight: 700;
 }
 .hero-v3 h1 .accent {
-    color: #6f8a18;
+    color: var(--bx-verde-escuro);
     background: linear-gradient(180deg, transparent 60%, var(--lime-soft) 60%);
     padding: 0 4px;
 }
@@ -1928,7 +1930,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
 }
 .price-card .bonus {
     font-size: 13px;
-    color: #6f8a18;
+    color: var(--bx-verde-escuro);
     font-weight: 700;
 }
 .price-card .button {
@@ -1968,7 +1970,7 @@ details.faq p { margin-top: 10px; margin-bottom: 0; }
     text-transform: uppercase;
     letter-spacing: .14em;
     font-weight: 700;
-    color: #6f8a18;
+    color: var(--bx-verde-escuro);
     margin-bottom: 8px;
 }
 .sec-head h2 {
@@ -2512,7 +2514,7 @@ body.bx-no-scroll { overflow: hidden; }
    Fundo papel #E8E6DD, superfícies claras com borda preta grossa + sombra
    dura (sem blur), Space Grotesk (display) + JetBrains Mono (dados/labels),
    neon #59FD27 como acento, cantos retos. Mesma linguagem de blaxx-neon.html.
-   Preserva #5AB800 (--lime-dark) e #F0FAD9 (--lime-soft) — regra do wordmark.
+   Preserva #F0FAD9 (--lime-soft). Verde sobre claro = --bx-verde-escuro #1F6B0B (26/10).
    ========================================================================== */
 :root{
   --paper:#E8E6DD;
@@ -2521,8 +2523,8 @@ body.bx-no-scroll { overflow: hidden; }
   --ink:#0A0B0E; --ink-2:#13161C;
   --muted:#5b6058; --muted-2:#6d7178;
   --line:#0A0B0E; --line-soft:#c9c6ba;
-  --lime:#59FD27; --lime-2:#59FD27; --lime-soft:#F0FAD9; --lime-bg:#eef6d6; --lime-dark:#5AB800;
-  --ok:#dff5cf; --ok-text:#1f7a12; --warn:#f6edcf; --warn-text:#8a6500;
+  --lime:#59FD27; --lime-2:#59FD27; --lime-soft:#F0FAD9; --lime-bg:#eef6d6; --bx-verde-escuro:#1F6B0B; --lime-dark:var(--bx-verde-escuro);
+  --ok:#dff5cf; --ok-text:var(--bx-verde-escuro); --warn:#f6edcf; --warn-text:#8a6500;
   --danger:#f4ddd2; --danger-text:#a83417; --info:#d8e6f2; --info-text:#1c4f87;
   /* Brutalismo ARREDONDADO (decisão de 01/08, escala canônica unificada em
      04/09): borda tinta grossa + sombra dura sem blur continuam sendo a

@@ -16,7 +16,8 @@
   --carbon: #16180F;       /* dark elevated */
   --lime: #59FD27;         /* primary signal — marca oficial */
   --lime-bright: #D7FF5C;  /* highlight / reward */
-  --lime-deep: #5AB800;    /* pressed */
+  --bx-verde-escuro: #1F6B0B; /* verde OFICIAL p/ texto/ícone sobre claro (26/10): 6,63:1 branco, 5,87:1 papel */
+  --lime-deep: var(--bx-verde-escuro); /* era #5AB800 (2,5:1, reprovado) */
   --paper: #ECEFE3;        /* page ground */
   --paper-2: #F4F6EE;      /* lighter ground */
   --white: #FFFFFF;        /* card */
@@ -453,7 +454,7 @@ main {
    sombra dura (sem blur), cantos retos. Chrome (topbar/sidebar/footer)
    permanece PRETO (#0A0B0E) — sidebar preta do protótipo. Space Grotesk
    (display) + JetBrains Mono (dados). Neon #59FD27 como acento.
-   Preserva #5AB800 (--lime-deep) — regra do wordmark.
+   Verde sobre claro = --bx-verde-escuro #1F6B0B (26/10); #5AB800 é legado.
    ========================================================================== */
 :root{
   --paper:#E8E6DD; --paper-2:#EFEEE6; --white:#F4F4F0; --cream:#F4F4F0;
@@ -463,9 +464,9 @@ main {
   --line:#0A0B0E; --line-strong:#0A0B0E; --line-dark:rgba(244,246,238,.14);
   --chrome:#0A0B0E; --chrome-2:#0f1216; --chrome-line:#22252b; --chrome-line-strong:#2b2f36;
   --chrome-fg:#F4F4F0; --chrome-fg-muted:#cfd2cb; --chrome-surface:rgba(244,246,238,.05);
-  --lime:#59FD27; --lime-bright:#59FD27; --lime-deep:#5AB800;
+  --lime:#59FD27; --lime-bright:#59FD27; --bx-verde-escuro:#1F6B0B; --lime-deep:var(--bx-verde-escuro);
   --lime-06:rgba(89,253,39,.06); --lime-12:rgba(89,253,39,.14); --lime-20:rgba(89,253,39,.20); --lime-40:rgba(89,253,39,.45);
-  --pos:#1f7a12; --neg:#a83417; --warn:#8a6500; --info:#1c4f87;
+  --pos:var(--bx-verde-escuro); --neg:#a83417; --warn:#8a6500; --info:#1c4f87;
   /* Brutalismo ARREDONDADO: mantém borda tinta grossa + sombra dura sem
      blur (a assinatura do estilo), mas suaviza os cantos. O contraste entre
      canto macio e sombra seca é o que dá a personalidade. Escala canônica
@@ -489,7 +490,7 @@ body{ background:var(--paper) !important; color:var(--fg); }
 .btn:hover{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
 .btn--primary{ background:var(--lime); color:var(--ink); }
 .btn--primary:hover{ background:var(--lime); }
-.btn--primary:active{ background:var(--lime-deep); }
+.btn--primary:active{ background:#4FE81F; } /* neon pressionado: texto tinta continua legível */
 .btn--dark{ background:var(--ink); color:var(--lime); }
 .btn--white,.btn--outline{ background:var(--white); color:var(--ink); border-color:var(--ink); }
 .btn--ghost-dark{ background:transparent; color:var(--fg-on-dark); border-color:var(--fg-on-dark); box-shadow:none; }

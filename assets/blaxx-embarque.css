@@ -52,7 +52,9 @@
   --bx-ink-muted:#8A8D96; /* texto secundário sobre preto (5,9:1) */
   --bx-bar-fg:#C9CBD1;    /* texto da barra utilitária */
   --bx-neon:#59FD27;
-  --bx-neon-deep:#5AB800; /* o verde do wordmark sobre claro; nunca texto */
+  --bx-verde-escuro:#1F6B0B; /* verde OFICIAL p/ texto/ícone sobre claro (26/10): 6,63:1 branco, 5,87:1 papel */
+  --bx-neon-press:#4FE81F;  /* neon pressionado (preenchimento) */
+  --bx-neon-deep:var(--bx-verde-escuro); /* alias legado (era #5AB800, 2,5:1) */
   --bx-azul:#8EC3EA;      /* esfera do globo */
 
   --bx-sans:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
@@ -73,7 +75,7 @@
   --line:var(--bx-line); --line-soft:var(--bx-line);
   --bg:var(--bx-bg); --bg-warm:var(--bx-surface-2); --card:var(--bx-surface); --paper:var(--bx-bg);
   --lime:var(--bx-neon); --lime-2:var(--bx-neon); --lime-soft:#EEF7E2; --lime-bg:#EEF7E2; --lime-dark:var(--bx-neon-deep);
-  --ok:#E4F5DA; --ok-text:#1f6b14; --warn:#F7EFD6; --warn-text:#7a5a00;
+  --ok:#E4F5DA; --ok-text:var(--bx-verde-escuro); --warn:#F7EFD6; --warn-text:#7a5a00;
   --danger:#F6DFD6; --danger-text:#9a2f15; --info:#DCE8F3; --info-text:#1b4a80;
   --shadow-sm:0 6px 16px rgba(10,11,14,.05); --shadow:var(--bx-sh); --shadow-lg:var(--bx-sh-lg);
   --r-xs:var(--bx-r-xxs); --r-sm:var(--bx-r-sm); --r-md:var(--bx-r-md); --r-lg:var(--bx-r-lg); --r-xl:var(--bx-r-xl); --r-pill:999px;
@@ -96,7 +98,7 @@
   /* --warn e --info NÃO entram aqui: a família A os usa como FUNDO (.alert.warn,
      .status.pendente); redeclará-los como cor de texto no mesmo :root deixava
      fundo = texto nessas 50 páginas (medido pelos verificadores). */
-  --pos:#1f6b14; --neg:#9a2f15;
+  --pos:var(--bx-verde-escuro); --neg:#9a2f15;
   --font-display:var(--bx-sans); --font-body:var(--bx-sans); --font-mono:var(--bx-mono);
   --sh-1:0 6px 16px rgba(10,11,14,.05); --sh-2:var(--bx-sh); --sh-3:var(--bx-sh-lg);
   --glow-lime:0 0 0 1px rgba(89,253,39,.35), var(--bx-sh);
@@ -474,7 +476,7 @@ input[type="range"]{ border:0; box-shadow:none; }   /* sem background:transparen
 .btn:hover{ transform:none; box-shadow:none; }
 .btn--primary{ background:var(--bx-neon); color:var(--bx-ink); }
 .btn--primary:hover{ background:#4FE81F; }
-.btn--primary:active{ background:var(--bx-neon-deep); }
+.btn--primary:active{ background:var(--bx-neon-press); }
 .btn--dark{ background:var(--bx-ink); color:var(--bx-surface); }
 .btn--dark:hover{ background:var(--bx-ink-2); }
 .btn--white,.btn--outline{ background:var(--bx-surface); color:var(--bx-ink); border:1px solid var(--bx-line); }
