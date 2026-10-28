@@ -18,7 +18,7 @@
 // quem já visitou o site continua rodando a versão em cache, foi o que
 // aconteceu ao integrar o Stripe (o navegador seguia servindo o JS antigo,
 // sem o checkout do Elements).
-const CACHE = 'blaxx-v51-cidades';
+const CACHE = 'blaxx-v52-ipad';
 const PRECACHE = [
   '/',
   '/login.html',

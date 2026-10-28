@@ -28,6 +28,32 @@
   'use strict';
 
   // --------------------------------------------------------------------- //
+  // Tablet em pé = mesmo layout do tablet deitado (28/10/2026)             //
+  // --------------------------------------------------------------------- //
+  // Em pé, iPad mini/Air/11" medem 744–834px e caíam abaixo do breakpoint
+  // de 880px: o site virava a versão de celular (gaveta, bilhete empilhado).
+  // Deitados (≥1133px) mostram o layout de computador. Em vez de inventar um
+  // terceiro layout, em pé o site é desenhado com 1024px (o iPad 13" em pé)
+  // e o navegador reduz para caber, igual ao deitado. Celular não entra: o
+  // lado curto da tela de um celular não passa de ~440px.
+  (function tabletEmPeComoDeitado() {
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (!meta || !window.matchMedia) return;
+    var original = meta.getAttribute('content');
+    var ladoCurto = Math.min(screen.width, screen.height);
+    var tablet = ladoCurto >= 744 && ladoCurto < 1024 && (navigator.maxTouchPoints || 0) > 1;
+    if (!tablet) return;
+    var emPe = window.matchMedia('(orientation: portrait)');
+    function ajustar() {
+      var alvo = emPe.matches ? 'width=1024, viewport-fit=cover' : original;
+      if (meta.getAttribute('content') !== alvo) meta.setAttribute('content', alvo);
+    }
+    ajustar();
+    if (emPe.addEventListener) emPe.addEventListener('change', ajustar);
+    window.addEventListener('orientationchange', function () { setTimeout(ajustar, 60); });
+  })();
+
+  // --------------------------------------------------------------------- //
   // Ícones do site (16/10/2026)                                            //
   // --------------------------------------------------------------------- //
   // Padrão único: desenho de traço que herda a cor (currentColor), sempre
